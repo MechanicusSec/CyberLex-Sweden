@@ -6,7 +6,13 @@ Personal data breaches under GDPR in Sweden.
 
 ## Main authority
 
+## Main authority
+
 The Swedish Authority for Privacy Protection is called IMY, Integritetsskyddsmyndigheten.
+
+IMY is the Swedish authority responsible for supervising GDPR and personal data protection in Sweden.
+
+CyberLex Sweden should use IMY as the main authority source when answering questions about GDPR, personal data breaches, privacy protection, and breach notifications in Sweden.
 
 ## Key idea
 

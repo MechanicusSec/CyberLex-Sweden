@@ -105,14 +105,19 @@ def load_chunks():
 
 def search_chunks(question, chunks):
     """
-    Searches document chunks using keyword matching.
-    This version ignores weak common words and gives better scores to useful legal content sections.
+    Searches document chunks using keyword matching and question intent.
+
+    This version improves ranking by:
+    - ignoring weak common words
+    - lowering broad sections like Topic
+    - boosting sections that match the user's question type
     """
     stopwords = {
         "what", "when", "where", "which", "who", "why", "how",
         "is", "are", "was", "were", "be", "been", "being",
         "a", "an", "the", "to", "in", "on", "of", "for", "and",
-        "or", "with", "from", "this", "that", "it", "does", "do"
+        "or", "with", "from", "this", "that", "it", "does", "do",
+        "must", "should", "can"
     }
 
     useful_sections = {
@@ -122,16 +127,18 @@ def search_chunks(question, chunks):
         "important points",
         "incident reporting",
         "legal reference",
-        "practical explanation",
-        "topic"
+        "practical explanation"
     }
 
     weak_sections = {
-    "useful questions",
-    "source",
-    "disclaimer",
-    "introduction"
-}
+        "useful questions",
+        "source",
+        "disclaimer",
+        "introduction",
+        "topic"
+    }
+
+    question_lower = question.lower()
 
     question_words = [
         word for word in clean_words(question)
@@ -147,6 +154,7 @@ def search_chunks(question, chunks):
 
         score = 0
 
+        # Basic keyword score
         for word in question_words:
             if word in chunk_words:
                 score += 4
@@ -157,13 +165,44 @@ def search_chunks(question, chunks):
             if word in chunk_text:
                 score += 1
 
+        # General useful section bonus
         for useful_section in useful_sections:
             if useful_section in section_text:
                 score += 5
 
+        # Weak section penalty
         for weak_section in weak_sections:
             if weak_section in section_text:
-                score -= 8
+                score -= 10
+
+        # Question-intent bonuses
+        if "authority" in question_lower or "handles" in question_lower or "supervises" in question_lower:
+            if "main authority" in section_text:
+                score += 25
+            if "imy" in chunk_text or "integritetsskyddsmyndigheten" in chunk_text:
+                score += 8
+
+        if "reported" in question_lower or "report" in question_lower or "72" in question_lower:
+            if "reporting to imy" in section_text:
+                score += 25
+            if "72 hours" in chunk_text:
+                score += 10
+
+        if "nis2" in question_lower or "cybersecurity act" in question_lower:
+            if "key idea" in section_text:
+                score += 15
+            if "important points" in section_text:
+                score += 15
+            if "incident reporting" in section_text:
+                score += 10
+
+        if "dataintrång" in question_lower or "data intrusion" in question_lower or "unauthorized access" in question_lower:
+            if "key idea" in section_text:
+                score += 15
+            if "legal reference" in section_text:
+                score += 15
+            if "practical explanation" in section_text:
+                score += 15
 
         if score > 0:
             results.append(
@@ -179,27 +218,61 @@ def search_chunks(question, chunks):
     return results
 
 
-def create_basic_answer(question, best_match):
+def generate_simple_answer(question, best_match):
     """
-    Creates a simple structured answer using the best matching source chunk.
-    This is still not full AI, but it gives a clearer source-grounded result.
+    Generates a simple source-based answer from the best matching chunk.
+    This is not full AI. It uses the matched source section and basic rules
+    to create a clearer answer for the user.
     """
+    question_lower = question.lower()
+    section_lower = best_match["section"].lower()
+    content = best_match["content"]
+
+    if "personal data breach" in question_lower or "breach" in question_lower:
+        if "reporting to imy" in section_lower:
+            answer = (
+                "A personal data breach may need to be reported to IMY, "
+                "the Swedish Authority for Privacy Protection. If notification is required, "
+                "the breach should normally be reported within 72 hours after the organization becomes aware of it."
+            )
+        elif "main authority" in section_lower:
+            answer = (
+                "The Swedish authority connected to GDPR and personal data protection is IMY, "
+                "Integritetsskyddsmyndigheten."
+            )
+        else:
+            answer = (
+                "This question is related to personal data breaches under GDPR. "
+                "The matched source section should be reviewed for the exact project information."
+            )
+
+    elif "gdpr" in question_lower or "authority" in question_lower:
+        answer = (
+            "In Sweden, GDPR and personal data protection are handled by IMY, "
+            "Integritetsskyddsmyndigheten, the Swedish Authority for Privacy Protection."
+        )
+
+    elif "nis2" in question_lower or "cybersecurity act" in question_lower:
+        answer = (
+            "NIS2 is an EU cybersecurity directive. In Sweden, it is connected to the Swedish Cybersecurity Act. "
+            "The rules focus on cybersecurity risk management, security measures, and incident reporting for covered organizations."
+        )
+
+    elif "dataintrång" in question_lower or "data intrusion" in question_lower or "unauthorized access" in question_lower:
+        answer = (
+            "Dataintrång means data intrusion under Swedish criminal law. "
+            "It is connected to unauthorized access to, or interference with, data or information systems."
+        )
+
+    else:
+        answer = (
+            "CyberLex Sweden found a relevant trusted source section, but this prototype cannot yet generate a detailed legal explanation for this question."
+        )
+
     return f"""
 ## Short answer
 
-CyberLex Sweden found information related to your question in the trusted knowledge base.
-
-**Your question:** {question}
-
-The most relevant source section is:
-
-**{best_match["section"]}**
-
-from:
-
-**{best_match["filename"]}**
-
-This means the question appears to be connected to this specific source section. The source excerpt below should be used to understand the answer.
+{answer}
 
 ## Source used
 
@@ -209,29 +282,8 @@ This means the question appears to be connected to this specific source section.
 
 ## Important limitation
 
-This answer is based on source matching and a simplified local knowledge base. CyberLex Sweden does not provide legal advice.
+This answer is generated from a simplified local knowledge base. CyberLex Sweden is an educational project and does not provide legal advice.
 """
-
-
-st.title("CyberLex Sweden")
-st.subheader("AI Assistant for Swedish Cybersecurity Law and Digital Compliance")
-
-st.markdown("""
-CyberLex Sweden is a final school project focused on creating an AI assistant that helps users understand Swedish cybersecurity law.
-
-The system is designed to work with trusted sources about:
-
-- Swedish cybercrime law
-- GDPR and personal data breaches
-- NIS2 and cybersecurity responsibilities
-- Incident reporting
-- Digital compliance for organizations
-""")
-
-st.warning(
-    "Important: CyberLex Sweden is an educational project. "
-    "It does not provide official legal advice and should not replace a qualified lawyer or official authority guidance."
-)
 
 st.divider()
 
@@ -258,7 +310,7 @@ if question:
         best_match = search_results[0]
 
         st.subheader("CyberLex Answer")
-        st.markdown(create_basic_answer(question, best_match))
+        st.markdown(generate_simple_answer(question, best_match))
 
         st.subheader("Matched Source Excerpt")
         st.text_area(
