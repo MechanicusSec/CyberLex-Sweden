@@ -37,3 +37,15 @@ CyberLex Sweden is an educational project. It does not provide official legal ad
 ## Project Status
 
 Planning and setup phase.
+
+## Copyright
+
+Copyright © 2026 Robert Banderby. All rights reserved.
+
+CyberLex Sweden, including its source code, documentation, structure, project materials, and written content, is created as a final school project.
+
+This repository is made publicly visible for educational and portfolio purposes only.
+
+No permission is granted to copy, modify, distribute, sublicense, or use this project or its contents for commercial or non-commercial purposes without written permission from the author.
+
+CyberLex Sweden does not provide legal advice and should not be used as a replacement for official legal guidance or a qualified legal professional.
