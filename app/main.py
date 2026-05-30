@@ -99,9 +99,37 @@ def load_chunks():
 def search_chunks(question, chunks):
     """
     Searches document chunks using keyword matching.
-    Smaller chunks make the search more precise than searching whole files.
+    This version ignores weak common words and gives better scores to useful legal content sections.
     """
-    question_words = clean_words(question)
+    stopwords = {
+        "what", "when", "where", "which", "who", "why", "how",
+        "is", "are", "was", "were", "be", "been", "being",
+        "a", "an", "the", "to", "in", "on", "of", "for", "and",
+        "or", "with", "from", "this", "that", "it", "does", "do"
+    }
+
+    useful_sections = {
+        "key idea",
+        "reporting to imy",
+        "main authority",
+        "important points",
+        "incident reporting",
+        "legal reference",
+        "practical explanation",
+        "topic"
+    }
+
+    weak_sections = {
+        "useful questions",
+        "source",
+        "disclaimer"
+    }
+
+    question_words = [
+        word for word in clean_words(question)
+        if len(word) > 2 and word not in stopwords
+    ]
+
     results = []
 
     for chunk in chunks:
@@ -112,17 +140,22 @@ def search_chunks(question, chunks):
         score = 0
 
         for word in question_words:
-            if len(word) <= 2:
-                continue
-
             if word in chunk_words:
-                score += 3
+                score += 4
 
             if word in section_text:
-                score += 2
+                score += 3
 
             if word in chunk_text:
                 score += 1
+
+        for useful_section in useful_sections:
+            if useful_section in section_text:
+                score += 5
+
+        for weak_section in weak_sections:
+            if weak_section in section_text:
+                score -= 8
 
         if score > 0:
             results.append(
