@@ -24,6 +24,31 @@ def clean_words(text):
     return text.split()
 
 
+def extract_official_sources(content):
+    """
+    Extracts URLs from the Official source section of a Markdown document.
+    These URLs are shown in the app so users can trace answers back to trusted sources.
+    """
+    lines = content.splitlines()
+    sources = []
+    in_official_source_section = False
+
+    for line in lines:
+        stripped_line = line.strip()
+
+        if stripped_line.lower() == "## official source":
+            in_official_source_section = True
+            continue
+
+        if in_official_source_section and stripped_line.startswith("## "):
+            break
+
+        if in_official_source_section and stripped_line.startswith("http"):
+            sources.append(stripped_line)
+
+    return sources
+
+
 def load_documents():
     """
     Loads all Markdown files from the data folder.
@@ -32,10 +57,12 @@ def load_documents():
 
     for file_path in DATA_DIR.glob("*.md"):
         content = file_path.read_text(encoding="utf-8")
+
         documents.append(
             {
                 "filename": file_path.name,
-                "content": content
+                "content": content,
+                "official_sources": extract_official_sources(content)
             }
         )
 
@@ -45,13 +72,14 @@ def load_documents():
 def split_into_chunks(document):
     """
     Splits a Markdown document into smaller chunks based on headings.
-    Each chunk keeps track of the source filename and section title.
+    Each chunk keeps track of the source filename, section title, and official source links.
 
     Very small chunks are ignored because they usually only contain a heading
     and do not give useful legal information.
     """
     filename = document["filename"]
     content = document["content"]
+    official_sources = document["official_sources"]
 
     chunks = []
     current_title = "Introduction"
@@ -59,8 +87,6 @@ def split_into_chunks(document):
 
     def save_chunk(title, lines):
         chunk_content = "\n".join(lines).strip()
-
-        # Remove empty chunks and heading-only chunks
         plain_words = clean_words(chunk_content)
 
         if len(plain_words) < 8:
@@ -70,7 +96,8 @@ def split_into_chunks(document):
             {
                 "filename": filename,
                 "section": title,
-                "content": chunk_content
+                "content": chunk_content,
+                "official_sources": official_sources
             }
         )
 
@@ -88,6 +115,7 @@ def split_into_chunks(document):
         save_chunk(current_title, current_lines)
 
     return chunks
+
 
 def load_chunks():
     """
@@ -154,7 +182,6 @@ def search_chunks(question, chunks):
 
         score = 0
 
-        # Basic keyword score
         for word in question_words:
             if word in chunk_words:
                 score += 4
@@ -165,17 +192,14 @@ def search_chunks(question, chunks):
             if word in chunk_text:
                 score += 1
 
-        # General useful section bonus
         for useful_section in useful_sections:
             if useful_section in section_text:
                 score += 5
 
-        # Weak section penalty
         for weak_section in weak_sections:
             if weak_section in section_text:
                 score -= 10
 
-        # Question-intent bonuses
         if "authority" in question_lower or "handles" in question_lower or "supervises" in question_lower:
             if "main authority" in section_text:
                 score += 25
@@ -210,7 +234,8 @@ def search_chunks(question, chunks):
                     "filename": chunk["filename"],
                     "section": chunk["section"],
                     "content": chunk["content"],
-                    "score": score
+                    "score": score,
+                    "official_sources": chunk["official_sources"]
                 }
             )
 
@@ -226,7 +251,6 @@ def generate_simple_answer(question, best_match):
     """
     question_lower = question.lower()
     section_lower = best_match["section"].lower()
-    content = best_match["content"]
 
     if "personal data breach" in question_lower or "breach" in question_lower:
         if "reporting to imy" in section_lower:
@@ -269,6 +293,13 @@ def generate_simple_answer(question, best_match):
             "CyberLex Sweden found a relevant trusted source section, but this prototype cannot yet generate a detailed legal explanation for this question."
         )
 
+    source_lines = "\n".join(
+        [f"- {source}" for source in best_match.get("official_sources", [])]
+    )
+
+    if not source_lines:
+        source_lines = "- No official source URL stored for this document yet."
+
     return f"""
 ## Short answer
 
@@ -280,10 +311,16 @@ def generate_simple_answer(question, best_match):
 - Section: `{best_match["section"]}`
 - Relevance score: `{best_match["score"]}`
 
+## Official source links
+
+{source_lines}
+
 ## Important limitation
 
 This answer is generated from a simplified local knowledge base. CyberLex Sweden is an educational project and does not provide legal advice.
 """
+
+
 def is_cyberlaw_question(question):
     """
     Checks whether the user question belongs to the CyberLex Sweden project scope.
@@ -327,9 +364,25 @@ def is_cyberlaw_question(question):
     return False
 
 
-st.divider()
+st.title("CyberLex Sweden")
+st.subheader("AI Assistant for Swedish Cybersecurity Law and Digital Compliance")
 
-documents, chunks = load_chunks()
+st.markdown("""
+CyberLex Sweden is a final school project focused on creating an AI assistant that helps users understand Swedish cybersecurity law.
+
+The system is designed to work with trusted sources about:
+
+- Swedish cybercrime law
+- GDPR and personal data breaches
+- NIS2 and cybersecurity responsibilities
+- Incident reporting
+- Digital compliance for organizations
+""")
+
+st.warning(
+    "Important: CyberLex Sweden is an educational project. "
+    "It does not provide official legal advice and should not replace a qualified lawyer or official authority guidance."
+)
 
 st.divider()
 
@@ -362,7 +415,6 @@ if question:
 
         if search_results:
             best_match = search_results[0]
-
             minimum_score = 12
 
             if best_match["score"] < minimum_score:

@@ -34,10 +34,13 @@ CyberLex Sweden should explain this at a high level and should not provide instr
 - What is the difference between dataintrång and grovt dataintrång?
 - Why should penetration testing require permission?
 
-## Source
+## Official source
 
 Riksdagen - Brottsbalken  
 https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/brottsbalk-1962700_sfs-1962-700/
+
+Riksdagen - Skärpt straff för dataintrång  
+https://www.riksdagen.se/sv/dokument-och-lagar/dokument/proposition/skarpt-straff-for-dataintrang_h10392/html/
 
 Riksdagen - Straffrättsliga frågor, dataintrång explanation  
 https://www.riksdagen.se/sv/dokument-och-lagar/dokument/betankande/straffrattsliga-fragor_ha01juu11/html/
