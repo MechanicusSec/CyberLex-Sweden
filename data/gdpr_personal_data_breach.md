@@ -36,7 +36,7 @@ If all information is not available immediately, supplementary information can b
 - What does the 72-hour rule mean?
 - What should an organization consider after a data breach?
 
-## Source
+## official source
 
 IMY - Notification of a personal data breach  
 https://www.imy.se/en/organisations/forms-and-e-services/notification-of-a-personal-data-breach/

@@ -37,7 +37,7 @@ The exact reporting requirements can depend on the organization, sector, and app
 - What kind of cybersecurity responsibilities may apply?
 - What is cybersecurity incident reporting?
 
-## Source
+## official source
 
 MSB - Det här är cybersäkerhetslagen  
 https://www.msb.se/sv/amnesomraden/informationssakerhet-cybersakerhet-och-sakra-kommunikationer/krav-och-regler-inom-informationssakerhet-och-cybersakerhet/nis-direktivet/det-har-ar-nis2-direktivet/
