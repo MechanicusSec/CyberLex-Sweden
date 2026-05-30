@@ -46,6 +46,9 @@ def split_into_chunks(document):
     """
     Splits a Markdown document into smaller chunks based on headings.
     Each chunk keeps track of the source filename and section title.
+
+    Very small chunks are ignored because they usually only contain a heading
+    and do not give useful legal information.
     """
     filename = document["filename"]
     content = document["content"]
@@ -54,16 +57,27 @@ def split_into_chunks(document):
     current_title = "Introduction"
     current_lines = []
 
+    def save_chunk(title, lines):
+        chunk_content = "\n".join(lines).strip()
+
+        # Remove empty chunks and heading-only chunks
+        plain_words = clean_words(chunk_content)
+
+        if len(plain_words) < 8:
+            return
+
+        chunks.append(
+            {
+                "filename": filename,
+                "section": title,
+                "content": chunk_content
+            }
+        )
+
     for line in content.splitlines():
         if line.startswith("#"):
             if current_lines:
-                chunks.append(
-                    {
-                        "filename": filename,
-                        "section": current_title,
-                        "content": "\n".join(current_lines).strip()
-                    }
-                )
+                save_chunk(current_title, current_lines)
 
             current_title = line.replace("#", "").strip()
             current_lines = [line]
@@ -71,16 +85,9 @@ def split_into_chunks(document):
             current_lines.append(line)
 
     if current_lines:
-        chunks.append(
-            {
-                "filename": filename,
-                "section": current_title,
-                "content": "\n".join(current_lines).strip()
-            }
-        )
+        save_chunk(current_title, current_lines)
 
     return chunks
-
 
 def load_chunks():
     """
@@ -120,10 +127,11 @@ def search_chunks(question, chunks):
     }
 
     weak_sections = {
-        "useful questions",
-        "source",
-        "disclaimer"
-    }
+    "useful questions",
+    "source",
+    "disclaimer",
+    "introduction"
+}
 
     question_words = [
         word for word in clean_words(question)
