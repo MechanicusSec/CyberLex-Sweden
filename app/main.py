@@ -3,17 +3,30 @@ import streamlit as st
 
 st.set_page_config(
     page_title="CyberLex Sweden",
-    page_icon="🔐",
+    page_icon="💻",
     layout="wide"
 )
 
 DATA_DIR = Path("data")
 
 
+def clean_words(text):
+    """
+    Converts text into simple searchable words.
+    This makes matching easier by removing punctuation and using lowercase text.
+    """
+    punctuation = ",.?!:;()[]{}\"'`"
+    text = text.lower()
+
+    for mark in punctuation:
+        text = text.replace(mark, " ")
+
+    return text.split()
+
+
 def load_documents():
     """
     Loads all Markdown files from the data folder.
-    Each Markdown file becomes one searchable document.
     """
     documents = []
 
@@ -29,45 +42,94 @@ def load_documents():
     return documents
 
 
-def clean_words(text):
+def split_into_chunks(document):
     """
-    Converts text into simple searchable words.
-    This removes basic punctuation and makes everything lowercase.
+    Splits a Markdown document into smaller chunks based on headings.
+    Each chunk keeps track of the source filename and section title.
     """
-    punctuation = ",.?!:;()[]{}\"'`"
-    text = text.lower()
+    filename = document["filename"]
+    content = document["content"]
 
-    for mark in punctuation:
-        text = text.replace(mark, " ")
+    chunks = []
+    current_title = "Introduction"
+    current_lines = []
 
-    return text.split()
+    for line in content.splitlines():
+        if line.startswith("#"):
+            if current_lines:
+                chunks.append(
+                    {
+                        "filename": filename,
+                        "section": current_title,
+                        "content": "\n".join(current_lines).strip()
+                    }
+                )
+
+            current_title = line.replace("#", "").strip()
+            current_lines = [line]
+        else:
+            current_lines.append(line)
+
+    if current_lines:
+        chunks.append(
+            {
+                "filename": filename,
+                "section": current_title,
+                "content": "\n".join(current_lines).strip()
+            }
+        )
+
+    return chunks
 
 
-def search_documents(question, documents):
+def load_chunks():
     """
-    Searches the documents using keyword matching.
-    Each document gets a score based on how many question words appear in it.
+    Loads all documents and splits them into searchable chunks.
+    """
+    documents = load_documents()
+    all_chunks = []
+
+    for document in documents:
+        chunks = split_into_chunks(document)
+        all_chunks.extend(chunks)
+
+    return documents, all_chunks
+
+
+def search_chunks(question, chunks):
+    """
+    Searches document chunks using keyword matching.
+    Smaller chunks make the search more precise than searching whole files.
     """
     question_words = clean_words(question)
     results = []
 
-    for doc in documents:
-        content_words = clean_words(doc["content"])
-        content_text = doc["content"].lower()
+    for chunk in chunks:
+        chunk_words = clean_words(chunk["content"])
+        chunk_text = chunk["content"].lower()
+        section_text = chunk["section"].lower()
 
         score = 0
 
         for word in question_words:
-            if len(word) > 2 and word in content_words:
+            if len(word) <= 2:
+                continue
+
+            if word in chunk_words:
+                score += 3
+
+            if word in section_text:
                 score += 2
-            elif len(word) > 2 and word in content_text:
+
+            if word in chunk_text:
                 score += 1
 
         if score > 0:
             results.append(
                 {
-                    "filename": doc["filename"],
-                    "content": doc["content"],
+                    "filename": chunk["filename"],
+                    "section": chunk["section"],
+                    "content": chunk["content"],
                     "score": score
                 }
             )
@@ -76,41 +138,10 @@ def search_documents(question, documents):
     return results
 
 
-def create_excerpt(content, question, excerpt_length=700):
+def create_basic_answer(question, best_match):
     """
-    Creates a shorter excerpt from the source document.
-    It tries to find the first word from the question inside the source text.
-    """
-    content_lower = content.lower()
-    question_words = clean_words(question)
-
-    match_position = 0
-
-    for word in question_words:
-        if len(word) > 2:
-            position = content_lower.find(word)
-            if position != -1:
-                match_position = position
-                break
-
-    start = max(match_position - 200, 0)
-    end = min(start + excerpt_length, len(content))
-
-    excerpt = content[start:end].strip()
-
-    if start > 0:
-        excerpt = "... " + excerpt
-
-    if end < len(content):
-        excerpt = excerpt + " ..."
-
-    return excerpt
-
-
-def create_basic_answer(question, best_match, excerpt):
-    """
-    Creates a simple structured answer using the best matching source.
-    This is not full AI yet, but it formats the retrieved source into a clearer answer.
+    Creates a simple structured answer using the best matching source chunk.
+    This is still not full AI, but it gives a clearer source-grounded result.
     """
     return f"""
 ## Short answer
@@ -119,15 +150,20 @@ CyberLex Sweden found information related to your question in the trusted knowle
 
 **Your question:** {question}
 
-The most relevant source is:
+The most relevant source section is:
+
+**{best_match["section"]}**
+
+from:
 
 **{best_match["filename"]}**
 
-This means the question appears to be connected to the topic described in that source file. The source excerpt below should be used to understand the answer.
+This means the question appears to be connected to this specific source section. The source excerpt below should be used to understand the answer.
 
 ## Source used
 
-- `{best_match["filename"]}`
+- File: `{best_match["filename"]}`
+- Section: `{best_match["section"]}`
 - Relevance score: `{best_match["score"]}`
 
 ## Important limitation
@@ -158,11 +194,13 @@ st.warning(
 
 st.divider()
 
-documents = load_documents()
+documents, chunks = load_chunks()
 
 st.sidebar.header("Knowledge Base")
 st.sidebar.write(f"Loaded documents: {len(documents)}")
+st.sidebar.write(f"Searchable chunks: {len(chunks)}")
 
+st.sidebar.subheader("Documents")
 for doc in documents:
     st.sidebar.write(f"- {doc['filename']}")
 
@@ -173,31 +211,32 @@ question = st.text_input(
 )
 
 if question:
-    search_results = search_documents(question, documents)
+    search_results = search_chunks(question, chunks)
 
     if search_results:
         best_match = search_results[0]
-        excerpt = create_excerpt(best_match["content"], question)
 
         st.subheader("CyberLex Answer")
-        st.markdown(create_basic_answer(question, best_match, excerpt))
+        st.markdown(create_basic_answer(question, best_match))
 
         st.subheader("Matched Source Excerpt")
         st.text_area(
-            "Relevant excerpt",
-            excerpt,
+            "Relevant source section",
+            best_match["content"],
             height=250
         )
 
-        st.subheader("All Matching Sources")
+        st.subheader("All Matching Source Sections")
 
-        for result in search_results:
+        for result in search_results[:5]:
             st.write(
-                f"**{result['filename']}** - relevance score: {result['score']}"
+                f"**{result['filename']}** | "
+                f"Section: **{result['section']}** | "
+                f"Relevance score: {result['score']}"
             )
 
         st.info(
-            "Next development step: replace the basic keyword search with stronger AI-assisted answers and better citations."
+            "Next development step: connect this chunk-based search to AI-generated explanations."
         )
 
     else:
