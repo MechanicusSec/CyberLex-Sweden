@@ -284,6 +284,52 @@ def generate_simple_answer(question, best_match):
 
 This answer is generated from a simplified local knowledge base. CyberLex Sweden is an educational project and does not provide legal advice.
 """
+def is_cyberlaw_question(question):
+    """
+    Checks whether the user question belongs to the CyberLex Sweden project scope.
+
+    The project scope is Swedish cybersecurity law, cybercrime law,
+    GDPR, NIS2, incident reporting, data protection, and digital compliance.
+    """
+    allowed_keywords = {
+        "cyber",
+        "cybersecurity",
+        "security",
+        "gdpr",
+        "personal",
+        "data",
+        "breach",
+        "incident",
+        "nis2",
+        "cybersecurity act",
+        "cybersäkerhetslagen",
+        "dataintrång",
+        "intrusion",
+        "unauthorized",
+        "access",
+        "hacking",
+        "malware",
+        "privacy",
+        "imy",
+        "integritetsskyddsmyndigheten",
+        "msb",
+        "information system",
+        "digital",
+        "compliance"
+    }
+
+    question_lower = question.lower()
+
+    for keyword in allowed_keywords:
+        if keyword in question_lower:
+            return True
+
+    return False
+
+
+st.divider()
+
+documents, chunks = load_chunks()
 
 st.divider()
 
@@ -304,38 +350,54 @@ question = st.text_input(
 )
 
 if question:
-    search_results = search_chunks(question, chunks)
-
-    if search_results:
-        best_match = search_results[0]
-
-        st.subheader("CyberLex Answer")
-        st.markdown(generate_simple_answer(question, best_match))
-
-        st.subheader("Matched Source Excerpt")
-        st.text_area(
-            "Relevant source section",
-            best_match["content"],
-            height=250
-        )
-
-        st.subheader("All Matching Source Sections")
-
-        for result in search_results[:5]:
-            st.write(
-                f"**{result['filename']}** | "
-                f"Section: **{result['section']}** | "
-                f"Relevance score: {result['score']}"
-            )
-
-        st.info(
-            "Next development step: connect this chunk-based search to AI-generated explanations."
+    if not is_cyberlaw_question(question):
+        st.error(
+            "No trusted source was found for this question. "
+            "CyberLex Sweden only covers Swedish cybersecurity law, cybercrime, GDPR, NIS2, "
+            "incident reporting, data protection, and related digital compliance topics."
         )
 
     else:
-        st.error(
-            "No trusted source was found for this question. "
-            "CyberLex Sweden cannot answer confidently yet."
-        )
+        search_results = search_chunks(question, chunks)
+
+        if search_results:
+            best_match = search_results[0]
+
+            minimum_score = 12
+
+            if best_match["score"] < minimum_score:
+                st.error(
+                    "No strong trusted source match was found for this question. "
+                    "CyberLex Sweden cannot answer confidently yet."
+                )
+            else:
+                st.subheader("CyberLex Answer")
+                st.markdown(generate_simple_answer(question, best_match))
+
+                st.subheader("Matched Source Excerpt")
+                st.text_area(
+                    "Relevant source section",
+                    best_match["content"],
+                    height=250
+                )
+
+                st.subheader("All Matching Source Sections")
+
+                for result in search_results[:5]:
+                    st.write(
+                        f"**{result['filename']}** | "
+                        f"Section: **{result['section']}** | "
+                        f"Relevance score: {result['score']}"
+                    )
+
+                st.info(
+                    "Next development step: connect this chunk-based search to AI-generated explanations."
+                )
+
+        else:
+            st.error(
+                "No trusted source was found for this question. "
+                "CyberLex Sweden cannot answer confidently yet."
+            )
 else:
     st.write("Enter a question above to search the CyberLex Sweden knowledge base.")
