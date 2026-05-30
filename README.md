@@ -1,6 +1,6 @@
 # CyberLex Sweden
 
-CyberLex Sweden is a final school project for Jensenkomvux, focused on creating an AI assistant for Swedish cybersecurity law and digital compliance.
+CyberLex Sweden is a final school project focused on creating an AI assistant for Swedish cybersecurity law and digital compliance.
 
 The goal of the project is to help users understand Swedish cyber laws, cybersecurity regulations, GDPR, NIS2, incident reporting, and cybercrime-related legal responsibilities.
 
