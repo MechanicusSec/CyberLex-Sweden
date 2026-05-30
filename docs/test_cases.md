@@ -11,8 +11,8 @@ The goal is to verify that the application can:
 - Match user questions to relevant source sections
 - Generate simple source-based answers
 - Show the source file and source section used
+- Show official source links connected to the matched knowledge file
 - Avoid unsupported answers when no trusted source exists
-
 ---
 
 ## Test Environment

@@ -11,6 +11,12 @@ Robert Banderby
 ## Project Summary
 
 CyberLex Sweden is a final school project focused on building a prototype AI-style assistant for Swedish cybersecurity law and digital compliance.
+## Source Quality Policy
+
+CyberLex Sweden includes a source quality policy documented in:
+
+```text
+docs/source_policy.md
 
 The goal of the project is to make legal and cybersecurity information easier to search and understand by using a structured knowledge base, source-based search, and simple answer generation.
 
