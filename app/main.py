@@ -26,7 +26,7 @@ def clean_words(text):
 
 def extract_official_sources(content):
     """
-    Extracts URLs from the Official source section of a Markdown document.
+    Extracts URLs from the official source section of a Markdown document.
     These URLs are shown in the app so users can trace answers back to trusted sources.
     """
     lines = content.splitlines()
@@ -130,15 +130,47 @@ def load_chunks():
 
     return documents, all_chunks
 
+def get_target_source_file(question):
+    """
+    Detects when a question clearly belongs to a specific knowledge file.
+    This prevents CyberLex from selecting the wrong source file when multiple files contain similar words.
+    """
+    question_lower = question.lower().strip()
 
+    if (
+        "gdpr principles" in question_lower
+        or "gdpr principle" in question_lower
+        or "what are the gdpr principles" in question_lower
+    ):
+        return "gdpr_core_principles.md"
+
+    if question_lower == "gdpr" or "what is gdpr" in question_lower:
+        return "gdpr_core_principles.md"
+
+    if (
+        "cyber resilience act" in question_lower
+        or "products with digital elements" in question_lower
+        or "product security" in question_lower
+    ):
+        return "eu_cyber_resilience_act.md"
+
+    if (
+        "attacks against information systems" in question_lower
+        or "eu law about attacks" in question_lower
+        or "eu cybercrime" in question_lower
+    ):
+        return "eu_attacks_against_information_systems.md"
+
+    return None
 def search_chunks(question, chunks):
     """
-    Searches document chunks using keyword matching and question intent.
+    Searches document chunks using keyword matching, question intent, and source routing.
 
     This version improves ranking by:
     - ignoring weak common words
     - lowering broad sections like Topic
     - boosting sections that match the user's question type
+    - forcing the correct source file when the question clearly belongs to one file
     """
     stopwords = {
         "what", "when", "where", "which", "who", "why", "how",
@@ -155,18 +187,24 @@ def search_chunks(question, chunks):
         "important points",
         "incident reporting",
         "legal reference",
-        "practical explanation"
+        "practical explanation",
+        "cybersecurity connection",
+        "swedish connection"
     }
 
     weak_sections = {
         "useful questions",
         "source",
+        "official source",
+        "source date",
+        "version notes",
         "disclaimer",
         "introduction",
         "topic"
     }
 
     question_lower = question.lower()
+    target_source_file = get_target_source_file(question)
 
     question_words = [
         word for word in clean_words(question)
@@ -176,12 +214,23 @@ def search_chunks(question, chunks):
     results = []
 
     for chunk in chunks:
+        filename = chunk["filename"]
+        filename_lower = filename.lower()
         chunk_words = clean_words(chunk["content"])
         chunk_text = chunk["content"].lower()
         section_text = chunk["section"].lower()
 
         score = 0
 
+        # If the question clearly belongs to a specific file,
+        # strongly punish all other files.
+        if target_source_file:
+            if filename_lower == target_source_file.lower():
+                score += 100
+            else:
+                score -= 100
+
+        # Basic keyword score
         for word in question_words:
             if word in chunk_words:
                 score += 4
@@ -192,14 +241,17 @@ def search_chunks(question, chunks):
             if word in chunk_text:
                 score += 1
 
+        # General useful section bonus
         for useful_section in useful_sections:
             if useful_section in section_text:
                 score += 5
 
+        # Weak section penalty
         for weak_section in weak_sections:
             if weak_section in section_text:
                 score -= 10
 
+        # Question-intent bonuses
         if "authority" in question_lower or "handles" in question_lower or "supervises" in question_lower:
             if "main authority" in section_text:
                 score += 25
@@ -213,6 +265,8 @@ def search_chunks(question, chunks):
                 score += 10
 
         if "nis2" in question_lower or "cybersecurity act" in question_lower:
+            if "nis2_cybersecurity_law" in filename_lower:
+                score += 50
             if "key idea" in section_text:
                 score += 15
             if "important points" in section_text:
@@ -221,12 +275,46 @@ def search_chunks(question, chunks):
                 score += 10
 
         if "dataintrång" in question_lower or "data intrusion" in question_lower or "unauthorized access" in question_lower:
+            if "cybercrime_dataintrang" in filename_lower:
+                score += 50
             if "key idea" in section_text:
                 score += 15
             if "legal reference" in section_text:
                 score += 15
             if "practical explanation" in section_text:
                 score += 15
+
+        if "gdpr principles" in question_lower or "gdpr principle" in question_lower or "principles" in question_lower:
+            if "important points" in section_text:
+                score += 25
+            if "key idea" in section_text:
+                score += 15
+            if "gdpr" in chunk_text:
+                score += 10
+
+        if "what is gdpr" in question_lower:
+            if "key idea" in section_text:
+                score += 20
+            if "main authority" in section_text:
+                score += 10
+            if "gdpr" in chunk_text:
+                score += 10
+
+        if "attacks against information systems" in question_lower or "information systems" in question_lower or "eu cybercrime" in question_lower:
+            if "key idea" in section_text:
+                score += 20
+            if "important points" in section_text:
+                score += 15
+            if "swedish connection" in section_text:
+                score += 10
+
+        if "cyber resilience act" in question_lower or "products with digital elements" in question_lower or "product security" in question_lower:
+            if "key idea" in section_text:
+                score += 20
+            if "important points" in section_text:
+                score += 15
+            if "cybersecurity connection" in section_text:
+                score += 10
 
         if score > 0:
             results.append(
@@ -241,7 +329,6 @@ def search_chunks(question, chunks):
 
     results.sort(key=lambda item: item["score"], reverse=True)
     return results
-
 
 def generate_simple_answer(question, best_match):
     """
@@ -270,6 +357,19 @@ def generate_simple_answer(question, best_match):
                 "The matched source section should be reviewed for the exact project information."
             )
 
+    elif "gdpr principles" in question_lower or "gdpr principle" in question_lower or "principles" in question_lower:
+        answer = (
+            "GDPR includes core principles such as lawfulness, fairness and transparency, "
+            "purpose limitation, data minimisation, accuracy, storage limitation, integrity and confidentiality, "
+            "and accountability. These principles guide how organizations should process and protect personal data."
+        )
+
+    elif "what is gdpr" in question_lower or question_lower.strip() == "gdpr":
+        answer = (
+            "GDPR is the General Data Protection Regulation. It is an EU regulation that controls how personal data "
+            "may be processed and protected. In Sweden, IMY supervises GDPR and personal data protection."
+        )
+
     elif "gdpr" in question_lower or "authority" in question_lower:
         answer = (
             "In Sweden, GDPR and personal data protection are handled by IMY, "
@@ -286,6 +386,19 @@ def generate_simple_answer(question, best_match):
         answer = (
             "Dataintrång means data intrusion under Swedish criminal law. "
             "It is connected to unauthorized access to, or interference with, data or information systems."
+        )
+
+    elif "attacks against information systems" in question_lower or "information systems" in question_lower or "eu cybercrime" in question_lower:
+        answer = (
+            "The EU rules on attacks against information systems are connected to cybercrime. "
+            "They cover areas such as illegal access, system interference, data interference, and cooperation between authorities. "
+            "This helps explain how cyber attacks against systems are treated as criminal conduct in Europe."
+        )
+
+    elif "cyber resilience act" in question_lower or "products with digital elements" in question_lower or "product security" in question_lower:
+        answer = (
+            "The Cyber Resilience Act is an EU regulation about cybersecurity requirements for products with digital elements. "
+            "It focuses on secure product design, vulnerability handling, and cybersecurity responsibilities for actors involved with digital products."
         )
 
     else:
@@ -351,8 +464,19 @@ def is_cyberlaw_question(question):
         "integritetsskyddsmyndigheten",
         "msb",
         "information system",
+        "information systems",
         "digital",
-        "compliance"
+        "compliance",
+        "cyber resilience",
+        "cyber resilience act",
+        "products with digital elements",
+        "product security",
+        "eu cybercrime",
+        "legal basis",
+        "controller",
+        "processor",
+        "accountability",
+        "principles"
     }
 
     question_lower = question.lower()
@@ -375,6 +499,8 @@ The system is designed to work with trusted sources about:
 - Swedish cybercrime law
 - GDPR and personal data breaches
 - NIS2 and cybersecurity responsibilities
+- EU cybersecurity law
+- Cyber Resilience Act
 - Incident reporting
 - Digital compliance for organizations
 """)
@@ -407,7 +533,7 @@ if question:
         st.error(
             "No trusted source was found for this question. "
             "CyberLex Sweden only covers Swedish cybersecurity law, cybercrime, GDPR, NIS2, "
-            "incident reporting, data protection, and related digital compliance topics."
+            "incident reporting, data protection, EU cybersecurity law, and related digital compliance topics."
         )
 
     else:
