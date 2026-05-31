@@ -254,6 +254,18 @@ def get_target_source_file(question):
     ):
         return "eu_attacks_against_information_systems.md"
 
+    if (
+        "dora" in question_lower
+        or "digital operational resilience act" in question_lower
+        or "digital operational resilience" in question_lower
+        or "ict risk management" in question_lower
+        or "ict third-party risk" in question_lower
+        or "third-party ict risk" in question_lower
+        or "financial sector cybersecurity" in question_lower
+        or "financial sector cyber" in question_lower
+    ):
+        return "eu_dora_digital_operational_resilience.md"
+
     return None
 def search_chunks(question, chunks):
     """
@@ -448,6 +460,22 @@ def generate_simple_answer(question, best_match):
         )
 
     elif (
+        "dora" in question_lower
+        or "digital operational resilience act" in question_lower
+        or "digital operational resilience" in question_lower
+        or "ict risk management" in question_lower
+        or "ict third-party risk" in question_lower
+        or "third-party ict risk" in question_lower
+        or "financial sector cybersecurity" in question_lower
+    ):
+        answer = (
+            "DORA, the Digital Operational Resilience Act, is an EU regulation for the financial sector. "
+            "It focuses on ICT risk management, major ICT-related incident reporting, digital operational resilience testing, "
+            "ICT third-party risk management, and information sharing. Its purpose is to help financial entities withstand, "
+            "respond to, and recover from ICT disruptions and cyber incidents."
+        )
+
+    elif (
         ("nis2" in question_lower or "nis" in question_lower or "cybersecurity act" in question_lower)
         and "gdpr" in question_lower
         and ("incident" in question_lower or "reported" in question_lower or "report" in question_lower)
@@ -586,6 +614,15 @@ def is_cyberlaw_question(question):
     GDPR, NIS2, incident reporting, data protection, and digital compliance.
     """
     allowed_keywords = {
+        "dora",
+        "digital operational resilience",
+        "digital operational resilience act",
+        "ict risk",
+        "ict incident",
+        "ict third-party",
+        "third-party ict",
+        "financial sector cybersecurity",
+        "financial sector cyber",
         "cyber",
         "cybersecurity",
         "security",
