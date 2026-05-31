@@ -48,21 +48,71 @@ def extract_official_sources(content):
 
     return sources
 
+def extract_section_text(content, heading):
+    """
+    Extracts text from a specific Markdown heading section.
+
+    Example:
+    If heading is '## Source date', this function returns the text under that heading
+    until the next Markdown heading starts.
+    """
+    lines = content.splitlines()
+    section_lines = []
+    in_section = False
+
+    for line in lines:
+        stripped_line = line.strip()
+
+        if stripped_line.lower() == heading.lower():
+            in_section = True
+            continue
+
+        if in_section and stripped_line.startswith("## "):
+            break
+
+        if in_section:
+            section_lines.append(line)
+
+    return "\n".join(section_lines).strip()
+
+
+def extract_source_metadata(content):
+    """
+    Extracts source date and version notes from a Markdown knowledge file.
+    """
+    source_date = extract_section_text(content, "## Source date")
+    version_notes = extract_section_text(content, "## Version notes")
+
+    if not source_date:
+        source_date = "No source date stored for this document yet."
+
+    if not version_notes:
+        version_notes = "No version notes stored for this document yet."
+
+    return {
+        "source_date": source_date,
+        "version_notes": version_notes
+    }
+
 
 def load_documents():
     """
     Loads all Markdown files from the data folder.
+    Also extracts official source links, source dates, and version notes.
     """
     documents = []
 
     for file_path in DATA_DIR.glob("*.md"):
         content = file_path.read_text(encoding="utf-8")
+        metadata = extract_source_metadata(content)
 
         documents.append(
             {
                 "filename": file_path.name,
                 "content": content,
-                "official_sources": extract_official_sources(content)
+                "official_sources": extract_official_sources(content),
+                "source_date": metadata["source_date"],
+                "version_notes": metadata["version_notes"]
             }
         )
 
@@ -80,6 +130,8 @@ def split_into_chunks(document):
     filename = document["filename"]
     content = document["content"]
     official_sources = document["official_sources"]
+    source_date = document["source_date"]
+    version_notes = document["version_notes"]
 
     chunks = []
     current_title = "Introduction"
@@ -93,13 +145,15 @@ def split_into_chunks(document):
             return
 
         chunks.append(
-            {
-                "filename": filename,
-                "section": title,
-                "content": chunk_content,
-                "official_sources": official_sources
-            }
-        )
+    {
+        "filename": filename,
+        "section": title,
+        "content": chunk_content,
+        "official_sources": official_sources,
+        "source_date": source_date,
+        "version_notes": version_notes
+    }
+)
 
     for line in content.splitlines():
         if line.startswith("#"):
@@ -318,14 +372,16 @@ def search_chunks(question, chunks):
 
         if score > 0:
             results.append(
-                {
-                    "filename": chunk["filename"],
-                    "section": chunk["section"],
-                    "content": chunk["content"],
-                    "score": score,
-                    "official_sources": chunk["official_sources"]
-                }
-            )
+    {
+        "filename": chunk["filename"],
+        "section": chunk["section"],
+        "content": chunk["content"],
+        "score": score,
+        "official_sources": chunk["official_sources"],
+        "source_date": chunk["source_date"],
+        "version_notes": chunk["version_notes"]
+    }
+)
 
     results.sort(key=lambda item: item["score"], reverse=True)
     return results
@@ -427,6 +483,11 @@ def generate_simple_answer(question, best_match):
 ## Official source links
 
 {source_lines}
+
+## Source metadata
+
+- Source date: {best_match["source_date"]}
+- Version notes: {best_match["version_notes"]}
 
 ## Important limitation
 
