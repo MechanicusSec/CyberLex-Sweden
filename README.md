@@ -100,6 +100,9 @@ Additional project documentation is available in the `docs/` folder:
 - `docs/test_cases.md` - manual test cases
 - `docs/technical_design.md` - application architecture and technical design
 - `docs/source_update_history.md` - source update history and knowledge base change log
+- `docs/terms_of_use.md` - draft terms of use for the prototype
+- `docs/privacy_policy.md` - draft privacy policy for the local prototype
+- `docs/legal_disclaimer.md` - legal disclaimer for educational use
 
 ---
 

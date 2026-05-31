@@ -465,6 +465,14 @@ The project should focus on lawful cybersecurity, education, legal awareness, co
 
 When the project grows, Terms of Use and a Privacy Policy should be added before public deployment.
 
+The project also includes draft user-facing policy documents:
+
+- `docs/terms_of_use.md`
+- `docs/privacy_policy.md`
+- `docs/legal_disclaimer.md`
+
+These documents explain that CyberLex Sweden is an educational prototype, does not provide legal advice, should not be used for unlawful cybersecurity activity, and must be reviewed before any future public deployment.
+
 ---
 
 ## 17. Conclusion
