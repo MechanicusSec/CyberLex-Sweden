@@ -643,29 +643,80 @@ def generate_simple_answer(question, best_match, language="English"):
             "The rules focus on cybersecurity risk management, security measures, and incident reporting for covered organizations."
         )
 
-    elif "dataintrång" in question_lower or "data intrusion" in question_lower or "unauthorized access" in question_lower:
-        answer = (
-            "Dataintrång means data intrusion under Swedish criminal law. "
-            "It is connected to unauthorized access to, or interference with, data or information systems."
-        )
+    elif (
+        "vad är dataintrång" in question_lower
+        or "dataintrång" in question_lower
+        or "data intrusion" in question_lower
+        or "unauthorized access" in question_lower
+        or "obehörig åtkomst" in question_lower
+    ):
+        if use_swedish:
+            answer = (
+                "Dataintrång är ett brott enligt svensk straffrätt. "
+                "Det handlar på en övergripande nivå om obehörig åtkomst till, eller otillåten påverkan på, "
+                "data eller informationssystem."
+            )
+        else:
+            answer = (
+                "Dataintrång means data intrusion under Swedish criminal law. "
+                "It is connected to unauthorized access to, or interference with, data or information systems."
+            )
 
-    elif "attacks against information systems" in question_lower or "information systems" in question_lower or "eu cybercrime" in question_lower:
-        answer = (
-            "The EU rules on attacks against information systems are connected to cybercrime. "
-            "They cover areas such as illegal access, system interference, data interference, and cooperation between authorities. "
-            "This helps explain how cyber attacks against systems are treated as criminal conduct in Europe."
-        )
+    elif (
+        "attacks against information systems" in question_lower
+        or "information systems" in question_lower
+        or "eu cybercrime" in question_lower
+        or "attacker mot informationssystem" in question_lower
+        or "eu cyberbrott" in question_lower
+        or "eu-regler om attacker" in question_lower
+    ):
+        if use_swedish:
+            answer = (
+                "EU-regler om attacker mot informationssystem handlar om cyberbrott som riktas mot "
+                "data och informationssystem. Det kan till exempel handla om olaglig åtkomst, "
+                "systemstörningar eller datastörningar."
+            )
+        else:
+            answer = (
+                "The EU rules on attacks against information systems are connected to cybercrime. "
+                "They cover areas such as illegal access, system interference, data interference, "
+                "and cooperation between authorities. This helps explain how cyber attacks against systems "
+                "are treated as criminal conduct in Europe."
+            )
 
-    elif "cyber resilience act" in question_lower or "products with digital elements" in question_lower or "product security" in question_lower:
-        answer = (
-            "The Cyber Resilience Act is an EU regulation about cybersecurity requirements for products with digital elements. "
-            "It focuses on secure product design, vulnerability handling, and cybersecurity responsibilities for actors involved with digital products."
-        )
+    elif (
+        "cyber resilience act" in question_lower
+        or "products with digital elements" in question_lower
+        or "product security" in question_lower
+        or "vad är cyber resilience act" in question_lower
+        or "cyberresiliensakten" in question_lower
+        or "produkter med digitala element" in question_lower
+        or "produktsäkerhet" in question_lower
+    ):
+        if use_swedish:
+            answer = (
+                "Cyber Resilience Act är en EU-förordning om cybersäkerhetskrav för produkter med digitala element. "
+                "Den fokuserar bland annat på säker produktdesign, hantering av sårbarheter och ansvar för aktörer "
+                "som tillverkar eller tillhandahåller digitala produkter."
+            )
+        else:
+            answer = (
+                "The Cyber Resilience Act is an EU regulation about cybersecurity requirements for products with digital elements. "
+                "It focuses on secure product design, vulnerability handling, and cybersecurity responsibilities for actors involved "
+                "with digital products."
+            )
 
     else:
-        answer = (
-            "CyberLex Sweden found a relevant trusted source section, but this prototype cannot yet generate a detailed legal explanation for this question."
-        )
+        if use_swedish:
+            answer = (
+                "CyberLex Sweden hittade en relevant betrodd källa, men prototypen kan ännu inte "
+                "generera en detaljerad juridisk förklaring för denna fråga."
+            )
+        else:
+            answer = (
+                "CyberLex Sweden found a relevant trusted source section, "
+                "but this prototype cannot yet generate a detailed legal explanation for this question."
+            )
 
     source_lines = "\n".join(
         [f"- {source}" for source in best_match.get("official_sources", [])]
