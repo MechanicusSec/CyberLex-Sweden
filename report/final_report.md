@@ -24,10 +24,10 @@ CyberLex Sweden is an educational prototype. It does not provide official legal 
 
 ## Source Quality Policy
 
-CyberLex Sweden includes a source quality policy documented in:
+CyberLex Sweden also includes a source update history documented in:
 
 ```text
-docs/source_policy.md
+docs/source_update_history.md
 ```
 
 The purpose of the source quality policy is to make sure that the project uses trusted and traceable legal or authority-based sources.

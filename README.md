@@ -99,6 +99,7 @@ Additional project documentation is available in the `docs/` folder:
 - `docs/source_policy.md` - source quality policy
 - `docs/test_cases.md` - manual test cases
 - `docs/technical_design.md` - application architecture and technical design
+- `docs/source_update_history.md` - source update history and knowledge base change log
 
 ---
 
