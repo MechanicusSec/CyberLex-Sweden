@@ -765,31 +765,47 @@ st.warning(
 
 st.divider()
 
+def detect_question_language(question):
+    """
+    Detects whether the user question is likely Swedish or English.
+
+    This is a simple rule-based detector for the prototype.
+    It does not use an external language detection library.
+    """
+    question_lower = question.lower().strip()
+
+    swedish_markers = {
+        "vad", "är", "när", "vilken", "vilka", "hur", "varför",
+        "svensk", "svenska", "sverige", "myndighet", "lag",
+        "cybersäkerhet", "dataskydd", "personuppgift",
+        "personuppgifter", "personuppgiftsincident",
+        "rapporteras", "anmälas", "incidentrapportering",
+        "dataintrång", "brott", "tillsyn", "ansvarar"
+    }
+
+    question_words = set(clean_words(question_lower))
+
+    if question_words.intersection(swedish_markers):
+        return "Svenska"
+
+    return "English"
+
 documents, chunks = load_chunks()
 
-language = st.sidebar.selectbox(
+language_mode = st.sidebar.selectbox(
     "Language / Språk",
-    ["English", "Svenska"]
+    ["Auto", "English", "Svenska"]
 )
 
-if language == "Svenska":
+if language_mode == "Svenska":
     ask_heading = "Ställ en fråga"
     question_label = "Skriv en fråga om svensk cybersäkerhetsrätt:"
-    empty_question_text = "Skriv en fråga ovan för att söka i CyberLex Swedens kunskapsbas."
-    out_of_scope_text = (
-        "Ingen betrodd källa hittades för denna fråga. "
-        "CyberLex Sweden täcker bara svensk cybersäkerhetsrätt, cyberbrott, GDPR, NIS2, "
-        "incidentrapportering, dataskydd, EU-cybersäkerhet och relaterade digitala compliance-frågor."
-    )
-else:
+elif language_mode == "English":
     ask_heading = "Ask a question"
     question_label = "Write a question about Swedish cybersecurity law:"
-    empty_question_text = "Enter a question above to search the CyberLex Sweden knowledge base."
-    out_of_scope_text = (
-        "No trusted source was found for this question. "
-        "CyberLex Sweden only covers Swedish cybersecurity law, cybercrime, GDPR, NIS2, "
-        "incident reporting, data protection, EU cybersecurity law, and related digital compliance topics."
-    )
+else:
+    ask_heading = "Ask a question / Ställ en fråga"
+    question_label = "Write a question about Swedish cybersecurity law / Skriv en fråga om svensk cybersäkerhetsrätt:"
 
 st.sidebar.header("CyberLex Status")
 st.sidebar.write(f"📄 Loaded documents: {len(documents)}")
@@ -831,48 +847,67 @@ st.header(ask_heading)
 
 question = st.text_input(
     question_label
- )
+)
+
+if language_mode == "Auto" and question:
+    language = detect_question_language(question)
+elif language_mode == "Svenska":
+    language = "Svenska"
+else:
+    language = "English"
+
+if language == "Svenska":
+    empty_question_text = "Skriv en fråga ovan för att söka i CyberLex Swedens kunskapsbas."
+    out_of_scope_text = (
+        "Ingen betrodd källa hittades för denna fråga. "
+        "CyberLex Sweden täcker bara svensk cybersäkerhetsrätt, cyberbrott, GDPR, NIS2, "
+        "incidentrapportering, dataskydd, EU-cybersäkerhet och relaterade digitala compliance-frågor."
+    )
+else:
+    empty_question_text = "Enter a question above to search the CyberLex Sweden knowledge base."
+    out_of_scope_text = (
+        "No trusted source was found for this question. "
+        "CyberLex Sweden only covers Swedish cybersecurity law, cybercrime, GDPR, NIS2, "
+        "incident reporting, data protection, EU cybersecurity law, and related digital compliance topics."
+    )
+
 if question:
     if not is_cyberlaw_question(question):
-        st.error(
-            "No trusted source was found for this question. "
-            "CyberLex Sweden only covers Swedish cybersecurity law, cybercrime, GDPR, NIS2, "
-            "incident reporting, data protection, EU cybersecurity law, and related digital compliance topics."
-        )
+        st.error(out_of_scope_text)
+    else:
+        search_results = search_chunks(question, chunks)
 
-else:
-    search_results = search_chunks(question, chunks)
+        if search_results:
+            best_match = search_results[0]
+            minimum_score = 12
 
-    if search_results:
-        best_match = search_results[0]
-        minimum_score = 12
+            if best_match["score"] < minimum_score:
+                st.error(out_of_scope_text)
+            else:
+                st.subheader("CyberLex Answer")
+                st.markdown(generate_simple_answer(question, best_match))
 
-        if best_match["score"] < minimum_score:
-            st.error(out_of_scope_text)
-        else:
-            st.subheader("CyberLex Answer")
-            st.markdown(generate_simple_answer(question, best_match))
+                st.subheader("Matched source excerpt")
+                st.caption("This is the exact source section CyberLex used for the answer.")
 
-            st.subheader("Matched source excerpt")
-            st.caption("This is the exact source section CyberLex used for the answer.")
-
-            st.text_area(
-                "Relevant source section",
-                best_match["content"],
-                height=260
-            )
-
-            st.subheader("Other matching source sections")
-            st.caption("These are additional source sections that matched the question, ranked by relevance.")
-
-            for result in search_results[:5]:
-                st.write(
-                    f"**{result['filename']}** | "
-                    f"Section: **{result['section']}** | "
-                    f"Relevance score: `{result['score']}`"
+                st.text_area(
+                    "Relevant source section",
+                    best_match["content"],
+                    height=260
                 )
 
-    else:
-        st.error(out_of_scope_text)
+                st.subheader("Other matching source sections")
+                st.caption("These are additional source sections that matched the question, ranked by relevance.")
+
+                for result in search_results[:5]:
+                    st.write(
+                        f"**{result['filename']}** | "
+                        f"Section: **{result['section']}** | "
+                        f"Relevance score: `{result['score']}`"
+                    )
+
+        else:
+            st.error(out_of_scope_text)
+
 else:
     st.write(empty_question_text)
