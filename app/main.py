@@ -193,8 +193,10 @@ def get_target_source_file(question):
 
     if (
         "what is imy" in question_lower
+        or "vad är imy" in question_lower
+        or "vad gör imy" in question_lower
         or "what does imy do" in question_lower
-        or "imy" == question_lower
+        or question_lower == "imy"
         or "supervises gdpr" in question_lower
         or "supervise gdpr" in question_lower
         or "authority supervises gdpr" in question_lower
@@ -203,11 +205,16 @@ def get_target_source_file(question):
         or "which authority handles gdpr" in question_lower
         or "personal data protection authority" in question_lower
         or "privacy protection authority" in question_lower
+        or "vilken myndighet hanterar gdpr" in question_lower
+        or "vilken myndighet ansvarar för gdpr" in question_lower
+        or "vilken myndighet har tillsyn över gdpr" in question_lower
+        or "dataskyddsmyndighet" in question_lower
     ):
         return "imy_gdpr_supervision.md"
 
     if (
         "nis2 incident reporting" in question_lower
+        or "nis2-incidentrapportering" in question_lower
         or "nis2 incidents" in question_lower
         or "cybersecurity incident reporting" in question_lower
         or "incident reporting under nis2" in question_lower
@@ -217,6 +224,11 @@ def get_target_source_file(question):
         or "reported under nis2" in question_lower
         or "reporting duties" in question_lower
         or "can an incident need to be reported under both nis2 and gdpr" in question_lower
+        or "incidentrapportering enligt nis2" in question_lower
+        or "incidentrapportering enligt cybersäkerhetslagen" in question_lower
+        or "rapportera cybersäkerhetsincident" in question_lower
+        or "rapporteras enligt både nis2 och gdpr" in question_lower
+        or "både nis2 och gdpr" in question_lower
     ):
         return "nis2_incident_reporting.md"
 
@@ -227,6 +239,11 @@ def get_target_source_file(question):
         or "72-hour" in question_lower
         or "72 hour" in question_lower
         or "breach notification" in question_lower
+        or "personuppgiftsincident" in question_lower
+        or "när måste en personuppgiftsincident rapporteras" in question_lower
+        or "när ska en personuppgiftsincident anmälas" in question_lower
+        or "rapportera personuppgiftsincident" in question_lower
+        or "72 timmar" in question_lower
     ):
         return "gdpr_personal_data_breach.md"
 
@@ -234,16 +251,47 @@ def get_target_source_file(question):
         "gdpr principles" in question_lower
         or "gdpr principle" in question_lower
         or "what are the gdpr principles" in question_lower
+        or "gdpr-principer" in question_lower
+        or "gdpr principer" in question_lower
+        or "vilka är gdpr-principerna" in question_lower
+        or "vilka är gdpr principerna" in question_lower
     ):
         return "gdpr_core_principles.md"
 
-    if question_lower == "gdpr" or "what is gdpr" in question_lower:
+    if (
+        question_lower == "gdpr"
+        or "what is gdpr" in question_lower
+        or "vad är gdpr" in question_lower
+    ):
         return "gdpr_core_principles.md"
+
+    if (
+        "nis2" in question_lower
+        or "what is nis2" in question_lower
+        or "vad är nis2" in question_lower
+        or "cybersecurity act" in question_lower
+        or "cybersäkerhetslagen" in question_lower
+    ):
+        return "nis2_cybersecurity_law.md"
+
+    if (
+        "dataintrång" in question_lower
+        or "vad är dataintrång" in question_lower
+        or "data intrusion" in question_lower
+        or "unauthorized access" in question_lower
+        or "obehörig åtkomst" in question_lower
+        or "är obehörig åtkomst olagligt" in question_lower
+    ):
+        return "cybercrime_dataintrang.md"
 
     if (
         "cyber resilience act" in question_lower
         or "products with digital elements" in question_lower
         or "product security" in question_lower
+        or "vad är cyber resilience act" in question_lower
+        or "cyberresiliensakten" in question_lower
+        or "produkter med digitala element" in question_lower
+        or "produktsäkerhet" in question_lower
     ):
         return "eu_cyber_resilience_act.md"
 
@@ -251,11 +299,15 @@ def get_target_source_file(question):
         "attacks against information systems" in question_lower
         or "eu law about attacks" in question_lower
         or "eu cybercrime" in question_lower
+        or "attacker mot informationssystem" in question_lower
+        or "eu-regler om attacker" in question_lower
+        or "eu cyberbrott" in question_lower
     ):
         return "eu_attacks_against_information_systems.md"
 
     if (
         "dora" in question_lower
+        or "vad är dora" in question_lower
         or "digital operational resilience act" in question_lower
         or "digital operational resilience" in question_lower
         or "ict risk management" in question_lower
@@ -263,10 +315,15 @@ def get_target_source_file(question):
         or "third-party ict risk" in question_lower
         or "financial sector cybersecurity" in question_lower
         or "financial sector cyber" in question_lower
+        or "digital operativ motståndskraft" in question_lower
+        or "tredjepartsrisk enligt dora" in question_lower
+        or "ict-risk enligt dora" in question_lower
+        or "finansiell cybersäkerhet" in question_lower
     ):
         return "eu_dora_digital_operational_resilience.md"
-
+    
     return None
+
 def search_chunks(question, chunks):
     """
     Searches document chunks using keyword matching, question intent, and source routing.
@@ -437,7 +494,7 @@ def search_chunks(question, chunks):
     results.sort(key=lambda item: item["score"], reverse=True)
     return results
 
-def generate_simple_answer(question, best_match):
+def generate_simple_answer(question, best_match, language="English"):
     """
     Generates a simple source-based answer from the best matching chunk.
     This is not full AI. It uses the matched source section and basic rules
@@ -445,19 +502,46 @@ def generate_simple_answer(question, best_match):
     """
     question_lower = question.lower()
     section_lower = best_match["section"].lower()
+    use_swedish = language == "Svenska"
 
-    if "what is imy" in question_lower or "what does imy do" in question_lower or question_lower.strip() == "imy":
-        answer = (
-            "IMY, Integritetsskyddsmyndigheten, is the Swedish Authority for Privacy Protection. "
-            "It supervises GDPR and personal data protection in Sweden. IMY is relevant to cybersecurity "
-            "because cyber incidents can involve personal data breaches or other personal data risks."
-        )
+    if (
+        "what is imy" in question_lower
+        or "what does imy do" in question_lower
+        or question_lower.strip() == "imy"
+        or "vad är imy" in question_lower
+        or "vad gör imy" in question_lower
+    ):
+        if use_swedish:
+            answer = (
+                "IMY, Integritetsskyddsmyndigheten, är Sveriges myndighet för integritetsskydd. "
+                "IMY har tillsyn över GDPR och dataskydd i Sverige. IMY är relevant för cybersäkerhet "
+                "eftersom cyberincidenter kan leda till personuppgiftsincidenter eller andra risker för personuppgifter."
+            )
+        else:
+            answer = (
+                "IMY, Integritetsskyddsmyndigheten, is the Swedish Authority for Privacy Protection. "
+                "It supervises GDPR and personal data protection in Sweden. IMY is relevant to cybersecurity "
+                "because cyber incidents can involve personal data breaches or other personal data risks."
+            )
 
-    elif "supervises gdpr" in question_lower or "authority supervises gdpr" in question_lower or "authority handles gdpr" in question_lower:
-        answer = (
-            "In Sweden, GDPR and personal data protection are supervised by IMY, "
-            "Integritetsskyddsmyndigheten, the Swedish Authority for Privacy Protection."
-        )
+    elif (
+        "supervises gdpr" in question_lower
+        or "authority supervises gdpr" in question_lower
+        or "authority handles gdpr" in question_lower
+        or "vilken myndighet hanterar gdpr" in question_lower
+        or "vilken myndighet ansvarar för gdpr" in question_lower
+        or "vilken myndighet har tillsyn över gdpr" in question_lower
+    ):
+        if use_swedish:
+            answer = (
+                "I Sverige är det IMY, Integritetsskyddsmyndigheten, som har tillsyn över GDPR "
+                "och dataskydd."
+            )
+        else:
+            answer = (
+                "In Sweden, GDPR and personal data protection are supervised by IMY, "
+                "Integritetsskyddsmyndigheten, the Swedish Authority for Privacy Protection."
+            )
 
     elif (
         "dora" in question_lower
@@ -467,13 +551,24 @@ def generate_simple_answer(question, best_match):
         or "ict third-party risk" in question_lower
         or "third-party ict risk" in question_lower
         or "financial sector cybersecurity" in question_lower
+        or "vad är dora" in question_lower
+        or "digital operativ motståndskraft" in question_lower
+        or "tredjepartsrisk enligt dora" in question_lower
+        or "ict-risk enligt dora" in question_lower
     ):
-        answer = (
-            "DORA, the Digital Operational Resilience Act, is an EU regulation for the financial sector. "
-            "It focuses on ICT risk management, major ICT-related incident reporting, digital operational resilience testing, "
-            "ICT third-party risk management, and information sharing. Its purpose is to help financial entities withstand, "
-            "respond to, and recover from ICT disruptions and cyber incidents."
-        )
+        if use_swedish:
+            answer = (
+                "DORA, Digital Operational Resilience Act, är en EU-förordning för den finansiella sektorn. "
+                "Den handlar om digital operativ motståndskraft, ICT-riskhantering, rapportering av större ICT-relaterade incidenter, "
+                "testning av digital motståndskraft och hantering av tredjepartsrisker kopplade till ICT-tjänster."
+            )
+        else:
+            answer = (
+                "DORA, the Digital Operational Resilience Act, is an EU regulation for the financial sector. "
+                "It focuses on ICT risk management, major ICT-related incident reporting, digital operational resilience testing, "
+                "ICT third-party risk management, and information sharing. Its purpose is to help financial entities withstand, "
+                "respond to, and recover from ICT disruptions and cyber incidents."
+            )
 
     elif (
         ("nis2" in question_lower or "nis" in question_lower or "cybersecurity act" in question_lower)
@@ -614,6 +709,27 @@ def is_cyberlaw_question(question):
     GDPR, NIS2, incident reporting, data protection, and digital compliance.
     """
     allowed_keywords = {
+                "vad är",
+        "svensk cybersäkerhetsrätt",
+        "cybersäkerhet",
+        "cyberbrott",
+        "dataskydd",
+        "personuppgift",
+        "personuppgifter",
+        "personuppgiftsincident",
+        "rapporteras",
+        "anmälas",
+        "incidentrapportering",
+        "dataintrång",
+        "obehörig åtkomst",
+        "integritetsskyddsmyndigheten",
+        "myndighet",
+        "tillsyn",
+        "dora",
+        "digital operativ motståndskraft",
+        "finansiell sektor",
+        "tredjepartsrisk",
+        "ict-risk",
         "dora",
         "digital operational resilience",
         "digital operational resilience act",
@@ -885,7 +1001,7 @@ if question:
                 st.error(out_of_scope_text)
             else:
                 st.subheader("CyberLex Answer")
-                st.markdown(generate_simple_answer(question, best_match))
+                st.markdown(generate_simple_answer(question, best_match, language))
 
                 st.subheader("Matched source excerpt")
                 st.caption("This is the exact source section CyberLex used for the answer.")
