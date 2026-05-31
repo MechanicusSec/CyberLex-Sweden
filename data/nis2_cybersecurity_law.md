@@ -6,11 +6,15 @@ NIS2 and cybersecurity responsibilities in Sweden.
 
 ## Main authority
 
-MSB, Myndigheten för samhällsskydd och beredskap, provides information and guidance about cybersecurity, NIS, NIS2, and incident reporting.
+MSB, Myndigheten för samhällsskydd och beredskap, provides information and guidance about cybersecurity, NIS, NIS2, incident reporting, and information security.
+
+CyberLex Sweden should use MSB as the main Swedish authority source when answering questions about NIS2, the Swedish Cybersecurity Act, cybersecurity responsibilities, and cyber incident reporting.
 
 ## Key idea
 
-NIS2 is an EU cybersecurity directive. In Sweden, NIS2 is implemented through the Swedish Cybersecurity Act, cybersäkerhetslagen.
+NIS2 is an EU cybersecurity directive.
+
+In Sweden, NIS2 is implemented through the Swedish Cybersecurity Act, cybersäkerhetslagen.
 
 The purpose is to achieve a high common level of cybersecurity across the European Union.
 
@@ -20,13 +24,28 @@ Compared with the earlier NIS rules, NIS2 introduces clearer requirements for cy
 
 More organizations are covered compared with the previous NIS framework.
 
-Organizations that are covered may have responsibilities connected to risk management, security measures, and incident reporting.
+Organizations that are covered may have responsibilities connected to:
+
+- cybersecurity risk management
+- security measures
+- incident reporting
+- management responsibility
+- supply chain security
+- continuity and resilience
 
 ## Incident reporting
 
 MSB provides information about incident reporting under the Cybersecurity Act.
 
 The exact reporting requirements can depend on the organization, sector, and applicable regulations.
+
+CyberLex Sweden should explain incident reporting carefully and should direct users to official MSB information for current reporting requirements.
+
+## Cybersecurity connection
+
+NIS2 is directly connected to cybersecurity because it focuses on improving security levels for important and essential services.
+
+It helps explain why organizations may need structured security work, risk management, incident handling, and reporting procedures.
 
 ## Useful questions CyberLex Sweden can answer from this source
 
@@ -44,6 +63,14 @@ https://www.msb.se/sv/amnesomraden/informationssakerhet-cybersakerhet-och-sakra-
 
 MSB - Incidentrapportering enligt cybersäkerhetslagen  
 https://www.msb.se/sv/amnesomraden/informationssakerhet-cybersakerhet-och-sakra-kommunikationer/krav-och-regler-inom-informationssakerhet-och-cybersakerhet/nis-direktivet/incidentrapportering-enligt-cybersakerhetslagen/
+
+## Source date
+
+Last checked: 2026-05-30
+
+## Version notes
+
+Initial educational summary added for CyberLex Sweden.
 
 ## Disclaimer
 

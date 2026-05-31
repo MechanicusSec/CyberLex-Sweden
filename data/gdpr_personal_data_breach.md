@@ -6,8 +6,6 @@ Personal data breaches under GDPR in Sweden.
 
 ## Main authority
 
-## Main authority
-
 The Swedish Authority for Privacy Protection is called IMY, Integritetsskyddsmyndigheten.
 
 IMY is the Swedish authority responsible for supervising GDPR and personal data protection in Sweden.
@@ -16,7 +14,11 @@ CyberLex Sweden should use IMY as the main authority source when answering quest
 
 ## Key idea
 
-A personal data breach is a security incident that affects personal data. It can include accidental or unlawful destruction, loss, alteration, unauthorized disclosure, or unauthorized access to personal data.
+A personal data breach is a security incident that affects personal data.
+
+It can include accidental or unlawful destruction, loss, alteration, unauthorized disclosure, or unauthorized access to personal data.
+
+Personal data breaches are important in cybersecurity because they can affect the rights and freedoms of individuals.
 
 ## Reporting to IMY
 
@@ -27,6 +29,14 @@ A controller must assess whether the breach is likely to result in a risk to the
 If notification is required, the breach should normally be reported within 72 hours after the organization becomes aware of it.
 
 If all information is not available immediately, supplementary information can be provided later.
+
+## Cybersecurity connection
+
+Personal data breach reporting is connected to cybersecurity because cyber incidents can expose, alter, destroy, or make personal data unavailable.
+
+Examples can include ransomware, unauthorized access, account compromise, accidental data exposure, or stolen systems containing personal data.
+
+CyberLex Sweden should use this source when answering questions about GDPR breach reporting, IMY notifications, personal data incidents, and the 72-hour rule.
 
 ## Useful questions CyberLex Sweden can answer from this source
 
@@ -40,6 +50,17 @@ If all information is not available immediately, supplementary information can b
 
 IMY - Notification of a personal data breach  
 https://www.imy.se/en/organisations/forms-and-e-services/notification-of-a-personal-data-breach/
+
+IMY - Swedish Authority for Privacy Protection  
+https://www.imy.se/en/
+
+## Source date
+
+Last checked: 2026-05-30
+
+## Version notes
+
+Initial educational summary added for CyberLex Sweden.
 
 ## Disclaimer
 
