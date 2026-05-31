@@ -450,7 +450,7 @@ Future improvements include:
 - deploying the app publicly
 - adding Terms of Use and Privacy Policy
 - considering trademark protection if the project develops further
-
+- supporting both Swedish and English as main languages
 ---
 
 ## 16. Ethical and Legal Considerations

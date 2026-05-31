@@ -181,3 +181,4 @@ Planned improvements include:
 - Deploying the app publicly
 - Adding Terms of Use and Privacy Policy
 - Considering trademark protection if the project develops further
+- Supporting both Swedish and English as main languages
