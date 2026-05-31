@@ -778,6 +778,27 @@ st.sidebar.write(
     "and rule-based answer generation."
 )
 
+st.sidebar.markdown("---")
+st.sidebar.subheader("Project resources")
+
+st.sidebar.markdown(
+    """
+    - `docs/terms_of_use.md`
+    - `docs/privacy_policy.md`
+    - `docs/legal_disclaimer.md`
+    - `docs/source_policy.md`
+    - `docs/source_update_history.md`
+    - `docs/product_roadmap.md`
+    - `docs/technical_design.md`
+    """
+)
+
+st.sidebar.markdown("---")
+st.sidebar.caption(
+    "CyberLex Sweden is an educational prototype and does not provide legal advice."
+)
+
+st.sidebar.markdown("---")
 st.sidebar.subheader("Documents")
 for doc in documents:
     st.sidebar.write(f"- {doc['filename']}")
