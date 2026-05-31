@@ -833,14 +833,17 @@ if question:
                 st.subheader("CyberLex Answer")
                 st.markdown(generate_simple_answer(question, best_match))
 
-                st.subheader("Matched Source Excerpt")
+                st.subheader("Matched source excerpt")
+                st.caption("This is the exact source section CyberLex used for the answer.")
+
                 st.text_area(
                     "Relevant source section",
-                    best_match["content"],
-                    height=250
+                     best_match["content"],
+                     height=260
                 )
 
-                st.subheader("All Matching Source Sections")
+                st.subheader("Other matching source sections")
+                st.caption("These are additional source sections that matched the question, ranked by relevance.")
 
                 for result in search_results[:5]:
                     st.write(
