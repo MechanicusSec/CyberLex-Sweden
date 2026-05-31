@@ -410,6 +410,147 @@ The system correctly matched the question to the Cyber Resilience Act source fil
 
 ---
 
+---
+
+## Test Case 9: DORA
+
+### Question
+
+```text
+What is DORA?
+```
+
+### Expected Result
+
+CyberLex Sweden should explain that DORA, the Digital Operational Resilience Act, is an EU regulation for the financial sector. The answer should mention ICT risk management, ICT-related incident reporting, resilience testing, third-party ICT risk, and digital operational resilience.
+
+### Expected Source
+
+```text
+eu_dora_digital_operational_resilience.md
+```
+
+### Expected Section
+
+```text
+Key idea
+```
+
+### Expected Official Source Link
+
+```text
+https://eur-lex.europa.eu/eli/reg/2022/2554/oj/eng
+```
+
+### Expected Source Metadata
+
+```text
+Source date: Last checked: 2026-05-31
+Version notes: Initial educational summary added for CyberLex Sweden.
+```
+
+### Result
+
+Passed.
+
+### Notes
+
+The system correctly matched the question to the DORA knowledge file and displayed citation details, official source links, source metadata, and the matched source excerpt.
+
+---
+
+## Test Case 10: DORA Third-Party ICT Risk
+
+### Question
+
+```text
+What is third-party ICT risk under DORA?
+```
+
+### Expected Result
+
+CyberLex Sweden should explain that third-party ICT risk under DORA concerns risks connected to ICT third-party service providers, such as cloud services, software providers, outsourced ICT services, and other external technology providers.
+
+### Expected Source
+
+```text
+eu_dora_digital_operational_resilience.md
+```
+
+### Expected Section
+
+```text
+Third-party ICT risk
+```
+
+### Expected Official Source Link
+
+```text
+https://eur-lex.europa.eu/eli/reg/2022/2554/oj/eng
+```
+
+### Expected Source Metadata
+
+```text
+Source date: Last checked: 2026-05-31
+Version notes: Initial educational summary added for CyberLex Sweden.
+```
+
+### Result
+
+Passed.
+
+### Notes
+
+The system correctly routed the question to the DORA source and matched the third-party ICT risk section.
+
+---
+
+## Test Case 11: DORA Relationship with NIS2 and GDPR
+
+### Question
+
+```text
+How is DORA connected to NIS2 and GDPR?
+```
+
+### Expected Result
+
+CyberLex Sweden should explain that DORA, NIS2, and GDPR are different legal frameworks but can overlap. DORA focuses on digital operational resilience in the financial sector, NIS2 focuses on cybersecurity requirements for covered entities, and GDPR focuses on personal data protection.
+
+### Expected Source
+
+```text
+eu_dora_digital_operational_resilience.md
+```
+
+### Expected Section
+
+```text
+Relationship with NIS2 and GDPR
+```
+
+### Expected Official Source Link
+
+```text
+https://eur-lex.europa.eu/eli/reg/2022/2554/oj/eng
+```
+
+### Expected Source Metadata
+
+```text
+Source date: Last checked: 2026-05-31
+Version notes: Initial educational summary added for CyberLex Sweden.
+```
+
+### Result
+
+Passed.
+
+### Notes
+
+The system correctly matched the DORA relationship question to the DORA source and displayed traceability information.
+
 ## Test Summary
 
 The current prototype successfully demonstrates:

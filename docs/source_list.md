@@ -91,6 +91,34 @@ MSB is a Swedish government authority responsible for civil protection, prepared
 
 ---
 
+## EU DORA: Digital Operational Resilience Act
+
+**File:** `data/eu_dora_digital_operational_resilience.md`
+
+**Topic:** Digital operational resilience and cybersecurity requirements for the EU financial sector.
+
+**Main source:** Regulation (EU) 2022/2554, Digital Operational Resilience Act.
+
+**Used for questions about:**
+
+- DORA
+- Digital Operational Resilience Act
+- financial-sector cybersecurity
+- ICT risk management
+- major ICT-related incident reporting
+- ICT third-party risk
+- relationship between DORA, NIS2, and GDPR
+
+**Official sources:**
+
+- https://eur-lex.europa.eu/eli/reg/2022/2554/oj/eng
+- https://www.eiopa.europa.eu/digital-operational-resilience-act-dora_en
+- https://www.esma.europa.eu/esmas-activities/digital-finance-and-innovation/digital-operational-resilience-act-dora
+
+**Source date:** Last checked: 2026-05-31
+
+**Version notes:** Initial educational summary added for CyberLex Sweden.
+
 ## 4. EU Legal Sources
 
 ### EUR-Lex
