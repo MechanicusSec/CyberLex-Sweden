@@ -192,6 +192,31 @@ def get_target_source_file(question):
     question_lower = question.lower().strip()
 
     if (
+        "what is imy" in question_lower
+        or "what does imy do" in question_lower
+        or "imy" == question_lower
+        or "supervises gdpr" in question_lower
+        or "supervise gdpr" in question_lower
+        or "authority supervises gdpr" in question_lower
+        or "authority handles gdpr" in question_lower
+        or "which authority supervises gdpr" in question_lower
+        or "which authority handles gdpr" in question_lower
+        or "personal data protection authority" in question_lower
+        or "privacy protection authority" in question_lower
+    ):
+        return "imy_gdpr_supervision.md"
+
+    if (
+        "personal data breach" in question_lower
+        or "breach reported" in question_lower
+        or "data breach reported" in question_lower
+        or "72-hour" in question_lower
+        or "72 hour" in question_lower
+        or "breach notification" in question_lower
+    ):
+        return "gdpr_personal_data_breach.md"
+
+    if (
         "gdpr principles" in question_lower
         or "gdpr principle" in question_lower
         or "what are the gdpr principles" in question_lower
@@ -394,8 +419,20 @@ def generate_simple_answer(question, best_match):
     """
     question_lower = question.lower()
     section_lower = best_match["section"].lower()
+    if "what is imy" in question_lower or "what does imy do" in question_lower or "imy" == question_lower:
+        answer = (
+            "IMY, Integritetsskyddsmyndigheten, is the Swedish Authority for Privacy Protection. "
+            "It supervises GDPR and personal data protection in Sweden. IMY is relevant to cybersecurity "
+            "because cyber incidents can involve personal data breaches or other personal data risks."
+        )
 
-    if "personal data breach" in question_lower or "breach" in question_lower:
+    elif "supervises gdpr" in question_lower or "authority supervises gdpr" in question_lower or "authority handles gdpr" in question_lower:
+        answer = (
+            "In Sweden, GDPR and personal data protection are supervised by IMY, "
+            "Integritetsskyddsmyndigheten, the Swedish Authority for Privacy Protection."
+        )
+
+    elif "personal data breach" in question_lower or "breach" in question_lower:
         if "reporting to imy" in section_lower:
             answer = (
                 "A personal data breach may need to be reported to IMY, "
