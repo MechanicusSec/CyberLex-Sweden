@@ -474,17 +474,19 @@ def generate_simple_answer(question, best_match):
 
 {answer}
 
-## Source used
+## Citation details
 
-- File: `{best_match["filename"]}`
-- Section: `{best_match["section"]}`
-- Relevance score: `{best_match["score"]}`
+**Matched knowledge file:** `{best_match["filename"]}`
 
-## Official source links
+**Matched section:** `{best_match["section"]}`
+
+**Relevance score:** `{best_match["score"]}`
+
+### Official source links
 
 {source_lines}
 
-## Source metadata
+### Source metadata
 
 - Source date: {best_match["source_date"]}
 - Version notes: {best_match["version_notes"]}
@@ -493,7 +495,6 @@ def generate_simple_answer(question, best_match):
 
 This answer is generated from a simplified local knowledge base. CyberLex Sweden is an educational project and does not provide legal advice.
 """
-
 
 def is_cyberlaw_question(question):
     """
