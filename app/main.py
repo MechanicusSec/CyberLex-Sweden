@@ -668,23 +668,95 @@ def is_cyberlaw_question(question):
 
     return False
 
+st.markdown(
+    """
+    <style>
+    .main-header {
+        padding: 1.5rem;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+        color: white;
+        margin-bottom: 1.5rem;
+    }
 
-st.title("CyberLex Sweden")
-st.subheader("AI Assistant for Swedish Cybersecurity Law and Digital Compliance")
+    .main-header h1 {
+        margin-bottom: 0.2rem;
+        font-size: 2.4rem;
+    }
 
-st.markdown("""
-CyberLex Sweden is a final school project focused on creating an AI assistant that helps users understand Swedish cybersecurity law.
+    .main-header p {
+        font-size: 1.05rem;
+        color: #cbd5e1;
+    }
 
-The system is designed to work with trusted sources about:
+    .info-card {
+    padding: 1rem;
+    border-radius: 12px;
+    border: 1px solid #334155;
+    background-color: #1e293b;
+    color: #e2e8f0;
+    margin-bottom: 1rem;
+}
 
-- Swedish cybercrime law
-- GDPR and personal data breaches
-- NIS2 and cybersecurity responsibilities
-- EU cybersecurity law
-- Cyber Resilience Act
-- Incident reporting
-- Digital compliance for organizations
-""")
+.info-card strong {
+    color: #ffffff;
+}
+
+    .topic-badge {
+        display: inline-block;
+        padding: 0.35rem 0.65rem;
+        margin: 0.2rem;
+        border-radius: 999px;
+        background-color: #e2e8f0;
+        color: #0f172a;
+        font-size: 0.9rem;
+    }
+
+    .small-muted {
+        color: #64748b;
+        font-size: 0.95rem;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+st.markdown(
+    """
+    <div class="main-header">
+        <h1>💻 CyberLex Sweden</h1>
+        <p>Source-grounded assistant for Swedish and EU cybersecurity law, digital compliance, and legal-tech research.</p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+st.markdown(
+    """
+    <div class="info-card">
+        <strong>What CyberLex does:</strong><br>
+        CyberLex Sweden searches a trusted local knowledge base and gives source-based answers with citation details,
+        official source links, source metadata, and matched source excerpts.
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+st.markdown("### Supported topic areas")
+
+st.markdown(
+    """
+    <span class="topic-badge">GDPR</span>
+    <span class="topic-badge">IMY</span>
+    <span class="topic-badge">Personal data breaches</span>
+    <span class="topic-badge">NIS2</span>
+    <span class="topic-badge">Swedish Cybersecurity Act</span>
+    <span class="topic-badge">Dataintrång</span>
+    <span class="topic-badge">EU Cyber Resilience Act</span>
+    <span class="topic-badge">DORA</span>
+    <span class="topic-badge">Digital compliance</span>
+    """,
+    unsafe_allow_html=True
+)
 
 st.warning(
     "Important: CyberLex Sweden is an educational project. "
@@ -695,9 +767,16 @@ st.divider()
 
 documents, chunks = load_chunks()
 
-st.sidebar.header("Knowledge Base")
-st.sidebar.write(f"Loaded documents: {len(documents)}")
-st.sidebar.write(f"Searchable chunks: {len(chunks)}")
+st.sidebar.header("CyberLex Status")
+st.sidebar.write(f"📄 Loaded documents: {len(documents)}")
+st.sidebar.write(f"🧩 Searchable chunks: {len(chunks)}")
+
+st.sidebar.markdown("---")
+st.sidebar.subheader("Prototype mode")
+st.sidebar.write(
+    "CyberLex currently uses local Markdown files, source routing, keyword ranking, "
+    "and rule-based answer generation."
+)
 
 st.sidebar.subheader("Documents")
 for doc in documents:
