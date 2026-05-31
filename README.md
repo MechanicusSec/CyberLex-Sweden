@@ -35,6 +35,10 @@ The current prototype can:
 - Show the matched source excerpt
 - Refuse out-of-scope questions
 - Display legal disclaimers
+- Display source metadata, including source date and version notes
+- Display official source links connected to the answer
+- Display source metadata, including source date and version notes
+- Show the matched source excerpt
 
 ---
 
@@ -66,6 +70,17 @@ Out-of-scope questions, such as Swedish tax law, should be refused by the applic
 | VS Code | Code editor used during development |
 
 ---
+
+## Documentation
+
+Additional project documentation is available in the `docs/` folder:
+
+- `docs/project_overview.md` - project overview and background
+- `docs/project_plan.md` - project plan and schedule
+- `docs/source_list.md` - trusted source list
+- `docs/source_policy.md` - source quality policy
+- `docs/test_cases.md` - manual test cases
+- `docs/technical_design.md` - application architecture and technical design
 
 ## Project Structure
 
