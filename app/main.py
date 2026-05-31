@@ -207,6 +207,20 @@ def get_target_source_file(question):
         return "imy_gdpr_supervision.md"
 
     if (
+        "nis2 incident reporting" in question_lower
+        or "nis2 incidents" in question_lower
+        or "cybersecurity incident reporting" in question_lower
+        or "incident reporting under nis2" in question_lower
+        or "incident reporting under the cybersecurity act" in question_lower
+        or "swedish cybersecurity act incident reporting" in question_lower
+        or "report cybersecurity incident" in question_lower
+        or "reported under nis2" in question_lower
+        or "reporting duties" in question_lower
+        or "can an incident need to be reported under both nis2 and gdpr" in question_lower
+    ):
+        return "nis2_incident_reporting.md"
+
+    if (
         "personal data breach" in question_lower
         or "breach reported" in question_lower
         or "data breach reported" in question_lower
@@ -419,7 +433,8 @@ def generate_simple_answer(question, best_match):
     """
     question_lower = question.lower()
     section_lower = best_match["section"].lower()
-    if "what is imy" in question_lower or "what does imy do" in question_lower or "imy" == question_lower:
+
+    if "what is imy" in question_lower or "what does imy do" in question_lower or question_lower.strip() == "imy":
         answer = (
             "IMY, Integritetsskyddsmyndigheten, is the Swedish Authority for Privacy Protection. "
             "It supervises GDPR and personal data protection in Sweden. IMY is relevant to cybersecurity "
@@ -430,6 +445,36 @@ def generate_simple_answer(question, best_match):
         answer = (
             "In Sweden, GDPR and personal data protection are supervised by IMY, "
             "Integritetsskyddsmyndigheten, the Swedish Authority for Privacy Protection."
+        )
+
+    elif (
+        ("nis2" in question_lower or "nis" in question_lower or "cybersecurity act" in question_lower)
+        and "gdpr" in question_lower
+        and ("incident" in question_lower or "reported" in question_lower or "report" in question_lower)
+    ):
+        answer = (
+            "Yes, some cybersecurity incidents may need to be considered under both NIS2 and GDPR. "
+            "NIS2 incident reporting and GDPR personal data breach notification are different legal areas, "
+            "but they can overlap if a cybersecurity incident also affects personal data. In that situation, "
+            "the incident may need to be reported under cybersecurity incident reporting rules and also assessed "
+            "as a personal data breach under GDPR."
+        )
+
+    elif (
+        "nis2 incident reporting" in question_lower
+        or "nis incident reporting" in question_lower
+        or "cybersecurity incident reporting" in question_lower
+        or "incident reporting under nis2" in question_lower
+        or "incident reporting under nis" in question_lower
+        or "incident reporting under the cybersecurity act" in question_lower
+        or "report cybersecurity incident" in question_lower
+        or "reported under nis2" in question_lower
+        or "reported under nis" in question_lower
+    ):
+        answer = (
+            "NIS2 incident reporting in Sweden is handled through the Swedish Cybersecurity Act. "
+            "Covered organizations may need to report significant cybersecurity incidents according to reporting criteria, "
+            "procedures, and time limits. Some incidents may also need separate GDPR reporting if personal data is affected."
         )
 
     elif "personal data breach" in question_lower or "breach" in question_lower:
