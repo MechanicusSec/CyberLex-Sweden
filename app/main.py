@@ -767,6 +767,30 @@ st.divider()
 
 documents, chunks = load_chunks()
 
+language = st.sidebar.selectbox(
+    "Language / Språk",
+    ["English", "Svenska"]
+)
+
+if language == "Svenska":
+    ask_heading = "Ställ en fråga"
+    question_label = "Skriv en fråga om svensk cybersäkerhetsrätt:"
+    empty_question_text = "Skriv en fråga ovan för att söka i CyberLex Swedens kunskapsbas."
+    out_of_scope_text = (
+        "Ingen betrodd källa hittades för denna fråga. "
+        "CyberLex Sweden täcker bara svensk cybersäkerhetsrätt, cyberbrott, GDPR, NIS2, "
+        "incidentrapportering, dataskydd, EU-cybersäkerhet och relaterade digitala compliance-frågor."
+    )
+else:
+    ask_heading = "Ask a question"
+    question_label = "Write a question about Swedish cybersecurity law:"
+    empty_question_text = "Enter a question above to search the CyberLex Sweden knowledge base."
+    out_of_scope_text = (
+        "No trusted source was found for this question. "
+        "CyberLex Sweden only covers Swedish cybersecurity law, cybercrime, GDPR, NIS2, "
+        "incident reporting, data protection, EU cybersecurity law, and related digital compliance topics."
+    )
+
 st.sidebar.header("CyberLex Status")
 st.sidebar.write(f"📄 Loaded documents: {len(documents)}")
 st.sidebar.write(f"🧩 Searchable chunks: {len(chunks)}")
@@ -803,12 +827,11 @@ st.sidebar.subheader("Documents")
 for doc in documents:
     st.sidebar.write(f"- {doc['filename']}")
 
-st.header("Ask a question")
+st.header(ask_heading)
 
 question = st.text_input(
-    "Write a question about Swedish cybersecurity law:"
-)
-
+    question_label
+ )
 if question:
     if not is_cyberlaw_question(question):
         st.error(
@@ -817,49 +840,39 @@ if question:
             "incident reporting, data protection, EU cybersecurity law, and related digital compliance topics."
         )
 
-    else:
-        search_results = search_chunks(question, chunks)
-
-        if search_results:
-            best_match = search_results[0]
-            minimum_score = 12
-
-            if best_match["score"] < minimum_score:
-                st.error(
-                    "No strong trusted source match was found for this question. "
-                    "CyberLex Sweden cannot answer confidently yet."
-                )
-            else:
-                st.subheader("CyberLex Answer")
-                st.markdown(generate_simple_answer(question, best_match))
-
-                st.subheader("Matched source excerpt")
-                st.caption("This is the exact source section CyberLex used for the answer.")
-
-                st.text_area(
-                    "Relevant source section",
-                     best_match["content"],
-                     height=260
-                )
-
-                st.subheader("Other matching source sections")
-                st.caption("These are additional source sections that matched the question, ranked by relevance.")
-
-                for result in search_results[:5]:
-                    st.write(
-                        f"**{result['filename']}** | "
-                        f"Section: **{result['section']}** | "
-                        f"Relevance score: {result['score']}"
-                    )
-
-                st.info(
-                    "Next development step: connect this chunk-based search to AI-generated explanations."
-                )
-
-        else:
-            st.error(
-                "No trusted source was found for this question. "
-                "CyberLex Sweden cannot answer confidently yet."
-            )
 else:
-    st.write("Enter a question above to search the CyberLex Sweden knowledge base.")
+    search_results = search_chunks(question, chunks)
+
+    if search_results:
+        best_match = search_results[0]
+        minimum_score = 12
+
+        if best_match["score"] < minimum_score:
+            st.error(out_of_scope_text)
+        else:
+            st.subheader("CyberLex Answer")
+            st.markdown(generate_simple_answer(question, best_match))
+
+            st.subheader("Matched source excerpt")
+            st.caption("This is the exact source section CyberLex used for the answer.")
+
+            st.text_area(
+                "Relevant source section",
+                best_match["content"],
+                height=260
+            )
+
+            st.subheader("Other matching source sections")
+            st.caption("These are additional source sections that matched the question, ranked by relevance.")
+
+            for result in search_results[:5]:
+                st.write(
+                    f"**{result['filename']}** | "
+                    f"Section: **{result['section']}** | "
+                    f"Relevance score: `{result['score']}`"
+                )
+
+    else:
+        st.error(out_of_scope_text)
+else:
+    st.write(empty_question_text)
