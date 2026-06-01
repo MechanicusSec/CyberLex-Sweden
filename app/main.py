@@ -1057,8 +1057,11 @@ st.header(ask_heading)
 
 question = st.text_input(question_label)
 
-if language_mode == "Auto" and question:
-    language = detect_question_language(question)
+if language_mode == "Auto":
+    if question:
+        language = detect_question_language(question)
+    else:
+        language = "English"
 elif language_mode == "Svenska":
     language = "Svenska"
 else:
@@ -1071,10 +1074,10 @@ if language == "Svenska":
         "CyberLex Sweden täcker bara svensk cybersäkerhetsrätt, cyberbrott, GDPR, NIS2, "
         "incidentrapportering, dataskydd, EU-cybersäkerhet och relaterade digitala compliance-frågor."
     )
-    answer_header = "CyberLex svar"
-    excerpt_header = "Matchat källutdrag"
-    excerpt_caption = "Detta är den exakta källsektion som CyberLex använde för svaret."
-    source_area_label = "Relevant källsektion"
+    answer_header = "CyberLex-svar"
+    matched_excerpt_heading = "Matchat källutdrag"
+    matched_excerpt_caption = "Detta är den exakta källsektion som CyberLex använde för svaret."
+    relevant_section_label = "Relevant källsektion"
     other_matches_header = "Andra matchande källsektioner"
     other_matches_caption = "Detta är ytterligare källsektioner som matchade frågan, sorterade efter relevans."
 else:
@@ -1085,9 +1088,9 @@ else:
         "incident reporting, data protection, EU cybersecurity law, and related digital compliance topics."
     )
     answer_header = "CyberLex Answer"
-    excerpt_header = "Matched source excerpt"
-    excerpt_caption = "This is the exact source section CyberLex used for the answer."
-    source_area_label = "Relevant source section"
+    matched_excerpt_heading = "Matched source excerpt"
+    matched_excerpt_caption = "This is the exact source section CyberLex used for the answer."
+    relevant_section_label = "Relevant source section"
     other_matches_header = "Other matching source sections"
     other_matches_caption = "These are additional source sections that matched the question, ranked by relevance."
 
@@ -1104,7 +1107,7 @@ if question:
             if best_match["score"] < minimum_score:
                 st.error(out_of_scope_text)
             else:
-                st.subheader("CyberLex Answer")
+                st.subheader(answer_header)
                 st.markdown(generate_simple_answer(question, best_match, language))
 
                 st.subheader(matched_excerpt_heading)
