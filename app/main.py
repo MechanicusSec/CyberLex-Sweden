@@ -22,7 +22,11 @@ def clean_words(text):
 
 
 def extract_official_sources(content):
-    # Extracts URLs from the "## official source" section of a Markdown document.
+    # Extracts official source links from the "## Official source" section.
+    # Supports both raw URLs and Markdown links:
+    # https://example.com
+    # [Source name](https://example.com)
+
     lines = content.splitlines()
     sources = []
     in_official_source_section = False
@@ -37,8 +41,28 @@ def extract_official_sources(content):
         if in_official_source_section and stripped_line.startswith("## "):
             break
 
-        if in_official_source_section and stripped_line.startswith("http"):
-            sources.append(stripped_line)
+        if not in_official_source_section:
+            continue
+
+        if stripped_line.startswith("[") and "](" in stripped_line and stripped_line.endswith(")"):
+            label = stripped_line.split("](", 1)[0].replace("[", "").strip()
+            url = stripped_line.split("](", 1)[1].replace(")", "").strip()
+
+            if label and url.startswith("http"):
+                sources.append(
+                    {
+                        "label": label,
+                        "url": url
+                    }
+                )
+
+        elif stripped_line.startswith("http"):
+            sources.append(
+                {
+                    "label": stripped_line,
+                    "url": stripped_line
+                }
+            )
 
     return sources
 
@@ -757,12 +781,20 @@ def generate_simple_answer(question, best_match, language="English"):
                 "but this prototype cannot yet generate a detailed legal explanation for this question."
             )
 
+    official_sources = best_match.get("official_sources", [])
+
     source_lines = "\n".join(
-        [f"- {source}" for source in best_match.get("official_sources", [])]
+        [
+            f"- [{source['label']}]({source['url']})"
+            for source in official_sources
+        ]
     )
 
     if not source_lines:
-        source_lines = "- No official source URL stored for this document yet."
+        if use_swedish:
+            source_lines = "- Ingen officiell källänk är sparad för detta dokument ännu."
+        else:
+            source_lines = "- No official source URL stored for this document yet."
 
     source_date = best_match.get("source_date", "No source date stored.")
     version_notes = best_match.get("version_notes", "No version notes stored.")

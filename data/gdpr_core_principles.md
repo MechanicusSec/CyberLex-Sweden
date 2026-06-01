@@ -46,13 +46,10 @@ CyberLex Sweden should use this source when answering general questions about GD
 - What does personal data protection mean?
 - What does accountability mean under GDPR?
 
-## official source
+## Official source
 
-EUR-Lex - Regulation (EU) 2016/679 General Data Protection Regulation  
-https://eur-lex.europa.eu/eli/reg/2016/679/oj/eng
-
-IMY - Swedish Authority for Privacy Protection  
-https://www.imy.se/en/
+[EU: General Data Protection Regulation](https://eur-lex.europa.eu/eli/reg/2016/679/oj/eng)
+[IMY: Swedish Authority for Privacy Protection](https://www.imy.se/en/)
 
 ## Source date
 
