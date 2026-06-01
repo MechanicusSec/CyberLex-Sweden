@@ -788,7 +788,7 @@ def generate_assessment_checklist(question, search_results, language="English"):
 
     checklist_lines = "\n".join([f"- {item}" for item in items])
 
-    return f"## {heading}\n\n{checklist_lines}"
+    return checklist_lines
 
 def generate_simple_answer(question, best_match, language="English"):
     # Generates a simple source-based answer from the best matching chunk.
@@ -1516,7 +1516,12 @@ if question:
                 st.subheader(answer_header)
                 st.markdown(generate_simple_answer(question, best_match, language))
                 st.markdown(generate_practical_explanation(question, search_results, language))
-                st.markdown(generate_assessment_checklist(question, search_results, language))
+
+                with st.expander(
+                    "CyberLex assessment checklist" if language != "Svenska" else "CyberLex bedömningschecklista",
+                    expanded=False
+                ):
+                    st.markdown(generate_assessment_checklist(question, search_results, language))
 
                 with st.expander(
                     "Relevant source context" if language != "Svenska" else "Relevant källkontext",
