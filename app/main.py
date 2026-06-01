@@ -647,6 +647,149 @@ def generate_practical_explanation(question, search_results, language="English")
 
     return f"## {heading}\n\n{explanation}"
 
+def generate_assessment_checklist(question, search_results, language="English"):
+    # Generates a simple assessment checklist based on the user's question.
+    # This is not legal advice. It gives the user a structured way to review the issue.
+
+    question_lower = question.lower()
+    use_swedish = language == "Svenska"
+
+    if use_swedish:
+        heading = "CyberLex bedömningschecklista"
+
+        if "personal data breach" in question_lower or "personuppgiftsincident" in question_lower or "72" in question_lower:
+            items = [
+                "Identifiera om incidenten berör personuppgifter.",
+                "Bedöm om incidenten kan innebära risk för registrerade personers rättigheter och friheter.",
+                "Kontrollera när organisationen blev medveten om incidenten.",
+                "Bedöm om anmälan till IMY kan vara relevant.",
+                "Dokumentera beslut, tidslinje, åtgärder och källor."
+            ]
+
+        elif ("nis2" in question_lower or "cybersäkerhetslagen" in question_lower) and "gdpr" in question_lower:
+            items = [
+                "Bedöm om incidenten är en cybersäkerhetsincident.",
+                "Bedöm om incidenten även påverkar personuppgifter.",
+                "Kontrollera om NIS2/cybersäkerhetslagen och GDPR kan vara relevanta samtidigt.",
+                "Identifiera vilka myndigheter eller rapporteringsvägar som kan behöva bedömas.",
+                "Dokumentera varför incidenten omfattas eller inte omfattas av respektive regelverk."
+            ]
+
+        elif "nis2" in question_lower or "cybersäkerhetslagen" in question_lower:
+            items = [
+                "Identifiera om organisationen kan omfattas av NIS2 eller svensk cybersäkerhetslag.",
+                "Bedöm om incidenten är betydande eller rapporteringspliktig enligt relevanta kriterier.",
+                "Kontrollera sektor, verksamhetstyp och ansvarig funktion.",
+                "Dokumentera teknisk påverkan, tidslinje och vidtagna åtgärder.",
+                "Jämför bedömningen med aktuella MSB-källor."
+            ]
+
+        elif "dora" in question_lower or "digital operational resilience" in question_lower:
+            items = [
+                "Identifiera om verksamheten tillhör den finansiella sektorn.",
+                "Bedöm om frågan gäller ICT-risk, incidenthantering, testning eller tredjepartsleverantörer.",
+                "Kontrollera om en ICT-relaterad incident eller störning föreligger.",
+                "Dokumentera påverkan på digital operativ motståndskraft.",
+                "Jämför bedömningen med DORA-källor och relevanta tillsynsmyndigheter."
+            ]
+
+        elif "dataintrång" in question_lower or "unauthorized access" in question_lower or "obehörig åtkomst" in question_lower:
+            items = [
+                "Identifiera vilken åtkomst eller påverkan som skett.",
+                "Bedöm om åtkomsten var behörig eller obehörig.",
+                "Skilj mellan tillåten säkerhetstestning och otillåten aktivitet.",
+                "Dokumentera system, konton, loggar och tidslinje.",
+                "Jämför situationen med svenska straffrättsliga källor."
+            ]
+
+        elif "cyber resilience act" in question_lower or "cyberresiliensakten" in question_lower:
+            items = [
+                "Identifiera om frågan gäller en produkt med digitala element.",
+                "Bedöm om produktdesign, säkerhetskrav eller sårbarhetshantering påverkas.",
+                "Kontrollera ansvar för tillverkare, leverantör eller annan aktör.",
+                "Dokumentera säkerhetsåtgärder, uppdateringar och sårbarhetsprocesser.",
+                "Jämför bedömningen med Cyber Resilience Act-källor."
+            ]
+
+        else:
+            items = [
+                "Identifiera vilken cyberrättslig eller compliance-fråga som ställs.",
+                "Kontrollera vilka källsektioner CyberLex matchade.",
+                "Läs den praktiska förklaringen tillsammans med källkontexten.",
+                "Kontrollera officiella källor och källdatum.",
+                "Sök juridisk eller myndighetsbaserad vägledning vid viktiga beslut."
+            ]
+
+    else:
+        heading = "CyberLex assessment checklist"
+
+        if "personal data breach" in question_lower or "breach" in question_lower or "72" in question_lower:
+            items = [
+                "Identify whether the incident involves personal data.",
+                "Assess whether the incident may create risk to individuals' rights and freedoms.",
+                "Check when the organization became aware of the incident.",
+                "Assess whether notification to IMY may be relevant.",
+                "Document the decision, timeline, actions, and sources."
+            ]
+
+        elif ("nis2" in question_lower or "cybersecurity act" in question_lower) and "gdpr" in question_lower:
+            items = [
+                "Assess whether the incident is a cybersecurity incident.",
+                "Assess whether the incident also affects personal data.",
+                "Check whether NIS2/the Swedish Cybersecurity Act and GDPR may both be relevant.",
+                "Identify which authorities or reporting paths may need to be considered.",
+                "Document why each legal framework is or is not relevant."
+            ]
+
+        elif "nis2" in question_lower or "cybersecurity act" in question_lower:
+            items = [
+                "Identify whether the organization may be covered by NIS2 or Swedish cybersecurity rules.",
+                "Assess whether the incident may be significant or reportable under relevant criteria.",
+                "Check the sector, organization type, and responsible internal function.",
+                "Document technical impact, timeline, and actions taken.",
+                "Compare the assessment with current MSB source material."
+            ]
+
+        elif "dora" in question_lower or "digital operational resilience" in question_lower:
+            items = [
+                "Identify whether the organization belongs to the financial sector.",
+                "Assess whether the issue concerns ICT risk, incident handling, testing, or third-party providers.",
+                "Check whether an ICT-related incident or disruption exists.",
+                "Document the impact on digital operational resilience.",
+                "Compare the assessment with DORA sources and relevant supervisory guidance."
+            ]
+
+        elif "dataintrång" in question_lower or "unauthorized access" in question_lower or "data intrusion" in question_lower:
+            items = [
+                "Identify what access or interference occurred.",
+                "Assess whether the access was authorized or unauthorized.",
+                "Separate authorized security testing from unauthorized activity.",
+                "Document systems, accounts, logs, and timeline.",
+                "Compare the situation with Swedish criminal-law source material."
+            ]
+
+        elif "cyber resilience act" in question_lower or "products with digital elements" in question_lower:
+            items = [
+                "Identify whether the question concerns a product with digital elements.",
+                "Assess whether product design, security requirements, or vulnerability handling are affected.",
+                "Check responsibility for the manufacturer, supplier, or other actor.",
+                "Document security measures, updates, and vulnerability processes.",
+                "Compare the assessment with Cyber Resilience Act sources."
+            ]
+
+        else:
+            items = [
+                "Identify the cybersecurity law or compliance issue.",
+                "Check which source sections CyberLex matched.",
+                "Read the practical explanation together with the source context.",
+                "Check official sources and source dates.",
+                "Use legal or authority-based guidance for important decisions."
+            ]
+
+    checklist_lines = "\n".join([f"- {item}" for item in items])
+
+    return f"## {heading}\n\n{checklist_lines}"
+
 def generate_simple_answer(question, best_match, language="English"):
     # Generates a simple source-based answer from the best matching chunk.
     question_lower = question.lower()
@@ -1373,6 +1516,7 @@ if question:
                 st.subheader(answer_header)
                 st.markdown(generate_simple_answer(question, best_match, language))
                 st.markdown(generate_practical_explanation(question, search_results, language))
+                st.markdown(generate_assessment_checklist(question, search_results, language))
 
                 with st.expander(
                     "Relevant source context" if language != "Svenska" else "Relevant källkontext",
