@@ -48,11 +48,10 @@ CyberLex Sweden should use this source when answering questions about GDPR breac
 
 ## official source
 
-IMY - Notification of a personal data breach  
-https://www.imy.se/en/organisations/forms-and-e-services/notification-of-a-personal-data-breach/
+## Official source
 
-IMY - Swedish Authority for Privacy Protection  
-https://www.imy.se/en/
+[IMY: Personal data breach guidance](https://www.imy.se/en/organisations/data-protection/this-applies-accordning-to-gdpr/personal-data-breach/)
+[EU: GDPR Regulation](https://eur-lex.europa.eu/eli/reg/2016/679/oj/eng)
 
 ## Source date
 

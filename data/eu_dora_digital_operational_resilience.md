@@ -80,14 +80,12 @@ A serious ICT incident in a financial organization may therefore raise questions
 
 ## official source
 
-EUR-Lex - Regulation (EU) 2022/2554 Digital Operational Resilience Act  
-https://eur-lex.europa.eu/eli/reg/2022/2554/oj/eng
+[EUR-Lex: Regulation (EU) 2022/2554 Digital Operational Resilience Act](https://eur-lex.europa.eu/eli/reg/2022/2554/oj/eng)
 
-EIOPA - Digital Operational Resilience Act DORA  
-https://www.eiopa.europa.eu/digital-operational-resilience-act-dora_en
+[EIOPA: Digital Operational Resilience Act DORA](https://www.eiopa.europa.eu/digital-operational-resilience-act-dora_en)
 
-ESMA - Digital Operational Resilience Act DORA  
-https://www.esma.europa.eu/esmas-activities/digital-finance-and-innovation/digital-operational-resilience-act-dora
+[ESMA: Digital Operational Resilience Act DORA](https://www.esma.europa.eu/esmas-activities/digital-finance-and-innovation/digital-operational-resilience-act-dora)
+
 
 ## Source date
 

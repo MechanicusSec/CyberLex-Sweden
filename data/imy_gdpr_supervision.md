@@ -49,11 +49,10 @@ If poor security leads to unauthorized disclosure, loss, destruction, alteration
 
 ## official source
 
-IMY - Swedish Authority for Privacy Protection  
-https://www.imy.se/en/
+## Official source
 
-IMY - Notification of a personal data breach  
-https://www.imy.se/en/organisations/forms-and-e-services/notification-of-a-personal-data-breach/
+[IMY: Swedish Authority for Privacy Protection](https://www.imy.se/en/)
+[IMY: About IMY](https://www.imy.se/en/about-us/) 
 
 ## Source date
 
