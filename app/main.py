@@ -1146,6 +1146,7 @@ st.sidebar.markdown(
     "- `docs/legal_disclaimer.md`\n"
     "- `docs/source_policy.md`\n"
     "- `docs/source_update_history.md`\n"
+    "- `docs/ai_rag_plan.md`\n"
     "- `docs/product_roadmap.md`\n"
     "- `docs/technical_design.md`"
 )
