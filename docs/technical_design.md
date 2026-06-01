@@ -6,7 +6,7 @@ This document explains the technical design of the CyberLex Sweden prototype.
 
 CyberLex Sweden is a local Streamlit application that answers questions about selected Swedish and EU cybersecurity law topics using a trusted local Markdown knowledge base.
 
-The prototype does not use a full language model yet. Instead, it uses source-based search, question intent matching, and simple rule-based answer generation.
+The prototype does not use a full language model yet. Instead, it uses source-based search, question intent matching, rule-based answer generation, practical explanations, assessment checklists, and transparent source display.
 
 ---
 
@@ -18,13 +18,112 @@ The application is built with:
 - Streamlit
 - Local Markdown files
 - Rule-based source search
+- Source routing
 - Source metadata extraction
 - Citation display
+- Bilingual interface support
+- Practical explanation generation
+- Topic-based assessment checklists
 
 The main application file is:
 
 ```text
 app/main.py
+```
+
+The local knowledge base is stored in:
+
+```text
+data/
+```
+
+The project documentation is stored in:
+
+```text
+docs/
+```
+
+---
+
+## Main components
+
+### Python
+
+Python is the programming language used to build the application logic.
+
+It handles:
+
+- reading Markdown files
+- splitting documents into searchable chunks
+- scoring search results
+- generating answers
+- displaying results through Streamlit
+
+### Streamlit
+
+Streamlit is the Python framework used to create the CyberLex Sweden web interface.
+
+It displays:
+
+- the main page
+- the sidebar
+- the question input field
+- answers
+- citations
+- source metadata
+- collapsible sections
+- warnings and disclaimers
+
+### Markdown knowledge base
+
+CyberLex uses Markdown files in the `data/` folder as its trusted local knowledge base.
+
+Each source file contains structured sections such as:
+
+- topic
+- key idea
+- main authority
+- important points
+- practical explanation
+- official source
+- source date
+- version notes
+- disclaimer
+
+This makes the source material easier to search, review, and update.
+
+---
+
+## Search and retrieval design
+
+CyberLex searches the local knowledge base by:
+
+1. Loading all Markdown files from `data/`.
+2. Splitting each file into smaller chunks based on headings.
+3. Cleaning the user question into searchable words.
+4. Matching question words against chunk text and section titles.
+5. Applying score boosts for useful sections.
+6. Applying score penalties for weak sections.
+7. Routing clear questions to the most relevant source file.
+8. Ranking results by relevance score.
+
+The best match is used for the main answer, while additional matching sections are shown for transparency.
+
+---
+
+## Source routing
+
+The function `get_target_source_file(question)` routes clear questions to a specific knowledge file.
+
+For example:
+
+- GDPR breach questions route to `gdpr_personal_data_breach.md`
+- IMY questions route to `imy_gdpr_supervision.md`
+- NIS2 incident reporting questions route to `nis2_incident_reporting.md`
+- DORA questions route to `eu_dora_digital_operational_resilience.md`
+- Dataintrång questions route to `cybercrime_dataintrang.md`
+
+This improves accuracy by preventing similar words from matching the wrong source file.
 
 ---
 
@@ -64,3 +163,173 @@ Example:
 
 ```markdown
 [IMY: Personal data breach guidance](https://www.imy.se/)
+```
+
+### 4. Source metadata
+
+The source metadata shows source date and version notes.
+
+This helps users understand when the source was checked or updated.
+
+### 5. Important limitation
+
+CyberLex Sweden always displays a limitation message.
+
+The app makes clear that it is an educational prototype and does not provide legal advice.
+
+### 6. Practical explanation
+
+The practical explanation gives a plain-language explanation of what the answer means in practice.
+
+This section is rule-based and source-grounded. It does not use an external AI model.
+
+The purpose is to make the answer more useful while still keeping the system transparent.
+
+### 7. CyberLex assessment checklist
+
+The CyberLex assessment checklist gives the user a structured way to review the issue.
+
+The checklist is generated from the user question and the matched topic area.
+
+For example, a personal data breach question produces a checklist about:
+
+- whether personal data is involved
+- risk assessment
+- awareness time
+- possible IMY notification
+- documentation
+
+The checklist is not legal advice. It is a practical review aid that helps users think through the issue before checking official sources or contacting a qualified expert.
+
+The checklist is displayed inside a collapsible Streamlit expander so the main answer stays readable.
+
+### 8. Relevant source context
+
+The relevant source context shows several matched source sections that support the answer.
+
+This section is inside an expandable Streamlit box so the page stays readable.
+
+It helps the user inspect supporting source material without overwhelming the main answer.
+
+### 9. Other matching source sections
+
+The app also lists other matching source sections ranked by relevance.
+
+This gives extra transparency into how CyberLex searched the local knowledge base.
+
+---
+
+## Bilingual support
+
+CyberLex Sweden supports:
+
+- Auto
+- English
+- Svenska
+
+The sidebar language selector controls the interface language.
+
+In Auto mode, the app detects whether the user question appears to be Swedish or English.
+
+The app can display:
+
+- Swedish interface labels
+- English interface labels
+- Swedish answer headings
+- English answer headings
+- Swedish practical explanations
+- English practical explanations
+- Swedish assessment checklists
+- English assessment checklists
+
+---
+
+## Scope control
+
+CyberLex Sweden is limited to selected Swedish and EU cybersecurity law and digital compliance topics.
+
+The app uses `is_cyberlaw_question(question)` to check whether the question is in scope.
+
+Supported areas include:
+
+- GDPR
+- IMY
+- personal data breaches
+- NIS2
+- Swedish Cybersecurity Act
+- incident reporting
+- dataintrång
+- EU attacks against information systems
+- EU Cyber Resilience Act
+- DORA
+- digital compliance
+
+If a question is outside the supported scope, the app refuses to answer and shows an out-of-scope message.
+
+---
+
+## Source transparency
+
+CyberLex Sweden is designed to show where answers come from.
+
+For each answer, the app displays:
+
+- matched knowledge file
+- matched section
+- relevance score
+- official source links
+- source date
+- version notes
+- relevant source context
+- other matching source sections
+
+This makes the prototype easier to review and safer than a generic chatbot response.
+
+---
+
+## Limitations
+
+CyberLex Sweden is an educational prototype.
+
+Current limitations include:
+
+- It does not use a full language model yet.
+- It does not browse the web live.
+- It only answers from local Markdown sources.
+- It only covers selected topics.
+- It uses rule-based answers, explanations, and checklists.
+- It does not provide legal advice.
+- Source material must be manually reviewed and updated.
+
+---
+
+## Future development
+
+Future improvements may include:
+
+- better Swedish source summaries
+- more Swedish and EU legal sources
+- vector search with ChromaDB or FAISS
+- AI-generated answers using a RAG design
+- stronger citation formatting
+- source update reminders
+- public deployment
+- improved visual design
+- stronger legal disclaimer and Terms of Use
+
+---
+
+## Why this structure matters
+
+CyberLex Sweden deals with cybersecurity law, GDPR, NIS2, cybercrime, DORA, incident reporting, and digital compliance.
+
+Because these topics can affect legal and compliance decisions, the app should not behave like a general chatbot.
+
+The answer structure is designed to:
+
+- keep answers source-grounded
+- show source transparency
+- show legal limitations
+- avoid unsupported claims
+- make the system easier to review
+- prepare the project for future AI/RAG development
