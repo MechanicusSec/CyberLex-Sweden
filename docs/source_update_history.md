@@ -62,6 +62,10 @@ data/gdpr_personal_data_breach.md
 data/imy_gdpr_supervision.md
 data/nis2_cybersecurity_law.md
 data/nis2_incident_reporting.md
+```
+
+---
+
 ## 2026-06-01 - Official source link formatting update
 
 Updated CyberLex Sweden knowledge base source sections to use labeled Markdown links instead of raw URLs.
@@ -71,3 +75,33 @@ Changed format from:
 ```text
 Source name
 https://source-url
+```
+
+to:
+
+```markdown
+[Source name](https://source-url)
+```
+
+Purpose:
+
+- Improve readability of official source links in the CyberLex interface.
+- Preserve all existing useful sources.
+- Make source citations easier to understand for users.
+- Prepare the project for future AI/RAG-based answer generation.
+
+Affected source files included:
+
+- `data/gdpr_core_principles.md`
+- `data/imy_gdpr_supervision.md`
+- `data/gdpr_personal_data_breach.md`
+- `data/nis2_cybersecurity_law.md`
+- `data/nis2_incident_reporting.md`
+- `data/cybercrime_dataintrang.md`
+- `data/eu_attacks_against_information_systems.md`
+- `data/eu_cyber_resilience_act.md`
+- `data/eu_dora_digital_operational_resilience.md`
+
+Result:
+
+Official source links now display as readable clickable labels inside the Streamlit app.
