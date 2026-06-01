@@ -1572,6 +1572,38 @@ for doc in documents:
 st.header(ask_heading)
 
 question = st.text_input(question_label)
+if language_mode == "Svenska":
+    example_questions_heading = "Exempelfrågor"
+    example_questions_intro = "Här är frågor som CyberLex Sweden kan hantera i prototypen:"
+    example_questions = [
+        "Vad är GDPR?",
+        "Vilka är GDPR-principerna?",
+        "När måste en personuppgiftsincident rapporteras?",
+        "Kan en incident behöva rapporteras enligt både NIS2 och GDPR?",
+        "Vad är NIS2?",
+        "Vad är DORA?",
+        "Vad är dataintrång?",
+        "Vad är Cyber Resilience Act?"
+    ]
+else:
+    example_questions_heading = "Example questions"
+    example_questions_intro = "Here are questions CyberLex Sweden can handle in this prototype:"
+    example_questions = [
+        "What is GDPR?",
+        "What are the GDPR principles?",
+        "When must a personal data breach be reported?",
+        "Can an incident need to be reported under both NIS2 and GDPR?",
+        "What is NIS2?",
+        "What is DORA?",
+        "What is dataintrång?",
+        "What is the Cyber Resilience Act?"
+    ]
+
+with st.expander(example_questions_heading, expanded=False):
+    st.write(example_questions_intro)
+
+    for example_question in example_questions:
+        st.code(example_question, language=None)
 
 # This controls the answer language.
 # Auto detects Swedish or English only after the user has typed a question.
