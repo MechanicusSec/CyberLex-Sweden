@@ -944,42 +944,97 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+# Main page text is controlled by the selected language mode.
+# In Auto mode, the page starts in English until a question is typed.
+
+language_mode_preview = st.sidebar.selectbox(
+    "Language / Språk",
+    ["Auto", "English", "Svenska"],
+    key="language_selector"
+)
+
+if language_mode_preview == "Svenska":
+    page_subtitle = (
+        "Källbaserad assistent för svensk och EU-relaterad cybersäkerhetsrätt, "
+        "digital compliance och legal-tech research."
+    )
+    info_card_heading = "Vad CyberLex gör:"
+    info_card_text = (
+        "CyberLex Sweden söker i en betrodd lokal kunskapsbas och ger källbaserade svar med "
+        "källhänvisningar, officiella källänkar, källmetadata och matchade källutdrag."
+    )
+    supported_topics_heading = "Stödda ämnesområden"
+    warning_text = (
+        "Viktigt: CyberLex Sweden är ett utbildningsprojekt. "
+        "Det ger inte officiell juridisk rådgivning och ska inte ersätta en kvalificerad jurist "
+        "eller vägledning från en myndighet."
+    )
+    topic_badges = [
+        "GDPR",
+        "IMY",
+        "Personuppgiftsincidenter",
+        "NIS2",
+        "Svenska cybersäkerhetslagen",
+        "Dataintrång",
+        "EU Cyber Resilience Act",
+        "DORA",
+        "Digital compliance"
+    ]
+else:
+    page_subtitle = (
+        "Source-grounded assistant for Swedish and EU cybersecurity law, "
+        "digital compliance, and legal-tech research."
+    )
+    info_card_heading = "What CyberLex does:"
+    info_card_text = (
+        "CyberLex Sweden searches a trusted local knowledge base and gives source-based answers with "
+        "citation details, official source links, source metadata, and matched source excerpts."
+    )
+    supported_topics_heading = "Supported topic areas"
+    warning_text = (
+        "Important: CyberLex Sweden is an educational project. "
+        "It does not provide official legal advice and should not replace a qualified lawyer "
+        "or official authority guidance."
+    )
+    topic_badges = [
+        "GDPR",
+        "IMY",
+        "Personal data breaches",
+        "NIS2",
+        "Swedish Cybersecurity Act",
+        "Dataintrång",
+        "EU Cyber Resilience Act",
+        "DORA",
+        "Digital compliance"
+    ]
+
 st.markdown(
-    '<div class="main-header"><h1>CyberLex Sweden</h1><p>Source-grounded assistant for Swedish and EU cybersecurity law, digital compliance, and legal-tech research.</p></div>',
+    f'<div class="main-header"><h1>CyberLex Sweden</h1><p>{page_subtitle}</p></div>',
     unsafe_allow_html=True
 )
 
 st.markdown(
     '<div class="info-card">'
-    '<strong>What CyberLex does:</strong><br>'
-    'CyberLex Sweden searches a trusted local knowledge base and gives source-based answers with citation details, '
-    'official source links, source metadata, and matched source excerpts.'
+    f'<strong>{info_card_heading}</strong><br>'
+    f'{info_card_text}'
     '</div>',
     unsafe_allow_html=True
 )
 
-st.markdown("### Supported topic areas")
+st.markdown(f"### {supported_topics_heading}")
+
+badge_html = "".join(
+    [f'<span class="topic-badge">{topic}</span>' for topic in topic_badges]
+)
 
 st.markdown(
-    '<span class="topic-badge">GDPR</span>'
-    '<span class="topic-badge">IMY</span>'
-    '<span class="topic-badge">Personal data breaches</span>'
-    '<span class="topic-badge">NIS2</span>'
-    '<span class="topic-badge">Swedish Cybersecurity Act</span>'
-    '<span class="topic-badge">Dataintrång</span>'
-    '<span class="topic-badge">EU Cyber Resilience Act</span>'
-    '<span class="topic-badge">DORA</span>'
-    '<span class="topic-badge">Digital compliance</span>',
+    badge_html,
     unsafe_allow_html=True
 )
 
-st.warning(
-    "Important: CyberLex Sweden is an educational project. "
-    "It does not provide official legal advice and should not replace a qualified lawyer or official authority guidance."
-)
+st.warning(warning_text)
 
 st.divider()
-
 
 def detect_question_language(question):
     # Detects whether the user question is likely Swedish or English.
@@ -1004,34 +1059,54 @@ def detect_question_language(question):
 
 documents, chunks = load_chunks()
 
-language_mode = st.sidebar.selectbox(
-    "Language / Språk",
-    ["Auto", "English", "Svenska"]
-)
+language_mode = language_mode_preview
 
+# This controls fixed interface text before the user asks a question.
+# In Auto mode, the interface starts in English until a question is typed.
 if language_mode == "Svenska":
+    interface_language = "Svenska"
+else:
+    interface_language = "English"
+
+if interface_language == "Svenska":
     ask_heading = "Ställ en fråga"
     question_label = "Skriv en fråga om svensk cybersäkerhetsrätt:"
-elif language_mode == "English":
+    status_header = "CyberLex-status"
+    loaded_documents_label = "Inlästa dokument"
+    searchable_chunks_label = "Sökbara källsektioner"
+    prototype_mode_header = "Prototypläge"
+    prototype_mode_text = (
+        "CyberLex använder just nu lokala Markdown-filer, källstyrning, nyckelordsrankning "
+        "och regelbaserad svarsgenerering."
+    )
+    project_resources_header = "Projektresurser"
+    documents_header = "Dokument"
+    sidebar_caption = "CyberLex Sweden är en utbildningsprototyp och ger inte juridisk rådgivning."
+else:
     ask_heading = "Ask a question"
     question_label = "Write a question about Swedish cybersecurity law:"
-else:
-    ask_heading = "Ask a question / Ställ en fråga"
-    question_label = "Write a question about Swedish cybersecurity law / Skriv en fråga om svensk cybersäkerhetsrätt:"
+    status_header = "CyberLex Status"
+    loaded_documents_label = "Loaded documents"
+    searchable_chunks_label = "Searchable chunks"
+    prototype_mode_header = "Prototype mode"
+    prototype_mode_text = (
+        "CyberLex currently uses local Markdown files, source routing, keyword ranking, "
+        "and rule-based answer generation."
+    )
+    project_resources_header = "Project resources"
+    documents_header = "Documents"
+    sidebar_caption = "CyberLex Sweden is an educational prototype and does not provide legal advice."
 
-st.sidebar.header("CyberLex Status")
-st.sidebar.write(f"📄 Loaded documents: {len(documents)}")
-st.sidebar.write(f"🧩 Searchable chunks: {len(chunks)}")
+st.sidebar.header(status_header)
+st.sidebar.write(f"📄 {loaded_documents_label}: {len(documents)}")
+st.sidebar.write(f"🧩 {searchable_chunks_label}: {len(chunks)}")
 
 st.sidebar.markdown("---")
-st.sidebar.subheader("Prototype mode")
-st.sidebar.write(
-    "CyberLex currently uses local Markdown files, source routing, keyword ranking, "
-    "and rule-based answer generation."
-)
+st.sidebar.subheader(prototype_mode_header)
+st.sidebar.write(prototype_mode_text)
 
 st.sidebar.markdown("---")
-st.sidebar.subheader("Project resources")
+st.sidebar.subheader(project_resources_header)
 
 st.sidebar.markdown(
     "- `docs/terms_of_use.md`\n"
@@ -1044,12 +1119,10 @@ st.sidebar.markdown(
 )
 
 st.sidebar.markdown("---")
-st.sidebar.caption(
-    "CyberLex Sweden is an educational prototype and does not provide legal advice."
-)
+st.sidebar.caption(sidebar_caption)
 
 st.sidebar.markdown("---")
-st.sidebar.subheader("Documents")
+st.sidebar.subheader(documents_header)
 for doc in documents:
     st.sidebar.write(f"- {doc['filename']}")
 
@@ -1057,11 +1130,10 @@ st.header(ask_heading)
 
 question = st.text_input(question_label)
 
-if language_mode == "Auto":
-    if question:
-        language = detect_question_language(question)
-    else:
-        language = "English"
+# This controls the answer language.
+# Auto detects Swedish or English only after the user has typed a question.
+if language_mode == "Auto" and question:
+    language = detect_question_language(question)
 elif language_mode == "Svenska":
     language = "Svenska"
 else:
