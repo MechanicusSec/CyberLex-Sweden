@@ -11,10 +11,7 @@ DATA_DIR = Path("data")
 
 
 def clean_words(text):
-    """
-    Converts text into simple searchable words.
-    This makes matching easier by removing punctuation and using lowercase text.
-    """
+    # Converts text into simple searchable lowercase words.
     punctuation = ",.?!:;()[]{}\"'`"
     text = text.lower()
 
@@ -25,10 +22,7 @@ def clean_words(text):
 
 
 def extract_official_sources(content):
-    """
-    Extracts URLs from the official source section of a Markdown document.
-    These URLs are shown in the app so users can trace answers back to trusted sources.
-    """
+    # Extracts URLs from the "## official source" section of a Markdown document.
     lines = content.splitlines()
     sources = []
     in_official_source_section = False
@@ -48,14 +42,9 @@ def extract_official_sources(content):
 
     return sources
 
-def extract_section_text(content, heading):
-    """
-    Extracts text from a specific Markdown heading section.
 
-    Example:
-    If heading is '## Source date', this function returns the text under that heading
-    until the next Markdown heading starts.
-    """
+def extract_section_text(content, heading):
+    # Extracts text from a specific Markdown heading section.
     lines = content.splitlines()
     section_lines = []
     in_section = False
@@ -77,9 +66,7 @@ def extract_section_text(content, heading):
 
 
 def extract_source_metadata(content):
-    """
-    Extracts source date and version notes from a Markdown knowledge file.
-    """
+    # Extracts source date and version notes from a Markdown knowledge file.
     source_date = extract_section_text(content, "## Source date")
     version_notes = extract_section_text(content, "## Version notes")
 
@@ -96,10 +83,7 @@ def extract_source_metadata(content):
 
 
 def load_documents():
-    """
-    Loads all Markdown files from the data folder.
-    Also extracts official source links, source dates, and version notes.
-    """
+    # Loads all Markdown files from the data folder.
     documents = []
 
     for file_path in DATA_DIR.glob("*.md"):
@@ -120,13 +104,7 @@ def load_documents():
 
 
 def split_into_chunks(document):
-    """
-    Splits a Markdown document into smaller chunks based on headings.
-    Each chunk keeps track of the source filename, section title, and official source links.
-
-    Very small chunks are ignored because they usually only contain a heading
-    and do not give useful legal information.
-    """
+    # Splits a Markdown document into smaller searchable chunks based on headings.
     filename = document["filename"]
     content = document["content"]
     official_sources = document["official_sources"]
@@ -145,15 +123,15 @@ def split_into_chunks(document):
             return
 
         chunks.append(
-    {
-        "filename": filename,
-        "section": title,
-        "content": chunk_content,
-        "official_sources": official_sources,
-        "source_date": source_date,
-        "version_notes": version_notes
-    }
-)
+            {
+                "filename": filename,
+                "section": title,
+                "content": chunk_content,
+                "official_sources": official_sources,
+                "source_date": source_date,
+                "version_notes": version_notes
+            }
+        )
 
     for line in content.splitlines():
         if line.startswith("#"):
@@ -172,23 +150,18 @@ def split_into_chunks(document):
 
 
 def load_chunks():
-    """
-    Loads all documents and splits them into searchable chunks.
-    """
+    # Loads all documents and splits them into searchable chunks.
     documents = load_documents()
     all_chunks = []
 
     for document in documents:
-        chunks = split_into_chunks(document)
-        all_chunks.extend(chunks)
+        all_chunks.extend(split_into_chunks(document))
 
     return documents, all_chunks
 
+
 def get_target_source_file(question):
-    """
-    Detects when a question clearly belongs to a specific knowledge file.
-    This prevents CyberLex from selecting the wrong source file when multiple files contain similar words.
-    """
+    # Routes clear questions to a specific knowledge file.
     question_lower = question.lower().strip()
 
     if (
@@ -321,19 +294,12 @@ def get_target_source_file(question):
         or "finansiell cybersäkerhet" in question_lower
     ):
         return "eu_dora_digital_operational_resilience.md"
-    
+
     return None
 
-def search_chunks(question, chunks):
-    """
-    Searches document chunks using keyword matching, question intent, and source routing.
 
-    This version improves ranking by:
-    - ignoring weak common words
-    - lowering broad sections like Topic
-    - boosting sections that match the user's question type
-    - forcing the correct source file when the question clearly belongs to one file
-    """
+def search_chunks(question, chunks):
+    # Searches document chunks using keyword matching, intent boosts, and source routing.
     stopwords = {
         "what", "when", "where", "which", "who", "why", "how",
         "is", "are", "was", "were", "be", "been", "being",
@@ -351,7 +317,9 @@ def search_chunks(question, chunks):
         "legal reference",
         "practical explanation",
         "cybersecurity connection",
-        "swedish connection"
+        "swedish connection",
+        "relationship with gdpr breach reporting",
+        "third-party ict risk"
     }
 
     weak_sections = {
@@ -384,15 +352,12 @@ def search_chunks(question, chunks):
 
         score = 0
 
-        # If the question clearly belongs to a specific file,
-        # strongly punish all other files.
         if target_source_file:
             if filename_lower == target_source_file.lower():
                 score += 100
             else:
                 score -= 100
 
-        # Basic keyword score
         for word in question_words:
             if word in chunk_words:
                 score += 4
@@ -403,31 +368,28 @@ def search_chunks(question, chunks):
             if word in chunk_text:
                 score += 1
 
-        # General useful section bonus
         for useful_section in useful_sections:
             if useful_section in section_text:
                 score += 5
 
-        # Weak section penalty
         for weak_section in weak_sections:
             if weak_section in section_text:
                 score -= 10
 
-        # Question-intent bonuses
         if "authority" in question_lower or "handles" in question_lower or "supervises" in question_lower:
             if "main authority" in section_text:
                 score += 25
             if "imy" in chunk_text or "integritetsskyddsmyndigheten" in chunk_text:
                 score += 8
 
-        if "reported" in question_lower or "report" in question_lower or "72" in question_lower:
-            if "reporting to imy" in section_text:
+        if "reported" in question_lower or "report" in question_lower or "72" in question_lower or "rapportera" in question_lower:
+            if "reporting" in section_text:
                 score += 25
-            if "72 hours" in chunk_text:
+            if "72 hours" in chunk_text or "72 timmar" in chunk_text:
                 score += 10
 
-        if "nis2" in question_lower or "cybersecurity act" in question_lower:
-            if "nis2_cybersecurity_law" in filename_lower:
+        if "nis2" in question_lower or "cybersecurity act" in question_lower or "cybersäkerhetslagen" in question_lower:
+            if "nis2" in filename_lower:
                 score += 50
             if "key idea" in section_text:
                 score += 15
@@ -446,7 +408,7 @@ def search_chunks(question, chunks):
             if "practical explanation" in section_text:
                 score += 15
 
-        if "gdpr principles" in question_lower or "gdpr principle" in question_lower or "principles" in question_lower:
+        if "gdpr principles" in question_lower or "gdpr principle" in question_lower or "principles" in question_lower or "principer" in question_lower:
             if "important points" in section_text:
                 score += 25
             if "key idea" in section_text:
@@ -454,7 +416,7 @@ def search_chunks(question, chunks):
             if "gdpr" in chunk_text:
                 score += 10
 
-        if "what is gdpr" in question_lower:
+        if "what is gdpr" in question_lower or "vad är gdpr" in question_lower:
             if "key idea" in section_text:
                 score += 20
             if "main authority" in section_text:
@@ -462,7 +424,7 @@ def search_chunks(question, chunks):
             if "gdpr" in chunk_text:
                 score += 10
 
-        if "attacks against information systems" in question_lower or "information systems" in question_lower or "eu cybercrime" in question_lower:
+        if "attacks against information systems" in question_lower or "information systems" in question_lower or "eu cybercrime" in question_lower or "informationssystem" in question_lower:
             if "key idea" in section_text:
                 score += 20
             if "important points" in section_text:
@@ -478,28 +440,35 @@ def search_chunks(question, chunks):
             if "cybersecurity connection" in section_text:
                 score += 10
 
+        if "dora" in question_lower:
+            if "dora" in filename_lower:
+                score += 50
+            if "key idea" in section_text:
+                score += 15
+            if "incident reporting" in section_text:
+                score += 10
+            if "third-party ict risk" in section_text:
+                score += 10
+
         if score > 0:
             results.append(
-    {
-        "filename": chunk["filename"],
-        "section": chunk["section"],
-        "content": chunk["content"],
-        "score": score,
-        "official_sources": chunk["official_sources"],
-        "source_date": chunk["source_date"],
-        "version_notes": chunk["version_notes"]
-    }
-)
+                {
+                    "filename": chunk["filename"],
+                    "section": chunk["section"],
+                    "content": chunk["content"],
+                    "score": score,
+                    "official_sources": chunk["official_sources"],
+                    "source_date": chunk["source_date"],
+                    "version_notes": chunk["version_notes"]
+                }
+            )
 
     results.sort(key=lambda item: item["score"], reverse=True)
     return results
 
+
 def generate_simple_answer(question, best_match, language="English"):
-    """
-    Generates a simple source-based answer from the best matching chunk.
-    This is not full AI. It uses the matched source section and basic rules
-    to create a clearer answer for the user.
-    """
+    # Generates a simple source-based answer from the best matching chunk.
     question_lower = question.lower()
     use_swedish = language == "Svenska"
 
@@ -798,44 +767,58 @@ def generate_simple_answer(question, best_match, language="English"):
     source_date = best_match.get("source_date", "No source date stored.")
     version_notes = best_match.get("version_notes", "No version notes stored.")
 
-    return f"""
-## Short answer
+    if use_swedish:
+        short_answer_heading = "Kort svar"
+        citation_heading = "Källhänvisning"
+        matched_file_label = "Matchad kunskapsfil"
+        matched_section_label = "Matchad sektion"
+        relevance_score_label = "Relevanspoäng"
+        official_sources_heading = "Officiella källor"
+        metadata_heading = "Källmetadata"
+        source_date_label = "Källdatum"
+        version_notes_label = "Versionsanteckningar"
+        limitation_heading = "Viktig begränsning"
+        limitation_text = (
+            "Detta svar genereras från en förenklad lokal kunskapsbas. "
+            "CyberLex Sweden är ett utbildningsprojekt och ger inte juridisk rådgivning."
+        )
+    else:
+        short_answer_heading = "Short answer"
+        citation_heading = "Citation details"
+        matched_file_label = "Matched knowledge file"
+        matched_section_label = "Matched section"
+        relevance_score_label = "Relevance score"
+        official_sources_heading = "Official source links"
+        metadata_heading = "Source metadata"
+        source_date_label = "Source date"
+        version_notes_label = "Version notes"
+        limitation_heading = "Important limitation"
+        limitation_text = (
+            "This answer is generated from a simplified local knowledge base. "
+            "CyberLex Sweden is an educational project and does not provide legal advice."
+        )
 
-{answer}
-
-## Citation details
-
-**Matched knowledge file:** `{best_match["filename"]}`
-
-**Matched section:** `{best_match["section"]}`
-
-**Relevance score:** `{best_match["score"]}`
-
-## Official source links
-
-{source_lines}
-
-## Source metadata
-
-- Source date: {source_date}
-- Version notes: {version_notes}
-
-## Important limitation
-
-This answer is generated from a simplified local knowledge base. CyberLex Sweden is an educational project and does not provide legal advice.
-"""
-
+    return (
+        f"## {short_answer_heading}\n\n"
+        f"{answer}\n\n"
+        f"## {citation_heading}\n\n"
+        f"**{matched_file_label}:** `{best_match['filename']}`\n\n"
+        f"**{matched_section_label}:** `{best_match['section']}`\n\n"
+        f"**{relevance_score_label}:** `{best_match['score']}`\n\n"
+        f"## {official_sources_heading}\n\n"
+        f"{source_lines}\n\n"
+        f"## {metadata_heading}\n\n"
+        f"- {source_date_label}: {source_date}\n"
+        f"- {version_notes_label}: {version_notes}\n\n"
+        f"## {limitation_heading}\n\n"
+        f"{limitation_text}"
+    )
 
 
 def is_cyberlaw_question(question):
-    """
-    Checks whether the user question belongs to the CyberLex Sweden project scope.
-
-    The project scope is Swedish cybersecurity law, cybercrime law,
-    GDPR, NIS2, incident reporting, data protection, and digital compliance.
-    """
+    # Checks whether the user question belongs to the CyberLex Sweden project scope.
     allowed_keywords = {
-                "vad är",
+        "vad är",
         "svensk cybersäkerhetsrätt",
         "cybersäkerhet",
         "cyberbrott",
@@ -856,7 +839,6 @@ def is_cyberlaw_question(question):
         "finansiell sektor",
         "tredjepartsrisk",
         "ict-risk",
-        "dora",
         "digital operational resilience",
         "digital operational resilience act",
         "ict risk",
@@ -876,7 +858,6 @@ def is_cyberlaw_question(question):
         "nis2",
         "cybersecurity act",
         "cybersäkerhetslagen",
-        "dataintrång",
         "intrusion",
         "unauthorized",
         "access",
@@ -884,7 +865,6 @@ def is_cyberlaw_question(question):
         "malware",
         "privacy",
         "imy",
-        "integritetsskyddsmyndigheten",
         "msb",
         "information system",
         "information systems",
@@ -910,55 +890,59 @@ def is_cyberlaw_question(question):
 
     return False
 
-st.markdown('''
-<style>
-.main-header {
-    padding: 1.5rem;
-    border-radius: 16px;
-    background: linear-gradient(135deg, #0f172a, #1e293b);
-    color: white;
-    margin-bottom: 1.5rem;
-}
 
-.main-header h1 {
-    margin-bottom: 0.2rem;
-    font-size: 2.4rem;
-}
+st.markdown(
+    '''
+    <style>
+    .main-header {
+        padding: 1.5rem;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+        color: white;
+        margin-bottom: 1.5rem;
+    }
 
-.main-header p {
-    font-size: 1.05rem;
-    color: #cbd5e1;
-}
+    .main-header h1 {
+        margin-bottom: 0.2rem;
+        font-size: 2.4rem;
+    }
 
-.info-card {
-    padding: 1rem;
-    border-radius: 12px;
-    border: 1px solid #334155;
-    background-color: #1e293b;
-    color: #e2e8f0;
-    margin-bottom: 1rem;
-}
+    .main-header p {
+        font-size: 1.05rem;
+        color: #cbd5e1;
+    }
 
-.info-card strong {
-    color: #ffffff;
-}
+    .info-card {
+        padding: 1rem;
+        border-radius: 12px;
+        border: 1px solid #334155;
+        background-color: #1e293b;
+        color: #e2e8f0;
+        margin-bottom: 1rem;
+    }
 
-.topic-badge {
-    display: inline-block;
-    padding: 0.35rem 0.65rem;
-    margin: 0.2rem;
-    border-radius: 999px;
-    background-color: #e2e8f0;
-    color: #0f172a;
-    font-size: 0.9rem;
-}
+    .info-card strong {
+        color: #ffffff;
+    }
 
-.small-muted {
-    color: #64748b;
-    font-size: 0.95rem;
-}
-</style>
-''', unsafe_allow_html=True)
+    .topic-badge {
+        display: inline-block;
+        padding: 0.35rem 0.65rem;
+        margin: 0.2rem;
+        border-radius: 999px;
+        background-color: #e2e8f0;
+        color: #0f172a;
+        font-size: 0.9rem;
+    }
+
+    .small-muted {
+        color: #64748b;
+        font-size: 0.95rem;
+    }
+    </style>
+    ''',
+    unsafe_allow_html=True
+)
 
 st.markdown(
     '<div class="main-header"><h1>CyberLex Sweden</h1><p>Source-grounded assistant for Swedish and EU cybersecurity law, digital compliance, and legal-tech research.</p></div>',
@@ -996,11 +980,9 @@ st.warning(
 
 st.divider()
 
+
 def detect_question_language(question):
     # Detects whether the user question is likely Swedish or English.
-    # This is a simple rule-based detector for the prototype.
-    # It does not use an external language detection library.
-
     question_lower = question.lower().strip()
 
     swedish_markers = {
@@ -1018,6 +1000,7 @@ def detect_question_language(question):
         return "Svenska"
 
     return "English"
+
 
 documents, chunks = load_chunks()
 
@@ -1072,9 +1055,7 @@ for doc in documents:
 
 st.header(ask_heading)
 
-question = st.text_input(
-    question_label
-)
+question = st.text_input(question_label)
 
 if language_mode == "Auto" and question:
     language = detect_question_language(question)
@@ -1090,6 +1071,12 @@ if language == "Svenska":
         "CyberLex Sweden täcker bara svensk cybersäkerhetsrätt, cyberbrott, GDPR, NIS2, "
         "incidentrapportering, dataskydd, EU-cybersäkerhet och relaterade digitala compliance-frågor."
     )
+    answer_header = "CyberLex svar"
+    excerpt_header = "Matchat källutdrag"
+    excerpt_caption = "Detta är den exakta källsektion som CyberLex använde för svaret."
+    source_area_label = "Relevant källsektion"
+    other_matches_header = "Andra matchande källsektioner"
+    other_matches_caption = "Detta är ytterligare källsektioner som matchade frågan, sorterade efter relevans."
 else:
     empty_question_text = "Enter a question above to search the CyberLex Sweden knowledge base."
     out_of_scope_text = (
@@ -1097,6 +1084,12 @@ else:
         "CyberLex Sweden only covers Swedish cybersecurity law, cybercrime, GDPR, NIS2, "
         "incident reporting, data protection, EU cybersecurity law, and related digital compliance topics."
     )
+    answer_header = "CyberLex Answer"
+    excerpt_header = "Matched source excerpt"
+    excerpt_caption = "This is the exact source section CyberLex used for the answer."
+    source_area_label = "Relevant source section"
+    other_matches_header = "Other matching source sections"
+    other_matches_caption = "These are additional source sections that matched the question, ranked by relevance."
 
 if question:
     if not is_cyberlaw_question(question):
@@ -1114,27 +1107,32 @@ if question:
                 st.subheader("CyberLex Answer")
                 st.markdown(generate_simple_answer(question, best_match, language))
 
-                st.subheader("Matched source excerpt")
-                st.caption("This is the exact source section CyberLex used for the answer.")
+                st.subheader(matched_excerpt_heading)
+                st.caption(matched_excerpt_caption)
 
                 st.text_area(
-                    "Relevant source section",
+                    relevant_section_label,
                     best_match["content"],
                     height=260
                 )
 
-                st.subheader("Other matching source sections")
-                st.caption("These are additional source sections that matched the question, ranked by relevance.")
+                st.subheader(other_matches_header)
+                st.caption(other_matches_caption)
 
                 for result in search_results[:5]:
-                    st.write(
-                        f"**{result['filename']}** | "
-                        f"Section: **{result['section']}** | "
-                        f"Relevance score: `{result['score']}`"
-                    )
-
+                    if language == "Svenska":
+                        st.write(
+                            f"**{result['filename']}** | "
+                            f"Sektion: **{result['section']}** | "
+                            f"Relevanspoäng: `{result['score']}`"
+                        )
+                    else:
+                        st.write(
+                            f"**{result['filename']}** | "
+                            f"Section: **{result['section']}** | "
+                            f"Relevance score: `{result['score']}`"
+                        )
         else:
             st.error(out_of_scope_text)
-
 else:
     st.write(empty_question_text)
