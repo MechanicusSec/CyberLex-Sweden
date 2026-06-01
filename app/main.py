@@ -510,7 +510,7 @@ def build_source_context(search_results, language="English", max_results=3):
         score_label = "Relevance score"
         excerpt_label = "Short excerpt"
 
-    context_blocks = [f"## {context_heading}\n"]
+    context_blocks = []
 
     for result in search_results[:max_results]:
         excerpt_lines = result["content"].strip().splitlines()
@@ -535,6 +535,117 @@ def build_source_context(search_results, language="English", max_results=3):
         )
 
     return "\n".join(context_blocks)
+
+def generate_practical_explanation(question, search_results, language="English"):
+    # Generates a practical explanation based on the question and matched source sections.
+    # This is still rule-based and source-grounded. It does not use an external AI model.
+
+    question_lower = question.lower()
+    use_swedish = language == "Svenska"
+
+    if use_swedish:
+        heading = "Praktisk förklaring"
+
+        if "personal data breach" in question_lower or "personuppgiftsincident" in question_lower or "72" in question_lower:
+            explanation = (
+                "I praktiken betyder detta att organisationen först måste bedöma om incidenten påverkar personuppgifter. "
+                "Om incidenten sannolikt innebär en risk för registrerade personers rättigheter och friheter kan den behöva anmälas till IMY. "
+                "CyberLex visar därför både rapporteringsregeln och den matchade källsektionen så att användaren kan se vad svaret bygger på."
+            )
+
+        elif ("nis2" in question_lower or "cybersäkerhetslagen" in question_lower) and "gdpr" in question_lower:
+            explanation = (
+                "I praktiken kan en och samma cyberincident behöva bedömas från två håll. "
+                "NIS2 eller den svenska cybersäkerhetslagen handlar om cybersäkerhetsincidenten som sådan, medan GDPR handlar om personuppgifter. "
+                "Om incidenten både påverkar samhällsviktig digital säkerhet och personuppgifter kan flera regelverk bli relevanta samtidigt."
+            )
+
+        elif "nis2" in question_lower or "cybersäkerhetslagen" in question_lower:
+            explanation = (
+                "I praktiken handlar NIS2 och den svenska cybersäkerhetslagen om att vissa organisationer måste arbeta mer systematiskt med cybersäkerhet. "
+                "Det kan omfatta riskhantering, säkerhetsåtgärder och incidentrapportering. "
+                "CyberLex bör därför alltid visa vilka källor som ligger bakom svaret, eftersom kraven kan bero på organisationstyp och sektor."
+            )
+
+        elif "dora" in question_lower or "digital operational resilience" in question_lower:
+            explanation = (
+                "I praktiken riktar sig DORA främst mot den finansiella sektorn och handlar om digital operativ motståndskraft. "
+                "Det betyder att organisationer behöver kunna förebygga, hantera och återhämta sig från ICT-relaterade störningar och cyberincidenter. "
+                "Särskilt viktigt är hantering av ICT-risker, incidenter, tester och tredjepartsleverantörer."
+            )
+
+        elif "dataintrång" in question_lower or "unauthorized access" in question_lower or "obehörig åtkomst" in question_lower:
+            explanation = (
+                "I praktiken handlar dataintrång om obehörig åtkomst till data eller informationssystem. "
+                "Det är därför viktigt att skilja mellan tillåten säkerhetstestning och obehöriga handlingar. "
+                "CyberLex visar källor kopplade till svensk straffrätt för att förklara den juridiska ramen."
+            )
+
+        elif "cyber resilience act" in question_lower or "cyberresiliensakten" in question_lower:
+            explanation = (
+                "I praktiken handlar Cyber Resilience Act om cybersäkerhetskrav för produkter med digitala element. "
+                "Det påverkar hur digitala produkter designas, dokumenteras, uppdateras och hanteras när sårbarheter upptäcks. "
+                "Reglerna är därför relevanta för produktutveckling, leverantörer och digital säkerhet."
+            )
+
+        else:
+            explanation = (
+                "I praktiken bör detta svar läsas tillsammans med de matchade källsektionerna nedan. "
+                "CyberLex visar källkontexten för att göra det tydligt vilka delar av kunskapsbasen som stödjer svaret."
+            )
+
+    else:
+        heading = "Practical explanation"
+
+        if "personal data breach" in question_lower or "breach" in question_lower or "72" in question_lower:
+            explanation = (
+                "In practice, the organization first needs to assess whether the incident affects personal data. "
+                "If the breach is likely to create a risk to individuals' rights and freedoms, it may need to be reported to IMY. "
+                "CyberLex shows the matched source sections so the user can see which source material supports the answer."
+            )
+
+        elif ("nis2" in question_lower or "cybersecurity act" in question_lower) and "gdpr" in question_lower:
+            explanation = (
+                "In practice, the same cyber incident may need to be assessed from two angles. "
+                "NIS2 or the Swedish Cybersecurity Act concerns the cybersecurity incident itself, while GDPR concerns personal data. "
+                "If an incident affects both cybersecurity obligations and personal data, more than one reporting path may be relevant."
+            )
+
+        elif "nis2" in question_lower or "cybersecurity act" in question_lower:
+            explanation = (
+                "In practice, NIS2 and the Swedish Cybersecurity Act focus on more structured cybersecurity duties for covered organizations. "
+                "This can include risk management, security measures, and incident reporting. "
+                "CyberLex should therefore show the supporting sources, because the exact duties may depend on the organization and sector."
+            )
+
+        elif "dora" in question_lower or "digital operational resilience" in question_lower:
+            explanation = (
+                "In practice, DORA mainly applies to the financial sector and focuses on digital operational resilience. "
+                "This means organizations need to prevent, manage, and recover from ICT-related disruptions and cyber incidents. "
+                "ICT risk management, incident handling, resilience testing, and third-party ICT providers are especially important."
+            )
+
+        elif "dataintrång" in question_lower or "unauthorized access" in question_lower or "data intrusion" in question_lower:
+            explanation = (
+                "In practice, dataintrång concerns unauthorized access to data or information systems under Swedish criminal law. "
+                "This makes it important to separate authorized security testing from unauthorized activity. "
+                "CyberLex shows Swedish criminal-law sources to explain the legal context."
+            )
+
+        elif "cyber resilience act" in question_lower or "products with digital elements" in question_lower:
+            explanation = (
+                "In practice, the Cyber Resilience Act concerns cybersecurity requirements for products with digital elements. "
+                "It affects how digital products are designed, documented, updated, and handled when vulnerabilities are found. "
+                "This makes it relevant for product development, suppliers, and digital security."
+            )
+
+        else:
+            explanation = (
+                "In practice, this answer should be read together with the matched source context below. "
+                "CyberLex shows the source context so it is clear which parts of the knowledge base support the answer."
+            )
+
+    return f"## {heading}\n\n{explanation}"
 
 def generate_simple_answer(question, best_match, language="English"):
     # Generates a simple source-based answer from the best matching chunk.
@@ -1261,8 +1372,12 @@ if question:
             else:
                 st.subheader(answer_header)
                 st.markdown(generate_simple_answer(question, best_match, language))
+                st.markdown(generate_practical_explanation(question, search_results, language))
 
-                with st.expander("Relevant source context" if language != "Svenska" else "Relevant källkontext", expanded=False):
+                with st.expander(
+                    "Relevant source context" if language != "Svenska" else "Relevant källkontext",
+                    expanded=False
+                ):
                     st.caption(source_context_caption)
                     st.markdown(build_source_context(search_results, language, max_results=3))
 
