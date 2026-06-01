@@ -62,3 +62,12 @@ data/gdpr_personal_data_breach.md
 data/imy_gdpr_supervision.md
 data/nis2_cybersecurity_law.md
 data/nis2_incident_reporting.md
+## 2026-06-01 - Official source link formatting update
+
+Updated CyberLex Sweden knowledge base source sections to use labeled Markdown links instead of raw URLs.
+
+Changed format from:
+
+```text
+Source name
+https://source-url
