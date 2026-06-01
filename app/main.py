@@ -490,6 +490,51 @@ def search_chunks(question, chunks):
     results.sort(key=lambda item: item["score"], reverse=True)
     return results
 
+def build_source_context(search_results, language="English", max_results=3):
+    # Builds a short source context summary from the top matched source sections.
+    # This helps CyberLex show useful supporting material without using an AI model.
+    # It also removes repeated Markdown headings from excerpts to avoid duplicate titles.
+
+    use_swedish = language == "Svenska"
+
+    if use_swedish:
+        context_heading = "Relevant källkontext"
+        file_label = "Källa"
+        section_label = "Sektion"
+        score_label = "Relevanspoäng"
+        excerpt_label = "Kort utdrag"
+    else:
+        context_heading = "Relevant source context"
+        file_label = "Source"
+        section_label = "Section"
+        score_label = "Relevance score"
+        excerpt_label = "Short excerpt"
+
+    context_blocks = [f"## {context_heading}\n"]
+
+    for result in search_results[:max_results]:
+        excerpt_lines = result["content"].strip().splitlines()
+
+        # Remove the first Markdown heading if the excerpt already starts with one.
+        # Example: "## Reporting to IMY" is removed because the section title is already shown.
+        if excerpt_lines and excerpt_lines[0].strip().startswith("#"):
+            excerpt_lines = excerpt_lines[1:]
+
+        excerpt = "\n".join(excerpt_lines).strip()
+
+        if len(excerpt) > 700:
+            excerpt = excerpt[:700].rsplit(" ", 1)[0] + "..."
+
+        context_blocks.append(
+            f"### {result['section']}\n\n"
+            f"- **{file_label}:** `{result['filename']}`\n"
+            f"- **{section_label}:** `{result['section']}`\n"
+            f"- **{score_label}:** `{result['score']}`\n\n"
+            f"**{excerpt_label}:**\n\n"
+            f"{excerpt}\n"
+        )
+
+    return "\n".join(context_blocks)
 
 def generate_simple_answer(question, best_match, language="English"):
     # Generates a simple source-based answer from the best matching chunk.
@@ -1173,6 +1218,7 @@ else:
     language = "English"
 
 if language == "Svenska":
+    source_context_caption = "Detta visar flera källsektioner som CyberLex använde som stöd för svaret."
     empty_question_text = "Skriv en fråga ovan för att söka i CyberLex Swedens kunskapsbas."
     out_of_scope_text = (
         "Ingen betrodd källa hittades för denna fråga. "
@@ -1186,6 +1232,7 @@ if language == "Svenska":
     other_matches_header = "Andra matchande källsektioner"
     other_matches_caption = "Detta är ytterligare källsektioner som matchade frågan, sorterade efter relevans."
 else:
+    source_context_caption = "This shows several source sections CyberLex used as supporting context for the answer."
     empty_question_text = "Enter a question above to search the CyberLex Sweden knowledge base."
     out_of_scope_text = (
         "No trusted source was found for this question. "
@@ -1215,14 +1262,8 @@ if question:
                 st.subheader(answer_header)
                 st.markdown(generate_simple_answer(question, best_match, language))
 
-                st.subheader(matched_excerpt_heading)
-                st.caption(matched_excerpt_caption)
-
-                st.text_area(
-                    relevant_section_label,
-                    best_match["content"],
-                    height=260
-                )
+                st.caption(source_context_caption)
+                st.markdown(build_source_context(search_results, language, max_results=3))
 
                 st.subheader(other_matches_header)
                 st.caption(other_matches_caption)
