@@ -1262,8 +1262,9 @@ if question:
                 st.subheader(answer_header)
                 st.markdown(generate_simple_answer(question, best_match, language))
 
-                st.caption(source_context_caption)
-                st.markdown(build_source_context(search_results, language, max_results=3))
+                with st.expander("Relevant source context" if language != "Svenska" else "Relevant källkontext", expanded=False):
+                    st.caption(source_context_caption)
+                    st.markdown(build_source_context(search_results, language, max_results=3))
 
                 st.subheader(other_matches_header)
                 st.caption(other_matches_caption)
