@@ -239,3 +239,61 @@ It helps the user inspect supporting source material without overwhelming the ma
 The app also lists other matching source sections ranked by relevance.
 
 This gives extra transparency into how CyberLex searched the local knowledge base.
+
+---
+
+## Example questions panel
+
+CyberLex Sweden includes an example questions panel below the main question input.
+
+The purpose of this panel is to help users understand what kinds of questions the prototype can answer.
+
+The panel is displayed inside a collapsible Streamlit expander.
+
+Example English questions include:
+
+- What is GDPR?
+- What are the GDPR principles?
+- When must a personal data breach be reported?
+- Can an incident need to be reported under both NIS2 and GDPR?
+- What is NIS2?
+- What is DORA?
+- What is dataintrång?
+- What is the Cyber Resilience Act?
+
+In Swedish mode, the app displays Swedish example questions.
+
+This improves usability by making the supported scope more visible to the user.
+
+---
+
+## Limitations
+
+CyberLex Sweden is an educational prototype.
+
+Current limitations include:
+
+- It does not use a full language model yet.
+- It does not browse the web live.
+- It only answers from local Markdown sources.
+- It only covers selected topics.
+- It uses rule-based answers, explanations, attention levels, and checklists.
+- It does not provide legal advice.
+- Source material must be manually reviewed and updated.
+
+---
+
+## Future development
+
+Future improvements may include:
+
+- better Swedish source summaries
+- more Swedish and EU legal sources
+- vector search with ChromaDB or FAISS
+- AI-generated answers using a RAG design
+- stronger citation formatting
+- source update reminders
+- public deployment
+- improved visual design
+- stronger legal disclaimer and Terms of Use
+- clickable example questions using Streamlit session state
