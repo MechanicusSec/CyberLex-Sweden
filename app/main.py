@@ -790,6 +790,117 @@ def generate_assessment_checklist(question, search_results, language="English"):
 
     return checklist_lines
 
+def generate_attention_level(question, search_results, language="English"):
+    # Generates a simple CyberLex attention level.
+    # This is not a legal risk rating. It is an educational signal based on topic and matched sources.
+
+    question_lower = question.lower()
+    use_swedish = language == "Svenska"
+
+    best_score = 0
+    if search_results:
+        best_score = search_results[0].get("score", 0)
+
+    high_terms = [
+        "personal data breach",
+        "personuppgiftsincident",
+        "72",
+        "incident reporting",
+        "incidentrapportering",
+        "reported",
+        "rapportera",
+        "rapporteras",
+        "nis2",
+        "cybersecurity act",
+        "cybersäkerhetslagen",
+        "dora"
+    ]
+
+    medium_terms = [
+        "gdpr",
+        "imy",
+        "dataintrång",
+        "unauthorized access",
+        "obehörig åtkomst",
+        "cyber resilience act",
+        "cyberresiliensakten",
+        "products with digital elements"
+    ]
+
+    if any(term in question_lower for term in high_terms) or best_score >= 180:
+        level = "High"
+        if use_swedish:
+            reason = (
+                "Frågan kan beröra incidentrapportering, tidsfrister, personuppgifter, "
+                "cybersäkerhetskrav eller regler som kräver noggrann bedömning."
+            )
+        else:
+            reason = (
+                "The question may involve incident reporting, timelines, personal data, "
+                "cybersecurity duties, or rules that require careful assessment."
+            )
+
+    elif any(term in question_lower for term in medium_terms) or best_score >= 100:
+        level = "Medium"
+        if use_swedish:
+            reason = (
+                "Frågan verkar vara relevant för dataskydd, cybersäkerhetsrätt eller digital compliance, "
+                "men den verkar inte nödvändigtvis vara en akut incidentfråga."
+            )
+        else:
+            reason = (
+                "The question appears relevant to data protection, cybersecurity law, or digital compliance, "
+                "but does not necessarily appear to be an urgent incident issue."
+            )
+
+    else:
+        level = "Normal"
+        if use_swedish:
+            reason = (
+                "Frågan verkar vara en allmän informationsfråga inom CyberLex Swedens kunskapsområde."
+            )
+        else:
+            reason = (
+                "The question appears to be a general information question within the CyberLex Sweden knowledge area."
+            )
+
+    if use_swedish:
+        heading = "CyberLex uppmärksamhetsnivå"
+        level_label = "Nivå"
+        reason_label = "Motivering"
+
+        if level == "High":
+            translated_level = "Hög"
+        elif level == "Medium":
+            translated_level = "Medel"
+        else:
+            translated_level = "Normal"
+
+        limitation = (
+            "Detta är inte en juridisk riskklassning. Det är en pedagogisk signal baserad på frågans ämne "
+            "och matchade källsektioner."
+        )
+
+        return (
+            f"## {heading}\n\n"
+            f"**{level_label}:** {translated_level}\n\n"
+            f"**{reason_label}:** {reason}\n\n"
+            f"*{limitation}*"
+        )
+
+    heading = "CyberLex attention level"
+    limitation = (
+        "This is not a legal risk rating. It is an educational signal based on the question topic "
+        "and matched source sections."
+    )
+
+    return (
+        f"## {heading}\n\n"
+        f"**Level:** {level}\n\n"
+        f"**Reason:** {reason}\n\n"
+        f"*{limitation}*"
+    )
+
 def generate_simple_answer(question, best_match, language="English"):
     # Generates a simple source-based answer from the best matching chunk.
     question_lower = question.lower()
@@ -1514,14 +1625,15 @@ if question:
                 st.error(out_of_scope_text)
             else:
                 st.subheader(answer_header)
-                st.markdown(generate_simple_answer(question, best_match, language))
-                st.markdown(generate_practical_explanation(question, search_results, language))
+            st.markdown(generate_simple_answer(question, best_match, language))
+            st.markdown(generate_attention_level(question, search_results, language))
+            st.markdown(generate_practical_explanation(question, search_results, language))
 
-                with st.expander(
-                    "CyberLex assessment checklist" if language != "Svenska" else "CyberLex bedömningschecklista",
-                    expanded=False
-                ):
-                    st.markdown(generate_assessment_checklist(question, search_results, language))
+            with st.expander(
+                "CyberLex assessment checklist" if language != "Svenska" else "CyberLex bedömningschecklista",
+                expanded=False
+            ):
+                st.markdown(generate_assessment_checklist(question, search_results, language))
 
                 with st.expander(
                     "Relevant source context" if language != "Svenska" else "Relevant källkontext",
