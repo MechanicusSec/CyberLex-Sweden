@@ -501,7 +501,6 @@ def generate_simple_answer(question, best_match, language="English"):
     to create a clearer answer for the user.
     """
     question_lower = question.lower()
-    section_lower = best_match["section"].lower()
     use_swedish = language == "Svenska"
 
     if (
@@ -571,17 +570,22 @@ def generate_simple_answer(question, best_match, language="English"):
             )
 
     elif (
-        ("nis2" in question_lower or "nis" in question_lower or "cybersecurity act" in question_lower)
+        ("nis2" in question_lower or "nis" in question_lower or "cybersecurity act" in question_lower or "cybersäkerhetslagen" in question_lower)
         and "gdpr" in question_lower
-        and ("incident" in question_lower or "reported" in question_lower or "report" in question_lower)
+        and ("incident" in question_lower or "reported" in question_lower or "report" in question_lower or "rapporteras" in question_lower or "rapportera" in question_lower)
     ):
-        answer = (
-            "Yes, some cybersecurity incidents may need to be considered under both NIS2 and GDPR. "
-            "NIS2 incident reporting and GDPR personal data breach notification are different legal areas, "
-            "but they can overlap if a cybersecurity incident also affects personal data. In that situation, "
-            "the incident may need to be reported under cybersecurity incident reporting rules and also assessed "
-            "as a personal data breach under GDPR."
-        )
+        if use_swedish:
+            answer = (
+                "Ja, vissa cybersäkerhetsincidenter kan behöva bedömas enligt både NIS2 och GDPR. "
+                "NIS2-incidentrapportering och GDPR-anmälan av personuppgiftsincidenter är olika rättsområden, "
+                "men de kan överlappa om en cybersäkerhetsincident även påverkar personuppgifter."
+            )
+        else:
+            answer = (
+                "Yes, some cybersecurity incidents may need to be considered under both NIS2 and GDPR. "
+                "NIS2 incident reporting and GDPR personal data breach notification are different legal areas, "
+                "but they can overlap if a cybersecurity incident also affects personal data."
+            )
 
     elif (
         "nis2 incident reporting" in question_lower
@@ -593,55 +597,121 @@ def generate_simple_answer(question, best_match, language="English"):
         or "report cybersecurity incident" in question_lower
         or "reported under nis2" in question_lower
         or "reported under nis" in question_lower
+        or "nis2-incidentrapportering" in question_lower
+        or "incidentrapportering enligt nis2" in question_lower
+        or "incidentrapportering enligt cybersäkerhetslagen" in question_lower
+        or "rapportera cybersäkerhetsincident" in question_lower
     ):
-        answer = (
-            "NIS2 incident reporting in Sweden is handled through the Swedish Cybersecurity Act. "
-            "Covered organizations may need to report significant cybersecurity incidents according to reporting criteria, "
-            "procedures, and time limits. Some incidents may also need separate GDPR reporting if personal data is affected."
-        )
-
-    elif "personal data breach" in question_lower or "breach" in question_lower:
-        if "reporting to imy" in section_lower:
+        if use_swedish:
             answer = (
-                "A personal data breach may need to be reported to IMY, "
-                "the Swedish Authority for Privacy Protection. If notification is required, "
-                "the breach should normally be reported within 72 hours after the organization becomes aware of it."
-            )
-        elif "main authority" in section_lower:
-            answer = (
-                "The Swedish authority connected to GDPR and personal data protection is IMY, "
-                "Integritetsskyddsmyndigheten."
+                "NIS2-incidentrapportering i Sverige är kopplad till cybersäkerhetslagen. "
+                "Organisationer som omfattas kan behöva rapportera betydande cybersäkerhetsincidenter enligt "
+                "särskilda kriterier, rutiner och tidsfrister. Vissa incidenter kan också behöva bedömas enligt GDPR "
+                "om personuppgifter påverkas."
             )
         else:
             answer = (
-                "This question is related to personal data breaches under GDPR. "
-                "The matched source section should be reviewed for the exact project information."
+                "NIS2 incident reporting in Sweden is handled through the Swedish Cybersecurity Act. "
+                "Covered organizations may need to report significant cybersecurity incidents according to reporting criteria, "
+                "procedures, and time limits. Some incidents may also need separate GDPR reporting if personal data is affected."
             )
 
-    elif "gdpr principles" in question_lower or "gdpr principle" in question_lower or "principles" in question_lower:
-        answer = (
-            "GDPR includes core principles such as lawfulness, fairness and transparency, "
-            "purpose limitation, data minimisation, accuracy, storage limitation, integrity and confidentiality, "
-            "and accountability. These principles guide how organizations should process and protect personal data."
-        )
+    elif (
+        "personal data breach" in question_lower
+        or "breach reported" in question_lower
+        or "data breach reported" in question_lower
+        or "72-hour" in question_lower
+        or "72 hour" in question_lower
+        or "breach notification" in question_lower
+        or "personuppgiftsincident" in question_lower
+        or "när måste en personuppgiftsincident rapporteras" in question_lower
+        or "när ska en personuppgiftsincident anmälas" in question_lower
+        or "rapportera personuppgiftsincident" in question_lower
+        or "72 timmar" in question_lower
+        or "breach" in question_lower
+    ):
+        if use_swedish:
+            answer = (
+                "En personuppgiftsincident kan behöva rapporteras till IMY. "
+                "Organisationen måste bedöma om incidenten sannolikt innebär en risk för fysiska personers rättigheter och friheter. "
+                "Om anmälan krävs ska den normalt göras inom 72 timmar efter att organisationen blev medveten om incidenten."
+            )
+        else:
+            answer = (
+                "A personal data breach may need to be reported to IMY, the Swedish Authority for Privacy Protection. "
+                "If notification is required, the breach should normally be reported within 72 hours after the organization becomes aware of it."
+            )
 
-    elif "what is gdpr" in question_lower or question_lower.strip() == "gdpr":
-        answer = (
-            "GDPR is the General Data Protection Regulation. It is an EU regulation that controls how personal data "
-            "may be processed and protected. In Sweden, IMY supervises GDPR and personal data protection."
-        )
+    elif (
+        "gdpr principles" in question_lower
+        or "gdpr principle" in question_lower
+        or "what are the gdpr principles" in question_lower
+        or "principles" in question_lower
+        or "gdpr-principer" in question_lower
+        or "gdpr principer" in question_lower
+        or "vilka är gdpr-principerna" in question_lower
+        or "vilka är gdpr principerna" in question_lower
+    ):
+        if use_swedish:
+            answer = (
+                "GDPR innehåller grundläggande principer för behandling av personuppgifter. "
+                "De omfattar bland annat laglighet, korrekthet och transparens, ändamålsbegränsning, "
+                "uppgiftsminimering, riktighet, lagringsminimering, integritet och konfidentialitet samt ansvarsskyldighet."
+            )
+        else:
+            answer = (
+                "GDPR includes core principles such as lawfulness, fairness and transparency, "
+                "purpose limitation, data minimisation, accuracy, storage limitation, integrity and confidentiality, "
+                "and accountability."
+            )
+
+    elif (
+        question_lower.strip() == "gdpr"
+        or "what is gdpr" in question_lower
+        or "vad är gdpr" in question_lower
+    ):
+        if use_swedish:
+            answer = (
+                "GDPR är EU:s dataskyddsförordning. Den reglerar hur personuppgifter får behandlas "
+                "och ställer krav på bland annat laglighet, transparens, säkerhet och ansvarsskyldighet. "
+                "I Sverige är IMY den ansvariga tillsynsmyndigheten för GDPR och dataskydd."
+            )
+        else:
+            answer = (
+                "GDPR is the General Data Protection Regulation. It is an EU regulation that controls how personal data "
+                "may be processed and protected. In Sweden, IMY supervises GDPR and personal data protection."
+            )
 
     elif "gdpr" in question_lower or "authority" in question_lower:
-        answer = (
-            "In Sweden, GDPR and personal data protection are handled by IMY, "
-            "Integritetsskyddsmyndigheten, the Swedish Authority for Privacy Protection."
-        )
+        if use_swedish:
+            answer = (
+                "I Sverige är GDPR och dataskydd kopplat till IMY, Integritetsskyddsmyndigheten. "
+                "IMY är tillsynsmyndighet för dataskydd och personuppgiftshantering."
+            )
+        else:
+            answer = (
+                "In Sweden, GDPR and personal data protection are handled by IMY, "
+                "Integritetsskyddsmyndigheten, the Swedish Authority for Privacy Protection."
+            )
 
-    elif "nis2" in question_lower or "cybersecurity act" in question_lower:
-        answer = (
-            "NIS2 is an EU cybersecurity directive. In Sweden, it is connected to the Swedish Cybersecurity Act. "
-            "The rules focus on cybersecurity risk management, security measures, and incident reporting for covered organizations."
-        )
+    elif (
+        "nis2" in question_lower
+        or "what is nis2" in question_lower
+        or "vad är nis2" in question_lower
+        or "cybersecurity act" in question_lower
+        or "cybersäkerhetslagen" in question_lower
+    ):
+        if use_swedish:
+            answer = (
+                "NIS2 är ett EU-direktiv om cybersäkerhet. Syftet är att skapa en hög gemensam nivå "
+                "av cybersäkerhet inom EU. I Sverige kopplas NIS2 till cybersäkerhetslagen och krav på "
+                "riskhantering, säkerhetsåtgärder och incidentrapportering för berörda organisationer."
+            )
+        else:
+            answer = (
+                "NIS2 is an EU cybersecurity directive. In Sweden, it is connected to the Swedish Cybersecurity Act. "
+                "The rules focus on cybersecurity risk management, security measures, and incident reporting for covered organizations."
+            )
 
     elif (
         "vad är dataintrång" in question_lower
@@ -725,6 +795,9 @@ def generate_simple_answer(question, best_match, language="English"):
     if not source_lines:
         source_lines = "- No official source URL stored for this document yet."
 
+    source_date = best_match.get("source_date", "No source date stored.")
+    version_notes = best_match.get("version_notes", "No version notes stored.")
+
     return f"""
 ## Short answer
 
@@ -738,19 +811,21 @@ def generate_simple_answer(question, best_match, language="English"):
 
 **Relevance score:** `{best_match["score"]}`
 
-### Official source links
+## Official source links
 
 {source_lines}
 
-### Source metadata
+## Source metadata
 
-- Source date: {best_match["source_date"]}
-- Version notes: {best_match["version_notes"]}
+- Source date: {source_date}
+- Version notes: {version_notes}
 
 ## Important limitation
 
 This answer is generated from a simplified local knowledge base. CyberLex Sweden is an educational project and does not provide legal advice.
 """
+
+
 
 def is_cyberlaw_question(question):
     """
@@ -835,28 +910,27 @@ def is_cyberlaw_question(question):
 
     return False
 
-st.markdown(
-    """
-    <style>
-    .main-header {
-        padding: 1.5rem;
-        border-radius: 16px;
-        background: linear-gradient(135deg, #0f172a, #1e293b);
-        color: white;
-        margin-bottom: 1.5rem;
-    }
+st.markdown('''
+<style>
+.main-header {
+    padding: 1.5rem;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    color: white;
+    margin-bottom: 1.5rem;
+}
 
-    .main-header h1 {
-        margin-bottom: 0.2rem;
-        font-size: 2.4rem;
-    }
+.main-header h1 {
+    margin-bottom: 0.2rem;
+    font-size: 2.4rem;
+}
 
-    .main-header p {
-        font-size: 1.05rem;
-        color: #cbd5e1;
-    }
+.main-header p {
+    font-size: 1.05rem;
+    color: #cbd5e1;
+}
 
-    .info-card {
+.info-card {
     padding: 1rem;
     border-radius: 12px;
     border: 1px solid #334155;
@@ -869,59 +943,49 @@ st.markdown(
     color: #ffffff;
 }
 
-    .topic-badge {
-        display: inline-block;
-        padding: 0.35rem 0.65rem;
-        margin: 0.2rem;
-        border-radius: 999px;
-        background-color: #e2e8f0;
-        color: #0f172a;
-        font-size: 0.9rem;
-    }
+.topic-badge {
+    display: inline-block;
+    padding: 0.35rem 0.65rem;
+    margin: 0.2rem;
+    border-radius: 999px;
+    background-color: #e2e8f0;
+    color: #0f172a;
+    font-size: 0.9rem;
+}
 
-    .small-muted {
-        color: #64748b;
-        font-size: 0.95rem;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+.small-muted {
+    color: #64748b;
+    font-size: 0.95rem;
+}
+</style>
+''', unsafe_allow_html=True)
+
 st.markdown(
-    """
-    <div class="main-header">
-        <h1>💻 CyberLex Sweden</h1>
-        <p>Source-grounded assistant for Swedish and EU cybersecurity law, digital compliance, and legal-tech research.</p>
-    </div>
-    """,
+    '<div class="main-header"><h1>CyberLex Sweden</h1><p>Source-grounded assistant for Swedish and EU cybersecurity law, digital compliance, and legal-tech research.</p></div>',
     unsafe_allow_html=True
 )
 
 st.markdown(
-    """
-    <div class="info-card">
-        <strong>What CyberLex does:</strong><br>
-        CyberLex Sweden searches a trusted local knowledge base and gives source-based answers with citation details,
-        official source links, source metadata, and matched source excerpts.
-    </div>
-    """,
+    '<div class="info-card">'
+    '<strong>What CyberLex does:</strong><br>'
+    'CyberLex Sweden searches a trusted local knowledge base and gives source-based answers with citation details, '
+    'official source links, source metadata, and matched source excerpts.'
+    '</div>',
     unsafe_allow_html=True
 )
 
 st.markdown("### Supported topic areas")
 
 st.markdown(
-    """
-    <span class="topic-badge">GDPR</span>
-    <span class="topic-badge">IMY</span>
-    <span class="topic-badge">Personal data breaches</span>
-    <span class="topic-badge">NIS2</span>
-    <span class="topic-badge">Swedish Cybersecurity Act</span>
-    <span class="topic-badge">Dataintrång</span>
-    <span class="topic-badge">EU Cyber Resilience Act</span>
-    <span class="topic-badge">DORA</span>
-    <span class="topic-badge">Digital compliance</span>
-    """,
+    '<span class="topic-badge">GDPR</span>'
+    '<span class="topic-badge">IMY</span>'
+    '<span class="topic-badge">Personal data breaches</span>'
+    '<span class="topic-badge">NIS2</span>'
+    '<span class="topic-badge">Swedish Cybersecurity Act</span>'
+    '<span class="topic-badge">Dataintrång</span>'
+    '<span class="topic-badge">EU Cyber Resilience Act</span>'
+    '<span class="topic-badge">DORA</span>'
+    '<span class="topic-badge">Digital compliance</span>',
     unsafe_allow_html=True
 )
 
@@ -933,12 +997,10 @@ st.warning(
 st.divider()
 
 def detect_question_language(question):
-    """
-    Detects whether the user question is likely Swedish or English.
+    # Detects whether the user question is likely Swedish or English.
+    # This is a simple rule-based detector for the prototype.
+    # It does not use an external language detection library.
 
-    This is a simple rule-based detector for the prototype.
-    It does not use an external language detection library.
-    """
     question_lower = question.lower().strip()
 
     swedish_markers = {
@@ -989,15 +1051,13 @@ st.sidebar.markdown("---")
 st.sidebar.subheader("Project resources")
 
 st.sidebar.markdown(
-    """
-    - `docs/terms_of_use.md`
-    - `docs/privacy_policy.md`
-    - `docs/legal_disclaimer.md`
-    - `docs/source_policy.md`
-    - `docs/source_update_history.md`
-    - `docs/product_roadmap.md`
-    - `docs/technical_design.md`
-    """
+    "- `docs/terms_of_use.md`\n"
+    "- `docs/privacy_policy.md`\n"
+    "- `docs/legal_disclaimer.md`\n"
+    "- `docs/source_policy.md`\n"
+    "- `docs/source_update_history.md`\n"
+    "- `docs/product_roadmap.md`\n"
+    "- `docs/technical_design.md`"
 )
 
 st.sidebar.markdown("---")
