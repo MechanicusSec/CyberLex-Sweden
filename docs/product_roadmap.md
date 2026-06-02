@@ -24,6 +24,7 @@ The current prototype includes:
 - Official source links with readable Markdown labels
 - Source date and version notes
 - Bilingual interface support for English and Swedish
+- Styled other matching source section cards
 - Auto language detection for user questions
 - Styled assessment checklist card
 - Rule-based short answers
@@ -69,6 +70,7 @@ Build a working local prototype that proves the core idea.
 - Source routing
 - Styled assessment checklist card
 - Simple answer generation
+- Styled other matching source section cards
 - Official source links
 - Source metadata
 - Citation details
@@ -250,6 +252,7 @@ Make CyberLex Sweden look more professional and easier to use.
 - Prototype version label
 - Future AI mode sidebar note
 - Styled important limitation card
+- Styled other matching source section cards
 - Styled citation details card
 - Styled assessment checklist card
 - Styled relevant source context cards

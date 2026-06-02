@@ -321,9 +321,21 @@ This improves transparency because users can see which source sections CyberLex 
 
 ### 10. Other matching source sections
 
-The app also lists other matching source sections ranked by relevance.
+CyberLex also lists other matching source sections ranked by relevance.
 
-This gives extra transparency into how CyberLex searched the local knowledge base.
+These are additional source sections found by the local search and ranking logic.
+
+Each other matching source section shows:
+
+- source file
+- matched section
+- relevance score
+
+The other matching source sections are displayed as styled match cards in the Streamlit interface.
+
+This makes the additional matches easier to scan and keeps the answer layout consistent with the citation, metadata, source context, checklist, and explanation cards.
+
+This feature improves transparency because users can see not only the best match, but also other source sections that CyberLex considered relevant.
 
 ---
 
