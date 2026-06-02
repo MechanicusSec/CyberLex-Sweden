@@ -1315,9 +1315,13 @@ def generate_simple_answer(question, best_match, language="English"):
         f'</div>\n\n'
         f"## {official_sources_heading}\n\n"
         f"{source_lines}\n\n"
-        f"## {metadata_heading}\n\n"
-        f"- {source_date_label}: {source_date}\n"
-        f"- {version_notes_label}: {version_notes}\n\n"
+        f'<div class="metadata-card">'
+        f'<div class="metadata-card-title">{metadata_heading}</div>'
+        f'<div class="metadata-row"><strong>{source_date_label}:</strong> '
+        f'<span class="metadata-code">{source_date}</span></div>'
+        f'<div class="metadata-row"><strong>{version_notes_label}:</strong> '
+        f'<span class="metadata-code">{version_notes}</span></div>'
+        f'</div>\n\n'
         f"## {limitation_heading}\n\n"
         f"{limitation_text}"
     )
@@ -1524,11 +1528,45 @@ st.markdown(
         font-size: 0.9rem;
     }
 
-    .citation-note {
+        .citation-note {
         color: #9ca3af;
         font-size: 0.9rem;
         font-style: italic;
         margin-top: 0.75rem;
+    }
+
+    .metadata-card {
+        padding: 1rem;
+        border-radius: 12px;
+        border: 1px solid #334155;
+        background-color: #0f172a;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .metadata-card-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 0.75rem;
+    }
+
+    .metadata-row {
+        margin-bottom: 0.45rem;
+        color: #d1d5db;
+    }
+
+    .metadata-row strong {
+        color: #ffffff;
+    }
+
+    .metadata-code {
+        background-color: #111827;
+        color: #93c5fd;
+        padding: 0.15rem 0.35rem;
+        border-radius: 6px;
+        font-family: monospace;
+        font-size: 0.9rem;
     }
     </style>
     ''',
