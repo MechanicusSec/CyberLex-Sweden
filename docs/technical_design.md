@@ -161,6 +161,10 @@ The source match confidence converts that numeric score into a readable label:
 
 This does not mean legal certainty. It only explains how strong the local source match is based on the current search logic.
 
+The citation details are displayed as a styled card in the Streamlit interface.
+
+The citation card shows the matched file, matched section, relevance score, source match confidence, and a short explanation of the confidence level.
+
 This helps the user understand which source section CyberLex used first and how strong the match appears to be.
 
 ### 3. Official source links

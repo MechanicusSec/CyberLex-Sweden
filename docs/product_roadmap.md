@@ -35,6 +35,7 @@ The current prototype includes:
 - Legal limitation notice
 - Refusal behavior for out-of-scope questions
 - Source match confidence note
+- Styled citation details card
 
 The current system does not yet use vector search, a full language model, public deployment, or a production database.
 
@@ -58,6 +59,7 @@ Build a working local prototype that proves the core idea.
 - Local Markdown knowledge base
 - Source-based search
 - Chunk-based search
+- Styled citation details card
 - Source routing
 - Simple answer generation
 - Official source links
@@ -237,6 +239,7 @@ Make CyberLex Sweden look more professional and easier to use.
 - Sidebar project resources
 - Prototype version label
 - Future AI mode sidebar note
+- Styled citation details card
 - Clickable example questions
 - Collapsible assessment checklist
 - Collapsible source context
