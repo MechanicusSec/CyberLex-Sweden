@@ -791,9 +791,13 @@ def generate_assessment_checklist(question, search_results, language="English"):
                 "Use legal or authority-based guidance for important decisions."
             ]
 
-    checklist_lines = "\n".join([f"- {item}" for item in items])
+        checklist_items = "".join([f"<li>{item}</li>" for item in items])
 
-    return checklist_lines
+        return (
+            f'<div class="checklist-card">'
+            f'<ul>{checklist_items}</ul>'
+            f'</div>'
+        )
 
 def generate_attention_level(question, search_results, language="English"):
     # Generates a simple CyberLex attention level.
@@ -1642,10 +1646,30 @@ st.markdown(
         margin-bottom: 0.75rem;
     }
 
-    .practical-card-text {
+        .practical-card-text {
         color: #d1d5db;
         font-size: 0.95rem;
         line-height: 1.6;
+    }
+
+    .checklist-card {
+        padding: 1rem;
+        border-radius: 12px;
+        border: 1px solid #334155;
+        background-color: #0f172a;
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .checklist-card ul {
+        margin-bottom: 0;
+        padding-left: 1.25rem;
+    }
+
+    .checklist-card li {
+        color: #d1d5db;
+        margin-bottom: 0.45rem;
+        line-height: 1.5;
     }
     </style>
     ''',
@@ -2000,7 +2024,10 @@ if question:
                     "CyberLex assessment checklist" if language != "Svenska" else "CyberLex bedömningschecklista",
                     expanded=False
                 ):
-                    st.markdown(generate_assessment_checklist(question, search_results, language))
+                    st.markdown(
+                        generate_assessment_checklist(question, search_results, language),
+                        unsafe_allow_html=True
+                )
 
                 with st.expander(
                     "Relevant source context" if language != "Svenska" else "Relevant källkontext",
