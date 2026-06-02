@@ -202,9 +202,22 @@ The metadata does not guarantee that a source is still legally current. It is a 
 
 ### 5. Important limitation
 
-CyberLex Sweden always displays a limitation message.
+CyberLex displays an important limitation notice for each generated answer.
 
-The app makes clear that it is an educational prototype and does not provide legal advice.
+The limitation explains that CyberLex Sweden is an educational prototype and does not provide legal advice.
+
+The limitation is displayed as a styled warning card in the Streamlit interface.
+
+This makes the limitation more visible and separates it from the answer text.
+
+The limitation card helps users understand that:
+
+- the answer is generated from a simplified local knowledge base
+- the project is educational
+- the answer should not replace legal advice
+- official authority guidance should be checked for important decisions
+
+This is an important safety feature because CyberLex Sweden deals with legal and compliance-related topics.
 
 ### 6. CyberLex attention level
 

@@ -19,6 +19,7 @@ The current prototype includes:
 - Local Markdown knowledge base in `data/`
 - Source-based search and chunk ranking
 - Source routing for clear topic questions
+- Styled important limitation card
 - Official source links with readable Markdown labels
 - Source date and version notes
 - Bilingual interface support for English and Swedish
@@ -71,6 +72,7 @@ Build a working local prototype that proves the core idea.
 - Assessment checklists
 - Styled attention level card
 - Clickable example questions
+- Styled important limitation card
 - Future AI mode sidebar note
 - Prototype version label
 - Source update history
@@ -242,6 +244,7 @@ Make CyberLex Sweden look more professional and easier to use.
 - Sidebar project resources
 - Prototype version label
 - Future AI mode sidebar note
+- Styled important limitation card
 - Styled citation details card
 - Styled official source links card
 - Clickable example questions
