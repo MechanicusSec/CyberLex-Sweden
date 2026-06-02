@@ -929,28 +929,32 @@ def generate_source_confidence(score, language="English"):
 
     if use_swedish:
         if level == "Very strong":
-            level = "Mycket stark"
-            reason = "Frågan matchar den valda källsektionen tydligt."
-        elif level == "Strong":
-            level = "Stark"
-            reason = "Frågan har en tydlig matchning i den lokala kunskapsbasen."
-        elif level == "Moderate":
-            level = "Måttlig"
-            reason = "Frågan har en relevant matchning, men användaren bör granska källkontexten."
-        else:
-            level = "Begränsad"
-            reason = "Matchningen är svag och bör behandlas försiktigt."
+            return {
+                "level": "Mycket stark",
+                "reason": "Frågan matchar den valda källsektionen tydligt."
+            }
 
-        return (
-            f"**Källmatchning:** `{level}`\n\n"
-            f"*{reason} Detta är inte juridisk säkerhet, utan bara en signal om hur stark källmatchningen är.*"
-        )
+        if level == "Strong":
+            return {
+                "level": "Stark",
+                "reason": "Frågan har en tydlig matchning i den lokala kunskapsbasen."
+            }
 
-    return (
-        f"**Source match confidence:** `{level}`\n\n"
-        f"*{reason} This is not legal certainty. It only describes how strong the source match is.*"
-    )
+        if level == "Moderate":
+            return {
+                "level": "Måttlig",
+                "reason": "Frågan har en relevant matchning, men användaren bör granska källkontexten."
+            }
 
+        return {
+            "level": "Begränsad",
+            "reason": "Matchningen är svag och bör behandlas försiktigt."
+        }
+
+    return {
+        "level": level,
+        "reason": reason
+    }
 
 def generate_simple_answer(question, best_match, language="English"):
     # Generates a simple source-based answer from the best matching chunk.
@@ -1291,14 +1295,24 @@ def generate_simple_answer(question, best_match, language="English"):
             "CyberLex Sweden is an educational project and does not provide legal advice."
         )
 
+    confidence = generate_source_confidence(best_match["score"], language)
+
     return (
         f"## {short_answer_heading}\n\n"
         f"{answer}\n\n"
-        f"## {citation_heading}\n\n"
-        f"**{matched_file_label}:** `{best_match['filename']}`\n\n"
-        f"**{matched_section_label}:** `{best_match['section']}`\n\n"
-        f"**{relevance_score_label}:** `{best_match['score']}`\n\n"
-        f"{generate_source_confidence(best_match['score'], language)}\n\n"
+        f'<div class="citation-card">'
+        f'<div class="citation-card-title">{citation_heading}</div>'
+        f'<div class="citation-row"><strong>{matched_file_label}:</strong> '
+        f'<span class="citation-code">{best_match["filename"]}</span></div>'
+        f'<div class="citation-row"><strong>{matched_section_label}:</strong> '
+        f'<span class="citation-code">{best_match["section"]}</span></div>'
+        f'<div class="citation-row"><strong>{relevance_score_label}:</strong> '
+        f'<span class="citation-code">{best_match["score"]}</span></div>'
+        f'<div class="citation-row"><strong>{"Källmatchning" if use_swedish else "Source match confidence"}:</strong> '
+        f'<span class="citation-code">{confidence["level"]}</span></div>'
+        f'<div class="citation-note">{confidence["reason"]} '
+        f'{"Detta är inte juridisk säkerhet. Det beskriver bara hur stark källmatchningen är." if use_swedish else "This is not legal certainty. It only describes how strong the source match is."}</div>'
+        f'</div>\n\n'
         f"## {official_sources_heading}\n\n"
         f"{source_lines}\n\n"
         f"## {metadata_heading}\n\n"
@@ -1474,6 +1488,47 @@ st.markdown(
         color: #9ca3af;
         font-size: 0.9rem;
         font-style: italic;
+    }
+
+    .citation-card {
+        padding: 1rem;
+        border-radius: 12px;
+        border: 1px solid #334155;
+        background-color: #0f172a;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .citation-card-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 0.75rem;
+    }
+
+    .citation-row {
+        margin-bottom: 0.45rem;
+        color: #d1d5db;
+    }
+
+    .citation-row strong {
+        color: #ffffff;
+    }
+
+    .citation-code {
+        background-color: #111827;
+        color: #86efac;
+        padding: 0.15rem 0.35rem;
+        border-radius: 6px;
+        font-family: monospace;
+        font-size: 0.9rem;
+    }
+
+    .citation-note {
+        color: #9ca3af;
+        font-size: 0.9rem;
+        font-style: italic;
+        margin-top: 0.75rem;
     }
     </style>
     ''',
@@ -1811,7 +1866,10 @@ if question:
                 st.error(out_of_scope_text)
             else:
                 st.subheader(answer_header)
-                st.markdown(generate_simple_answer(question, best_match, language))
+                st.markdown(
+                    generate_simple_answer(question, best_match, language),
+                    unsafe_allow_html=True
+                )
                 st.markdown(
                     generate_attention_level(question, search_results, language),
                     unsafe_allow_html=True
