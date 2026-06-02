@@ -11,6 +11,7 @@ DATA_DIR = Path("data")
 
 
 def clean_words(text):
+
     # Converts text into simple searchable lowercase words.
     punctuation = ",.?!:;()[]{}\"'`"
     text = text.lower()
@@ -19,6 +20,165 @@ def clean_words(text):
         text = text.replace(mark, " ")
 
     return text.split()
+
+def expand_question_terms(question):
+    """
+    Expands a user question with related cybersecurity and legal terms.
+
+    This improves local search by helping CyberLex match questions even when
+    the user does not use the exact same words as the source files.
+
+    Example:
+    "ransomware attack" can also search for incident, breach, reporting,
+    security measures, and personal data.
+    """
+
+    question_lower = question.lower()
+    expanded_terms = []
+
+    topic_expansions = {
+        "gdpr": [
+            "personal data",
+            "data protection",
+            "privacy",
+            "imy",
+            "breach",
+            "72 hours",
+            "notification",
+            "controller",
+            "processor",
+        ],
+        "personal data breach": [
+            "gdpr",
+            "imy",
+            "72 hours",
+            "notification",
+            "risk",
+            "data subject",
+            "personal data",
+            "incident",
+        ],
+        "breach": [
+            "personal data breach",
+            "incident",
+            "notification",
+            "imy",
+            "gdpr",
+            "risk",
+        ],
+        "incident": [
+            "incident reporting",
+            "cybersecurity incident",
+            "nis2",
+            "gdpr",
+            "breach",
+            "reporting",
+        ],
+        "ransomware": [
+            "cyber incident",
+            "incident reporting",
+            "personal data breach",
+            "gdpr",
+            "nis2",
+            "security measures",
+            "unauthorized access",
+            "availability",
+        ],
+        "cyber attack": [
+            "cyber incident",
+            "incident reporting",
+            "personal data breach",
+            "gdpr",
+            "nis2",
+            "security measures",
+            "unauthorized access",
+            "availability",
+        ],
+        "cyberattack": [
+            "cyber incident",
+            "incident reporting",
+            "personal data breach",
+            "gdpr",
+            "nis2",
+            "security measures",
+            "unauthorized access",
+            "availability",
+        ],
+        "security incident": [
+            "cyber incident",
+            "incident reporting",
+            "nis2",
+            "gdpr",
+            "breach",
+            "security measures",
+        ],
+        "nis2": [
+            "cybersecurity",
+            "incident reporting",
+            "essential entities",
+            "important entities",
+            "risk management",
+            "security measures",
+            "msb",
+        ],
+        "dora": [
+            "digital operational resilience",
+            "financial sector",
+            "ict risk",
+            "ict incident",
+            "third-party ict",
+            "resilience testing",
+        ],
+        "third-party": [
+            "ict third-party risk",
+            "supplier",
+            "provider",
+            "outsourcing",
+            "cloud",
+            "dora",
+        ],
+        "dataintrång": [
+            "unauthorized access",
+            "cybercrime",
+            "information system",
+            "data intrusion",
+            "brottsbalken",
+        ],
+        "unauthorized access": [
+            "dataintrång",
+            "cybercrime",
+            "illegal access",
+            "information system",
+            "data intrusion",
+        ],
+        "cyber resilience act": [
+            "cra",
+            "products with digital elements",
+            "vulnerability handling",
+            "manufacturer",
+            "security requirements",
+        ],
+        "cra": [
+            "cyber resilience act",
+            "products with digital elements",
+            "vulnerability handling",
+            "manufacturer",
+            "security requirements",
+        ],
+        "imy": [
+            "gdpr",
+            "data protection",
+            "personal data breach",
+            "supervision",
+            "notification",
+        ],
+    }
+
+    for trigger, related_terms in topic_expansions.items():
+        if trigger in question_lower:
+            expanded_terms.extend(related_terms)
+
+    return expanded_terms
 
 
 def extract_official_sources(content):
@@ -211,6 +371,17 @@ def get_target_source_file(question):
 
     if (
         "nis2 incident reporting" in question_lower
+        or "ransomware" in question_lower
+        or "malware" in question_lower
+        or "cyber attack" in question_lower
+        or "cyberattack" in question_lower
+        or "security incident" in question_lower
+        or "incident response" in question_lower
+        or "after a cyber incident" in question_lower
+        or "after ransomware" in question_lower
+        or "after a ransomware" in question_lower
+        or "what should a company do after" in question_lower
+        or "what should an organization check after" in question_lower
         or "nis2-incidentrapportering" in question_lower
         or "nis2 incidents" in question_lower
         or "cybersecurity incident reporting" in question_lower
@@ -365,6 +536,17 @@ def search_chunks(question, chunks):
         if len(word) > 2 and word not in stopwords
     ]
 
+    expanded_terms = expand_question_terms(question)
+
+    for term in expanded_terms:
+        expanded_words = [
+            word for word in clean_words(term)
+            if len(word) > 2 and word not in stopwords
+        ]
+        question_words.extend(expanded_words)
+
+    question_words = list(dict.fromkeys(question_words))
+
     results = []
 
     for chunk in chunks:
@@ -406,11 +588,27 @@ def search_chunks(question, chunks):
             if "imy" in chunk_text or "integritetsskyddsmyndigheten" in chunk_text:
                 score += 8
 
-        if "reported" in question_lower or "report" in question_lower or "72" in question_lower or "rapportera" in question_lower:
-            if "reporting" in section_text:
+        if (
+            "ransomware" in question_lower
+            or "malware" in question_lower
+            or "cyber attack" in question_lower
+            or "cyberattack" in question_lower
+            or "security incident" in question_lower
+            or "cyber incident" in question_lower
+            or "incident response" in question_lower
+        ):
+            if "nis2_incident_reporting" in filename_lower:
+                score += 60
+            if "incident reporting" in section_text:
                 score += 25
-            if "72 hours" in chunk_text or "72 timmar" in chunk_text:
+            if "relationship with gdpr breach reporting" in section_text:
+                score += 20
+            if "practical explanation" in section_text:
+                score += 15
+            if "cybersecurity" in chunk_text:
                 score += 10
+            if "personal data" in chunk_text:
+                score += 8
 
         if "nis2" in question_lower or "cybersecurity act" in question_lower or "cybersäkerhetslagen" in question_lower:
             if "nis2" in filename_lower:
@@ -551,7 +749,22 @@ def generate_practical_explanation(question, search_results, language="English")
     if use_swedish:
         heading = "Praktisk förklaring"
 
-        if "personal data breach" in question_lower or "personuppgiftsincident" in question_lower or "72" in question_lower:
+        if (
+            "ransomware" in question_lower
+            or "malware" in question_lower
+            or "cyberattack" in question_lower
+            or "cyber attack" in question_lower
+            or "cyberincident" in question_lower
+            or "cyber incident" in question_lower
+        ):
+            explanation = (
+                "I praktiken bör en ransomware- eller cyberincident hanteras både tekniskt och juridiskt. "
+                "Organisationen bör begränsa skadan, säkra loggar och bevis, bedöma om personuppgifter påverkas, "
+                "kontrollera om rapportering enligt GDPR eller NIS2/cybersäkerhetslagen kan bli aktuell, "
+                "och dokumentera beslut, tidslinje och åtgärder."
+            )
+
+        elif "personal data breach" in question_lower or "personuppgiftsincident" in question_lower or "72" in question_lower:
             explanation = (
                 "I praktiken betyder detta att organisationen först måste bedöma om incidenten påverkar personuppgifter. "
                 "Om incidenten sannolikt innebär en risk för registrerade personers rättigheter och friheter kan den behöva anmälas till IMY. "
@@ -602,7 +815,21 @@ def generate_practical_explanation(question, search_results, language="English")
     else:
         heading = "Practical explanation"
 
-        if "personal data breach" in question_lower or "breach" in question_lower or "72" in question_lower:
+        if (
+            "ransomware" in question_lower
+            or "malware" in question_lower
+            or "cyberattack" in question_lower
+            or "cyber attack" in question_lower
+            or "cyber incident" in question_lower
+            or "security incident" in question_lower
+        ):
+            explanation = (
+                "In practice, a ransomware or cyber incident should be handled both technically and legally. "
+                "The organization should contain the incident, preserve logs and evidence, assess whether personal data is affected, "
+                "check whether GDPR or NIS2/Swedish Cybersecurity Act reporting may be relevant, and document the timeline, decisions, and actions taken."
+            )
+
+        elif "personal data breach" in question_lower or "breach" in question_lower or "72" in question_lower:
             explanation = (
                 "In practice, the organization first needs to assess whether the incident affects personal data. "
                 "If the breach is likely to create a risk to individuals' rights and freedoms, it may need to be reported to IMY. "
@@ -668,7 +895,23 @@ def generate_assessment_checklist(question, search_results, language="English"):
     if use_swedish:
         heading = "CyberLex bedömningschecklista"
 
-        if "personal data breach" in question_lower or "personuppgiftsincident" in question_lower or "72" in question_lower:
+        if (
+            "ransomware" in question_lower
+            or "malware" in question_lower
+            or "cyberattack" in question_lower
+            or "cyber attack" in question_lower
+            or "cyberincident" in question_lower
+            or "cyber incident" in question_lower
+        ):
+            items = [
+                "Begränsa incidenten och säkra system, loggar och bevis.",
+                "Bedöm om personuppgifter har påverkats.",
+                "Bedöm om GDPR-anmälan till IMY kan vara relevant.",
+                "Bedöm om NIS2/cybersäkerhetslagen eller annan incidentrapportering kan vara relevant.",
+                "Dokumentera tidslinje, beslut, åtgärder och källor."
+            ]
+
+        elif "personal data breach" in question_lower or "personuppgiftsincident" in question_lower or "72" in question_lower:
             items = [
                 "Identifiera om incidenten berör personuppgifter.",
                 "Bedöm om incidenten kan innebära risk för registrerade personers rättigheter och friheter.",
@@ -734,7 +977,23 @@ def generate_assessment_checklist(question, search_results, language="English"):
     else:
         heading = "CyberLex assessment checklist"
 
-        if "personal data breach" in question_lower or "breach" in question_lower or "72" in question_lower:
+        if (
+            "ransomware" in question_lower
+            or "malware" in question_lower
+            or "cyberattack" in question_lower
+            or "cyber attack" in question_lower
+            or "cyber incident" in question_lower
+            or "security incident" in question_lower
+        ):
+            items = [
+                "Contain the incident and preserve systems, logs, and evidence.",
+                "Assess whether personal data has been affected.",
+                "Assess whether GDPR notification to IMY may be relevant.",
+                "Assess whether NIS2/Swedish Cybersecurity Act reporting or another incident reporting path may be relevant.",
+                "Document the timeline, decisions, actions, and sources."
+            ]
+
+        elif "personal data breach" in question_lower or "breach" in question_lower or "72" in question_lower:
             items = [
                 "Identify whether the incident involves personal data.",
                 "Assess whether the incident may create risk to individuals' rights and freedoms.",
@@ -829,7 +1088,13 @@ def generate_attention_level(question, search_results, language="English"):
         "nis2",
         "cybersecurity act",
         "cybersäkerhetslagen",
-        "dora"
+        "dora",
+        "ransomware",
+        "malware",
+        "cyber attack",
+        "cyberattack",
+        "security incident",
+        "incident response"
     ]
 
     medium_terms = [
@@ -1044,6 +1309,28 @@ def generate_simple_answer(question, best_match, language="English"):
             )
 
     elif (
+        "ransomware" in question_lower
+        or "malware" in question_lower
+        or "cyber attack" in question_lower
+        or "cyberattack" in question_lower
+        or "security incident" in question_lower
+        or "cyber incident" in question_lower
+        or "incident response" in question_lower
+    ):
+        if use_swedish:
+            answer = (
+                "Efter en ransomware- eller cyberincident bör en organisation först begränsa skadan, säkra bevis och dokumentera händelseförloppet. "
+                "Därefter bör organisationen bedöma om personuppgifter har påverkats, om en anmälan till IMY enligt GDPR kan krävas, "
+                "och om incidentrapportering enligt NIS2 eller den svenska cybersäkerhetslagen kan vara relevant."
+            )
+        else:
+            answer = (
+                "After a ransomware or cyber incident, an organization should first contain the incident, preserve evidence, and document what happened. "
+                "It should then assess whether personal data was affected, whether notification to IMY under GDPR may be required, "
+                "and whether incident reporting under NIS2 or the Swedish Cybersecurity Act may be relevant."
+            )
+
+    elif (
         ("nis2" in question_lower or "nis" in question_lower or "cybersecurity act" in question_lower or "cybersäkerhetslagen" in question_lower)
         and "gdpr" in question_lower
         and ("incident" in question_lower or "reported" in question_lower or "report" in question_lower or "rapporteras" in question_lower or "rapportera" in question_lower)
@@ -1202,8 +1489,9 @@ def generate_simple_answer(question, best_match, language="English"):
             )
         else:
             answer = (
-                "Dataintrång means data intrusion under Swedish criminal law. "
-                "It is connected to unauthorized access to, or interference with, data or information systems."
+                "Unauthorized access to an information system may be illegal in Sweden. "
+                "In Swedish law, this is commonly connected to the offence called dataintrång, "
+                "which concerns unauthorized access to, or interference with, data or information systems."
             )
 
     elif (
@@ -1357,6 +1645,13 @@ def is_cyberlaw_question(question):
         "svensk cybersäkerhetsrätt",
         "cybersäkerhet",
         "cyberbrott",
+        "ransomware",
+        "malware",
+        "cyber attack",
+        "cyberattack",
+        "security incident",
+        "incident response",
+        "data breach",
         "dataskydd",
         "personuppgift",
         "personuppgifter",
