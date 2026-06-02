@@ -1327,8 +1327,10 @@ def generate_simple_answer(question, best_match, language="English"):
         f'<div class="metadata-row"><strong>{version_notes_label}:</strong> '
         f'<span class="metadata-code">{version_notes}</span></div>'
         f'</div>\n\n'
-        f"## {limitation_heading}\n\n"
-        f"{limitation_text}"
+        f'<div class="limitation-card">'
+        f'<div class="limitation-card-title">{limitation_heading}</div>'
+        f'<div class="limitation-card-text">{limitation_text}</div>'
+        f'</div>'
     )
 
 
@@ -1594,8 +1596,29 @@ st.markdown(
         margin-bottom: 0;
     }
 
-    .source-card li {
+        .source-card li {
         margin-bottom: 0.35rem;
+    }
+
+    .limitation-card {
+        padding: 1rem;
+        border-radius: 12px;
+        border: 1px solid #854d0e;
+        background-color: #1c1917;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .limitation-card-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 0.75rem;
+    }
+
+    .limitation-card-text {
+        color: #fef3c7;
+        font-size: 0.95rem;
     }
     </style>
     ''',
