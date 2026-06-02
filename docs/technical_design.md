@@ -6,7 +6,7 @@ This document explains the technical design of the CyberLex Sweden prototype.
 
 CyberLex Sweden is a local Streamlit application that answers questions about selected Swedish and EU cybersecurity law topics using a trusted local Markdown knowledge base.
 
-The prototype does not use a full language model yet. Instead, it uses source-based search, question intent matching, rule-based answer generation, practical explanations, assessment checklists, detected topic labels, confidence explanations, and transparent source display.
+The prototype does not use a full language model yet. Instead, it uses source-based search, question intent matching, rule-based answer generation, practical explanations, assessment checklists, detected topic labels, source quality labels, confidence explanations, and transparent source display.
 
 ---
 
@@ -21,6 +21,7 @@ The application is built with:
 - Source routing
 - Topic keyword expansion
 - Source confidence explanations
+- Source quality labels
 - Detected topic labels
 - Source metadata extraction
 - Citation display
@@ -62,6 +63,7 @@ It handles:
 - routing questions to source files
 - expanding question terms
 - detecting question topics
+- detecting source quality labels
 - generating answers
 - generating practical explanations
 - generating assessment checklists
@@ -79,6 +81,7 @@ It displays:
 - answers
 - citations
 - detected topic cards
+- source quality labels
 - source metadata
 - confidence explanations
 - collapsible sections
@@ -221,6 +224,49 @@ This helps users understand whether the answer is based on a strong source match
 
 ---
 
+## Source quality labels
+
+CyberLex Sweden displays a source quality label inside the citation details card.
+
+The function `detect_source_quality(filename, language)` checks the matched knowledge file name and returns a short user-facing description of what type of source the local file is based on.
+
+Examples:
+
+```text
+cybercrime_dataintrang.md
+→ Swedish legal source / criminal-law topic
+
+gdpr_personal_data_breach.md
+→ IMY guidance and EU data protection source
+
+gdpr_core_principles.md
+→ EU data protection regulation source
+
+imy_gdpr_supervision.md
+→ Swedish supervisory authority source
+
+nis2_incident_reporting.md
+→ Swedish authority guidance and EU cybersecurity source
+
+nis2_cybersecurity_law.md
+→ Swedish authority guidance and EU cybersecurity source
+
+eu_dora_digital_operational_resilience.md
+→ EU digital operational resilience regulation source
+
+eu_cyber_resilience_act.md
+→ EU regulation source for digital product cybersecurity
+
+eu_attacks_against_information_systems.md
+→ EU directive source on attacks against information systems
+```
+
+The source quality label does not prove legal authority by itself. It only explains what kind of source category the local Markdown file represents.
+
+This improves transparency because users can see whether the answer is based on Swedish legal material, Swedish authority guidance, EU regulation material, EU directive material, or a local educational summary based on trusted sources.
+
+---
+
 ## CyberLex answer structure
 
 CyberLex Sweden answers are designed to be source-grounded and transparent.
@@ -270,13 +316,16 @@ This includes:
 
 - matched knowledge file
 - matched section
+- source quality
 - relevance score
 - source match confidence
 - confidence explanation
 
 The relevance score is the numeric score produced by CyberLex Sweden’s local search and ranking logic.
 
-The source match confidence converts that numeric score into a readable label:
+The source quality label explains what kind of source category the matched Markdown file represents, such as Swedish legal material, Swedish authority guidance, EU regulation material, EU directive material, or a local educational summary.
+
+The source match confidence converts the numeric relevance score into a readable label:
 
 - Very strong
 - Strong
@@ -287,9 +336,9 @@ This does not mean legal certainty. It only explains how strong the local source
 
 The citation details are displayed as a styled card in the Streamlit interface.
 
-The citation card shows the matched file, matched section, relevance score, source match confidence, and a short explanation of the confidence level.
+The citation card shows the matched file, matched section, source quality, relevance score, source match confidence, and a short explanation of the confidence level.
 
-This helps the user understand which source section CyberLex used first and how strong the match appears to be.
+This helps the user understand which source section CyberLex used first, what kind of source the local file is based on, and how strong the match appears to be.
 
 ### 4. Official source links
 
@@ -518,7 +567,7 @@ The current displayed version is:
 Prototype version: 0.5
 ```
 
-Version 0.5 represents the styled answer-card prototype. This version includes citation details, detected topic labels, official source links, source metadata, important limitation cards, attention level cards, practical explanation cards, assessment checklist cards, relevant source context cards, and other matching source section cards.
+Version 0.5 represents the styled answer-card prototype. This version includes citation details, detected topic labels, source quality labels, official source links, source metadata, important limitation cards, attention level cards, practical explanation cards, assessment checklist cards, relevant source context cards, and other matching source section cards.
 
 ---
 
@@ -535,6 +584,7 @@ The sidebar explains that the current version uses:
 - keyword ranking
 - topic keyword expansion
 - detected topic labels
+- source quality labels
 - source confidence explanations
 - rule-based answers
 
@@ -560,10 +610,11 @@ Current limitations include:
 - It does not browse the web live.
 - It only answers from local Markdown sources.
 - It only covers selected topics.
-- It uses rule-based answers, explanations, attention levels, topic labels, confidence explanations, and checklists.
+- It uses rule-based answers, explanations, attention levels, topic labels, source quality labels, confidence explanations, and checklists.
 - It does not provide legal advice.
 - Source material must be manually reviewed and updated.
 - Confidence labels describe local source matching only, not legal certainty.
+- Source quality labels describe the type of local source file, not a guarantee that the source is legally current.
 - Detected topic labels describe question interpretation only, not a legal classification.
 
 ---
@@ -578,7 +629,6 @@ Future improvements may include:
 - AI-generated answers using a RAG design
 - stronger citation formatting
 - source update reminders
-- source quality labels
 - public deployment
 - improved visual design
 - stronger legal disclaimer and Terms of Use
