@@ -569,6 +569,16 @@ The purpose is to confirm that CyberLex Sweden displays source-grounded answers 
 When must a personal data breach be reported?
 ```
 
+---
+
+## Test Case 23: Ransomware Incident Handling
+
+### Question
+
+```text
+What should a company do after a ransomware attack?
+```
+
 ## Test Summary
 
 The current prototype successfully demonstrates:

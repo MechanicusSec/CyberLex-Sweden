@@ -107,6 +107,25 @@ CyberLex searches the local knowledge base by:
 7. Routing clear questions to the most relevant source file.
 8. Ranking results by relevance score.
 
+### Topic keyword expansion
+
+CyberLex Sweden uses topic keyword expansion to improve local search matching.
+
+The function `expand_question_terms(question)` adds related cybersecurity and legal terms when the user question contains important trigger words.
+
+For example:
+
+- `ransomware` can expand into terms such as cyber incident, incident reporting, personal data breach, GDPR, NIS2, security measures, and unauthorized access.
+- `unauthorized access` can expand into terms such as dataintrång, cybercrime, illegal access, information system, and data intrusion.
+- `DORA` can expand into terms such as digital operational resilience, financial sector, ICT risk, ICT incident, third-party ICT, and resilience testing.
+- `NIS2` can expand into terms such as cybersecurity, incident reporting, essential entities, important entities, risk management, security measures, and MSB.
+
+This makes the prototype better at finding relevant source sections even when the user does not use the exact same words as the Markdown knowledge files.
+
+The expanded terms are added inside `search_chunks(question, chunks)` after the original question words are cleaned. Duplicate search terms are removed before scoring.
+
+This is still rule-based search. It does not use a language model or vector database yet.
+
 The best match is used for the main answer, while additional matching sections are shown for transparency.
 
 ---
