@@ -1257,6 +1257,84 @@ def generate_attention_level(question, search_results, language="English"):
         f'</div>'
     )
 
+def detect_question_topic(question, language="English"):
+    # Detects a simple human-readable topic label from the user's question.
+    # This helps users understand how CyberLex interpreted the question.
+    # It does not replace source matching or legal analysis.
+
+    question_lower = question.lower()
+    use_swedish = language == "Svenska"
+
+    if (
+        "data breach" in question_lower
+        or "personal data breach" in question_lower
+        or "personuppgiftsincident" in question_lower
+        or "72" in question_lower
+    ):
+        return "GDPR-personuppgiftsincident" if use_swedish else "GDPR data breach"
+
+    if (
+        "ransomware" in question_lower
+        or "malware" in question_lower
+        or "cyberattack" in question_lower
+        or "cyber attack" in question_lower
+    ):
+        return "Ransomware- eller malwareincident" if use_swedish else "Ransomware or malware incident"
+
+    if (
+        "cyber incident" in question_lower
+        or "cyberincident" in question_lower
+        or "security incident" in question_lower
+        or "incident response" in question_lower
+    ):
+        return "Bedömning av cyberincident" if use_swedish else "Cyber incident assessment"
+
+    if (
+        "nis2" in question_lower
+        or "cybersecurity act" in question_lower
+        or "cybersäkerhetslagen" in question_lower
+    ):
+        return "NIS2 och cybersäkerhetskrav" if use_swedish else "NIS2 and cybersecurity duties"
+
+    if (
+        "dora" in question_lower
+        or "digital operational resilience" in question_lower
+        or "ict risk" in question_lower
+        or "third-party ict" in question_lower
+    ):
+        return "DORA och ICT-risk" if use_swedish else "DORA and ICT risk"
+
+    if (
+        "unauthorized access" in question_lower
+        or "dataintrång" in question_lower
+        or "obehörig åtkomst" in question_lower
+        or "data intrusion" in question_lower
+    ):
+        return "Obehörig åtkomst / dataintrång" if use_swedish else "Unauthorized access / dataintrång"
+
+    if (
+        "cyber resilience act" in question_lower
+        or "products with digital elements" in question_lower
+        or "product security" in question_lower
+    ):
+        return "Cyber Resilience Act och produktsäkerhet" if use_swedish else "Cyber Resilience Act and product security"
+
+    if (
+        "gdpr" in question_lower
+        or "imy" in question_lower
+        or "data protection" in question_lower
+        or "privacy" in question_lower
+    ):
+        return "GDPR och dataskydd" if use_swedish else "GDPR and data protection"
+
+    if (
+        "attacks against information systems" in question_lower
+        or "eu cybercrime" in question_lower
+        or "information systems" in question_lower
+    ):
+        return "EU-cyberbrott och informationssystem" if use_swedish else "EU cybercrime and information systems"
+
+    return "Allmän cyberrättslig fråga" if use_swedish else "General cybersecurity law question"
 
 def generate_source_confidence(score, language="English"):
     # Converts the numeric relevance score into a readable confidence note.
@@ -1727,6 +1805,7 @@ def generate_simple_answer(question, best_match, language="English"):
         source_date_label = "Källdatum"
         version_notes_label = "Versionsanteckningar"
         limitation_heading = "Viktig begränsning"
+        topic_heading = "Identifierat ämne"
         limitation_text = (
             "Detta svar genereras från en förenklad lokal kunskapsbas. "
             "CyberLex Sweden är ett utbildningsprojekt och ger inte juridisk rådgivning."
@@ -1742,16 +1821,22 @@ def generate_simple_answer(question, best_match, language="English"):
         source_date_label = "Source date"
         version_notes_label = "Version notes"
         limitation_heading = "Important limitation"
+        topic_heading = "Detected topic"
         limitation_text = (
             "This answer is generated from a simplified local knowledge base. "
             "CyberLex Sweden is an educational project and does not provide legal advice."
         )
-
+    detected_topic = detect_question_topic(question, language)
     confidence = generate_source_confidence(best_match["score"], language)
 
     return (
         f"## {short_answer_heading}\n\n"
         f"{answer}\n\n"
+        f'<div class="metadata-card">'
+        f'<div class="metadata-card-title">{topic_heading}</div>'
+        f'<div class="metadata-row"><strong>{topic_heading}:</strong> '
+        f'<span class="metadata-code">{detected_topic}</span></div>'
+        f'</div>\n\n'
         f'<div class="citation-card">'
         f'<div class="citation-card-title">{citation_heading}</div>'
         f'<div class="citation-row"><strong>{matched_file_label}:</strong> '
