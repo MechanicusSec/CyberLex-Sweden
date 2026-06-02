@@ -1264,41 +1264,65 @@ def generate_source_confidence(score, language="English"):
 
     use_swedish = language == "Svenska"
 
-    if score >= 180:
+    if score >= 220:
         level = "Very strong"
-        reason = "The question closely matches the selected source section."
-    elif score >= 100:
+        reason = (
+            "The question strongly matches the selected source file and section. "
+            "The answer is likely based on the most relevant local knowledge source."
+        )
+    elif score >= 160:
         level = "Strong"
-        reason = "The question has a clear match in the local knowledge base."
-    elif score >= 50:
+        reason = (
+            "The question has a clear match in the local knowledge base. "
+            "The selected source section appears highly relevant, but the user should still review the source context."
+        )
+    elif score >= 90:
         level = "Moderate"
-        reason = "The question has a relevant match, but the user should review the supporting source context."
+        reason = (
+            "The question has a relevant match, but the result may depend on keyword overlap or source routing. "
+            "The user should review the supporting source context before relying on the answer."
+        )
     else:
         level = "Limited"
-        reason = "The match is weak and should be treated cautiously."
+        reason = (
+            "The match is weak or narrow. "
+            "The answer should be treated cautiously and checked against the displayed source context."
+        )
 
     if use_swedish:
         if level == "Very strong":
             return {
                 "level": "Mycket stark",
-                "reason": "Frågan matchar den valda källsektionen tydligt."
+                "reason": (
+                    "Frågan matchar tydligt den valda källfilen och källsektionen. "
+                    "Svaret bygger sannolikt på den mest relevanta lokala kunskapskällan."
+                )
             }
 
         if level == "Strong":
             return {
                 "level": "Stark",
-                "reason": "Frågan har en tydlig matchning i den lokala kunskapsbasen."
+                "reason": (
+                    "Frågan har en tydlig matchning i den lokala kunskapsbasen. "
+                    "Den valda källsektionen verkar mycket relevant, men användaren bör ändå granska källkontexten."
+                )
             }
 
         if level == "Moderate":
             return {
                 "level": "Måttlig",
-                "reason": "Frågan har en relevant matchning, men användaren bör granska källkontexten."
+                "reason": (
+                    "Frågan har en relevant matchning, men resultatet kan bero på nyckelordsöverlappning eller källroutning. "
+                    "Användaren bör granska den stödjande källkontexten innan svaret används."
+                )
             }
 
         return {
             "level": "Begränsad",
-            "reason": "Matchningen är svag och bör behandlas försiktigt."
+            "reason": (
+                "Matchningen är svag eller smal. "
+                "Svaret bör behandlas försiktigt och jämföras med den visade källkontexten."
+            )
         }
 
     return {
