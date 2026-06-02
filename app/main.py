@@ -1547,6 +1547,24 @@ st.sidebar.markdown("---")
 st.sidebar.subheader(prototype_mode_header)
 st.sidebar.write(prototype_mode_text)
 
+if interface_language == "Svenska":
+    ai_roadmap_header = "Framtida AI-läge"
+    ai_roadmap_text = (
+        "**Nuvarande version:** lokala Markdown-filer, källstyrning, nyckelordsrankning "
+        "och regelbaserade svar.\n\n"
+        "**Framtida version:** vektorsökning, RAG och AI-genererade svar baserade på betrodda källor."
+    )
+else:
+    ai_roadmap_header = "Future AI mode"
+    ai_roadmap_text = (
+        "**Current version:** local Markdown files, source routing, keyword ranking, "
+        "and rule-based answers.\n\n"
+        "**Future version:** vector search, RAG, and AI-generated answers based on trusted sources."
+    )
+
+with st.sidebar.expander(ai_roadmap_header, expanded=False):
+    st.markdown(ai_roadmap_text)
+
 st.sidebar.markdown("---")
 st.sidebar.subheader(project_resources_header)
 
