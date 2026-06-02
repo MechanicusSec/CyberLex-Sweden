@@ -148,8 +148,20 @@ This includes:
 - matched knowledge file
 - matched section
 - relevance score
+- source match confidence
 
-This helps the user understand which source section CyberLex used first.
+The relevance score is the numeric score produced by CyberLex Sweden’s local search and ranking logic.
+
+The source match confidence converts that numeric score into a readable label:
+
+- Very strong
+- Strong
+- Moderate
+- Limited
+
+This does not mean legal certainty. It only explains how strong the local source match is based on the current search logic.
+
+This helps the user understand which source section CyberLex used first and how strong the match appears to be.
 
 ### 3. Official source links
 

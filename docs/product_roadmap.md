@@ -34,6 +34,7 @@ The current prototype includes:
 - Sidebar future AI mode note
 - Legal limitation notice
 - Refusal behavior for out-of-scope questions
+- Source match confidence note
 
 The current system does not yet use vector search, a full language model, public deployment, or a production database.
 
@@ -75,6 +76,7 @@ Build a working local prototype that proves the core idea.
 - Legal disclaimer draft
 - Terms of Use draft
 - Privacy Policy draft
+- Source match confidence note
 
 ### Purpose
 
