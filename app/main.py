@@ -1543,6 +1543,13 @@ st.sidebar.header(status_header)
 st.sidebar.write(f"📄 {loaded_documents_label}: {len(documents)}")
 st.sidebar.write(f"🧩 {searchable_chunks_label}: {len(chunks)}")
 
+if interface_language == "Svenska":
+    st.sidebar.write("🛠️ Prototypversion: `0.4`")
+    st.sidebar.write("🏷️ Byggtyp: Lokal utbildningsprototyp")
+else:
+    st.sidebar.write("🛠️ Prototype version: `0.4`")
+    st.sidebar.write("🏷️ Build type: Local educational prototype")
+
 st.sidebar.markdown("---")
 st.sidebar.subheader(prototype_mode_header)
 st.sidebar.write(prototype_mode_text)
