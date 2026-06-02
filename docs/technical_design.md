@@ -298,6 +298,30 @@ Current limitations include:
 - Source material must be manually reviewed and updated.
 
 ---
+---
+
+## Future AI mode sidebar note
+
+CyberLex Sweden includes a small sidebar note called "Future AI mode".
+
+The purpose of this note is to make the prototype status clear to users and reviewers.
+
+The sidebar explains that the current version uses:
+
+- local Markdown files
+- source routing
+- keyword ranking
+- rule-based answers
+
+It also explains that a future version may use:
+
+- vector search
+- RAG
+- AI-generated answers based on trusted source material
+
+This helps separate the current working prototype from the planned future AI version.
+
+The current app does not use a full language model yet. It remains a local, rule-based, source-grounded prototype.
 
 ## Future development
 
