@@ -1336,6 +1336,84 @@ def detect_question_topic(question, language="English"):
 
     return "Allmän cyberrättslig fråga" if use_swedish else "General cybersecurity law question"
 
+
+def detect_source_quality(filename, language="English"):
+    # Detects a simple user-facing source quality label from the matched knowledge file.
+    # This does not prove legal authority. It explains what type of source the local file is based on.
+
+    filename_lower = filename.lower()
+    use_swedish = language == "Svenska"
+
+    if "cybercrime_dataintrang" in filename_lower:
+        return (
+            "Svensk rättskälla / straffrättsligt ämne"
+            if use_swedish
+            else "Swedish legal source / criminal-law topic"
+        )
+
+    if "gdpr_personal_data_breach" in filename_lower:
+        return (
+            "IMY-vägledning och EU-dataskyddskälla"
+            if use_swedish
+            else "IMY guidance and EU data protection source"
+        )
+
+    if "gdpr_core_principles" in filename_lower:
+        return (
+            "EU-dataskyddsförordning"
+            if use_swedish
+            else "EU data protection regulation source"
+        )
+
+    if "imy_gdpr_supervision" in filename_lower:
+        return (
+            "Svensk tillsynsmyndighetskälla"
+            if use_swedish
+            else "Swedish supervisory authority source"
+        )
+
+    if "nis2_incident_reporting" in filename_lower:
+        return (
+            "Svensk myndighetsvägledning och EU-cybersäkerhetskälla"
+            if use_swedish
+            else "Swedish authority guidance and EU cybersecurity source"
+        )
+
+    if "nis2_cybersecurity_law" in filename_lower:
+        return (
+            "Svensk myndighetsvägledning och EU-cybersäkerhetskälla"
+            if use_swedish
+            else "Swedish authority guidance and EU cybersecurity source"
+        )
+
+    if "eu_dora" in filename_lower:
+        return (
+            "EU-förordning för digital operativ motståndskraft"
+            if use_swedish
+            else "EU digital operational resilience regulation source"
+        )
+
+    if "eu_cyber_resilience_act" in filename_lower:
+        return (
+            "EU-förordning om cybersäkerhet för digitala produkter"
+            if use_swedish
+            else "EU regulation source for digital product cybersecurity"
+        )
+
+    if "eu_attacks_against_information_systems" in filename_lower:
+        return (
+            "EU-direktiv om angrepp mot informationssystem"
+            if use_swedish
+            else "EU directive source on attacks against information systems"
+        )
+
+    return (
+        "Lokal utbildningssammanfattning baserad på betrodda källor"
+        if use_swedish
+        else "Local educational summary based on trusted sources"
+    )
+
+
 def generate_source_confidence(score, language="English"):
     # Converts the numeric relevance score into a readable confidence note.
     # This is not legal certainty. It only describes how strong the local source match is.
@@ -1800,6 +1878,7 @@ def generate_simple_answer(question, best_match, language="English"):
         matched_file_label = "Matchad kunskapsfil"
         matched_section_label = "Matchad sektion"
         relevance_score_label = "Relevanspoäng"
+        source_quality_label = "Källtyp"
         official_sources_heading = "Officiella källor"
         metadata_heading = "Källmetadata"
         source_date_label = "Källdatum"
@@ -1816,6 +1895,7 @@ def generate_simple_answer(question, best_match, language="English"):
         matched_file_label = "Matched knowledge file"
         matched_section_label = "Matched section"
         relevance_score_label = "Relevance score"
+        source_quality_label = "Source quality"
         official_sources_heading = "Official source links"
         metadata_heading = "Source metadata"
         source_date_label = "Source date"
@@ -1827,6 +1907,7 @@ def generate_simple_answer(question, best_match, language="English"):
             "CyberLex Sweden is an educational project and does not provide legal advice."
         )
     detected_topic = detect_question_topic(question, language)
+    source_quality = detect_source_quality(best_match["filename"], language)
     confidence = generate_source_confidence(best_match["score"], language)
 
     return (
@@ -1843,6 +1924,8 @@ def generate_simple_answer(question, best_match, language="English"):
         f'<span class="citation-code">{best_match["filename"]}</span></div>'
         f'<div class="citation-row"><strong>{matched_section_label}:</strong> '
         f'<span class="citation-code">{best_match["section"]}</span></div>'
+        f'<div class="citation-row"><strong>{source_quality_label}:</strong> '
+        f'<span class="citation-code">{source_quality}</span></div>'
         f'<div class="citation-row"><strong>{relevance_score_label}:</strong> '
         f'<span class="citation-code">{best_match["score"]}</span></div>'
         f'<div class="citation-row"><strong>{"Källmatchning" if use_swedish else "Source match confidence"}:</strong> '
