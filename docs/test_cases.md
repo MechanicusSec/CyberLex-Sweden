@@ -14,6 +14,8 @@ The goal is to verify that the application can:
 - Show official source links connected to the matched knowledge file
 - Show source metadata such as source date and version notes
 - Avoid unsupported answers when no trusted source exists
+- Display styled answer cards introduced in prototype version 0.5
+- Handle practical cyber incident questions with more specific short answers
 
 ---
 
@@ -410,8 +412,6 @@ The system correctly matched the question to the Cyber Resilience Act source fil
 
 ---
 
----
-
 ## Test Case 9: DORA
 
 ### Question
@@ -569,6 +569,220 @@ The purpose is to confirm that CyberLex Sweden displays source-grounded answers 
 When must a personal data breach be reported?
 ```
 
+### Expected Result
+
+CyberLex Sweden should display a citation details card showing:
+
+- matched knowledge file
+- matched section
+- relevance score
+- source match confidence
+
+### Pass Condition
+
+The citation details are visible and displayed as a styled card.
+
+---
+
+## Test Case 13: Official Source Links Card
+
+### Question
+
+```text
+When must a personal data breach be reported?
+```
+
+### Expected Result
+
+CyberLex Sweden should display official source links connected to the matched knowledge file.
+
+### Pass Condition
+
+The official source links are visible, readable, and clickable.
+
+---
+
+## Test Case 14: Source Metadata Card
+
+### Question
+
+```text
+What is NIS2?
+```
+
+### Expected Result
+
+CyberLex Sweden should display source metadata, including source date and version notes if available.
+
+### Pass Condition
+
+The source metadata appears in a styled card.
+
+---
+
+## Test Case 15: Important Limitation Card
+
+### Question
+
+```text
+What is GDPR?
+```
+
+### Expected Result
+
+CyberLex Sweden should display an important limitation notice explaining that the app is educational and does not provide legal advice.
+
+### Pass Condition
+
+The limitation is visible and displayed as a warning-style card.
+
+---
+
+## Test Case 16: CyberLex Attention Level Card
+
+### Question
+
+```text
+Can an incident need to be reported under both NIS2 and GDPR?
+```
+
+### Expected Result
+
+CyberLex Sweden should display a CyberLex attention level card.
+
+The attention level should explain why the question may require extra care.
+
+### Pass Condition
+
+The attention level card is visible and includes:
+
+- level
+- reason
+- limitation note
+
+---
+
+## Test Case 17: Practical Explanation Card
+
+### Question
+
+```text
+What should a company do after a ransomware attack?
+```
+
+### Expected Result
+
+CyberLex Sweden should display a practical explanation based on the matched source context.
+
+### Pass Condition
+
+The practical explanation appears in a styled card and does not replace the legal limitation notice.
+
+---
+
+## Test Case 18: Assessment Checklist Expander
+
+### Question
+
+```text
+When must a personal data breach be reported?
+```
+
+### Expected Result
+
+CyberLex Sweden should display a CyberLex assessment checklist inside a collapsible expander.
+
+### Pass Condition
+
+The checklist can be opened and contains relevant review points.
+
+---
+
+## Test Case 19: Relevant Source Context Cards
+
+### Question
+
+```text
+What is the difference between GDPR and NIS2?
+```
+
+### Expected Result
+
+CyberLex Sweden should display relevant source context inside a collapsible expander.
+
+Each source context item should show:
+
+- source file
+- matched section
+- relevance score
+- excerpt
+
+### Pass Condition
+
+The source context cards are visible inside the expander and the excerpts are readable.
+
+---
+
+## Test Case 20: Other Matching Source Section Cards
+
+### Question
+
+```text
+What is DORA?
+```
+
+### Expected Result
+
+CyberLex Sweden should display other matching source sections ranked by relevance.
+
+### Pass Condition
+
+The other matching sections appear as styled cards and do not break the answer layout.
+
+---
+
+## Test Case 21: Swedish Interface Card Layout
+
+### Question
+
+```text
+När måste en personuppgiftsincident rapporteras?
+```
+
+### Expected Result
+
+CyberLex Sweden should answer using Swedish interface labels and show the same source-grounded card structure.
+
+### Pass Condition
+
+The answer appears with Swedish labels and the styled cards still render correctly.
+
+---
+
+## Test Case 22: Example Question Panel
+
+### Action
+
+Open the example questions panel and click an example question.
+
+### Expected Result
+
+CyberLex Sweden should:
+
+1. Fill the question input with the selected example question.
+2. Hide the example question panel.
+3. Generate an answer for the selected question.
+
+### Pass Condition
+
+The selected example question works without manually typing it.
+
+---
+
+## Improved Incident Handling Test Cases
+
+These test cases verify topic keyword expansion, improved cyber incident handling, improved unauthorized access wording, and separated practical short answers.
+
 ---
 
 ## Test Case 23: Ransomware Incident Handling
@@ -578,6 +792,215 @@ When must a personal data breach be reported?
 ```text
 What should a company do after a ransomware attack?
 ```
+
+### Expected Result
+
+CyberLex Sweden should treat ransomware as an in-scope cybersecurity incident question.
+
+The answer should explain that an organization should contain the incident, preserve evidence, document what happened, assess whether personal data was affected, and consider whether GDPR or NIS2 incident reporting may be relevant.
+
+### Expected Source
+
+```text
+nis2_incident_reporting.md
+```
+
+### Expected Section
+
+```text
+Relationship with GDPR breach reporting
+```
+
+### Pass Condition
+
+The question is not rejected as out-of-scope, and CyberLex displays a source-grounded answer with citation details, official source links, source metadata, limitation notice, attention level, and practical explanation.
+
+---
+
+## Test Case 24: Cyber Incident Checklist Handling
+
+### Question
+
+```text
+What should an organization check after a cyber incident?
+```
+
+### Expected Result
+
+CyberLex Sweden should treat the question as an in-scope cyber incident question.
+
+The answer should explain that the organization may need to assess incident containment, documentation, personal data impact, and whether NIS2 or GDPR reporting could be relevant.
+
+### Expected Source
+
+```text
+nis2_incident_reporting.md
+```
+
+### Expected Section
+
+```text
+Relationship with GDPR breach reporting
+```
+
+### Pass Condition
+
+CyberLex matches a relevant incident reporting source and displays the styled answer cards correctly.
+
+---
+
+## Test Case 25: Unauthorized Access English Answer
+
+### Question
+
+```text
+Is unauthorized access illegal in Sweden?
+```
+
+### Expected Result
+
+CyberLex Sweden should explain in English that unauthorized access to an information system may be illegal in Sweden.
+
+The answer may mention the Swedish offence `dataintrång`, but the English explanation should come first.
+
+### Expected Source
+
+```text
+cybercrime_dataintrang.md
+```
+
+### Expected Section
+
+```text
+Practical explanation
+```
+
+### Pass Condition
+
+The answer starts with English wording and does not begin directly with the Swedish term `Dataintrång`.
+
+---
+
+## Test Case 26: Ransomware Practical Short Answer
+
+### Question
+
+```text
+What should a company do after a ransomware attack?
+```
+
+### Expected Result
+
+CyberLex Sweden should give a ransomware-specific practical answer.
+
+The answer should explain that the organization should:
+
+- isolate affected systems
+- limit further spread
+- preserve logs and evidence
+- document the timeline
+- assess whether personal data was affected
+- assess whether GDPR notification to IMY may be required
+- assess whether NIS2 or Swedish Cybersecurity Act reporting may be relevant
+
+### Expected Source
+
+```text
+nis2_incident_reporting.md
+```
+
+### Expected Section
+
+```text
+Relationship with GDPR breach reporting
+```
+
+### Pass Condition
+
+The answer should mention ransomware or malware handling and should not use the exact same short answer as the general cyber incident test.
+
+---
+
+## Test Case 27: General Cyber Incident Practical Short Answer
+
+### Question
+
+```text
+What should an organization check after a cyber incident?
+```
+
+### Expected Result
+
+CyberLex Sweden should give a general cyber incident assessment answer.
+
+The answer should explain that the organization should check:
+
+- what happened
+- which systems and data were affected
+- whether personal data was involved
+- whether the incident may be reportable
+- the timeline
+- technical impact
+- decisions and actions taken
+- which legal frameworks were assessed, such as GDPR, NIS2, or the Swedish Cybersecurity Act
+
+### Expected Source
+
+```text
+nis2_incident_reporting.md
+```
+
+### Expected Section
+
+```text
+Relationship with GDPR breach reporting
+```
+
+### Pass Condition
+
+The answer should be a general assessment answer and should not use the exact same wording as the ransomware answer.
+
+---
+
+## Test Case 28: Data Breach Practical Short Answer
+
+### Question
+
+```text
+What should a company do after a data breach?
+```
+
+### Expected Result
+
+CyberLex Sweden should give a GDPR/data breach-specific practical answer.
+
+The answer should explain that the organization should:
+
+- contain the incident
+- preserve relevant evidence
+- document what happened
+- assess whether personal data was affected
+- assess whether the breach creates a risk to individuals' rights and freedoms
+- assess whether notification to IMY is required within 72 hours
+- assess whether affected individuals may need to be informed if the risk is high
+
+### Expected Source
+
+```text
+gdpr_personal_data_breach.md
+```
+
+### Expected Section
+
+```text
+Reporting to IMY
+```
+
+### Pass Condition
+
+The answer should focus on GDPR/data breach handling and should not use the same wording as the ransomware or general cyber incident answer.
+
+---
 
 ## Test Summary
 
@@ -593,5 +1016,21 @@ The current prototype successfully demonstrates:
 - Source metadata display
 - Legal disclaimer display
 - Out-of-scope question refusal
+- Styled citation details card
+- Styled official source links card
+- Styled source metadata card
+- Styled important limitation card
+- Styled CyberLex attention level card
+- Styled practical explanation card
+- Styled assessment checklist expander
+- Styled relevant source context cards
+- Styled other matching source section cards
+- Swedish interface card layout
+- Clickable example question panel behavior
+- Topic keyword expansion
+- Improved ransomware handling
+- Improved cyber incident handling
+- Improved unauthorized access English answer wording
+- Separated practical short answers for ransomware, cyber incidents, and data breaches
 
-The test results show that CyberLex Sweden can answer supported questions from trusted local knowledge files and refuse unsupported questions outside the project scope.
+The test results show that CyberLex Sweden can answer supported questions from trusted local knowledge files, display transparent source information, provide styled answer sections, and refuse unsupported questions outside the project scope.
