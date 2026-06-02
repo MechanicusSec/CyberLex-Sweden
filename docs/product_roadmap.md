@@ -28,6 +28,7 @@ The current prototype includes:
 - Practical explanation section
 - Topic-based assessment checklist
 - Collapsible source context
+- Styled official source links card
 - Other matching source sections list
 - Clickable example questions using Streamlit session state
 - Sidebar prototype version label
@@ -242,6 +243,7 @@ Make CyberLex Sweden look more professional and easier to use.
 - Prototype version label
 - Future AI mode sidebar note
 - Styled citation details card
+- Styled official source links card
 - Clickable example questions
 - Collapsible assessment checklist
 - Collapsible source context

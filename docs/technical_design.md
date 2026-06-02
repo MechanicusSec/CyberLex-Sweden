@@ -179,7 +179,7 @@ Example:
 
 ```markdown
 [IMY: Personal data breach guidance](https://www.imy.se/)
-```
+
 
 ### 4. Source metadata
 
