@@ -551,6 +551,24 @@ Passed.
 
 The system correctly matched the DORA relationship question to the DORA source and displayed traceability information.
 
+---
+
+## Prototype Version 0.5 UI Test Cases
+
+These test cases verify the styled answer layout introduced in prototype version 0.5.
+
+The purpose is to confirm that CyberLex Sweden displays source-grounded answers clearly, consistently, and with visible separation between the answer, sources, limitations, practical guidance, and supporting context.
+
+---
+
+## Test Case 12: Citation Details Card
+
+### Question
+
+```text
+When must a personal data breach be reported?
+```
+
 ## Test Summary
 
 The current prototype successfully demonstrates:
