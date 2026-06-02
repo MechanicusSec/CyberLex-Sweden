@@ -298,7 +298,16 @@ Current limitations include:
 - Source material must be manually reviewed and updated.
 
 ---
----
+
+## Prototype version label
+
+CyberLex Sweden displays a prototype version label in the sidebar.
+
+The current displayed version is:
+
+```text
+Prototype version: 0.4
+```
 
 ## Future AI mode sidebar note
 
