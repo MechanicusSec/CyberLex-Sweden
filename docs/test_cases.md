@@ -16,6 +16,7 @@ The goal is to verify that the application can:
 - Avoid unsupported answers when no trusted source exists
 - Display styled answer cards introduced in prototype version 0.5
 - Handle practical cyber incident questions with more specific short answers
+- Display detected topic labels for supported question categories
 
 ---
 
@@ -779,13 +780,39 @@ The selected example question works without manually typing it.
 
 ---
 
-## Improved Incident Handling Test Cases
+## Test Case 23: Detected Topic Card
 
-These test cases verify topic keyword expansion, improved cyber incident handling, improved unauthorized access wording, and separated practical short answers.
+### Question
+
+```text
+What should a company do after a ransomware attack?
+```
+
+### Expected Result
+
+CyberLex Sweden should display a detected topic card between the short answer and the citation details.
+
+The detected topic should explain how CyberLex interpreted the question.
+
+### Expected Topic
+
+```text
+Ransomware or malware incident
+```
+
+### Pass Condition
+
+The detected topic card is visible and shows a topic label that matches the question category.
 
 ---
 
-## Test Case 23: Ransomware Incident Handling
+## Improved Incident Handling Test Cases
+
+These test cases verify topic keyword expansion, improved cyber incident handling, improved unauthorized access wording, separated practical short answers, and separated assessment checklists.
+
+---
+
+## Test Case 24: Ransomware Incident Handling
 
 ### Question
 
@@ -813,11 +840,11 @@ Relationship with GDPR breach reporting
 
 ### Pass Condition
 
-The question is not rejected as out-of-scope, and CyberLex displays a source-grounded answer with citation details, official source links, source metadata, limitation notice, attention level, and practical explanation.
+The question is not rejected as out-of-scope, and CyberLex displays a source-grounded answer with citation details, official source links, source metadata, limitation notice, attention level, practical explanation, and assessment checklist.
 
 ---
 
-## Test Case 24: Cyber Incident Checklist Handling
+## Test Case 25: Cyber Incident Checklist Handling
 
 ### Question
 
@@ -849,7 +876,7 @@ CyberLex matches a relevant incident reporting source and displays the styled an
 
 ---
 
-## Test Case 25: Unauthorized Access English Answer
+## Test Case 26: Unauthorized Access English Answer
 
 ### Question
 
@@ -881,7 +908,7 @@ The answer starts with English wording and does not begin directly with the Swed
 
 ---
 
-## Test Case 26: Ransomware Practical Short Answer
+## Test Case 27: Ransomware Practical Short Answer
 
 ### Question
 
@@ -921,7 +948,7 @@ The answer should mention ransomware or malware handling and should not use the 
 
 ---
 
-## Test Case 27: General Cyber Incident Practical Short Answer
+## Test Case 28: General Cyber Incident Practical Short Answer
 
 ### Question
 
@@ -962,21 +989,12 @@ The answer should be a general assessment answer and should not use the exact sa
 
 ---
 
-## Test Case 28: Data Breach Practical Short Answer
+## Test Case 29: Data Breach Practical Short Answer
 
 ### Question
 
 ```text
 What should a company do after a data breach?
-```
----
-
-## Test Case 29: Ransomware Assessment Checklist
-
-### Question
-
-```text
-What should a company do after a ransomware attack?
 ```
 
 ### Expected Result
@@ -1011,6 +1029,93 @@ The answer should focus on GDPR/data breach handling and should not use the same
 
 ---
 
+## Test Case 30: Ransomware Assessment Checklist
+
+### Question
+
+```text
+What should a company do after a ransomware attack?
+```
+
+### Expected Result
+
+CyberLex Sweden should display a ransomware-specific assessment checklist.
+
+The checklist should include review points such as:
+
+- isolate affected systems
+- limit further spread
+- preserve logs and technical evidence
+- document the timeline, discovery, impact, and actions taken
+- check whether backups exist and are unaffected
+- assess whether personal data was affected
+- assess whether GDPR notification to IMY may be relevant
+- assess whether NIS2 or Swedish Cybersecurity Act reporting may be relevant
+
+### Pass Condition
+
+The checklist is clearly focused on ransomware or malware handling and is different from the general cyber incident checklist.
+
+---
+
+## Test Case 31: General Cyber Incident Assessment Checklist
+
+### Question
+
+```text
+What should an organization check after a cyber incident?
+```
+
+### Expected Result
+
+CyberLex Sweden should display a general cyber incident assessment checklist.
+
+The checklist should include review points such as:
+
+- identify what happened and when it was discovered
+- identify affected systems, accounts, services, and data
+- assess technical impact and severity
+- assess whether personal data was involved
+- check whether the incident may be reportable
+- assess whether GDPR, NIS2, or the Swedish Cybersecurity Act may be relevant
+- document timeline, technical impact, decisions, and actions taken
+- compare the assessment with official sources and internal incident response procedures
+
+### Pass Condition
+
+The checklist is clearly focused on general cyber incident assessment and is different from the ransomware checklist.
+
+---
+
+## Test Case 32: Data Breach Assessment Checklist
+
+### Question
+
+```text
+What should a company do after a data breach?
+```
+
+### Expected Result
+
+CyberLex Sweden should display a GDPR/data breach-specific assessment checklist.
+
+The checklist should include review points such as:
+
+- contain the incident
+- preserve relevant evidence
+- identify what personal data may have been affected
+- assess whether the breach may create risk to individuals' rights and freedoms
+- check when the organization became aware of the breach
+- assess whether notification to IMY is required within 72 hours
+- assess whether affected individuals may need to be informed if the risk is high
+- document the decision, timeline, actions, and sources
+
+### Pass Condition
+
+The checklist is clearly focused on GDPR/data breach handling and is different from the ransomware and general cyber incident checklists.
+
+---
+
 ## Test Summary
 
 The current prototype successfully demonstrates:
@@ -1029,17 +1134,20 @@ The current prototype successfully demonstrates:
 - Styled official source links card
 - Styled source metadata card
 - Styled important limitation card
-- Styled CyberLex attention level card
-- Styled practical explanation card
-- Styled assessment checklist expander
-- Styled relevant source context cards
-- Styled other matching source section cards
+- CyberLex attention level card
+- Practical explanation card
+- Assessment checklist expander
+- Relevant source context cards
+- Other matching source section cards
 - Swedish interface card layout
 - Clickable example question panel behavior
+- Detected topic card
+- Human-readable topic labels for ransomware, GDPR data breach, DORA, NIS2, GDPR, unauthorized access, and general cyber law questions
 - Topic keyword expansion
 - Improved ransomware handling
 - Improved cyber incident handling
 - Improved unauthorized access English answer wording
 - Separated practical short answers for ransomware, cyber incidents, and data breaches
+- Separated assessment checklists for ransomware, cyber incidents, and data breaches
 
 The test results show that CyberLex Sweden can answer supported questions from trusted local knowledge files, display transparent source information, provide styled answer sections, and refuse unsupported questions outside the project scope.
