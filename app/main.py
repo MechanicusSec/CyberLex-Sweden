@@ -1910,10 +1910,10 @@ st.sidebar.write(f"📄 {loaded_documents_label}: {len(documents)}")
 st.sidebar.write(f"🧩 {searchable_chunks_label}: {len(chunks)}")
 
 if interface_language == "Svenska":
-    st.sidebar.write("🛠️ Prototypversion: `0.4`")
+    st.sidebar.write("🛠️ Prototypversion: `0.5`")
     st.sidebar.write("🏷️ Byggtyp: Lokal utbildningsprototyp")
 else:
-    st.sidebar.write("🛠️ Prototype version: `0.4`")
+    st.sidebar.write("🛠️ Prototype version: `0.5`")
     st.sidebar.write("🏷️ Build type: Local educational prototype")
 
 st.sidebar.markdown("---")
