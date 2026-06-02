@@ -304,9 +304,20 @@ The checklist is educational and does not replace legal advice or official autho
 
 The relevant source context shows several matched source sections that support the answer.
 
-This section is inside an expandable Streamlit box so the page stays readable.
+This section is displayed inside a collapsible Streamlit expander so the page stays readable.
 
-It helps the user inspect supporting source material without overwhelming the main answer.
+Each matched source section is displayed as a styled source context card.
+
+Each context card shows:
+
+- matched source file
+- matched section
+- relevance score
+- short excerpt from the matched source section
+
+The source context cards help users inspect the supporting source material without overwhelming the main answer.
+
+This improves transparency because users can see which source sections CyberLex used as supporting context, not only the single best match.
 
 ### 10. Other matching source sections
 

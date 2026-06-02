@@ -20,6 +20,7 @@ The current prototype includes:
 - Source-based search and chunk ranking
 - Source routing for clear topic questions
 - Styled important limitation card
+- Styled relevant source context cards
 - Official source links with readable Markdown labels
 - Source date and version notes
 - Bilingual interface support for English and Swedish
@@ -72,6 +73,7 @@ Build a working local prototype that proves the core idea.
 - Source metadata
 - Citation details
 - Practical explanations
+- Styled relevant source context cards
 - Assessment checklists
 - Styled attention level card
 - Clickable example questions
@@ -250,6 +252,7 @@ Make CyberLex Sweden look more professional and easier to use.
 - Styled important limitation card
 - Styled citation details card
 - Styled assessment checklist card
+- Styled relevant source context cards
 - Styled official source links card
 - Clickable example questions
 - Styled practical explanation card
