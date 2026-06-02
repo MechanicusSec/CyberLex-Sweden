@@ -908,6 +908,50 @@ def generate_attention_level(question, search_results, language="English"):
     )
 
 
+def generate_source_confidence(score, language="English"):
+    # Converts the numeric relevance score into a readable confidence note.
+    # This is not legal certainty. It only describes how strong the local source match is.
+
+    use_swedish = language == "Svenska"
+
+    if score >= 180:
+        level = "Very strong"
+        reason = "The question closely matches the selected source section."
+    elif score >= 100:
+        level = "Strong"
+        reason = "The question has a clear match in the local knowledge base."
+    elif score >= 50:
+        level = "Moderate"
+        reason = "The question has a relevant match, but the user should review the supporting source context."
+    else:
+        level = "Limited"
+        reason = "The match is weak and should be treated cautiously."
+
+    if use_swedish:
+        if level == "Very strong":
+            level = "Mycket stark"
+            reason = "Frågan matchar den valda källsektionen tydligt."
+        elif level == "Strong":
+            level = "Stark"
+            reason = "Frågan har en tydlig matchning i den lokala kunskapsbasen."
+        elif level == "Moderate":
+            level = "Måttlig"
+            reason = "Frågan har en relevant matchning, men användaren bör granska källkontexten."
+        else:
+            level = "Begränsad"
+            reason = "Matchningen är svag och bör behandlas försiktigt."
+
+        return (
+            f"**Källmatchning:** `{level}`\n\n"
+            f"*{reason} Detta är inte juridisk säkerhet, utan bara en signal om hur stark källmatchningen är.*"
+        )
+
+    return (
+        f"**Source match confidence:** `{level}`\n\n"
+        f"*{reason} This is not legal certainty. It only describes how strong the source match is.*"
+    )
+
+
 def generate_simple_answer(question, best_match, language="English"):
     # Generates a simple source-based answer from the best matching chunk.
     question_lower = question.lower()
@@ -1254,6 +1298,7 @@ def generate_simple_answer(question, best_match, language="English"):
         f"**{matched_file_label}:** `{best_match['filename']}`\n\n"
         f"**{matched_section_label}:** `{best_match['section']}`\n\n"
         f"**{relevance_score_label}:** `{best_match['score']}`\n\n"
+        f"{generate_source_confidence(best_match['score'], language)}\n\n"
         f"## {official_sources_heading}\n\n"
         f"{source_lines}\n\n"
         f"## {metadata_heading}\n\n"
