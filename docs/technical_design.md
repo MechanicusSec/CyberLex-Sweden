@@ -254,13 +254,19 @@ The card uses CSS classes in `app/main.py` to show:
 
 This makes the attention level easier to notice while keeping the wording cautious and educational.
 
-### 7. Practical explanation
+### Practical explanation
 
-The practical explanation gives a plain-language explanation of what the answer means in practice.
+CyberLex displays a practical explanation for each generated answer.
 
-This section is rule-based and source-grounded. It does not use an external AI model.
+The practical explanation gives the user a plain-language explanation of how the matched legal or authority-based source may be understood in practice.
 
-The purpose is to make the answer more useful while still keeping the system transparent.
+This section is still rule-based and source-grounded. It does not use an external AI model.
+
+The practical explanation is displayed as a styled card in the Streamlit interface.
+
+The purpose is to make the answer easier to understand while keeping the source context visible.
+
+The practical explanation should not be treated as legal advice. It is an educational explanation based on the matched knowledge source and the current prototype rules.
 
 ### 8. CyberLex assessment checklist
 

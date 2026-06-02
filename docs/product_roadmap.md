@@ -34,6 +34,7 @@ The current prototype includes:
 - Clickable example questions using Streamlit session state
 - Sidebar prototype version label
 - Sidebar future AI mode note
+- Styled practical explanation card
 - Styled source metadata card
 - Legal limitation notice
 - Refusal behavior for out-of-scope questions
@@ -248,6 +249,7 @@ Make CyberLex Sweden look more professional and easier to use.
 - Styled citation details card
 - Styled official source links card
 - Clickable example questions
+- Styled practical explanation card
 - Collapsible assessment checklist
 - Collapsible source context
 - Styled CyberLex attention level card
