@@ -200,6 +200,18 @@ The purpose is to help users notice when a question may involve topics that requ
 - cybersecurity duties
 - reporting timelines
 
+The attention level is displayed as a styled card in the Streamlit interface.
+
+The card uses CSS classes in `app/main.py` to show:
+
+- a dark card background
+- a left border indicating the attention level
+- a bold level label
+- a short reason
+- a limitation note explaining that the level is not a legal risk rating
+
+This makes the attention level easier to notice while keeping the wording cautious and educational.
+
 ### 7. Practical explanation
 
 The practical explanation gives a plain-language explanation of what the answer means in practice.
