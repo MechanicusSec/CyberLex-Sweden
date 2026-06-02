@@ -179,6 +179,15 @@ Example:
 
 ```markdown
 [IMY: Personal data breach guidance](https://www.imy.se/)
+```
+
+Inside the Streamlit interface, official source links are displayed in a styled source card.
+
+The source card makes the official sources easier to see and separates them from the answer text.
+
+The application converts stored source links into clickable HTML links when displaying them inside the styled card.
+
+This helps users review the official sources behind the answer.
 
 
 ### 4. Source metadata
@@ -270,21 +279,26 @@ The practical explanation should not be treated as legal advice. It is an educat
 
 ### 8. CyberLex assessment checklist
 
-The CyberLex assessment checklist gives the user a structured way to review the issue.
+CyberLex displays a topic-based assessment checklist for each generated answer.
 
-The checklist is generated from the user question and the matched topic area.
+The checklist gives the user a structured way to review the issue raised by the question.
 
-For example, a personal data breach question produces a checklist about:
+The checklist is rule-based and changes depending on the topic, such as:
 
-- whether personal data is involved
-- risk assessment
-- awareness time
-- possible IMY notification
-- documentation
+- GDPR personal data breaches
+- NIS2 and cybersecurity incident reporting
+- overlap between NIS2 and GDPR
+- DORA
+- dataintrång
+- Cyber Resilience Act
 
-The checklist is not legal advice. It is a practical review aid that helps users think through the issue before checking official sources or contacting a qualified expert.
+The checklist is displayed inside a collapsible Streamlit expander.
 
-The checklist is displayed inside a collapsible Streamlit expander so the main answer stays readable.
+Inside the expander, the checklist items are displayed in a styled checklist card.
+
+This keeps the main answer page cleaner while still giving users practical review steps when they want more detail.
+
+The checklist is educational and does not replace legal advice or official authority guidance.
 
 ### 9. Relevant source context
 
