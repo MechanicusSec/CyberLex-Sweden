@@ -411,3 +411,100 @@ What is NIS2 incident reporting?
 What is DORA?
 When must a personal data breach be reported?
 Can an incident need to be reported under both NIS2 and GDPR?
+
+```
+
+Swedish examples:
+
+```text
+Vad är IMY?
+Vad är NIS2?
+Vad är DORA?
+När måste en personuppgiftsincident rapporteras?
+Kan en incident behöva rapporteras enligt både NIS2 och GDPR?
+```
+
+---
+
+## Risk Overview
+
+| Risk | Explanation | Mitigation |
+|---|---|---|
+| Outdated legal sources | Laws and guidance can change | Add source review dates and update history |
+| Unsupported answers | The system may answer without enough evidence | Use scope checks, source routing, and refusal behavior |
+| Wrong source match | Similar legal topics may confuse search | Use source routing and later vector search |
+| Overreliance by users | Users may treat answers as legal advice | Keep disclaimers and Terms of Use clear |
+| Privacy issues | Public deployment may process user input | Add Privacy Policy and avoid storing sensitive data |
+| Cyber misuse | Users may ask harmful cybercrime questions | Refuse harmful or out-of-scope questions |
+| Brand copying | Others may copy the name or concept | Keep copyright notice and consider trademark later |
+
+---
+
+## Near-Term Roadmap
+
+The next practical steps are:
+
+1. Add more Swedish and EU sources
+2. Add source update history improvements
+3. Prepare for ChromaDB vector search
+4. Test vector search against current keyword search
+5. Connect a language model only after retrieval is reliable
+6. Prepare deployment documentation
+7. Improve source cards and citation cards
+8. Review Terms of Use, Privacy Policy, and Legal Disclaimer
+
+---
+
+## Future AI Improvements
+
+Future AI-related improvements may include:
+
+- Vector search using ChromaDB or FAISS
+- Retrieval-Augmented Generation, also called RAG
+- AI-generated answers based only on trusted retrieved source sections
+- Better multi-source answer synthesis
+- Stronger citation handling
+- Refusal when source material is insufficient
+- Clear separation between legal information and practical guidance
+
+The future AI version should remain source-grounded and should not answer legal or compliance questions from general model memory alone.
+
+---
+
+## Possible Deployment Improvements
+
+Possible deployment improvements include:
+
+- Public deployment through Streamlit Community Cloud, Render, Azure, or AWS
+- Environment-based configuration
+- Better project branding
+- Improved UI layout for mobile screens
+- Public-facing README updates
+- Clear user-facing legal disclaimer
+
+---
+
+## Long-Term Vision
+
+CyberLex Sweden could become a source-grounded assistant for Swedish and EU cybersecurity law.
+
+A mature version should:
+
+- rely on official sources
+- show citations clearly
+- explain legal concepts in plain language
+- refuse unsupported questions
+- keep source history
+- protect user privacy
+- avoid harmful cybersecurity guidance
+- support future expansion into more compliance areas
+
+---
+
+## Summary
+
+CyberLex Sweden has moved beyond a basic prototype.
+
+The project now has a working application, trusted knowledge files, citation details, metadata, source policy, test cases, legal disclaimer drafts, clickable examples, structured answer sections, styled attention levels, and a development roadmap.
+
+The next major technical step is vector search, but the project should continue improving source quality, documentation, safety, and user experience before becoming public.
