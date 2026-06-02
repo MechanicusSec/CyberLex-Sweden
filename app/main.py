@@ -1832,10 +1832,10 @@ def generate_simple_answer(question, best_match, language="English"):
     return (
         f"## {short_answer_heading}\n\n"
         f"{answer}\n\n"
-        f'<div class="metadata-card">'
-        f'<div class="metadata-card-title">{topic_heading}</div>'
-        f'<div class="metadata-row"><strong>{topic_heading}:</strong> '
-        f'<span class="metadata-code">{detected_topic}</span></div>'
+        f'<div class="topic-card">'
+        f'<div class="topic-card-title">{topic_heading}</div>'
+        f'<div class="topic-row"><strong>{topic_heading}:</strong> '
+        f'<span class="topic-code">{detected_topic}</span></div>'
         f'</div>\n\n'
         f'<div class="citation-card">'
         f'<div class="citation-card-title">{citation_heading}</div>'
@@ -2081,6 +2081,37 @@ st.markdown(
         font-size: 0.9rem;
         font-style: italic;
         margin-top: 0.75rem;
+    }
+
+        .topic-card {
+        padding: 1rem;
+        border-radius: 12px;
+        border: 1px solid #2563eb;
+        background: linear-gradient(135deg, #0f172a, #111827);
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .topic-card-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 0.75rem;
+    }
+
+    .topic-row {
+        margin-bottom: 0.45rem;
+        color: #d1d5db;
+    }
+
+    .topic-row strong {
+        color: #ffffff;
+    }
+
+    .topic-code {
+        color: #93c5fd;
+        font-family: monospace;
+        font-weight: 600;
     }
 
     .metadata-card {
