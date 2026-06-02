@@ -650,12 +650,13 @@ def generate_practical_explanation(question, search_results, language="English")
                 "CyberLex shows the source context so it is clear which parts of the knowledge base support the answer."
             )
 
-        return (
+    return (
         f'<div class="practical-card">'
         f'<div class="practical-card-title">{heading}</div>'
         f'<div class="practical-card-text">{explanation}</div>'
         f'</div>'
     )
+
 
 def generate_assessment_checklist(question, search_results, language="English"):
     # Generates a simple assessment checklist based on the user's question.
@@ -796,13 +797,14 @@ def generate_assessment_checklist(question, search_results, language="English"):
                 "Use legal or authority-based guidance for important decisions."
             ]
 
-        checklist_items = "".join([f"<li>{item}</li>" for item in items])
+    checklist_items = "".join([f"<li>{item}</li>" for item in items])
 
-        return (
-            f'<div class="checklist-card">'
-            f'<ul>{checklist_items}</ul>'
-            f'</div>'
-        )
+    return (
+        f'<div class="checklist-card">'
+        f'<ul>{checklist_items}</ul>'
+        f'</div>'
+    )
+
 
 def generate_attention_level(question, search_results, language="English"):
     # Generates a simple CyberLex attention level.
@@ -1718,10 +1720,32 @@ st.markdown(
         margin-bottom: 0.35rem;
     }
 
-    .context-excerpt {
+        .context-excerpt {
         color: #d1d5db;
         line-height: 1.6;
         white-space: pre-wrap;
+    }
+
+    .match-card {
+        padding: 0.85rem;
+        border-radius: 10px;
+        border: 1px solid #334155;
+        background-color: #0f172a;
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .match-card strong {
+        color: #ffffff;
+    }
+
+    .match-code {
+        background-color: #111827;
+        color: #86efac;
+        padding: 0.15rem 0.35rem;
+        border-radius: 6px;
+        font-family: monospace;
+        font-size: 0.9rem;
     }
     </style>
     ''',
@@ -2079,7 +2103,7 @@ if question:
                     st.markdown(
                         generate_assessment_checklist(question, search_results, language),
                         unsafe_allow_html=True
-                )
+                    )
 
                 with st.expander(
                     "Relevant source context" if language != "Svenska" else "Relevant källkontext",
@@ -2096,16 +2120,22 @@ if question:
 
                 for result in search_results[:5]:
                     if language == "Svenska":
-                        st.write(
-                            f"**{result['filename']}** | "
-                            f"Sektion: **{result['section']}** | "
-                            f"Relevanspoäng: `{result['score']}`"
+                        st.markdown(
+                            f'<div class="match-card">'
+                            f'<strong>Källa:</strong> <span class="match-code">{result["filename"]}</span> '
+                            f'<strong>Sektion:</strong> <span class="match-code">{result["section"]}</span> '
+                            f'<strong>Relevanspoäng:</strong> <span class="match-code">{result["score"]}</span>'
+                            f'</div>',
+                            unsafe_allow_html=True
                         )
                     else:
-                        st.write(
-                            f"**{result['filename']}** | "
-                            f"Section: **{result['section']}** | "
-                            f"Relevance score: `{result['score']}`"
+                        st.markdown(
+                            f'<div class="match-card">'
+                            f'<strong>Source:</strong> <span class="match-code">{result["filename"]}</span> '
+                            f'<strong>Section:</strong> <span class="match-code">{result["section"]}</span> '
+                            f'<strong>Relevance score:</strong> <span class="match-code">{result["score"]}</span>'
+                            f'</div>',
+                            unsafe_allow_html=True
                         )
         else:
             st.error(out_of_scope_text)
