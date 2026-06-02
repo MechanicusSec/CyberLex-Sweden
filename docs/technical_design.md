@@ -248,7 +248,23 @@ CyberLex Sweden includes an example questions panel below the main question inpu
 
 The purpose of this panel is to help users understand what kinds of questions the prototype can answer.
 
-The panel is displayed inside a collapsible Streamlit expander.
+The panel can be shown or hidden with a Streamlit button.
+
+Each example question is displayed with a button that lets the user fill the question input field automatically.
+
+This is handled with Streamlit session state.
+
+Streamlit session state is used to remember:
+
+- the selected example question
+- whether the example questions panel should be visible or hidden
+
+When the user clicks an example question, CyberLex:
+
+1. stores the selected question in session state
+2. fills the question input field with that question
+3. hides the example questions panel
+4. reruns the Streamlit app so the answer is generated
 
 Example English questions include:
 
@@ -261,9 +277,9 @@ Example English questions include:
 - What is dataintrång?
 - What is the Cyber Resilience Act?
 
-In Swedish mode, the app displays Swedish example questions.
+In Swedish mode, the app displays Swedish example questions and Swedish button labels.
 
-This improves usability by making the supported scope more visible to the user.
+This improves usability by making the supported scope more visible and making it easier to test the prototype.
 
 ---
 
