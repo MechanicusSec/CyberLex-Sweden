@@ -6,7 +6,7 @@ This document explains the technical design of the CyberLex Sweden prototype.
 
 CyberLex Sweden is a local Streamlit application that answers questions about selected Swedish and EU cybersecurity law topics using a trusted local Markdown knowledge base.
 
-The prototype does not use a full language model yet. Instead, it uses source-based search, question intent matching, rule-based answer generation, practical explanations, assessment checklists, and transparent source display.
+The prototype does not use a full language model yet. Instead, it uses source-based search, question intent matching, rule-based answer generation, practical explanations, assessment checklists, detected topic labels, confidence explanations, and transparent source display.
 
 ---
 
@@ -19,6 +19,9 @@ The application is built with:
 - Local Markdown files
 - Rule-based source search
 - Source routing
+- Topic keyword expansion
+- Source confidence explanations
+- Detected topic labels
 - Source metadata extraction
 - Citation display
 - Bilingual interface support
@@ -56,7 +59,12 @@ It handles:
 - reading Markdown files
 - splitting documents into searchable chunks
 - scoring search results
+- routing questions to source files
+- expanding question terms
+- detecting question topics
 - generating answers
+- generating practical explanations
+- generating assessment checklists
 - displaying results through Streamlit
 
 ### Streamlit
@@ -70,7 +78,9 @@ It displays:
 - the question input field
 - answers
 - citations
+- detected topic cards
 - source metadata
+- confidence explanations
 - collapsible sections
 - warnings and disclaimers
 
@@ -101,11 +111,14 @@ CyberLex searches the local knowledge base by:
 1. Loading all Markdown files from `data/`.
 2. Splitting each file into smaller chunks based on headings.
 3. Cleaning the user question into searchable words.
-4. Matching question words against chunk text and section titles.
-5. Applying score boosts for useful sections.
-6. Applying score penalties for weak sections.
-7. Routing clear questions to the most relevant source file.
-8. Ranking results by relevance score.
+4. Expanding important question terms with related legal and cybersecurity terms.
+5. Matching question words against chunk text and section titles.
+6. Applying score boosts for useful sections.
+7. Applying score penalties for weak sections.
+8. Routing clear questions to the most relevant source file.
+9. Ranking results by relevance score.
+
+The best match is used for the main answer, while additional matching sections are shown for transparency.
 
 ### Topic keyword expansion
 
@@ -126,8 +139,6 @@ The expanded terms are added inside `search_chunks(question, chunks)` after the 
 
 This is still rule-based search. It does not use a language model or vector database yet.
 
-The best match is used for the main answer, while additional matching sections are shown for transparency.
-
 ---
 
 ## Source routing
@@ -146,6 +157,70 @@ This improves accuracy by preventing similar words from matching the wrong sourc
 
 ---
 
+## Detected topic labels
+
+CyberLex Sweden displays a detected topic label above the citation details.
+
+The function `detect_question_topic(question, language)` identifies a simple topic category from the user question.
+
+Examples of detected topic labels include:
+
+```text
+Ransomware or malware incident
+GDPR data breach
+Cyber incident assessment
+DORA and ICT risk
+NIS2 and cybersecurity duties
+Unauthorized access / dataintrång
+Cyber Resilience Act and product security
+GDPR and data protection
+EU cybercrime and information systems
+General cybersecurity law question
+```
+
+In Swedish mode, the topic labels are displayed in Swedish where relevant.
+
+The detected topic label does not replace source matching. It is only a user-facing explanation of how CyberLex interpreted the question.
+
+The detected topic card helps make the prototype easier to understand because the user can see the question category before reviewing the matched source, citation details, source metadata, limitation notice, and practical explanation.
+
+The detected topic card uses a dedicated `topic-card` style in `app/main.py`.
+
+---
+
+## Source confidence explanations
+
+CyberLex Sweden converts the numeric relevance score from local search into a human-readable source confidence explanation.
+
+The function `generate_source_confidence(score, language)` returns both:
+
+- a confidence level
+- a short explanation of why the match should be treated as strong, moderate, or limited
+
+The current English confidence levels are:
+
+```text
+Very strong
+Strong
+Moderate
+Limited
+```
+
+In Swedish mode, these are displayed as:
+
+```text
+Mycket stark
+Stark
+Måttlig
+Begränsad
+```
+
+The source confidence value does not represent legal certainty. It only explains how strongly the user question matched the selected local source section.
+
+This helps users understand whether the answer is based on a strong source match or whether they should review the source context more carefully.
+
+---
+
 ## CyberLex answer structure
 
 CyberLex Sweden answers are designed to be source-grounded and transparent.
@@ -158,7 +233,36 @@ The short answer gives a brief plain-language response to the user question.
 
 This is generated by the rule-based answer function in `app/main.py`.
 
-### 2. Citation details
+The short answer now includes more specific practical handling for different incident types, including:
+
+- ransomware or malware incidents
+- general cyber incidents
+- GDPR/data breach questions
+- unauthorized access questions
+- DORA questions
+- NIS2 questions
+
+### 2. Detected topic
+
+The detected topic card shows how CyberLex interpreted the question.
+
+For example:
+
+```text
+Detected topic: Ransomware or malware incident
+```
+
+or:
+
+```text
+Detected topic: GDPR data breach
+```
+
+This card appears between the short answer and the citation details.
+
+The purpose is to make the answer more understandable by showing the question category before the user reviews the matched source.
+
+### 3. Citation details
 
 The citation details show which local knowledge base file and section were used as the best match.
 
@@ -168,6 +272,7 @@ This includes:
 - matched section
 - relevance score
 - source match confidence
+- confidence explanation
 
 The relevance score is the numeric score produced by CyberLex Sweden’s local search and ranking logic.
 
@@ -186,7 +291,7 @@ The citation card shows the matched file, matched section, relevance score, sour
 
 This helps the user understand which source section CyberLex used first and how strong the match appears to be.
 
-### 3. Official source links
+### 4. Official source links
 
 The official source links show trusted legal or authority-based sources connected to the matched knowledge file.
 
@@ -208,8 +313,7 @@ The application converts stored source links into clickable HTML links when disp
 
 This helps users review the official sources behind the answer.
 
-
-### 4. Source metadata
+### 5. Source metadata
 
 CyberLex displays source metadata for the matched knowledge file.
 
@@ -228,7 +332,7 @@ This helps users and reviewers see whether the answer is based on source materia
 
 The metadata does not guarantee that a source is still legally current. It is a transparency feature that helps show how the local knowledge base is maintained.
 
-### 5. Important limitation
+### 6. Important limitation
 
 CyberLex displays an important limitation notice for each generated answer.
 
@@ -247,7 +351,7 @@ The limitation card helps users understand that:
 
 This is an important safety feature because CyberLex Sweden deals with legal and compliance-related topics.
 
-### 6. CyberLex attention level
+### 7. CyberLex attention level
 
 CyberLex displays an attention level for the answer.
 
@@ -282,7 +386,7 @@ The card uses CSS classes in `app/main.py` to show:
 
 This makes the attention level easier to notice while keeping the wording cautious and educational.
 
-### Practical explanation
+### 8. Practical explanation
 
 CyberLex displays a practical explanation for each generated answer.
 
@@ -296,7 +400,7 @@ The purpose is to make the answer easier to understand while keeping the source 
 
 The practical explanation should not be treated as legal advice. It is an educational explanation based on the matched knowledge source and the current prototype rules.
 
-### 8. CyberLex assessment checklist
+### 9. CyberLex assessment checklist
 
 CyberLex displays a topic-based assessment checklist for each generated answer.
 
@@ -305,6 +409,8 @@ The checklist gives the user a structured way to review the issue raised by the 
 The checklist is rule-based and changes depending on the topic, such as:
 
 - GDPR personal data breaches
+- ransomware or malware incidents
+- general cyber incidents
 - NIS2 and cybersecurity incident reporting
 - overlap between NIS2 and GDPR
 - DORA
@@ -319,7 +425,7 @@ This keeps the main answer page cleaner while still giving users practical revie
 
 The checklist is educational and does not replace legal advice or official authority guidance.
 
-### 9. Relevant source context
+### 10. Relevant source context
 
 The relevant source context shows several matched source sections that support the answer.
 
@@ -338,7 +444,7 @@ The source context cards help users inspect the supporting source material witho
 
 This improves transparency because users can see which source sections CyberLex used as supporting context, not only the single best match.
 
-### 10. Other matching source sections
+### 11. Other matching source sections
 
 CyberLex also lists other matching source sections ranked by relevance.
 
@@ -388,6 +494,9 @@ Example English questions include:
 - What are the GDPR principles?
 - When must a personal data breach be reported?
 - Can an incident need to be reported under both NIS2 and GDPR?
+- What should a company do after a ransomware attack?
+- What should an organization check after a cyber incident?
+- What should a company do after a data breach?
 - What is NIS2?
 - What is DORA?
 - What is dataintrång?
@@ -396,6 +505,48 @@ Example English questions include:
 In Swedish mode, the app displays Swedish example questions and Swedish button labels.
 
 This improves usability by making the supported scope more visible and making it easier to test the prototype.
+
+---
+
+## Prototype version label
+
+CyberLex Sweden displays a prototype version label in the sidebar.
+
+The current displayed version is:
+
+```text
+Prototype version: 0.5
+```
+
+Version 0.5 represents the styled answer-card prototype. This version includes citation details, detected topic labels, official source links, source metadata, important limitation cards, attention level cards, practical explanation cards, assessment checklist cards, relevant source context cards, and other matching source section cards.
+
+---
+
+## Future AI mode sidebar note
+
+CyberLex Sweden includes a small sidebar note called "Future AI mode".
+
+The purpose of this note is to make the prototype status clear to users and reviewers.
+
+The sidebar explains that the current version uses:
+
+- local Markdown files
+- source routing
+- keyword ranking
+- topic keyword expansion
+- detected topic labels
+- source confidence explanations
+- rule-based answers
+
+It also explains that a future version may use:
+
+- vector search
+- RAG
+- AI-generated answers based on trusted source material
+
+This helps separate the current working prototype from the planned future AI version.
+
+The current app does not use a full language model yet. It remains a local, rule-based, source-grounded prototype.
 
 ---
 
@@ -409,46 +560,13 @@ Current limitations include:
 - It does not browse the web live.
 - It only answers from local Markdown sources.
 - It only covers selected topics.
-- It uses rule-based answers, explanations, attention levels, and checklists.
+- It uses rule-based answers, explanations, attention levels, topic labels, confidence explanations, and checklists.
 - It does not provide legal advice.
 - Source material must be manually reviewed and updated.
+- Confidence labels describe local source matching only, not legal certainty.
+- Detected topic labels describe question interpretation only, not a legal classification.
 
 ---
-
-
-````markdown
-## Prototype version label
-
-CyberLex Sweden displays a prototype version label in the sidebar.
-
-The current displayed version is:
-
-```text
-Prototype version: 0.5
-```
-
-## Future AI mode sidebar note
-
-CyberLex Sweden includes a small sidebar note called "Future AI mode".
-
-The purpose of this note is to make the prototype status clear to users and reviewers.
-
-The sidebar explains that the current version uses:
-
-- local Markdown files
-- source routing
-- keyword ranking
-- rule-based answers
-
-It also explains that a future version may use:
-
-- vector search
-- RAG
-- AI-generated answers based on trusted source material
-
-This helps separate the current working prototype from the planned future AI version.
-
-The current app does not use a full language model yet. It remains a local, rule-based, source-grounded prototype.
 
 ## Future development
 
@@ -460,6 +578,7 @@ Future improvements may include:
 - AI-generated answers using a RAG design
 - stronger citation formatting
 - source update reminders
+- source quality labels
 - public deployment
 - improved visual design
 - stronger legal disclaimer and Terms of Use
