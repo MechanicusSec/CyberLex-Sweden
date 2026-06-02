@@ -50,6 +50,30 @@ These features make the current version a transparent, source-grounded education
 
 ---
 
+## Completed Milestone: Prototype Version 0.5
+
+Prototype version **0.5** focused on improving the user experience, answer structure, and readability of CyberLex Sweden.
+
+This version upgraded the app from a basic source-answer layout into a more structured interface with separate styled cards.
+
+Completed improvements:
+
+- Styled citation details card
+- Styled official source links card
+- Styled source metadata card
+- Styled important limitation warning card
+- Styled CyberLex attention level card
+- Styled practical explanation card
+- Styled assessment checklist card
+- Styled relevant source context cards
+- Styled other matching source section cards
+- Improved readability of source-grounded answers
+- Clearer separation between answer, source, limitation, and practical guidance sections
+- Improved bilingual interface support
+- Better presentation of source context and official references
+
+This version keeps the app as a local, rule-based prototype. A full AI/RAG mode is still planned for a later version.
+
 ## Phase 1: Prototype Foundation
 
 ### Status

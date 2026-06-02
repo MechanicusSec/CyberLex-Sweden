@@ -396,6 +396,8 @@ Current limitations include:
 
 ---
 
+
+````markdown
 ## Prototype version label
 
 CyberLex Sweden displays a prototype version label in the sidebar.
@@ -403,7 +405,7 @@ CyberLex Sweden displays a prototype version label in the sidebar.
 The current displayed version is:
 
 ```text
-Prototype version: 0.4
+Prototype version: 0.5
 ```
 
 ## Future AI mode sidebar note
