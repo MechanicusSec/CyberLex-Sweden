@@ -969,6 +969,15 @@ The answer should be a general assessment answer and should not use the exact sa
 ```text
 What should a company do after a data breach?
 ```
+---
+
+## Test Case 29: Ransomware Assessment Checklist
+
+### Question
+
+```text
+What should a company do after a ransomware attack?
+```
 
 ### Expected Result
 
