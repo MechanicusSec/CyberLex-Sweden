@@ -829,6 +829,7 @@ def generate_attention_level(question, search_results, language="English"):
 
     if any(term in question_lower for term in high_terms) or best_score >= 180:
         level = "High"
+
         if use_swedish:
             reason = (
                 "Frågan kan beröra incidentrapportering, tidsfrister, personuppgifter, "
@@ -842,6 +843,7 @@ def generate_attention_level(question, search_results, language="English"):
 
     elif any(term in question_lower for term in medium_terms) or best_score >= 100:
         level = "Medium"
+
         if use_swedish:
             reason = (
                 "Frågan verkar vara relevant för dataskydd, cybersäkerhetsrätt eller digital compliance, "
@@ -855,6 +857,7 @@ def generate_attention_level(question, search_results, language="English"):
 
     else:
         level = "Normal"
+
         if use_swedish:
             reason = (
                 "Frågan verkar vara en allmän informationsfråga inom CyberLex Swedens kunskapsområde."
@@ -864,9 +867,10 @@ def generate_attention_level(question, search_results, language="English"):
                 "The question appears to be a general information question within the CyberLex Sweden knowledge area."
             )
 
+    css_level = level.lower()
+
     if use_swedish:
         heading = "CyberLex uppmärksamhetsnivå"
-        level_label = "Nivå"
         reason_label = "Motivering"
 
         if level == "High":
@@ -882,10 +886,11 @@ def generate_attention_level(question, search_results, language="English"):
         )
 
         return (
-            f"## {heading}\n\n"
-            f"**{level_label}:** {translated_level}\n\n"
-            f"**{reason_label}:** {reason}\n\n"
-            f"*{limitation}*"
+            f'<div class="attention-card attention-level-{css_level}">'
+            f'<div class="attention-label">{heading}: {translated_level}</div>'
+            f'<div class="attention-reason"><strong>{reason_label}:</strong> {reason}</div>'
+            f'<div class="attention-limitation">{limitation}</div>'
+            f'</div>'
         )
 
     heading = "CyberLex attention level"
@@ -895,11 +900,13 @@ def generate_attention_level(question, search_results, language="English"):
     )
 
     return (
-        f"## {heading}\n\n"
-        f"**Level:** {level}\n\n"
-        f"**Reason:** {reason}\n\n"
-        f"*{limitation}*"
+        f'<div class="attention-card attention-level-{css_level}">'
+        f'<div class="attention-label">{heading}: {level}</div>'
+        f'<div class="attention-reason"><strong>Reason:</strong> {reason}</div>'
+        f'<div class="attention-limitation">{limitation}</div>'
+        f'</div>'
     )
+
 
 def generate_simple_answer(question, best_match, language="English"):
     # Generates a simple source-based answer from the best matching chunk.
@@ -1381,6 +1388,48 @@ st.markdown(
         color: #64748b;
         font-size: 0.95rem;
     }
+
+    .attention-card {
+        padding: 1rem;
+        border-radius: 12px;
+        border: 1px solid #475569;
+        background-color: #111827;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .attention-card strong {
+        color: #ffffff;
+    }
+
+    .attention-level-high {
+        border-left: 6px solid #ef4444;
+    }
+
+    .attention-level-medium {
+        border-left: 6px solid #f59e0b;
+    }
+
+    .attention-level-normal {
+        border-left: 6px solid #22c55e;
+    }
+
+    .attention-label {
+        font-size: 1.05rem;
+        font-weight: 700;
+        margin-bottom: 0.4rem;
+    }
+
+    .attention-reason {
+        color: #d1d5db;
+        margin-bottom: 0.4rem;
+    }
+
+    .attention-limitation {
+        color: #9ca3af;
+        font-size: 0.9rem;
+        font-style: italic;
+    }
     </style>
     ''',
     unsafe_allow_html=True
@@ -1717,15 +1766,18 @@ if question:
                 st.error(out_of_scope_text)
             else:
                 st.subheader(answer_header)
-            st.markdown(generate_simple_answer(question, best_match, language))
-            st.markdown(generate_attention_level(question, search_results, language))
-            st.markdown(generate_practical_explanation(question, search_results, language))
+                st.markdown(generate_simple_answer(question, best_match, language))
+                st.markdown(
+                    generate_attention_level(question, search_results, language),
+                    unsafe_allow_html=True
+                )
+                st.markdown(generate_practical_explanation(question, search_results, language))
 
-            with st.expander(
-                "CyberLex assessment checklist" if language != "Svenska" else "CyberLex bedömningschecklista",
-                expanded=False
-            ):
-                st.markdown(generate_assessment_checklist(question, search_results, language))
+                with st.expander(
+                    "CyberLex assessment checklist" if language != "Svenska" else "CyberLex bedömningschecklista",
+                    expanded=False
+                ):
+                    st.markdown(generate_assessment_checklist(question, search_results, language))
 
                 with st.expander(
                     "Relevant source context" if language != "Svenska" else "Relevant källkontext",
