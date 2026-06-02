@@ -369,6 +369,23 @@ def get_target_source_file(question):
     ):
         return "imy_gdpr_supervision.md"
 
+    # Data breach questions should route to GDPR breach material before broader incident routing.
+    if (
+        "personal data breach" in question_lower
+        or "data breach" in question_lower
+        or "breach reported" in question_lower
+        or "data breach reported" in question_lower
+        or "72-hour" in question_lower
+        or "72 hour" in question_lower
+        or "breach notification" in question_lower
+        or "personuppgiftsincident" in question_lower
+        or "när måste en personuppgiftsincident rapporteras" in question_lower
+        or "när ska en personuppgiftsincident anmälas" in question_lower
+        or "rapportera personuppgiftsincident" in question_lower
+        or "72 timmar" in question_lower
+    ):
+        return "gdpr_personal_data_breach.md"
+
     if (
         "nis2 incident reporting" in question_lower
         or "ransomware" in question_lower
@@ -1243,6 +1260,80 @@ def generate_simple_answer(question, best_match, language="English"):
     use_swedish = language == "Svenska"
 
     if (
+        "data breach" in question_lower
+        or "personal data breach" in question_lower
+        or "personuppgiftsincident" in question_lower
+    ) and (
+        "what should" in question_lower
+        or "what must" in question_lower
+        or "what does" in question_lower
+        or "after" in question_lower
+        or "reported" in question_lower
+        or "report" in question_lower
+        or "rapportera" in question_lower
+        or "rapporteras" in question_lower
+    ):
+        if use_swedish:
+            answer = (
+                "Efter en personuppgiftsincident bör organisationen först begränsa incidenten, bevara relevant bevisning "
+                "och dokumentera vad som har hänt. Därefter bör organisationen bedöma om incidenten innebär risk för "
+                "registrerades rättigheter och friheter, om anmälan till IMY krävs inom 72 timmar, och om de berörda personerna "
+                "kan behöva informeras vid hög risk."
+            )
+        else:
+            answer = (
+                "After a data breach, an organization should first contain the incident, preserve relevant evidence, "
+                "and document what happened. It should then assess whether personal data was affected, whether the breach creates "
+                "a risk to individuals' rights and freedoms, whether notification to IMY is required within 72 hours, "
+                "and whether affected individuals may need to be informed if the risk is high."
+            )
+
+    elif (
+        "ransomware" in question_lower
+        or "malware" in question_lower
+        or "cyber attack" in question_lower
+        or "cyberattack" in question_lower
+    ):
+        if use_swedish:
+            answer = (
+                "Efter en ransomwareattack eller malwareincident bör organisationen först isolera drabbade system, "
+                "begränsa vidare spridning, säkra loggar och bevis, och dokumentera tidslinjen. Därefter bör organisationen "
+                "bedöma om personuppgifter har påverkats, om anmälan till IMY enligt GDPR kan krävas, och om "
+                "incidentrapportering enligt NIS2 eller den svenska cybersäkerhetslagen kan vara relevant."
+            )
+        else:
+            answer = (
+                "After a ransomware or malware attack, an organization should first isolate affected systems, "
+                "limit further spread, preserve logs and evidence, and document the timeline. It should then assess "
+                "whether personal data was affected, whether notification to IMY under GDPR may be required, and whether "
+                "incident reporting under NIS2 or the Swedish Cybersecurity Act may be relevant."
+            )
+
+    elif (
+        "cyber incident" in question_lower
+        or "security incident" in question_lower
+        or "incident response" in question_lower
+        or "what should an organization check after" in question_lower
+        or "what should an organisation check after" in question_lower
+        or "what should an organization do after a cyber incident" in question_lower
+        or "what should an organisation do after a cyber incident" in question_lower
+    ):
+        if use_swedish:
+            answer = (
+                "Efter en cyberincident bör organisationen kontrollera vad som hänt, vilka system och data som berörts, "
+                "om personuppgifter har påverkats, och om incidenten kan vara rapporteringspliktig. Organisationen bör också "
+                "dokumentera tidslinje, teknisk påverkan, beslut, åtgärder och vilka regelverk som har bedömts, till exempel "
+                "GDPR, NIS2 eller den svenska cybersäkerhetslagen."
+            )
+        else:
+            answer = (
+                "After a cyber incident, an organization should check what happened, which systems and data were affected, "
+                "whether personal data was involved, and whether the incident may be reportable. It should also document "
+                "the timeline, technical impact, decisions, actions taken, and which legal frameworks were assessed, such as "
+                "GDPR, NIS2, or the Swedish Cybersecurity Act."
+            )
+
+    elif (
         "what is imy" in question_lower
         or "what does imy do" in question_lower
         or question_lower.strip() == "imy"
@@ -1306,28 +1397,6 @@ def generate_simple_answer(question, best_match, language="English"):
                 "It focuses on ICT risk management, major ICT-related incident reporting, digital operational resilience testing, "
                 "ICT third-party risk management, and information sharing. Its purpose is to help financial entities withstand, "
                 "respond to, and recover from ICT disruptions and cyber incidents."
-            )
-
-    elif (
-        "ransomware" in question_lower
-        or "malware" in question_lower
-        or "cyber attack" in question_lower
-        or "cyberattack" in question_lower
-        or "security incident" in question_lower
-        or "cyber incident" in question_lower
-        or "incident response" in question_lower
-    ):
-        if use_swedish:
-            answer = (
-                "Efter en ransomware- eller cyberincident bör en organisation först begränsa skadan, säkra bevis och dokumentera händelseförloppet. "
-                "Därefter bör organisationen bedöma om personuppgifter har påverkats, om en anmälan till IMY enligt GDPR kan krävas, "
-                "och om incidentrapportering enligt NIS2 eller den svenska cybersäkerhetslagen kan vara relevant."
-            )
-        else:
-            answer = (
-                "After a ransomware or cyber incident, an organization should first contain the incident, preserve evidence, and document what happened. "
-                "It should then assess whether personal data was affected, whether notification to IMY under GDPR may be required, "
-                "and whether incident reporting under NIS2 or the Swedish Cybersecurity Act may be relevant."
             )
 
     elif (
