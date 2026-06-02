@@ -526,12 +526,17 @@ def build_source_context(search_results, language="English", max_results=3):
             excerpt = excerpt[:700].rsplit(" ", 1)[0] + "..."
 
         context_blocks.append(
-            f"### {result['section']}\n\n"
-            f"- **{file_label}:** `{result['filename']}`\n"
-            f"- **{section_label}:** `{result['section']}`\n"
-            f"- **{score_label}:** `{result['score']}`\n\n"
-            f"**{excerpt_label}:**\n\n"
-            f"{excerpt}\n"
+            f'<div class="context-card">'
+            f'<div class="context-card-title">{result["section"]}</div>'
+            f'<div class="context-row"><strong>{file_label}:</strong> '
+            f'<span class="context-code">{result["filename"]}</span></div>'
+            f'<div class="context-row"><strong>{section_label}:</strong> '
+            f'<span class="context-code">{result["section"]}</span></div>'
+            f'<div class="context-row"><strong>{score_label}:</strong> '
+            f'<span class="context-code">{result["score"]}</span></div>'
+            f'<div class="context-excerpt-label">{excerpt_label}:</div>'
+            f'<div class="context-excerpt">{excerpt}</div>'
+            f'</div>'
         )
 
     return "\n".join(context_blocks)
@@ -1666,10 +1671,57 @@ st.markdown(
         padding-left: 1.25rem;
     }
 
-    .checklist-card li {
+        .checklist-card li {
         color: #d1d5db;
         margin-bottom: 0.45rem;
         line-height: 1.5;
+    }
+
+    .context-card {
+        padding: 1rem;
+        border-radius: 12px;
+        border: 1px solid #334155;
+        background-color: #0f172a;
+        margin-top: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .context-card-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 0.75rem;
+    }
+
+    .context-row {
+        margin-bottom: 0.45rem;
+        color: #d1d5db;
+    }
+
+    .context-row strong {
+        color: #ffffff;
+    }
+
+    .context-code {
+        background-color: #111827;
+        color: #86efac;
+        padding: 0.15rem 0.35rem;
+        border-radius: 6px;
+        font-family: monospace;
+        font-size: 0.9rem;
+    }
+
+    .context-excerpt-label {
+        font-weight: 700;
+        color: #ffffff;
+        margin-top: 0.75rem;
+        margin-bottom: 0.35rem;
+    }
+
+    .context-excerpt {
+        color: #d1d5db;
+        line-height: 1.6;
+        white-space: pre-wrap;
     }
     </style>
     ''',
@@ -2034,7 +2086,10 @@ if question:
                     expanded=False
                 ):
                     st.caption(source_context_caption)
-                    st.markdown(build_source_context(search_results, language, max_results=3))
+                    st.markdown(
+                        build_source_context(search_results, language, max_results=3),
+                        unsafe_allow_html=True
+                    )
 
                 st.subheader(other_matches_header)
                 st.caption(other_matches_caption)
