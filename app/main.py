@@ -913,28 +913,55 @@ def generate_assessment_checklist(question, search_results, language="English"):
         heading = "CyberLex bedömningschecklista"
 
         if (
+            "data breach" in question_lower
+            or "personal data breach" in question_lower
+            or "personuppgiftsincident" in question_lower
+            or "72" in question_lower
+        ):
+            items = [
+                "Begränsa incidenten och bevara relevant bevisning.",
+                "Identifiera vilka personuppgifter som kan ha påverkats.",
+                "Bedöm om incidenten kan innebära risk för registrerade personers rättigheter och friheter.",
+                "Kontrollera när organisationen blev medveten om incidenten.",
+                "Bedöm om anmälan till IMY krävs inom 72 timmar.",
+                "Bedöm om berörda personer behöver informeras vid hög risk.",
+                "Dokumentera beslut, tidslinje, åtgärder och källor."
+            ]
+
+        elif (
             "ransomware" in question_lower
             or "malware" in question_lower
             or "cyberattack" in question_lower
             or "cyber attack" in question_lower
-            or "cyberincident" in question_lower
-            or "cyber incident" in question_lower
-        ):
+            ):
             items = [
-                "Begränsa incidenten och säkra system, loggar och bevis.",
+                "Isolera drabbade system för att begränsa spridning.",
+                "Säkra loggar, systeminformation och annan teknisk bevisning.",
+                "Dokumentera tidslinje, upptäckt, påverkan och vidtagna åtgärder.",
+                "Kontrollera om säkerhetskopior finns och om de är opåverkade.",
                 "Bedöm om personuppgifter har påverkats.",
                 "Bedöm om GDPR-anmälan till IMY kan vara relevant.",
                 "Bedöm om NIS2/cybersäkerhetslagen eller annan incidentrapportering kan vara relevant.",
-                "Dokumentera tidslinje, beslut, åtgärder och källor."
+                "Jämför bedömningen med aktuella källor och interna incidentrutiner."
             ]
 
-        elif "personal data breach" in question_lower or "personuppgiftsincident" in question_lower or "72" in question_lower:
+        elif (
+            "cyber incident" in question_lower
+            or "cyberincident" in question_lower
+            or "security incident" in question_lower
+            or "incident response" in question_lower
+            or "what should an organization check after" in question_lower
+            or "what should an organisation check after" in question_lower
+        ):
             items = [
-                "Identifiera om incidenten berör personuppgifter.",
-                "Bedöm om incidenten kan innebära risk för registrerade personers rättigheter och friheter.",
-                "Kontrollera när organisationen blev medveten om incidenten.",
-                "Bedöm om anmälan till IMY kan vara relevant.",
-                "Dokumentera beslut, tidslinje, åtgärder och källor."
+                "Identifiera vad som har hänt och när incidenten upptäcktes.",
+                "Identifiera vilka system, konton, tjänster och data som påverkats.",
+                "Bedöm incidentens tekniska påverkan och allvarlighetsgrad.",
+                "Bedöm om personuppgifter har påverkats.",
+                "Kontrollera om incidenten kan vara rapporteringspliktig.",
+                "Bedöm om GDPR, NIS2 eller den svenska cybersäkerhetslagen kan vara relevanta.",
+                "Dokumentera tidslinje, teknisk påverkan, beslut och åtgärder.",
+                "Jämför bedömningen med officiella källor och interna incidentrutiner."
             ]
 
         elif ("nis2" in question_lower or "cybersäkerhetslagen" in question_lower) and "gdpr" in question_lower:
@@ -995,28 +1022,53 @@ def generate_assessment_checklist(question, search_results, language="English"):
         heading = "CyberLex assessment checklist"
 
         if (
+            "data breach" in question_lower
+            or "personal data breach" in question_lower
+            or "72" in question_lower
+        ):
+            items = [
+                "Contain the incident and preserve relevant evidence.",
+                "Identify what personal data may have been affected.",
+                "Assess whether the breach may create risk to individuals' rights and freedoms.",
+                "Check when the organization became aware of the breach.",
+                "Assess whether notification to IMY is required within 72 hours.",
+                "Assess whether affected individuals may need to be informed if the risk is high.",
+                "Document the decision, timeline, actions, and sources."
+            ]
+
+        elif (
             "ransomware" in question_lower
             or "malware" in question_lower
             or "cyberattack" in question_lower
             or "cyber attack" in question_lower
-            or "cyber incident" in question_lower
-            or "security incident" in question_lower
-        ):
+            ):
             items = [
-                "Contain the incident and preserve systems, logs, and evidence.",
+                "Isolate affected systems to limit further spread.",
+                "Preserve logs, system information, and other technical evidence.",
+                "Document the timeline, discovery, impact, and actions taken.",
+                "Check whether backups exist and whether they are unaffected.",
                 "Assess whether personal data has been affected.",
                 "Assess whether GDPR notification to IMY may be relevant.",
                 "Assess whether NIS2/Swedish Cybersecurity Act reporting or another incident reporting path may be relevant.",
-                "Document the timeline, decisions, actions, and sources."
+                "Compare the assessment with official sources and internal incident response procedures."
             ]
 
-        elif "personal data breach" in question_lower or "breach" in question_lower or "72" in question_lower:
+        elif (
+            "cyber incident" in question_lower
+            or "security incident" in question_lower
+            or "incident response" in question_lower
+            or "what should an organization check after" in question_lower
+            or "what should an organisation check after" in question_lower
+        ):
             items = [
-                "Identify whether the incident involves personal data.",
-                "Assess whether the incident may create risk to individuals' rights and freedoms.",
-                "Check when the organization became aware of the incident.",
-                "Assess whether notification to IMY may be relevant.",
-                "Document the decision, timeline, actions, and sources."
+                "Identify what happened and when the incident was discovered.",
+                "Identify which systems, accounts, services, and data were affected.",
+                "Assess the technical impact and severity of the incident.",
+                "Assess whether personal data was involved.",
+                "Check whether the incident may be reportable.",
+                "Assess whether GDPR, NIS2, or the Swedish Cybersecurity Act may be relevant.",
+                "Document the timeline, technical impact, decisions, and actions taken.",
+                "Compare the assessment with official sources and internal incident response procedures."
             ]
 
         elif ("nis2" in question_lower or "cybersecurity act" in question_lower) and "gdpr" in question_lower:
