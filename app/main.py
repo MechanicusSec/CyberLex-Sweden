@@ -1248,18 +1248,21 @@ def generate_simple_answer(question, best_match, language="English"):
 
     official_sources = best_match.get("official_sources", [])
 
-    source_lines = "\n".join(
+    source_lines = "".join(
         [
-            f"- [{source['label']}]({source['url']})"
+            f'<li><a href="{source["url"]}" target="_blank" rel="noopener noreferrer">{source["label"]}</a></li>'
             for source in official_sources
         ]
     )
 
+    if source_lines:
+        source_lines = f"<ul>{source_lines}</ul>"
+
     if not source_lines:
         if use_swedish:
-            source_lines = "- Ingen officiell källänk är sparad för detta dokument ännu."
+            source_lines = "<p>Ingen officiell källänk är sparad för detta dokument ännu.</p>"
         else:
-            source_lines = "- No official source URL stored for this document yet."
+            source_lines = "<p>No official source URL stored for this document yet.</p>"
 
     source_date = best_match.get("source_date", "No source date stored.")
     version_notes = best_match.get("version_notes", "No version notes stored.")
@@ -1313,8 +1316,10 @@ def generate_simple_answer(question, best_match, language="English"):
         f'<div class="citation-note">{confidence["reason"]} '
         f'{"Detta är inte juridisk säkerhet. Det beskriver bara hur stark källmatchningen är." if use_swedish else "This is not legal certainty. It only describes how strong the source match is."}</div>'
         f'</div>\n\n'
-        f"## {official_sources_heading}\n\n"
-        f"{source_lines}\n\n"
+        f'<div class="source-card">'
+        f'<div class="source-card-title">{official_sources_heading}</div>'
+        f'{source_lines}'
+        f'</div>\n\n'
         f'<div class="metadata-card">'
         f'<div class="metadata-card-title">{metadata_heading}</div>'
         f'<div class="metadata-row"><strong>{source_date_label}:</strong> '
@@ -1560,13 +1565,37 @@ st.markdown(
         color: #ffffff;
     }
 
-    .metadata-code {
+        .metadata-code {
         background-color: #111827;
         color: #93c5fd;
         padding: 0.15rem 0.35rem;
         border-radius: 6px;
         font-family: monospace;
         font-size: 0.9rem;
+    }
+
+    .source-card {
+        padding: 1rem;
+        border-radius: 12px;
+        border: 1px solid #334155;
+        background-color: #0f172a;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .source-card-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 0.75rem;
+    }
+
+    .source-card ul {
+        margin-bottom: 0;
+    }
+
+    .source-card li {
+        margin-bottom: 0.35rem;
     }
     </style>
     ''',
