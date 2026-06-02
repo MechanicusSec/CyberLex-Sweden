@@ -645,7 +645,12 @@ def generate_practical_explanation(question, search_results, language="English")
                 "CyberLex shows the source context so it is clear which parts of the knowledge base support the answer."
             )
 
-    return f"## {heading}\n\n{explanation}"
+        return (
+        f'<div class="practical-card">'
+        f'<div class="practical-card-title">{heading}</div>'
+        f'<div class="practical-card-text">{explanation}</div>'
+        f'</div>'
+    )
 
 def generate_assessment_checklist(question, search_results, language="English"):
     # Generates a simple assessment checklist based on the user's question.
@@ -1616,9 +1621,31 @@ st.markdown(
         margin-bottom: 0.75rem;
     }
 
-    .limitation-card-text {
+        .limitation-card-text {
         color: #fef3c7;
         font-size: 0.95rem;
+    }
+
+    .practical-card {
+        padding: 1rem;
+        border-radius: 12px;
+        border: 1px solid #334155;
+        background-color: #0f172a;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .practical-card-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 0.75rem;
+    }
+
+    .practical-card-text {
+        color: #d1d5db;
+        font-size: 0.95rem;
+        line-height: 1.6;
     }
     </style>
     ''',
@@ -1964,7 +1991,10 @@ if question:
                     generate_attention_level(question, search_results, language),
                     unsafe_allow_html=True
                 )
-                st.markdown(generate_practical_explanation(question, search_results, language))
+                st.markdown(
+                    generate_practical_explanation(question, search_results, language),
+                    unsafe_allow_html=True
+                )
 
                 with st.expander(
                     "CyberLex assessment checklist" if language != "Svenska" else "CyberLex bedömningschecklista",
