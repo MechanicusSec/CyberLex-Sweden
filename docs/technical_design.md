@@ -183,9 +183,22 @@ Example:
 
 ### 4. Source metadata
 
-The source metadata shows source date and version notes.
+CyberLex displays source metadata for the matched knowledge file.
 
-This helps users understand when the source was checked or updated.
+This includes:
+
+- source date
+- version notes
+
+The source date shows when the source material was last checked or added.
+
+The version notes explain what kind of update or summary was added to the knowledge file.
+
+The source metadata is displayed as a styled card in the Streamlit interface.
+
+This helps users and reviewers see whether the answer is based on source material that has an update history and a documented review date.
+
+The metadata does not guarantee that a source is still legally current. It is a transparency feature that helps show how the local knowledge base is maintained.
 
 ### 5. Important limitation
 
