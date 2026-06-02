@@ -1571,10 +1571,21 @@ for doc in documents:
 
 st.header(ask_heading)
 
-question = st.text_input(question_label)
+if "selected_example_question" not in st.session_state:
+    st.session_state.selected_example_question = ""
+
+if "show_example_questions" not in st.session_state:
+    st.session_state.show_example_questions = False
+
+question = st.text_input(
+    question_label,
+    value=st.session_state.selected_example_question
+)
+
 if language_mode == "Svenska":
     example_questions_heading = "Exempelfrågor"
-    example_questions_intro = "Här är frågor som CyberLex Sweden kan hantera i prototypen:"
+    example_questions_intro = "Klicka på en fråga för att fylla i frågefältet:"
+    use_question_button_label = "Använd denna fråga"
     example_questions = [
         "Vad är GDPR?",
         "Vilka är GDPR-principerna?",
@@ -1587,7 +1598,8 @@ if language_mode == "Svenska":
     ]
 else:
     example_questions_heading = "Example questions"
-    example_questions_intro = "Here are questions CyberLex Sweden can handle in this prototype:"
+    example_questions_intro = "Click a question to fill the input field:"
+    use_question_button_label = "Use this question"
     example_questions = [
         "What is GDPR?",
         "What are the GDPR principles?",
@@ -1599,11 +1611,34 @@ else:
         "What is the Cyber Resilience Act?"
     ]
 
-with st.expander(example_questions_heading, expanded=False):
+toggle_examples_label = (
+    "Dölj exempelfrågor"
+    if language_mode == "Svenska" and st.session_state.show_example_questions
+    else "Visa exempelfrågor"
+    if language_mode == "Svenska"
+    else "Hide example questions"
+    if st.session_state.show_example_questions
+    else "Show example questions"
+)
+
+if st.button(toggle_examples_label, key="toggle_example_questions"):
+    st.session_state.show_example_questions = not st.session_state.show_example_questions
+    st.rerun()
+
+if st.session_state.show_example_questions:
+    st.markdown(f"### {example_questions_heading}")
     st.write(example_questions_intro)
 
-    for example_question in example_questions:
+    for index, example_question in enumerate(example_questions):
         st.code(example_question, language=None)
+
+        if st.button(
+            use_question_button_label,
+            key=f"example_question_{index}_{language_mode}"
+        ):
+            st.session_state.selected_example_question = example_question
+            st.session_state.show_example_questions = False
+            st.rerun()
 
 # This controls the answer language.
 # Auto detects Swedish or English only after the user has typed a question.
