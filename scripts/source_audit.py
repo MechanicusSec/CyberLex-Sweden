@@ -131,6 +131,15 @@ def audit_file(file_path):
     source_date = extract_source_date(metadata_section)
     version_notes = extract_version_notes(metadata_section)
 
+    # Fallback:
+    # If metadata was not found inside a Source metadata section,
+    # scan the whole file. This makes the audit more tolerant of older source file formats.
+    if not source_date:
+        source_date = extract_source_date(content)
+
+    if not version_notes:
+        version_notes = extract_version_notes(content)
+
     official_link_count = count_links(official_source_section)
     freshness_label = get_freshness_label(source_date)
 
