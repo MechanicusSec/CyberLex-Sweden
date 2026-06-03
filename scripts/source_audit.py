@@ -18,20 +18,30 @@ def read_markdown_file(file_path):
     return file_path.read_text(encoding="utf-8")
 
 
+def clean_markdown_label(text):
+    """
+    Remove common Markdown formatting from labels.
+
+    Example:
+    **Source date:** becomes Source date:
+    """
+    text = text.replace("**", "")
+    text = text.replace("__", "")
+    text = text.strip()
+    return text
+
+
 def extract_section(content, heading):
     """
     Extract a Markdown section by heading.
 
-    Example:
-    heading = "Official source"
-
-    This looks for:
-    ## Official source
-
-    Then it returns the text until the next ## heading.
+    This supports headings such as:
+    ## Source metadata
+    ### Source metadata
+    #### Source metadata
     """
-    pattern = rf"##\s+{re.escape(heading)}\s*(.*?)(?=\n##\s+|\Z)"
-    match = re.search(pattern, content, flags=re.IGNORECASE | re.DOTALL)
+    pattern = rf"^#{{2,6}}\s+{re.escape(heading)}\s*$([\s\S]*?)(?=^#{{2,6}}\s+|\Z)"
+    match = re.search(pattern, content, flags=re.IGNORECASE | re.MULTILINE)
 
     if not match:
         return ""
@@ -43,13 +53,17 @@ def extract_source_date(metadata_section):
     """
     Extract the source date line from the Source metadata section.
 
-    Expected examples:
+    Supported examples:
     Source date: Last checked: 2026-05-31
-    Source date: 2026-05-31
+    **Source date:** Last checked: 2026-05-31
+    - Source date: Last checked: 2026-05-31
     """
     for line in metadata_section.splitlines():
-        if line.lower().strip().startswith("source date"):
-            return line.strip()
+        cleaned = clean_markdown_label(line)
+        cleaned = cleaned.lstrip("-").strip()
+
+        if cleaned.lower().startswith("source date"):
+            return cleaned
 
     return ""
 
@@ -57,10 +71,18 @@ def extract_source_date(metadata_section):
 def extract_version_notes(metadata_section):
     """
     Extract version notes from the Source metadata section.
+
+    Supported examples:
+    Version notes: Initial educational summary added for CyberLex Sweden.
+    **Version notes:** Initial educational summary added for CyberLex Sweden.
+    - Version notes: Initial educational summary added for CyberLex Sweden.
     """
     for line in metadata_section.splitlines():
-        if line.lower().strip().startswith("version notes"):
-            return line.strip()
+        cleaned = clean_markdown_label(line)
+        cleaned = cleaned.lstrip("-").strip()
+
+        if cleaned.lower().startswith("version notes"):
+            return cleaned
 
     return ""
 
@@ -76,7 +98,7 @@ def count_links(text):
     https://www.msb.se/
     """
     markdown_links = re.findall(r"\[[^\]]+\]\([^)]+\)", text)
-    raw_links = re.findall(r"https?://\S+", text)
+    raw_links = re.findall(r"https?://[^\s)]+", text)
 
     return len(set(markdown_links + raw_links))
 
@@ -235,7 +257,7 @@ def main():
 
     REPORT_FILE.write_text(report, encoding="utf-8")
 
-    print(f"Source audit completed.")
+    print("Source audit completed.")
     print(f"Files checked: {len(results)}")
     print(f"Report written to: {REPORT_FILE}")
 

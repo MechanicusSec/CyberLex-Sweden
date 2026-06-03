@@ -10,7 +10,7 @@ This audit does not browse the web and does not confirm whether the law is curre
 
 ## Audit Summary
 
-- Generated at: `2026-06-03 08:44:32`
+- Generated at: `2026-06-03 08:48:01`
 - Total source files checked: `9`
 - Files marked OK: `0`
 - Files needing review: `9`
@@ -107,13 +107,15 @@ This audit does not browse the web and does not confirm whether the law is curre
 ### gdpr_personal_data_breach.md
 
 - Status: `Needs review`
-- Official source links found: `4`
+- Official source links found: `0`
 - Source date: `Not found`
 - Source freshness: `No review date stored`
 - Version notes: `Not found`
 
 #### Issues
 
+- Missing Official source section
+- No official source links found
 - Missing Source metadata section
 - Missing source date
 - Missing version notes
@@ -124,13 +126,15 @@ This audit does not browse the web and does not confirm whether the law is curre
 ### imy_gdpr_supervision.md
 
 - Status: `Needs review`
-- Official source links found: `4`
+- Official source links found: `0`
 - Source date: `Not found`
 - Source freshness: `No review date stored`
 - Version notes: `Not found`
 
 #### Issues
 
+- Missing Official source section
+- No official source links found
 - Missing Source metadata section
 - Missing source date
 - Missing version notes
