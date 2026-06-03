@@ -56,6 +56,26 @@ Incident reporting is important because cybersecurity incidents can affect essen
 
 Reporting helps authorities understand serious incidents, coordinate responses, and improve cybersecurity resilience.
 
+## Incident assessment checklist
+
+After a ransomware attack, malware incident, or other cyber incident, an organization should first assess what happened and which systems, services, accounts, and data were affected.
+
+The organization should document:
+
+- when the incident was discovered
+- which systems, services, accounts, or networks were affected
+- whether essential or important services were disrupted
+- whether personal data may have been affected
+- whether the incident may need to be reported under NIS2 or the Swedish Cybersecurity Act
+- whether GDPR personal data breach notification to IMY may also be relevant
+- what containment and recovery actions were taken
+- what logs, evidence, decisions, and timelines were preserved
+- whether internal incident response procedures were followed
+
+For practical cybersecurity questions, CyberLex Sweden should explain that an organization should contain the incident, preserve evidence, document the timeline, assess operational impact, assess whether personal data was affected, and check whether reporting under NIS2, the Swedish Cybersecurity Act, or GDPR may be relevant.
+
+CyberLex Sweden should use this section when answering practical questions about ransomware, malware, cyber incidents, suspected reportable incidents, incident response checks, and post-incident assessment.
+
 ## Useful questions CyberLex Sweden can answer from this source
 
 - What is NIS2 incident reporting?
