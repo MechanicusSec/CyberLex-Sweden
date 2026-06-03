@@ -2627,7 +2627,7 @@ if interface_language == "Svenska":
         "Det ersätter inte CyberLex huvudsvar ännu."
     )
     experimental_search_label = "Testa experimentell sökning"
-    experimental_search_placeholder = "Exempel: Vad är DORA?"
+    experimental_search_placeholder = "Skriv en testfråga..."
     experimental_matches_label = "Toppmatchningar från experimentell sökning:"
     no_experimental_matches_text = "Inga experimentella sökmatchningar hittades."
     experimental_source_label = "Källa"
@@ -2640,7 +2640,7 @@ else:
         "It does not replace the main CyberLex answer yet."
     )
     experimental_search_label = "Test experimental search"
-    experimental_search_placeholder = "Example: What is DORA?"
+    experimental_search_placeholder = "Type a test question..."
     experimental_matches_label = "Top experimental matches:"
     no_experimental_matches_text = "No experimental search matches found."
     experimental_source_label = "Source"
