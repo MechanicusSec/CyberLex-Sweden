@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document tracks updates to the CyberLex Sweden knowledge base, source structure, source maintenance tools, and source-related documentation.
+This document tracks updates to the CyberLex Sweden knowledge base, source structure, source maintenance tools, source retrieval logic, and source-related documentation.
 
 The goal is to make source changes transparent and easier to review.
 
@@ -55,6 +55,10 @@ CyberLex Sweden is an educational prototype. This update history does not prove 
 | 2026-06-03 | `app/vector_search.py` | Unauthorized access retrieval | Improved unauthorized access ranking so English questions about illegal access prefer `cybercrime_dataintrang.md` | Cybercrime retrieval improved |
 | 2026-06-03 | `data/nis2_incident_reporting.md` | Incident assessment checklist | Added a dedicated incident assessment checklist section for ransomware, malware, cyber incidents, and suspected reportable incidents | Practical incident source improved |
 | 2026-06-03 | `app/vector_search.py` | Ransomware retrieval | Improved ransomware ranking so `What should a company do after a ransomware attack?` prefers `nis2_incident_reporting.md` and `Incident assessment checklist` | Ransomware retrieval improved |
+| 2026-06-03 | `data/nis2_incident_reporting.md` | Swedish NIS2 incident reporting support | Added Swedish summary for ransomware, malware, cyber incidents, NIS2, the Swedish Cybersecurity Act, MSB, GDPR overlap, and incident documentation | Swedish NIS2 incident support added |
+| 2026-06-03 | `data/gdpr_personal_data_breach.md` | Swedish GDPR breach support | Added Swedish summary and data breach assessment checklist for personuppgiftsincidenter, IMY, GDPR, 72-timmarsregeln, affected individuals, and breach documentation | Swedish GDPR breach support added |
+| 2026-06-03 | `app/vector_search.py` | Swedish GDPR breach retrieval | Added Swedish GDPR breach terms, boosted GDPR breach source sections, and reduced incorrect NIS2 ranking for Swedish personuppgiftsincident questions | Swedish GDPR retrieval improved |
+| 2026-06-03 | `app/vector_search.py` | Experimental search code fix | Fixed indentation and function structure in the experimental search module after retrieval logic updates | Experimental search syntax fixed |
 | 2026-06-03 | `docs/technical_design.md` | Technical documentation | Updated technical design to document experimental AI search, source audit system, metadata helper script, weekly GitHub Actions audit, source quality labels, source freshness labels, and incident assessment checklist | Technical design updated |
 | 2026-06-03 | `docs/test_cases.md` | Test documentation | Updated test cases to include experimental AI search tests, source audit tests, GitHub Actions audit test, and updated expected sections for ransomware/cyber incident questions | Test cases updated |
 
@@ -210,7 +214,7 @@ It only checks the local project files.
 
 Result:
 
-CyberLex Sweden gained a repeatable local source audit process. Truly shocking, a bureaucracy that actually helps.
+CyberLex Sweden gained a repeatable local source audit process.
 
 ---
 
@@ -487,10 +491,13 @@ Changes included:
 Useful sections boosted include:
 
 - incident assessment checklist
+- data breach assessment checklist
+- Swedish summary
 - key idea
 - important points
 - main authority
 - reporting to IMY
+- affected individuals
 - incident reporting
 - cybersecurity connection
 - practical explanation
@@ -615,6 +622,43 @@ The source file became more useful for practical ransomware and cyber incident q
 
 ---
 
+## 2026-06-03 - Swedish NIS2 incident reporting summary added
+
+The source file:
+
+```text
+data/nis2_incident_reporting.md
+```
+
+was updated with a Swedish summary section.
+
+Purpose:
+
+- Improve support for Swedish questions about ransomware, malware, cyber incidents, NIS2, the Swedish Cybersecurity Act, MSB, GDPR overlap, and incident reporting.
+- Help Swedish search terms match the correct local source file.
+- Support bilingual CyberLex Sweden testing.
+- Make the source more useful for Swedish users.
+
+The Swedish summary covers:
+
+- ransomwareattacker
+- skadlig kod
+- cybersäkerhetsincidenter
+- incidentrapportering
+- NIS2
+- cybersäkerhetslagen
+- GDPR-overlap
+- personuppgiftsincidenter
+- IMY
+- MSB
+- loggar, bevis, beslut och tidslinjer
+
+Result:
+
+Swedish ransomware and cyber incident questions now match the NIS2 incident reporting source more reliably.
+
+---
+
 ## 2026-06-03 - Ransomware retrieval improved
 
 Experimental search for:
@@ -641,6 +685,116 @@ Purpose:
 Result:
 
 The experimental search now correctly ranks the NIS2 incident assessment checklist as the top result for ransomware questions.
+
+---
+
+## 2026-06-03 - Swedish GDPR personal data breach summary added
+
+The source file:
+
+```text
+data/gdpr_personal_data_breach.md
+```
+
+was updated with a Swedish summary and a data breach assessment checklist.
+
+Purpose:
+
+- Improve support for Swedish questions about personuppgiftsincidenter, IMY, GDPR, 72-timmarsregeln, dataläckor, affected individuals, and data breach assessment.
+- Help Swedish questions match the GDPR personal data breach source instead of the broader NIS2 incident source.
+- Support bilingual CyberLex Sweden testing.
+- Give CyberLex stronger source chunks for practical GDPR breach questions.
+
+The Swedish summary covers:
+
+- what a personuppgiftsincident is
+- when IMY may need to be notified
+- the 72-hour rule
+- risk to individuals' rights and freedoms
+- affected individuals
+- documentation of decisions, logs, evidence, and timeline
+- the difference between all incidents and reportable incidents
+
+Result:
+
+Swedish personal data breach questions now have better source support inside the GDPR breach file.
+
+---
+
+## 2026-06-03 - Swedish GDPR breach retrieval improved
+
+The experimental search module was updated:
+
+```text
+app/vector_search.py
+```
+
+Changes included:
+
+- added Swedish GDPR breach terms to experimental retrieval
+- boosted `gdpr_personal_data_breach.md` for Swedish personuppgiftsincident questions
+- boosted `Data breach assessment checklist`
+- boosted `Swedish summary`
+- boosted `Reporting to IMY`
+- reduced incorrect NIS2 ranking for Swedish GDPR breach questions
+- fixed indentation and function structure in the experimental search code
+
+Purpose:
+
+- Make Swedish questions such as `Vad ska ett företag göra efter en personuppgiftsincident?` match the GDPR breach source.
+- Prevent broad incident wording from incorrectly ranking NIS2 above GDPR breach material.
+- Improve bilingual retrieval quality.
+
+Expected top results now include:
+
+```text
+gdpr_personal_data_breach.md
+Section: Swedish summary
+```
+
+or:
+
+```text
+gdpr_personal_data_breach.md
+Section: Data breach assessment checklist
+```
+
+Result:
+
+The experimental search now correctly retrieves the GDPR personal data breach source for Swedish personuppgiftsincident questions.
+
+---
+
+## 2026-06-03 - Experimental search code structure fixed
+
+The experimental search module was corrected after adding the Swedish GDPR retrieval logic.
+
+Affected file:
+
+```text
+app/vector_search.py
+```
+
+Issue:
+
+The GDPR scoring block and `return score` line had indentation problems after editing.
+
+Purpose:
+
+- Restore valid Python syntax.
+- Keep all scoring logic inside the `score_chunk()` function.
+- Make the experimental search module compile correctly.
+- Preserve the improved Swedish GDPR retrieval logic.
+
+Verification command:
+
+```powershell
+python -m py_compile app/vector_search.py
+```
+
+Result:
+
+The experimental search module compiled successfully after the structure was corrected.
 
 ---
 
@@ -700,6 +854,7 @@ The update added or improved test coverage for:
 - source audit limitation wording
 - updated ransomware expected section
 - updated cyber incident expected section
+- Swedish GDPR breach retrieval behavior
 
 Purpose:
 
@@ -709,7 +864,7 @@ Purpose:
 
 Result:
 
-The test cases now cover the current source-grounded app, experimental AI search, and source maintenance workflow.
+The test cases now cover the current source-grounded app, experimental AI search, source maintenance workflow, and improved Swedish retrieval behavior.
 
 ---
 
@@ -727,6 +882,8 @@ When a knowledge base source is added or updated, the following should be checke
 8. The source file is covered by at least one test case in `docs/test_cases.md`.
 9. The source file passes `scripts/source_audit.py`.
 10. The source file is mentioned in this source update history when the change is significant.
+11. New Swedish source sections should be tested with Swedish questions in the experimental AI search sidebar.
+12. Retrieval changes should be tested with `python -m py_compile` before commit.
 
 ---
 
@@ -767,6 +924,21 @@ scripts/add_missing_metadata.py
 
 ---
 
+## Current Retrieval Files
+
+The current retrieval-related project files include:
+
+```text
+app/main.py
+app/vector_search.py
+```
+
+`app/main.py` contains the main Streamlit application and the experimental search sidebar.
+
+`app/vector_search.py` contains the experimental retrieval module used for testing source ranking before real vector search is added.
+
+---
+
 ## Current Source Status
 
 The current source audit goal is:
@@ -787,6 +959,65 @@ This means every local source file should have:
 This does not mean that the legal content has been verified online during the audit.
 
 It only means that the local source files pass the structural source audit.
+
+---
+
+## Current Retrieval Status
+
+The current experimental retrieval goals include:
+
+```text
+What is DORA?
+```
+
+Expected top source:
+
+```text
+eu_dora_digital_operational_resilience.md
+Section: Key idea
+```
+
+```text
+What should a company do after a ransomware attack?
+```
+
+Expected top source:
+
+```text
+nis2_incident_reporting.md
+Section: Incident assessment checklist
+```
+
+```text
+Vad ska ett företag göra efter en ransomwareattack?
+```
+
+Expected top source:
+
+```text
+nis2_incident_reporting.md
+Section: Incident assessment checklist
+```
+
+```text
+Vad ska ett företag göra efter en personuppgiftsincident?
+```
+
+Expected top source:
+
+```text
+gdpr_personal_data_breach.md
+Section: Swedish summary
+```
+
+or:
+
+```text
+gdpr_personal_data_breach.md
+Section: Data breach assessment checklist
+```
+
+These retrieval results are part of the experimental AI search sidebar and do not yet replace the main CyberLex answer system.
 
 ---
 
