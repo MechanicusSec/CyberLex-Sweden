@@ -421,6 +421,110 @@ def score_chunk(question_words, chunk):
         if "official source" in section_text or "useful questions" in section_text:
             score -= 30
 
+        # Cyber Resilience Act / CRA / product cybersecurity routing
+    cra_question_terms = {
+        "cra",
+        "cyber resilience act",
+        "cyberresilience act",
+        "cyber resilience",
+        "cyberresiliensakten",
+        "cyberresiliens",
+        "digitala produkter",
+        "digital produkt",
+        "produkter med digitala element",
+        "produkt med digitala element",
+        "uppkopplade produkter",
+        "uppkopplad produkt",
+        "iot",
+        "mjukvarusäkerhet",
+        "programvarusäkerhet",
+        "säkerhetsuppdateringar",
+        "säkerhetsuppdatering",
+        "sårbarhetshantering",
+        "tillverkare",
+        "importörer",
+        "distributörer",
+        "cybersäkerhetskrav för digitala produkter",
+        "cybersäkerhetskrav",
+    }
+
+    cra_section_terms = {
+        "swedish summary",
+        "key idea",
+        "important points",
+        "products with digital elements explained",
+        "cybersecurity by design",
+        "vulnerability handling",
+        "security updates",
+        "cra assessment checklist",
+        "swedish useful questions",
+    }
+
+    question_lower = question_joined
+    source_lower = filename_text
+    section_lower = section_text
+
+    is_cra_question = any(term in question_lower for term in cra_question_terms)
+
+    if is_cra_question:
+        if "eu_cyber_resilience_act.md" in source_lower:
+            score += 220
+
+            if section_lower in cra_section_terms:
+                score += 70
+
+            if (
+                "digitala produkter" in question_lower
+                or "digital produkt" in question_lower
+                or "produkter med digitala element" in question_lower
+                or "produkt med digitala element" in question_lower
+                or "cybersäkerhetskrav för digitala produkter" in question_lower
+            ):
+                if section_lower in {
+                    "swedish summary",
+                    "products with digital elements explained",
+                    "cra assessment checklist",
+                    "important points",
+                    "cybersecurity by design",
+                }:
+                    score += 90
+
+            if "säkerhetsuppdatering" in question_lower or "säkerhetsuppdateringar" in question_lower:
+                if section_lower in {
+                    "security updates",
+                    "swedish summary",
+                    "cra assessment checklist",
+                }:
+                    score += 90
+
+            if "sårbarhet" in question_lower or "sårbarhetshantering" in question_lower:
+                if section_lower in {
+                    "vulnerability handling",
+                    "swedish summary",
+                    "cra assessment checklist",
+                }:
+                    score += 90
+
+        if "nis2_cybersecurity_law.md" in source_lower:
+            if (
+                "digitala produkter" in question_lower
+                or "digital produkt" in question_lower
+                or "produkter med digitala element" in question_lower
+                or "produkt med digitala element" in question_lower
+                or "uppkopplade produkter" in question_lower
+                or "uppkopplad produkt" in question_lower
+                or "cra" in question_lower
+                or "cyber resilience act" in question_lower
+                or "cyberresiliensakten" in question_lower
+            ):
+                score -= 350
+
+        if "gdpr_personal_data_breach.md" in source_lower:
+            score -= 80
+
+        if "nis2_incident_reporting.md" in source_lower:
+            score -= 80
+
     return score
 
 

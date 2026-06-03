@@ -10,7 +10,7 @@ This audit does not browse the web and does not confirm whether the law is curre
 
 ## Audit Summary
 
-- Generated at: `2026-06-03 15:10:02`
+- Generated at: `2026-06-03 15:24:38`
 - Total source files checked: `9`
 - Files marked OK: `8`
 - Files needing review: `1`
@@ -46,10 +46,10 @@ No issues found.
 ### eu_cyber_resilience_act.md
 
 - Status: `OK`
-- Official source links found: `1`
+- Official source links found: `8`
 - Source date: `Source date: Last checked: 2026-06-03`
 - Source freshness: `Recently checked`
-- Version notes: `Version notes: Source reviewed for CyberLex Sweden educational prototype.`
+- Version notes: `Version notes: Source reviewed and expanded for CyberLex Sweden educational prototype. Added Swedish summary, CRA assessment checklist, product security explanation, vulnerability handling explanation, security update explanation, and relationship notes for NIS2, GDPR, and DORA.`
 
 No issues found.
 
