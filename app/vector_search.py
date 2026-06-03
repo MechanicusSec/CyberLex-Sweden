@@ -262,6 +262,35 @@ def score_chunk(question_words, chunk):
         if "official source" in section_text or "useful questions" in section_text:
             score -= 30
 
+        # IMY / Swedish GDPR supervision authority questions.
+    if (
+        "imy" in question_joined
+        or "integritetsskyddsmyndigheten" in question_joined
+        or "tillsynsmyndighet" in question_joined
+        or "tillsyn" in question_joined
+        or "gdpr myndighet" in question_joined
+        or "myndighet ansvarar" in question_joined
+        or "dataskyddsmyndighet" in question_joined
+        or "personuppgiftsskydd" in question_joined
+    ):
+        if "imy_gdpr_supervision" in filename_text:
+            score += 180
+        if "gdpr_personal_data_breach" in filename_text:
+            score -= 60
+
+        if "swedish summary" in section_text:
+            score += 80
+        if "main authority" in section_text:
+            score += 70
+        if "key idea" in section_text:
+            score += 40
+        if "important points" in section_text:
+            score += 30
+        if "cybersecurity connection" in section_text:
+            score += 20
+        if "official source" in section_text or "useful questions" in section_text:
+            score -= 30
+
     # GDPR / personal data breach questions.
     if (
         "breach" in question_joined
