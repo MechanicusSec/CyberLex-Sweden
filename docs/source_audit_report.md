@@ -10,7 +10,7 @@ This audit does not browse the web and does not confirm whether the law is curre
 
 ## Audit Summary
 
-- Generated at: `2026-06-03 15:00:37`
+- Generated at: `2026-06-03 15:10:02`
 - Total source files checked: `9`
 - Files marked OK: `8`
 - Files needing review: `1`
@@ -58,10 +58,10 @@ No issues found.
 ### eu_dora_digital_operational_resilience.md
 
 - Status: `OK`
-- Official source links found: `6`
+- Official source links found: `10`
 - Source date: `Source date: Last checked: 2026-06-03`
 - Source freshness: `Recently checked`
-- Version notes: `Version notes: Source reviewed for CyberLex Sweden educational prototype.`
+- Version notes: `Version notes: Source reviewed and expanded for CyberLex Sweden educational prototype. Added Swedish summary, DORA assessment checklist, ICT third-party risk explanation, resilience testing explanation, and relationship notes for NIS2 and GDPR.`
 
 No issues found.
 
