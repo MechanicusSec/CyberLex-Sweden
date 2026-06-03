@@ -120,18 +120,19 @@ def score_chunk(question_words, chunk):
     score = 0
 
     useful_sections = {
-        "key idea": 25,
-        "important points": 20,
-        "main authority": 18,
-        "reporting to imy": 18,
-        "incident reporting": 18,
-        "cybersecurity connection": 15,
-        "swedish connection": 15,
-        "practical explanation": 15,
-        "relationship with gdpr breach reporting": 15,
-        "third-party ict risk": 15,
-        "legal reference": 15,
-    }
+    "incident assessment checklist": 35,
+    "key idea": 25,
+    "important points": 20,
+    "main authority": 18,
+    "reporting to imy": 18,
+    "incident reporting": 18,
+    "cybersecurity connection": 15,
+    "swedish connection": 15,
+    "practical explanation": 15,
+    "relationship with gdpr breach reporting": 15,
+    "third-party ict risk": 15,
+    "legal reference": 15,
+}
 
     weak_sections = {
         "useful questions": -35,
@@ -211,10 +212,12 @@ def score_chunk(question_words, chunk):
         if "eu_dora" in filename_text:
             score -= 100
 
+        if "incident assessment checklist" in section_text:
+            score += 80
         if "incident reporting" in section_text:
             score += 35
         if "relationship with gdpr breach reporting" in section_text:
-            score += 30
+            score += 20
         if "cybersecurity connection" in section_text:
             score += 20
         if "practical explanation" in section_text:
