@@ -916,6 +916,28 @@ Result:
 - General NIS2 questions now prefer `nis2_cybersecurity_law.md`.
 - Ransomware questions still correctly return `nis2_incident_reporting.md` and the `Incident assessment checklist`.
 
+### 2026-06-03 - Swedish DORA source support
+
+Updated:
+
+- `data/eu_dora_digital_operational_resilience.md`
+
+Change:
+
+- Expanded the DORA source with stronger Swedish and English explanations.
+- Added a Swedish summary for DORA and digital operational resilience.
+- Added sections for ICT risk management, ICT incident reporting, third-party ICT risk, resilience testing, and relationship with NIS2 and GDPR.
+- Added a DORA assessment checklist for educational incident and compliance analysis.
+- Added Swedish useful questions for DORA-related retrieval.
+
+Reason:
+
+- CyberLex Sweden should be able to answer Swedish and English questions about DORA, digital operational resilience, ICT risk, ICT third-party risk, and financial-sector cyber incidents.
+
+Result:
+
+- Swedish DORA questions such as `Vad är DORA?`, `Vad betyder digital operativ motståndskraft?`, and `Vad betyder tredjepartsrisk enligt DORA?` now correctly return `eu_dora_digital_operational_resilience.md`.
+
 ## Source Review Rules
 
 When a knowledge base source is added or updated, the following should be checked:
