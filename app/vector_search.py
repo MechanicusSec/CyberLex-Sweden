@@ -105,26 +105,122 @@ def score_chunk(question_words, chunk):
     Score a chunk against a user question.
 
     This is still a simple lexical similarity score.
-    It is placed here so it can later be replaced with vector similarity.
+    It is designed to behave like an experimental retrieval engine before
+    real vector embeddings are added.
     """
     chunk_words = clean_text(chunk["text"])
     section_words = clean_text(chunk["section"])
     filename_words = clean_text(chunk["filename"].replace("_", " "))
 
+    chunk_text = chunk["text"].lower()
+    section_text = chunk["section"].lower()
+    filename_text = chunk["filename"].lower()
+
     chunk_counter = Counter(chunk_words)
     score = 0
+
+    useful_sections = {
+        "key idea": 25,
+        "important points": 20,
+        "main authority": 18,
+        "reporting to imy": 18,
+        "incident reporting": 18,
+        "cybersecurity connection": 15,
+        "swedish connection": 15,
+        "practical explanation": 15,
+        "relationship with gdpr breach reporting": 15,
+        "third-party ict risk": 15,
+        "legal reference": 15,
+    }
+
+    weak_sections = {
+        "useful questions": -35,
+        "official source": -30,
+        "source metadata": -30,
+        "source date": -30,
+        "version notes": -30,
+        "disclaimer": -25,
+        "topic": -15,
+        "introduction": -10,
+    }
+
+    for section_name, boost in useful_sections.items():
+        if section_name in section_text:
+            score += boost
+
+    for section_name, penalty in weak_sections.items():
+        if section_name in section_text:
+            score += penalty
 
     for word in question_words:
         if len(word) <= 2:
             continue
 
-        score += chunk_counter.get(word, 0)
+        # Main text match.
+        score += chunk_counter.get(word, 0) * 3
 
+        # Section title match.
         if word in section_words:
-            score += 5
+            score += 8
 
+        # Filename match.
         if word in filename_words:
-            score += 3
+            score += 6
+
+        # Broader text match.
+        if word in chunk_text:
+            score += 1
+
+    # Topic-specific boosts.
+    question_joined = " ".join(question_words)
+
+    if "dora" in question_joined or "dora" in filename_text:
+        if "dora" in filename_text:
+            score += 40
+        if "key idea" in section_text:
+            score += 30
+        if "important points" in section_text:
+            score += 25
+        if "third-party ict risk" in section_text:
+            score += 20
+        if "official source" in section_text or "useful questions" in section_text:
+            score -= 30
+
+    if "ransomware" in question_joined or "malware" in question_joined:
+        if "nis2_incident_reporting" in filename_text:
+            score += 40
+        if "incident reporting" in section_text:
+            score += 25
+        if "relationship with gdpr breach reporting" in section_text:
+            score += 20
+        if "cybersecurity connection" in section_text:
+            score += 15
+        if "official source" in section_text or "useful questions" in section_text:
+            score -= 30
+
+    if "unauthorized" in question_joined or "access" in question_joined or "dataintrång" in question_joined:
+        if "cybercrime_dataintrang" in filename_text:
+            score += 40
+        if "key idea" in section_text:
+            score += 25
+        if "legal reference" in section_text:
+            score += 25
+        if "practical explanation" in section_text:
+            score += 20
+        if "official source" in section_text or "useful questions" in section_text:
+            score -= 30
+
+    if "breach" in question_joined or "gdpr" in question_joined:
+        if "gdpr_personal_data_breach" in filename_text:
+            score += 25
+        if "reporting to imy" in section_text:
+            score += 25
+        if "main authority" in section_text:
+            score += 15
+        if "cybersecurity connection" in section_text:
+            score += 15
+        if "official source" in section_text or "useful questions" in section_text:
+            score -= 30
 
     return score
 
