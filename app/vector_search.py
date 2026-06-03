@@ -174,7 +174,14 @@ def score_chunk(question_words, chunk):
     # Topic-specific boosts.
     question_joined = " ".join(question_words)
 
-    if "dora" in question_joined or "dora" in filename_text:
+    # DORA / digital operational resilience questions.
+    if (
+        "dora" in question_joined
+        or "digital operational resilience" in question_joined
+        or "operational resilience" in question_joined
+        or "ict risk" in question_joined
+        or "financial sector" in question_joined
+    ):
         if "dora" in filename_text:
             score += 40
         if "key idea" in section_text:
@@ -186,21 +193,46 @@ def score_chunk(question_words, chunk):
         if "official source" in section_text or "useful questions" in section_text:
             score -= 30
 
-    if "ransomware" in question_joined or "malware" in question_joined:
+    # Ransomware, malware, cyber attack, and general cyber incident questions.
+    if (
+        "ransomware" in question_joined
+        or "malware" in question_joined
+        or "cyber incident" in question_joined
+        or "cyber attack" in question_joined
+        or "attack" in question_joined
+        or "incident" in question_joined
+    ):
         if "nis2_incident_reporting" in filename_text:
-            score += 40
-        if "incident reporting" in section_text:
+            score += 120
+        if "gdpr_personal_data_breach" in filename_text:
+            score += 35
+        if "nis2_cybersecurity_law" in filename_text:
             score += 25
+        if "eu_dora" in filename_text:
+            score -= 100
+
+        if "incident reporting" in section_text:
+            score += 35
         if "relationship with gdpr breach reporting" in section_text:
-            score += 20
+            score += 30
         if "cybersecurity connection" in section_text:
+            score += 20
+        if "practical explanation" in section_text:
+            score += 20
+        if "key idea" in section_text:
             score += 15
         if "official source" in section_text or "useful questions" in section_text:
             score -= 30
 
-    if "unauthorized" in question_joined or "access" in question_joined or "dataintrång" in question_joined:
+    # Unauthorized access / dataintrång questions.
+    if (
+        "unauthorized" in question_joined
+        or "access" in question_joined
+        or "dataintrång" in question_joined
+        or "illegal access" in question_joined
+    ):
         if "cybercrime_dataintrang" in filename_text:
-            score += 40
+            score += 70
         if "key idea" in section_text:
             score += 25
         if "legal reference" in section_text:
@@ -210,11 +242,19 @@ def score_chunk(question_words, chunk):
         if "official source" in section_text or "useful questions" in section_text:
             score -= 30
 
-    if "breach" in question_joined or "gdpr" in question_joined:
+    # GDPR / personal data breach questions.
+    if (
+        "breach" in question_joined
+        or "gdpr" in question_joined
+        or "personal data" in question_joined
+        or "data breach" in question_joined
+    ):
         if "gdpr_personal_data_breach" in filename_text:
-            score += 25
+            score += 70
+        if "imy_gdpr_supervision" in filename_text:
+            score += 20
         if "reporting to imy" in section_text:
-            score += 25
+            score += 30
         if "main authority" in section_text:
             score += 15
         if "cybersecurity connection" in section_text:
