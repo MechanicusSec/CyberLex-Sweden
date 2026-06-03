@@ -10,10 +10,10 @@ This audit does not browse the web and does not confirm whether the law is curre
 
 ## Audit Summary
 
-- Generated at: `2026-06-03 14:43:02`
+- Generated at: `2026-06-03 15:00:37`
 - Total source files checked: `9`
-- Files marked OK: `9`
-- Files needing review: `0`
+- Files marked OK: `8`
+- Files needing review: `1`
 
 ---
 
@@ -105,13 +105,20 @@ No issues found.
 
 ### nis2_cybersecurity_law.md
 
-- Status: `OK`
-- Official source links found: `4`
-- Source date: `Source date: Last checked: 2026-06-03`
-- Source freshness: `Recently checked`
-- Version notes: `Version notes: Source reviewed for CyberLex Sweden educational prototype.`
+- Status: `Needs review`
+- Official source links found: `0`
+- Source date: `Not found`
+- Source freshness: `No review date stored`
+- Version notes: `Not found`
 
-No issues found.
+#### Issues
+
+- Missing Official source section
+- No official source links found
+- Missing Source metadata section
+- Missing source date
+- Missing version notes
+- Freshness status: No review date stored
 
 ---
 
