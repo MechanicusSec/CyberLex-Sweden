@@ -10,7 +10,7 @@ This audit does not browse the web and does not confirm whether the law is curre
 
 ## Audit Summary
 
-- Generated at: `2026-06-03 14:36:15`
+- Generated at: `2026-06-03 14:43:02`
 - Total source files checked: `9`
 - Files marked OK: `9`
 - Files needing review: `0`
@@ -22,10 +22,10 @@ This audit does not browse the web and does not confirm whether the law is curre
 ### cybercrime_dataintrang.md
 
 - Status: `OK`
-- Official source links found: `3`
+- Official source links found: `6`
 - Source date: `Source date: Last checked: 2026-06-03`
 - Source freshness: `Recently checked`
-- Version notes: `Version notes: Source reviewed for CyberLex Sweden educational prototype.`
+- Version notes: `Version notes: Swedish summary added and Swedish cybercrime dataintrång source expanded for bilingual CyberLex Sweden testing.`
 
 No issues found.
 
