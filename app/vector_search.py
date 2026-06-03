@@ -291,7 +291,49 @@ def score_chunk(question_words, chunk):
         if "official source" in section_text or "useful questions" in section_text:
             score -= 30
 
-    # GDPR / personal data breach questions.
+        # GDPR core principles questions.
+    if (
+        "gdpr principles" in question_joined
+        or "core principles" in question_joined
+        or "principles" in question_joined
+        or "gdpr principerna" in question_joined
+        or "gdpr-principerna" in question_joined
+        or "principerna" in question_joined
+        or "uppgiftsminimering" in question_joined
+        or "dataminimering" in question_joined
+        or "ansvarsskyldighet" in question_joined
+        or "ändamålsbegränsning" in question_joined
+        or "lagringsminimering" in question_joined
+        or "integritet och konfidentialitet" in question_joined
+        or "laglighet" in question_joined
+        or "korrekthet" in question_joined
+        or "öppenhet" in question_joined
+        or "accountability" in question_joined
+        or "data minimisation" in question_joined
+        or "purpose limitation" in question_joined
+        or "storage limitation" in question_joined
+        or "integrity and confidentiality" in question_joined
+    ):
+        if "gdpr_core_principles" in filename_text:
+            score += 180
+        if "gdpr_personal_data_breach" in filename_text:
+            score -= 70
+        if "imy_gdpr_supervision" in filename_text:
+            score += 15
+
+        if "swedish summary" in section_text:
+            score += 80
+        if "gdpr principles explained" in section_text:
+            score += 80
+        if "important points" in section_text:
+            score += 45
+        if "key idea" in section_text:
+            score += 35
+        if "cybersecurity connection" in section_text:
+            score += 20
+        if "official source" in section_text or "useful questions" in section_text:
+            score -= 30
+
     if (
         "breach" in question_joined
         or "gdpr" in question_joined
