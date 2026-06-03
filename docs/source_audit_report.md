@@ -10,7 +10,7 @@ This audit does not browse the web and does not confirm whether the law is curre
 
 ## Audit Summary
 
-- Generated at: `2026-06-03 15:24:38`
+- Generated at: `2026-06-03 18:39:41`
 - Total source files checked: `9`
 - Files marked OK: `8`
 - Files needing review: `1`
@@ -34,10 +34,10 @@ No issues found.
 ### eu_attacks_against_information_systems.md
 
 - Status: `OK`
-- Official source links found: `2`
+- Official source links found: `4`
 - Source date: `Source date: Last checked: 2026-06-03`
 - Source freshness: `Recently checked`
-- Version notes: `Version notes: Source reviewed for CyberLex Sweden educational prototype.`
+- Version notes: `Version notes: Source reviewed and expanded for CyberLex Sweden educational prototype. Added Swedish summary, cybercrime assessment checklist, illegal access explanation, illegal system interference explanation, illegal data interference explanation, misuse of tools explanation, botnet and DDoS explanation, and relationship notes for Swedish dataintrång, NIS2, GDPR, DORA, and CRA.`
 
 No issues found.
 

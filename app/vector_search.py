@@ -525,6 +525,119 @@ def score_chunk(question_words, chunk):
         if "nis2_incident_reporting.md" in source_lower:
             score -= 80
 
+    # EU attacks against information systems / EU cybercrime routing
+    eu_attacks_question_terms = {
+        "attacker mot informationssystem",
+        "attack mot informationssystem",
+        "attacks against information systems",
+        "information systems",
+        "informationssystem",
+        "direktiv 2013/40/eu",
+        "2013/40/eu",
+        "eu cybercrime",
+        "eu cyberbrott",
+        "eu-regler",
+        "eu regler",
+        "olaglig åtkomst",
+        "illegal access",
+        "olaglig systemstörning",
+        "illegal system interference",
+        "olaglig datastörning",
+        "illegal data interference",
+        "olaglig avlyssning",
+        "illegal interception",
+        "missbruk av verktyg",
+        "misuse of tools",
+        "botnät",
+        "botnet",
+        "botnets",
+        "ddos",
+        "ddos-attacker",
+        "denial of service",
+        "distributed denial of service",
+    }
+
+    eu_attacks_section_terms = {
+        "swedish summary",
+        "key idea",
+        "important points",
+        "illegal access explained",
+        "illegal system interference explained",
+        "illegal data interference explained",
+        "misuse of tools explained",
+        "botnets and ddos",
+        "cybercrime assessment checklist",
+        "relationship with swedish dataintrång",
+        "swedish useful questions",
+    }
+
+    is_eu_attacks_question = any(term in question_joined for term in eu_attacks_question_terms)
+
+    if is_eu_attacks_question:
+        if "eu_attacks_against_information_systems" in filename_text:
+            score += 220
+
+            if section_text in eu_attacks_section_terms:
+                score += 60
+
+            if "olaglig åtkomst" in question_joined or "illegal access" in question_joined:
+                if section_text in {
+                    "illegal access explained",
+                    "swedish summary",
+                    "cybercrime assessment checklist",
+                    "key idea",
+                }:
+                    score += 80
+
+            if "ddos" in question_joined or "denial of service" in question_joined:
+                if section_text in {
+                    "botnets and ddos",
+                    "illegal system interference explained",
+                    "swedish summary",
+                    "cybercrime assessment checklist",
+                }:
+                    score += 90
+
+            if "attacker mot informationssystem" in question_joined or "attacks against information systems" in question_joined:
+                if section_text in {
+                    "swedish summary",
+                    "key idea",
+                    "important points",
+                    "cybercrime assessment checklist",
+                }:
+                    score += 80
+
+            if "missbruk av verktyg" in question_joined or "misuse of tools" in question_joined:
+                if section_text in {
+                    "misuse of tools explained",
+                    "swedish summary",
+                    "cybercrime assessment checklist",
+                }:
+                    score += 80
+
+        if "nis2_incident_reporting" in filename_text:
+            if (
+                "eu" in question_joined
+                or "eu-regler" in question_joined
+                or "attacker mot informationssystem" in question_joined
+                or "ddos" in question_joined
+                or "olaglig åtkomst" in question_joined
+            ):
+                score -= 180
+
+        if "nis2_cybersecurity_law" in filename_text:
+            score -= 120
+
+        if "cybercrime_dataintrang" in filename_text:
+            if (
+                "eu" in question_joined
+                or "eu-regler" in question_joined
+                or "attacker mot informationssystem" in question_joined
+                or "direktiv" in question_joined
+                or "2013" in question_joined
+            ):
+                score -= 100
+
     return score
 
 
