@@ -201,6 +201,53 @@ def score_chunk(question_words, chunk):
         if "official source" in section_text or "useful questions" in section_text:
             score -= 30
 
+        # General NIS2 / Swedish Cybersecurity Act questions.
+    if (
+        "nis2" in question_joined
+        or "cybersäkerhetslagen" in question_joined
+        or "cybersakerhetslagen" in question_joined
+        or "swedish cybersecurity act" in question_joined
+        or "cybersecurity act" in question_joined
+        or "cybersäkerhetskrav" in question_joined
+        or "cybersakerhetskrav" in question_joined
+        or "riskhantering" in question_joined
+        or "säkerhetsåtgärder" in question_joined
+        or "sakerhetsatgarder" in question_joined
+        or "ledningens ansvar" in question_joined
+        or "supply chain" in question_joined
+        or "leverantör" in question_joined
+        or "leverantors" in question_joined
+        or "omfattas av nis2" in question_joined
+        or "covered organizations" in question_joined
+    ):
+        if "nis2_cybersecurity_law" in filename_text:
+            score += 180
+        if "nis2_incident_reporting" in filename_text:
+            score -= 55
+        if "gdpr_personal_data_breach" in filename_text:
+            score -= 60
+        if "gdpr_core_principles" in filename_text:
+            score -= 40
+
+        if "swedish summary" in section_text:
+            score += 80
+        if "key idea" in section_text:
+            score += 70
+        if "swedish cybersecurity act" in section_text:
+            score += 60
+        if "cybersecurity risk management" in section_text:
+            score += 60
+        if "covered organizations" in section_text:
+            score += 45
+        if "important points" in section_text:
+            score += 40
+        if "relationship with gdpr and dora" in section_text:
+            score += 35
+        if "incident reporting" in section_text:
+            score -= 15
+        if "official source" in section_text or "useful questions" in section_text:
+            score -= 30
+
     # Ransomware, malware, cyber attack, and general cyber incident questions.
     if (
         "ransomware" in question_joined
