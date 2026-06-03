@@ -871,6 +871,51 @@ The test cases now cover the current source-grounded app, experimental AI search
 
 ---
 
+### 2026-06-03 - Swedish NIS2 cybersecurity law support
+
+Updated:
+
+- `data/nis2_cybersecurity_law.md`
+
+Change:
+
+- Added stronger Swedish support for NIS2 and the Swedish Cybersecurity Act.
+- Added Swedish explanation for `cybersäkerhetslagen`.
+- Expanded coverage for cybersecurity risk management, covered organizations, management responsibility, supply chain security, continuity, and resilience.
+- Added clearer relationship notes for NIS2, GDPR, and DORA.
+
+Reason:
+
+- CyberLex Sweden should answer broad Swedish NIS2 questions using the general NIS2 cybersecurity law source instead of the incident reporting source.
+
+Result:
+
+- Questions such as `Vad är NIS2?`, `Vad är cybersäkerhetslagen?`, and `Vad betyder riskhantering enligt NIS2?` now route correctly to `nis2_cybersecurity_law.md`.
+
+---
+
+### 2026-06-03 - Swedish NIS2 retrieval improvement
+
+Updated:
+
+- `app/vector_search.py`
+
+Change:
+
+- Improved experimental retrieval for Swedish NIS2 questions.
+- Added stronger routing for broad NIS2 and Swedish Cybersecurity Act questions.
+- Boosted `nis2_cybersecurity_law.md` for general NIS2 questions.
+- Preserved ransomware and cyber incident routing to `nis2_incident_reporting.md`.
+
+Reason:
+
+- Broad NIS2 law questions and incident reporting questions need separate source handling.
+
+Result:
+
+- General NIS2 questions now prefer `nis2_cybersecurity_law.md`.
+- Ransomware questions still correctly return `nis2_incident_reporting.md` and the `Incident assessment checklist`.
+
 ## Source Review Rules
 
 When a knowledge base source is added or updated, the following should be checked:
