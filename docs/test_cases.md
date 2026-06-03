@@ -19,6 +19,13 @@ The goal is to verify that the application can:
 - Display styled answer cards introduced in prototype version 0.5
 - Handle practical cyber incident questions with more specific short answers
 - Display detected topic labels for supported question categories
+- Display experimental AI search results in the sidebar
+- Test improved experimental retrieval ranking
+- Verify that ransomware questions match the NIS2 incident assessment checklist
+- Verify that DORA questions match the DORA key idea section
+- Verify that unauthorized access questions match Swedish cybercrime material
+- Verify the local source audit system
+- Verify the weekly GitHub Actions source audit workflow
 
 ---
 
@@ -31,12 +38,38 @@ The tests were performed locally using:
 - Python virtual environment
 - Streamlit
 - Local Markdown knowledge base files in the `data/` folder
+- Local scripts in the `scripts/` folder
+- GitHub Actions workflow in `.github/workflows/`
 
 Application command:
 
 ```powershell
 streamlit run app/main.py
 ```
+
+Alternative application command:
+
+```powershell
+python -m streamlit run app/main.py
+```
+
+Source audit command:
+
+```powershell
+python scripts/source_audit.py
+```
+
+Experimental search module command:
+
+```powershell
+python app/vector_search.py
+```
+
+---
+
+## Core Knowledge Base Test Cases
+
+These test cases verify that CyberLex Sweden can answer supported questions from trusted local Markdown source files.
 
 ---
 
@@ -55,7 +88,7 @@ CyberLex Sweden should explain that GDPR and personal data protection in Sweden 
 ### Expected Source
 
 ```text
-gdpr_personal_data_breach.md
+imy_gdpr_supervision.md
 ```
 
 ### Expected Section
@@ -67,14 +100,14 @@ Main authority
 ### Expected Official Source Link
 
 ```text
-https://www.imy.se/en/organisations/forms-and-e-services/notification-of-a-personal-data-breach/
+https://www.imy.se/en/
 ```
 
 ### Expected Source Metadata
 
 ```text
-Source date: Last checked: 2026-05-30
-Version notes: Initial educational summary added for CyberLex Sweden.
+Source date: Last checked: 2026-06-03
+Version notes: Source reviewed and cleaned for CyberLex Sweden educational prototype.
 ```
 
 ### Result
@@ -83,7 +116,7 @@ Passed.
 
 ### Notes
 
-The system correctly matched the question to the GDPR source and displayed the source file, source section, official source link, and source metadata.
+The system should route authority questions about GDPR supervision to the IMY supervision source. This is more accurate than routing broad authority questions to the personal data breach source.
 
 ---
 
@@ -120,8 +153,8 @@ https://www.imy.se/en/organisations/forms-and-e-services/notification-of-a-perso
 ### Expected Source Metadata
 
 ```text
-Source date: Last checked: 2026-05-30
-Version notes: Initial educational summary added for CyberLex Sweden.
+Source date: Last checked: 2026-06-03
+Version notes: Source reviewed and cleaned for CyberLex Sweden educational prototype.
 ```
 
 ### Result
@@ -130,7 +163,7 @@ Passed.
 
 ### Notes
 
-The system correctly matched the question to the reporting section and displayed the source metadata.
+The system correctly matches the question to the GDPR personal data breach reporting source and displays source traceability.
 
 ---
 
@@ -161,14 +194,14 @@ Key idea
 ### Expected Official Source Link
 
 ```text
-https://www.msb.se/sv/amnesomraden/informationssakerhet-cybersakerhet-och-sakra-kommunikationer/krav-och-regler-inom-informationssakerhet-och-cybersakerhet/nis-direktivet/det-har-ar-nis2-direktivet/
+https://www.msb.se/
 ```
 
 ### Expected Source Metadata
 
 ```text
-Source date: Last checked: 2026-05-30
-Version notes: Initial educational summary added for CyberLex Sweden.
+Source date: Last checked: 2026-06-03
+Version notes: Source reviewed for CyberLex Sweden educational prototype.
 ```
 
 ### Result
@@ -177,7 +210,7 @@ Passed.
 
 ### Notes
 
-The system correctly matched the question to the NIS2 knowledge file and displayed official source links and metadata.
+The system correctly matches general NIS2 questions to the NIS2 cybersecurity law source.
 
 ---
 
@@ -208,14 +241,14 @@ Key idea
 ### Expected Official Source Link
 
 ```text
-https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/brottsbalk-1962700_sfs-1962-700/
+https://www.riksdagen.se/
 ```
 
 ### Expected Source Metadata
 
 ```text
-Source date: Last checked: 2026-05-30
-Version notes: Initial educational summary added for CyberLex Sweden.
+Source date: Last checked: 2026-06-03
+Version notes: Source reviewed for CyberLex Sweden educational prototype.
 ```
 
 ### Result
@@ -224,7 +257,7 @@ Passed.
 
 ### Notes
 
-The system correctly matched the question to the cybercrime source and showed official legal source links.
+The system correctly matches the question to the Swedish cybercrime source and shows official legal source links.
 
 ---
 
@@ -270,7 +303,7 @@ Passed.
 
 ### Notes
 
-The system correctly refused the question because it was outside the CyberLex Sweden scope.
+The system correctly refuses the question because Swedish tax law is outside the CyberLex Sweden scope.
 
 ---
 
@@ -307,8 +340,8 @@ https://eur-lex.europa.eu/eli/reg/2016/679/oj/eng
 ### Expected Source Metadata
 
 ```text
-Source date: Last checked: 2026-05-30
-Version notes: Initial educational summary added for CyberLex Sweden.
+Source date: Last checked: 2026-06-03
+Version notes: Source reviewed for CyberLex Sweden educational prototype.
 ```
 
 ### Result
@@ -317,7 +350,7 @@ Passed.
 
 ### Notes
 
-The system correctly matched the question to the GDPR core principles knowledge file and showed official source links and metadata.
+The system correctly matches the question to the GDPR core principles source file.
 
 ---
 
@@ -354,8 +387,8 @@ https://eur-lex.europa.eu/eli/dir/2013/40/oj/eng
 ### Expected Source Metadata
 
 ```text
-Source date: Last checked: 2026-05-30
-Version notes: Initial educational summary added for CyberLex Sweden.
+Source date: Last checked: 2026-06-03
+Version notes: Source reviewed for CyberLex Sweden educational prototype.
 ```
 
 ### Result
@@ -364,7 +397,7 @@ Passed.
 
 ### Notes
 
-The system correctly matched the question to the EU attacks against information systems source file and displayed source traceability.
+The system correctly matches the question to the EU attacks against information systems source file.
 
 ---
 
@@ -401,8 +434,8 @@ https://eur-lex.europa.eu/eli/reg/2024/2847/oj/eng
 ### Expected Source Metadata
 
 ```text
-Source date: Last checked: 2026-05-30
-Version notes: Initial educational summary added for CyberLex Sweden.
+Source date: Last checked: 2026-06-03
+Version notes: Source reviewed for CyberLex Sweden educational prototype.
 ```
 
 ### Result
@@ -411,7 +444,7 @@ Passed.
 
 ### Notes
 
-The system correctly matched the question to the Cyber Resilience Act source file and displayed the official source link and source metadata.
+The system correctly matches the question to the Cyber Resilience Act source file.
 
 ---
 
@@ -448,8 +481,8 @@ https://eur-lex.europa.eu/eli/reg/2022/2554/oj/eng
 ### Expected Source Metadata
 
 ```text
-Source date: Last checked: 2026-05-31
-Version notes: Initial educational summary added for CyberLex Sweden.
+Source date: Last checked: 2026-06-03
+Version notes: Source reviewed for CyberLex Sweden educational prototype.
 ```
 
 ### Result
@@ -458,7 +491,7 @@ Passed.
 
 ### Notes
 
-The system correctly matched the question to the DORA knowledge file and displayed citation details, official source links, source metadata, and the matched source excerpt.
+The system correctly matches the question to the DORA knowledge file and displays citation details, official source links, source metadata, and source context.
 
 ---
 
@@ -495,8 +528,8 @@ https://eur-lex.europa.eu/eli/reg/2022/2554/oj/eng
 ### Expected Source Metadata
 
 ```text
-Source date: Last checked: 2026-05-31
-Version notes: Initial educational summary added for CyberLex Sweden.
+Source date: Last checked: 2026-06-03
+Version notes: Source reviewed for CyberLex Sweden educational prototype.
 ```
 
 ### Result
@@ -505,7 +538,7 @@ Passed.
 
 ### Notes
 
-The system correctly routed the question to the DORA source and matched the third-party ICT risk section.
+The system correctly routes the question to the DORA source and matches the third-party ICT risk section.
 
 ---
 
@@ -542,8 +575,8 @@ https://eur-lex.europa.eu/eli/reg/2022/2554/oj/eng
 ### Expected Source Metadata
 
 ```text
-Source date: Last checked: 2026-05-31
-Version notes: Initial educational summary added for CyberLex Sweden.
+Source date: Last checked: 2026-06-03
+Version notes: Source reviewed for CyberLex Sweden educational prototype.
 ```
 
 ### Result
@@ -552,7 +585,7 @@ Passed.
 
 ### Notes
 
-The system correctly matched the DORA relationship question to the DORA source and displayed traceability information.
+The system correctly matches the DORA relationship question to the DORA source and displays traceability information.
 
 ---
 
@@ -578,8 +611,10 @@ CyberLex Sweden should display a citation details card showing:
 
 - matched knowledge file
 - matched section
+- source quality
 - relevance score
 - source match confidence
+- confidence explanation
 
 ### Pass Condition
 
@@ -615,7 +650,7 @@ What is NIS2?
 
 ### Expected Result
 
-CyberLex Sweden should display source metadata, including source date and version notes if available.
+CyberLex Sweden should display source metadata, including source date, source freshness, and version notes if available.
 
 ### Pass Condition
 
@@ -863,7 +898,7 @@ nis2_incident_reporting.md
 ### Expected Source Date
 
 ```text
-Last checked: 2026-05-31
+Last checked: 2026-06-03
 ```
 
 ### Expected Source Freshness
@@ -907,7 +942,7 @@ nis2_incident_reporting.md
 ### Expected Section
 
 ```text
-Relationship with GDPR breach reporting
+Incident assessment checklist
 ```
 
 ### Pass Condition
@@ -928,7 +963,7 @@ What should an organization check after a cyber incident?
 
 CyberLex Sweden should treat the question as an in-scope cyber incident question.
 
-The answer should explain that the organization may need to assess incident containment, documentation, personal data impact, and whether NIS2 or GDPR reporting could be relevant.
+The answer should explain that the organization may need to assess incident containment, documentation, personal data impact, service impact, preserved evidence, and whether NIS2 or GDPR reporting could be relevant.
 
 ### Expected Source
 
@@ -939,7 +974,7 @@ nis2_incident_reporting.md
 ### Expected Section
 
 ```text
-Relationship with GDPR breach reporting
+Incident assessment checklist
 ```
 
 ### Pass Condition
@@ -971,7 +1006,7 @@ cybercrime_dataintrang.md
 ### Expected Section
 
 ```text
-Practical explanation
+Key idea
 ```
 
 ### Pass Condition
@@ -1011,7 +1046,7 @@ nis2_incident_reporting.md
 ### Expected Section
 
 ```text
-Relationship with GDPR breach reporting
+Incident assessment checklist
 ```
 
 ### Pass Condition
@@ -1052,7 +1087,7 @@ nis2_incident_reporting.md
 ### Expected Section
 
 ```text
-Relationship with GDPR breach reporting
+Incident assessment checklist
 ```
 
 ### Pass Condition
@@ -1188,6 +1223,310 @@ The checklist is clearly focused on GDPR/data breach handling and is different f
 
 ---
 
+## Experimental AI Search Test Cases
+
+These test cases verify the experimental AI search sidebar and the experimental retrieval module in `app/vector_search.py`.
+
+The experimental search does not replace the main CyberLex answer system yet.
+
+It is used to test retrieval ranking and source-section matching before future vector search or RAG features are added.
+
+---
+
+## Test Case 33: Experimental Search Sidebar Visibility
+
+### Action
+
+Open CyberLex Sweden in Streamlit and check the sidebar.
+
+### Expected Result
+
+The sidebar should show an experimental AI search section.
+
+### Pass Condition
+
+The sidebar includes an input field for experimental search testing and explains that the feature does not replace the main CyberLex answer yet.
+
+---
+
+## Test Case 34: Experimental Search DORA Retrieval
+
+### Question
+
+```text
+What is DORA?
+```
+
+### Expected Result
+
+The experimental AI search sidebar should return DORA source material as the top match.
+
+### Expected Source
+
+```text
+eu_dora_digital_operational_resilience.md
+```
+
+### Expected Section
+
+```text
+Key idea
+```
+
+### Pass Condition
+
+The top experimental search result is the DORA file and the `Key idea` section.
+
+---
+
+## Test Case 35: Experimental Search Unauthorized Access Retrieval
+
+### Question
+
+```text
+Is unauthorized access illegal in Sweden?
+```
+
+### Expected Result
+
+The experimental AI search sidebar should return the Swedish cybercrime source as the top match.
+
+### Expected Source
+
+```text
+cybercrime_dataintrang.md
+```
+
+### Expected Section
+
+```text
+Key idea
+```
+
+### Pass Condition
+
+The top experimental search result is the cybercrime dataintrång source and the `Key idea` section.
+
+---
+
+## Test Case 36: Experimental Search Ransomware Retrieval
+
+### Question
+
+```text
+What should a company do after a ransomware attack?
+```
+
+### Expected Result
+
+The experimental AI search sidebar should return the NIS2 incident reporting source as the top match.
+
+### Expected Source
+
+```text
+nis2_incident_reporting.md
+```
+
+### Expected Section
+
+```text
+Incident assessment checklist
+```
+
+### Pass Condition
+
+The top experimental search result is the NIS2 incident reporting file and the `Incident assessment checklist` section.
+
+---
+
+## Test Case 37: Experimental Search Cyber Incident Retrieval
+
+### Question
+
+```text
+What should an organization check after a cyber incident?
+```
+
+### Expected Result
+
+The experimental AI search sidebar should return the NIS2 incident reporting source as the top match.
+
+### Expected Source
+
+```text
+nis2_incident_reporting.md
+```
+
+### Expected Section
+
+```text
+Incident assessment checklist
+```
+
+### Pass Condition
+
+The top experimental search result is the NIS2 incident reporting file and a relevant cyber incident assessment section.
+
+---
+
+## Test Case 38: Experimental Search Data Breach Retrieval
+
+### Question
+
+```text
+What should a company do after a data breach?
+```
+
+### Expected Result
+
+The experimental AI search sidebar should return the GDPR personal data breach source as a top match.
+
+### Expected Source
+
+```text
+gdpr_personal_data_breach.md
+```
+
+### Expected Section
+
+```text
+Reporting to IMY
+```
+
+### Pass Condition
+
+The experimental search result includes the GDPR breach source and a relevant reporting or cybersecurity connection section.
+
+---
+
+## Source Audit Test Cases
+
+These test cases verify the local source audit script and the weekly GitHub Actions source audit workflow.
+
+---
+
+## Test Case 39: Local Source Audit Script
+
+### Command
+
+```powershell
+python scripts/source_audit.py
+```
+
+### Expected Result
+
+The script should check all Markdown files in the `data/` folder and generate:
+
+```text
+docs/source_audit_report.md
+```
+
+### Expected Summary
+
+```text
+Files marked OK: 9
+Files needing review: 0
+```
+
+### Pass Condition
+
+The script runs without errors and creates or updates the audit report.
+
+---
+
+## Test Case 40: Source Audit Report Content
+
+### File
+
+```text
+docs/source_audit_report.md
+```
+
+### Expected Result
+
+The report should list all 9 local source files.
+
+Each file should show:
+
+- status
+- official source link count
+- source date
+- source freshness
+- version notes
+- issues if any
+
+### Pass Condition
+
+All 9 files are listed and all are marked `OK`.
+
+---
+
+## Test Case 41: Metadata Helper Script
+
+### Command
+
+```powershell
+python scripts/add_missing_metadata.py
+```
+
+### Expected Result
+
+The script should check the Markdown files in the `data/` folder and add a `## Source metadata` section only if it is missing.
+
+### Pass Condition
+
+The script should not duplicate metadata sections in files that already have them.
+
+### Notes
+
+This script is mainly a maintenance helper and does not need to be run every week.
+
+---
+
+## Test Case 42: GitHub Actions Weekly Source Audit
+
+### Action
+
+Open GitHub Actions and run the workflow manually.
+
+### Expected Workflow
+
+```text
+Weekly Source Audit
+```
+
+### Expected Result
+
+The workflow should:
+
+1. Check out the repository.
+2. Set up Python.
+3. Run `python scripts/source_audit.py`.
+4. Update `docs/source_audit_report.md`.
+5. Commit the updated report if changes are found.
+
+### Pass Condition
+
+The workflow run finishes with status `Success`.
+
+---
+
+## Test Case 43: Source Audit Does Not Claim Live Legal Currency
+
+### Action
+
+Read the generated source audit report.
+
+### Expected Result
+
+The report should clearly explain that it does not browse the web and does not confirm whether the law is currently up to date.
+
+### Pass Condition
+
+The report states that it only checks the local project files.
+
+---
+
 ## Test Summary
 
 The current prototype successfully demonstrates:
@@ -1225,5 +1564,18 @@ The current prototype successfully demonstrates:
 - Improved unauthorized access English answer wording
 - Separated practical short answers for ransomware, cyber incidents, and data breaches
 - Separated assessment checklists for ransomware, cyber incidents, and data breaches
+- Experimental AI search sidebar
+- Experimental retrieval module in `app/vector_search.py`
+- Experimental DORA retrieval test
+- Experimental unauthorized access retrieval test
+- Experimental ransomware retrieval test
+- Experimental cyber incident retrieval test
+- Experimental data breach retrieval test
+- Improved ransomware ranking toward `nis2_incident_reporting.md`
+- Improved ransomware ranking toward `Incident assessment checklist`
+- Local source audit script
+- Generated source audit report
+- Metadata helper script
+- Weekly GitHub Actions source audit workflow
 
-The test results show that CyberLex Sweden can answer supported questions from trusted local knowledge files, display transparent source information, provide styled answer sections, and refuse unsupported questions outside the project scope.
+The test results show that CyberLex Sweden can answer supported questions from trusted local knowledge files, display transparent source information, provide styled answer sections, test experimental retrieval behavior, audit local source files, and refuse unsupported questions outside the project scope.
