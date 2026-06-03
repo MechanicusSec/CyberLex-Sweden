@@ -25,6 +25,15 @@ The goal is to verify that the application can:
 - Verify that DORA questions match the DORA key idea section
 - Verify that unauthorized access questions match Swedish cybercrime material
 - Verify the local source audit system
+- Verify Swedish NIS2 cybersecurity law retrieval
+- Verify Swedish ransomware and incident retrieval
+- Verify Swedish GDPR breach retrieval
+- Verify Swedish IMY retrieval
+- Verify Swedish GDPR principles retrieval
+- Verify Swedish dataintrång retrieval
+- Verify Swedish DORA retrieval
+- Verify Swedish Cyber Resilience Act retrieval
+- Verify Swedish EU attacks against information systems retrieval
 - Verify the weekly GitHub Actions source audit workflow
 
 ---
@@ -1399,13 +1408,564 @@ The experimental search result includes the GDPR breach source and a relevant re
 
 ---
 
+
+## Swedish Experimental Retrieval Test Cases
+
+These test cases verify that the experimental AI search sidebar routes Swedish questions to the correct local source files after the Swedish source and retrieval improvements added on 2026-06-03.
+
+---
+
+## Test Case 39: Swedish NIS2 Cybersecurity Law Retrieval
+
+### Question
+
+```text
+Vad är NIS2?
+```
+
+### Expected Result
+
+The experimental AI search sidebar should return the general NIS2 cybersecurity law source, not the NIS2 incident reporting source.
+
+### Expected Source
+
+```text
+nis2_cybersecurity_law.md
+```
+
+### Expected Section Examples
+
+```text
+Key idea
+Swedish summary
+Swedish Cybersecurity Act
+```
+
+### Pass Condition
+
+The top experimental search result is `nis2_cybersecurity_law.md` and the result focuses on NIS2 as a cybersecurity law framework.
+
+---
+
+## Test Case 40: Swedish Cybersecurity Act Retrieval
+
+### Question
+
+```text
+Vad är cybersäkerhetslagen?
+```
+
+### Expected Result
+
+The experimental AI search sidebar should return the NIS2 cybersecurity law source.
+
+### Expected Source
+
+```text
+nis2_cybersecurity_law.md
+```
+
+### Expected Section Examples
+
+```text
+Key idea
+Swedish Cybersecurity Act
+Swedish summary
+```
+
+### Pass Condition
+
+The top experimental search result is `nis2_cybersecurity_law.md`.
+
+---
+
+## Test Case 41: Swedish NIS2 Risk Management Retrieval
+
+### Question
+
+```text
+Vad betyder riskhantering enligt NIS2?
+```
+
+### Expected Result
+
+The experimental AI search sidebar should return the NIS2 cybersecurity law source and match sections about risk management or Swedish NIS2 duties.
+
+### Expected Source
+
+```text
+nis2_cybersecurity_law.md
+```
+
+### Expected Section Examples
+
+```text
+Cybersecurity risk management
+Swedish summary
+Key idea
+```
+
+### Pass Condition
+
+The top experimental search result is `nis2_cybersecurity_law.md`.
+
+---
+
+## Test Case 42: Swedish Ransomware Retrieval
+
+### Question
+
+```text
+Vad ska ett företag göra efter en ransomwareattack?
+```
+
+### Expected Result
+
+The experimental AI search sidebar should return the NIS2 incident reporting source and match the incident assessment checklist.
+
+### Expected Source
+
+```text
+nis2_incident_reporting.md
+```
+
+### Expected Section Examples
+
+```text
+Incident assessment checklist
+Swedish summary
+Incident reporting
+```
+
+### Pass Condition
+
+The top experimental search result is `nis2_incident_reporting.md` and the result is focused on incident handling.
+
+---
+
+## Test Case 43: Swedish GDPR Personal Data Breach Retrieval
+
+### Question
+
+```text
+Vad ska ett företag göra efter en personuppgiftsincident?
+```
+
+### Expected Result
+
+The experimental AI search sidebar should return the GDPR personal data breach source.
+
+### Expected Source
+
+```text
+gdpr_personal_data_breach.md
+```
+
+### Expected Section Examples
+
+```text
+Swedish summary
+Data breach assessment checklist
+Reporting to IMY
+```
+
+### Pass Condition
+
+The top experimental search result is `gdpr_personal_data_breach.md`.
+
+---
+
+## Test Case 44: Swedish IMY Retrieval
+
+### Question
+
+```text
+Vad är IMY?
+```
+
+### Expected Result
+
+The experimental AI search sidebar should return the IMY GDPR supervision source, not the GDPR personal data breach source.
+
+### Expected Source
+
+```text
+imy_gdpr_supervision.md
+```
+
+### Expected Section Examples
+
+```text
+Swedish summary
+Main authority
+Key idea
+```
+
+### Pass Condition
+
+The top experimental search result is `imy_gdpr_supervision.md`.
+
+---
+
+## Test Case 45: Swedish GDPR Principles Retrieval
+
+### Question
+
+```text
+Vilka är GDPR-principerna?
+```
+
+### Expected Result
+
+The experimental AI search sidebar should return the GDPR core principles source.
+
+### Expected Source
+
+```text
+gdpr_core_principles.md
+```
+
+### Expected Section Examples
+
+```text
+Swedish summary
+GDPR principles explained
+Important points
+```
+
+### Pass Condition
+
+The top experimental search result is `gdpr_core_principles.md`.
+
+---
+
+## Test Case 46: Swedish Dataintrång Retrieval
+
+### Question
+
+```text
+Vad är dataintrång?
+```
+
+### Expected Result
+
+The experimental AI search sidebar should return the Swedish cybercrime dataintrång source.
+
+### Expected Source
+
+```text
+cybercrime_dataintrang.md
+```
+
+### Expected Section Examples
+
+```text
+Swedish summary
+Key idea
+Legal reference
+```
+
+### Pass Condition
+
+The top experimental search result is `cybercrime_dataintrang.md`.
+
+---
+
+## Test Case 47: Swedish DORA Retrieval
+
+### Question
+
+```text
+Vad är DORA?
+```
+
+### Expected Result
+
+The experimental AI search sidebar should return the DORA source.
+
+### Expected Source
+
+```text
+eu_dora_digital_operational_resilience.md
+```
+
+### Expected Section Examples
+
+```text
+Swedish summary
+Key idea
+Important points
+```
+
+### Pass Condition
+
+The top experimental search result is `eu_dora_digital_operational_resilience.md`.
+
+---
+
+## Test Case 48: Swedish Digital Operational Resilience Retrieval
+
+### Question
+
+```text
+Vad betyder digital operativ motståndskraft?
+```
+
+### Expected Result
+
+The experimental AI search sidebar should return the DORA source and match sections explaining digital operational resilience.
+
+### Expected Source
+
+```text
+eu_dora_digital_operational_resilience.md
+```
+
+### Expected Section Examples
+
+```text
+Swedish summary
+Digital operational resilience explained
+Key idea
+```
+
+### Pass Condition
+
+The top experimental search result is `eu_dora_digital_operational_resilience.md`.
+
+---
+
+## Test Case 49: Swedish DORA Third-Party Risk Retrieval
+
+### Question
+
+```text
+Vad betyder tredjepartsrisk enligt DORA?
+```
+
+### Expected Result
+
+The experimental AI search sidebar should return the DORA source and match sections about third-party ICT risk.
+
+### Expected Source
+
+```text
+eu_dora_digital_operational_resilience.md
+```
+
+### Expected Section Examples
+
+```text
+Swedish summary
+Third-party ICT risk
+Important points
+```
+
+### Pass Condition
+
+The top experimental search result is `eu_dora_digital_operational_resilience.md`.
+
+---
+
+## Test Case 50: Swedish Cyber Resilience Act Retrieval
+
+### Question
+
+```text
+Vad är Cyber Resilience Act?
+```
+
+### Expected Result
+
+The experimental AI search sidebar should return the Cyber Resilience Act source.
+
+### Expected Source
+
+```text
+eu_cyber_resilience_act.md
+```
+
+### Expected Section Examples
+
+```text
+Swedish summary
+Key idea
+Important points
+```
+
+### Pass Condition
+
+The top experimental search result is `eu_cyber_resilience_act.md`.
+
+---
+
+## Test Case 51: Swedish CRA Digital Product Requirements Retrieval
+
+### Question
+
+```text
+Vad betyder cybersäkerhetskrav för digitala produkter?
+```
+
+### Expected Result
+
+The experimental AI search sidebar should return the Cyber Resilience Act source, not the NIS2 cybersecurity law source.
+
+### Expected Source
+
+```text
+eu_cyber_resilience_act.md
+```
+
+### Expected Section Examples
+
+```text
+Swedish summary
+Important points
+Products with digital elements explained
+```
+
+### Pass Condition
+
+The top experimental search result is `eu_cyber_resilience_act.md`.
+
+---
+
+## Test Case 52: Swedish CRA Security Updates Retrieval
+
+### Question
+
+```text
+Vad säger CRA om säkerhetsuppdateringar?
+```
+
+### Expected Result
+
+The experimental AI search sidebar should return the Cyber Resilience Act source and match sections about security updates.
+
+### Expected Source
+
+```text
+eu_cyber_resilience_act.md
+```
+
+### Expected Section Examples
+
+```text
+Security updates
+Swedish summary
+CRA assessment checklist
+```
+
+### Pass Condition
+
+The top experimental search result is `eu_cyber_resilience_act.md`.
+
+---
+
+## Test Case 53: Swedish EU Attacks Against Information Systems Retrieval
+
+### Question
+
+```text
+Vad säger EU om attacker mot informationssystem?
+```
+
+### Expected Result
+
+The experimental AI search sidebar should return the EU attacks against information systems source, not the NIS2 incident reporting source.
+
+### Expected Source
+
+```text
+eu_attacks_against_information_systems.md
+```
+
+### Expected Section Examples
+
+```text
+Key idea
+Important points
+Swedish summary
+```
+
+### Pass Condition
+
+The top experimental search result is `eu_attacks_against_information_systems.md`.
+
+---
+
+## Test Case 54: Swedish EU Illegal Access Retrieval
+
+### Question
+
+```text
+Vad är olaglig åtkomst enligt EU-regler?
+```
+
+### Expected Result
+
+The experimental AI search sidebar should return the EU attacks against information systems source, not the Swedish dataintrång source.
+
+### Expected Source
+
+```text
+eu_attacks_against_information_systems.md
+```
+
+### Expected Section Examples
+
+```text
+Illegal access explained
+Key idea
+Important points
+```
+
+### Pass Condition
+
+The top experimental search result is `eu_attacks_against_information_systems.md`.
+
+---
+
+## Test Case 55: Swedish EU DDoS Retrieval
+
+### Question
+
+```text
+Vad säger EU om DDoS-attacker?
+```
+
+### Expected Result
+
+The experimental AI search sidebar should return the EU attacks against information systems source, not the NIS2 incident reporting source.
+
+### Expected Source
+
+```text
+eu_attacks_against_information_systems.md
+```
+
+### Expected Section Examples
+
+```text
+Botnets and DDoS
+Illegal system interference explained
+Key idea
+```
+
+### Pass Condition
+
+The top experimental search result is `eu_attacks_against_information_systems.md`.
+
+---
+
 ## Source Audit Test Cases
 
 These test cases verify the local source audit script and the weekly GitHub Actions source audit workflow.
 
 ---
 
-## Test Case 39: Local Source Audit Script
+## Test Case 56: Local Source Audit Script
 
 ### Command
 
@@ -1434,7 +1994,7 @@ The script runs without errors and creates or updates the audit report.
 
 ---
 
-## Test Case 40: Source Audit Report Content
+## Test Case 57: Source Audit Report Content
 
 ### File
 
@@ -1461,7 +2021,7 @@ All 9 files are listed and all are marked `OK`.
 
 ---
 
-## Test Case 41: Metadata Helper Script
+## Test Case 58: Metadata Helper Script
 
 ### Command
 
@@ -1483,7 +2043,7 @@ This script is mainly a maintenance helper and does not need to be run every wee
 
 ---
 
-## Test Case 42: GitHub Actions Weekly Source Audit
+## Test Case 59: GitHub Actions Weekly Source Audit
 
 ### Action
 
@@ -1511,7 +2071,7 @@ The workflow run finishes with status `Success`.
 
 ---
 
-## Test Case 43: Source Audit Does Not Claim Live Legal Currency
+## Test Case 60: Source Audit Does Not Claim Live Legal Currency
 
 ### Action
 
@@ -1573,6 +2133,18 @@ The current prototype successfully demonstrates:
 - Experimental data breach retrieval test
 - Improved ransomware ranking toward `nis2_incident_reporting.md`
 - Improved ransomware ranking toward `Incident assessment checklist`
+- Swedish experimental retrieval tests for NIS2 cybersecurity law
+- Swedish experimental retrieval tests for ransomware and cyber incidents
+- Swedish experimental retrieval tests for GDPR personal data breaches
+- Swedish experimental retrieval tests for IMY supervision questions
+- Swedish experimental retrieval tests for GDPR principles
+- Swedish experimental retrieval tests for Swedish dataintrång
+- Swedish experimental retrieval tests for DORA
+- Swedish experimental retrieval tests for Cyber Resilience Act
+- Swedish experimental retrieval tests for EU attacks against information systems
+- Improved experimental routing between NIS2 incident reporting and EU cybercrime sources
+- Improved experimental routing between Swedish dataintrång and EU cybercrime sources
+- Improved experimental routing between NIS2 cybersecurity duties and CRA product security duties
 - Local source audit script
 - Generated source audit report
 - Metadata helper script
