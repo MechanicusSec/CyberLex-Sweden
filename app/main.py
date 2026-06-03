@@ -1336,7 +1336,6 @@ def detect_question_topic(question, language="English"):
 
     return "Allmän cyberrättslig fråga" if use_swedish else "General cybersecurity law question"
 
-
 def detect_source_quality(filename, language="English"):
     # Detects a simple user-facing source quality label from the matched knowledge file.
     # This does not prove legal authority. It explains what type of source the local file is based on.
@@ -1411,6 +1410,35 @@ def detect_source_quality(filename, language="English"):
         "Lokal utbildningssammanfattning baserad på betrodda källor"
         if use_swedish
         else "Local educational summary based on trusted sources"
+    )
+
+def detect_source_freshness(source_date, language="English"):
+    # Creates a readable freshness label from the stored source date text.
+    # This does not check the internet. It only describes whether the local file has a visible review date.
+
+    use_swedish = language == "Svenska"
+    source_date_lower = source_date.lower()
+
+    has_date = any(char.isdigit() for char in source_date_lower)
+
+    if not has_date or "no source date" in source_date_lower:
+        return (
+            "Inget granskningsdatum sparat"
+            if use_swedish
+            else "No review date stored"
+        )
+
+    if "2026" in source_date_lower:
+        return (
+            "Nyligen kontrollerad"
+            if use_swedish
+            else "Recently checked"
+        )
+
+    return (
+        "Granskning rekommenderas"
+        if use_swedish
+        else "Review recommended"
     )
 
 
@@ -1879,6 +1907,7 @@ def generate_simple_answer(question, best_match, language="English"):
         matched_section_label = "Matchad sektion"
         relevance_score_label = "Relevanspoäng"
         source_quality_label = "Källtyp"
+        source_freshness_label = "Källaktualitet"
         official_sources_heading = "Officiella källor"
         metadata_heading = "Källmetadata"
         source_date_label = "Källdatum"
@@ -1896,6 +1925,7 @@ def generate_simple_answer(question, best_match, language="English"):
         matched_section_label = "Matched section"
         relevance_score_label = "Relevance score"
         source_quality_label = "Source quality"
+        source_freshness_label = "Source freshness"
         official_sources_heading = "Official source links"
         metadata_heading = "Source metadata"
         source_date_label = "Source date"
@@ -1908,6 +1938,7 @@ def generate_simple_answer(question, best_match, language="English"):
         )
     detected_topic = detect_question_topic(question, language)
     source_quality = detect_source_quality(best_match["filename"], language)
+    source_freshness = detect_source_freshness(best_match["source_date"], language)
     confidence = generate_source_confidence(best_match["score"], language)
 
     return (
@@ -1941,6 +1972,8 @@ def generate_simple_answer(question, best_match, language="English"):
         f'<div class="metadata-card-title">{metadata_heading}</div>'
         f'<div class="metadata-row"><strong>{source_date_label}:</strong> '
         f'<span class="metadata-code">{source_date}</span></div>'
+        f'<div class="metadata-row"><strong>{source_freshness_label}:</strong> '
+        f'<span class="metadata-code">{source_freshness}</span></div>'
         f'<div class="metadata-row"><strong>{version_notes_label}:</strong> '
         f'<span class="metadata-code">{version_notes}</span></div>'
         f'</div>\n\n'
