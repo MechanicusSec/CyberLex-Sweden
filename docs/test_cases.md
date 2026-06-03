@@ -13,6 +13,8 @@ The goal is to verify that the application can:
 - Show the source file and source section used
 - Show official source links connected to the matched knowledge file
 - Show source metadata such as source date and version notes
+- Show source quality labels
+- Show source freshness labels
 - Avoid unsupported answers when no trusted source exists
 - Display styled answer cards introduced in prototype version 0.5
 - Handle practical cyber incident questions with more specific short answers
@@ -806,12 +808,6 @@ The detected topic card is visible and shows a topic label that matches the ques
 
 ---
 
-## Improved Incident Handling Test Cases
-
-These test cases verify topic keyword expansion, improved cyber incident handling, improved unauthorized access wording, separated practical short answers, and separated assessment checklists.
-
----
-
 ## Test Case 23B: Source Quality Label
 
 ### Question
@@ -819,6 +815,73 @@ These test cases verify topic keyword expansion, improved cyber incident handlin
 ```text
 What should a company do after a ransomware attack?
 ```
+
+### Expected Result
+
+CyberLex Sweden should display a source quality label inside the citation details card.
+
+The source quality label should explain what type of source the matched local knowledge file is based on.
+
+### Expected Source
+
+```text
+nis2_incident_reporting.md
+```
+
+### Expected Source Quality
+
+```text
+Swedish authority guidance and EU cybersecurity source
+```
+
+### Pass Condition
+
+The citation details card includes a visible source quality row, and the label matches the type of source used by the matched knowledge file.
+
+---
+
+## Test Case 23C: Source Freshness Label
+
+### Question
+
+```text
+What should a company do after a ransomware attack?
+```
+
+### Expected Result
+
+CyberLex Sweden should display a source freshness label inside the source metadata card.
+
+The source freshness label should explain whether the matched local knowledge file has a recent stored review date.
+
+### Expected Source
+
+```text
+nis2_incident_reporting.md
+```
+
+### Expected Source Date
+
+```text
+Last checked: 2026-05-31
+```
+
+### Expected Source Freshness
+
+```text
+Recently checked
+```
+
+### Pass Condition
+
+The source metadata card includes a visible source freshness row, and the label is based on the stored source date in the matched knowledge file.
+
+---
+
+## Improved Incident Handling Test Cases
+
+These test cases verify topic keyword expansion, improved cyber incident handling, improved unauthorized access wording, separated practical short answers, and separated assessment checklists.
+
 ---
 
 ## Test Case 24: Ransomware Incident Handling
@@ -1137,7 +1200,9 @@ The current prototype successfully demonstrates:
 - Source file and section display
 - Official source link display
 - Source quality label in citation details
-- Human-readable source quality labels for Swedish legal sources, Swedish authority guidance, EU regulations, EU  directives, and local educational summaries
+- Human-readable source quality labels for Swedish legal sources, Swedish authority guidance, EU regulations, EU directives, and local educational summaries
+- Source freshness label in source metadata
+- Human-readable freshness labels based on stored local source review dates
 - Source metadata display
 - Legal disclaimer display
 - Out-of-scope question refusal

@@ -6,7 +6,7 @@ This document explains the technical design of the CyberLex Sweden prototype.
 
 CyberLex Sweden is a local Streamlit application that answers questions about selected Swedish and EU cybersecurity law topics using a trusted local Markdown knowledge base.
 
-The prototype does not use a full language model yet. Instead, it uses source-based search, question intent matching, rule-based answer generation, practical explanations, assessment checklists, detected topic labels, source quality labels, confidence explanations, and transparent source display.
+The prototype does not use a full language model yet. Instead, it uses source-based search, question intent matching, rule-based answer generation, practical explanations, assessment checklists, detected topic labels, source quality labels, source freshness labels, confidence explanations, and transparent source display.
 
 ---
 
@@ -22,6 +22,7 @@ The application is built with:
 - Topic keyword expansion
 - Source confidence explanations
 - Source quality labels
+- Source freshness labels
 - Detected topic labels
 - Source metadata extraction
 - Citation display
@@ -64,6 +65,7 @@ It handles:
 - expanding question terms
 - detecting question topics
 - detecting source quality labels
+- detecting source freshness labels
 - generating answers
 - generating practical explanations
 - generating assessment checklists
@@ -82,6 +84,7 @@ It displays:
 - citations
 - detected topic cards
 - source quality labels
+- source freshness labels
 - source metadata
 - confidence explanations
 - collapsible sections
@@ -267,6 +270,41 @@ This improves transparency because users can see whether the answer is based on 
 
 ---
 
+## Source freshness labels
+
+CyberLex Sweden displays a source freshness label inside the source metadata card.
+
+The function `detect_source_freshness(source_date, language)` checks the stored source date text from the matched Markdown knowledge file and returns a simple user-facing freshness label.
+
+Examples:
+
+```text
+Last checked: 2026-05-31
+→ Recently checked
+
+No source date
+→ No review date stored
+
+Older stored date
+→ Review recommended
+```
+
+In Swedish mode, the labels are displayed as:
+
+```text
+Nyligen kontrollerad
+Inget granskningsdatum sparat
+Granskning rekommenderas
+```
+
+The source freshness label does not check the internet and does not confirm that the law is currently up to date.
+
+It only explains whether the local knowledge file has a visible review date and whether the stored source date appears recent according to the prototype rules.
+
+This improves transparency because users can see not only what kind of source was matched, but also whether the local source file has a documented review date.
+
+---
+
 ## CyberLex answer structure
 
 CyberLex Sweden answers are designed to be source-grounded and transparent.
@@ -369,9 +407,14 @@ CyberLex displays source metadata for the matched knowledge file.
 This includes:
 
 - source date
+- source freshness
 - version notes
 
 The source date shows when the source material was last checked or added.
+
+The source freshness label explains whether the local source file was recently checked, whether review is recommended, or whether no review date is stored.
+
+This does not mean the source is legally current. It only describes the stored review date in the local Markdown file.
 
 The version notes explain what kind of update or summary was added to the knowledge file.
 
@@ -567,7 +610,7 @@ The current displayed version is:
 Prototype version: 0.5
 ```
 
-Version 0.5 represents the styled answer-card prototype. This version includes citation details, detected topic labels, source quality labels, official source links, source metadata, important limitation cards, attention level cards, practical explanation cards, assessment checklist cards, relevant source context cards, and other matching source section cards.
+Version 0.5 represents the styled answer-card prototype. This version includes citation details, detected topic labels, source quality labels, source freshness labels, official source links, source metadata, important limitation cards, attention level cards, practical explanation cards, assessment checklist cards, relevant source context cards, and other matching source section cards.
 
 ---
 
@@ -585,6 +628,7 @@ The sidebar explains that the current version uses:
 - topic keyword expansion
 - detected topic labels
 - source quality labels
+- source freshness labels
 - source confidence explanations
 - rule-based answers
 
@@ -610,11 +654,12 @@ Current limitations include:
 - It does not browse the web live.
 - It only answers from local Markdown sources.
 - It only covers selected topics.
-- It uses rule-based answers, explanations, attention levels, topic labels, source quality labels, confidence explanations, and checklists.
+- It uses rule-based answers, explanations, attention levels, topic labels, source quality labels, source freshness labels, confidence explanations, and checklists.
 - It does not provide legal advice.
 - Source material must be manually reviewed and updated.
 - Confidence labels describe local source matching only, not legal certainty.
 - Source quality labels describe the type of local source file, not a guarantee that the source is legally current.
+- Source freshness labels describe stored local review dates only, not live legal currency.
 - Detected topic labels describe question interpretation only, not a legal classification.
 
 ---
