@@ -62,3 +62,10 @@ Initial educational summary added for CyberLex Sweden.
 ## Disclaimer
 
 This text is simplified for educational use in the CyberLex Sweden project. It is not legal advice.
+
+## Source metadata
+
+Source date: Last checked: 2026-06-03
+
+Version notes: Source reviewed for CyberLex Sweden educational prototype.
+
