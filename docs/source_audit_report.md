@@ -10,10 +10,10 @@ This audit does not browse the web and does not confirm whether the law is curre
 
 ## Audit Summary
 
-- Generated at: `2026-06-03 09:04:56`
+- Generated at: `2026-06-03 09:15:39`
 - Total source files checked: `9`
-- Files marked OK: `0`
-- Files needing review: `9`
+- Files marked OK: `9`
+- Files needing review: `0`
 
 ---
 
@@ -21,157 +21,108 @@ This audit does not browse the web and does not confirm whether the law is curre
 
 ### cybercrime_dataintrang.md
 
-- Status: `Needs review`
+- Status: `OK`
 - Official source links found: `3`
-- Source date: `Not found`
-- Source freshness: `No review date stored`
-- Version notes: `Not found`
+- Source date: `Source date: Last checked: 2026-06-03`
+- Source freshness: `Recently checked`
+- Version notes: `Version notes: Source reviewed for CyberLex Sweden educational prototype.`
 
-#### Issues
-
-- Missing Source metadata section
-- Missing source date
-- Missing version notes
-- Freshness status: No review date stored
+No issues found.
 
 ---
 
 ### eu_attacks_against_information_systems.md
 
-- Status: `Needs review`
+- Status: `OK`
 - Official source links found: `2`
-- Source date: `Not found`
-- Source freshness: `No review date stored`
-- Version notes: `Not found`
+- Source date: `Source date: Last checked: 2026-06-03`
+- Source freshness: `Recently checked`
+- Version notes: `Version notes: Source reviewed for CyberLex Sweden educational prototype.`
 
-#### Issues
-
-- Missing Source metadata section
-- Missing source date
-- Missing version notes
-- Freshness status: No review date stored
+No issues found.
 
 ---
 
 ### eu_cyber_resilience_act.md
 
-- Status: `Needs review`
+- Status: `OK`
 - Official source links found: `1`
-- Source date: `Not found`
-- Source freshness: `No review date stored`
-- Version notes: `Not found`
+- Source date: `Source date: Last checked: 2026-06-03`
+- Source freshness: `Recently checked`
+- Version notes: `Version notes: Source reviewed for CyberLex Sweden educational prototype.`
 
-#### Issues
-
-- Missing Source metadata section
-- Missing source date
-- Missing version notes
-- Freshness status: No review date stored
+No issues found.
 
 ---
 
 ### eu_dora_digital_operational_resilience.md
 
-- Status: `Needs review`
+- Status: `OK`
 - Official source links found: `6`
-- Source date: `Not found`
-- Source freshness: `No review date stored`
-- Version notes: `Not found`
+- Source date: `Source date: Last checked: 2026-06-03`
+- Source freshness: `Recently checked`
+- Version notes: `Version notes: Source reviewed for CyberLex Sweden educational prototype.`
 
-#### Issues
-
-- Missing Source metadata section
-- Missing source date
-- Missing version notes
-- Freshness status: No review date stored
+No issues found.
 
 ---
 
 ### gdpr_core_principles.md
 
-- Status: `Needs review`
+- Status: `OK`
 - Official source links found: `4`
-- Source date: `Not found`
-- Source freshness: `No review date stored`
-- Version notes: `Not found`
+- Source date: `Source date: Last checked: 2026-06-03`
+- Source freshness: `Recently checked`
+- Version notes: `Version notes: Source reviewed for CyberLex Sweden educational prototype.`
 
-#### Issues
-
-- Missing Source metadata section
-- Missing source date
-- Missing version notes
-- Freshness status: No review date stored
+No issues found.
 
 ---
 
 ### gdpr_personal_data_breach.md
 
-- Status: `Needs review`
-- Official source links found: `0`
-- Source date: `Not found`
-- Source freshness: `No review date stored`
-- Version notes: `Not found`
+- Status: `OK`
+- Official source links found: `8`
+- Source date: `Source date: Last checked: 2026-06-03`
+- Source freshness: `Recently checked`
+- Version notes: `Version notes: Source reviewed and cleaned for CyberLex Sweden educational prototype. Duplicate source sections were removed and official source links were standardized.`
 
-#### Issues
-
-- Missing Official source section
-- No official source links found
-- Missing Source metadata section
-- Missing source date
-- Missing version notes
-- Freshness status: No review date stored
+No issues found.
 
 ---
 
 ### imy_gdpr_supervision.md
 
-- Status: `Needs review`
-- Official source links found: `0`
-- Source date: `Not found`
-- Source freshness: `No review date stored`
-- Version notes: `Not found`
+- Status: `OK`
+- Official source links found: `8`
+- Source date: `Source date: Last checked: 2026-06-03`
+- Source freshness: `Recently checked`
+- Version notes: `Version notes: Source reviewed and cleaned for CyberLex Sweden educational prototype. Duplicate source sections were removed and official source links were standardized.`
 
-#### Issues
-
-- Missing Official source section
-- No official source links found
-- Missing Source metadata section
-- Missing source date
-- Missing version notes
-- Freshness status: No review date stored
+No issues found.
 
 ---
 
 ### nis2_cybersecurity_law.md
 
-- Status: `Needs review`
+- Status: `OK`
 - Official source links found: `4`
-- Source date: `Not found`
-- Source freshness: `No review date stored`
-- Version notes: `Not found`
+- Source date: `Source date: Last checked: 2026-06-03`
+- Source freshness: `Recently checked`
+- Version notes: `Version notes: Source reviewed for CyberLex Sweden educational prototype.`
 
-#### Issues
-
-- Missing Source metadata section
-- Missing source date
-- Missing version notes
-- Freshness status: No review date stored
+No issues found.
 
 ---
 
 ### nis2_incident_reporting.md
 
-- Status: `Needs review`
+- Status: `OK`
 - Official source links found: `8`
-- Source date: `Not found`
-- Source freshness: `No review date stored`
-- Version notes: `Not found`
+- Source date: `Source date: Last checked: 2026-06-03`
+- Source freshness: `Recently checked`
+- Version notes: `Version notes: Source reviewed for CyberLex Sweden educational prototype.`
 
-#### Issues
-
-- Missing Source metadata section
-- Missing source date
-- Missing version notes
-- Freshness status: No review date stored
+No issues found.
 
 ---

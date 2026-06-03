@@ -46,20 +46,18 @@ CyberLex Sweden should use this source when answering questions about GDPR breac
 - What does the 72-hour rule mean?
 - What should an organization consider after a data breach?
 
-## official source
-
 ## Official source
 
-[IMY: Personal data breach guidance](https://www.imy.se/en/organisations/data-protection/this-applies-accordning-to-gdpr/personal-data-breach/)
-[EU: GDPR Regulation](https://eur-lex.europa.eu/eli/reg/2016/679/oj/eng)
+- [IMY: Personal data breach guidance](https://www.imy.se/en/organisations/data-protection/this-applies-accordning-to-gdpr/personal-data-breach/)
+- [IMY: Notification of a personal data breach](https://www.imy.se/en/organisations/forms-and-e-services/notification-of-a-personal-data-breach/)
+- [IMY: Do we have to report all personal data breaches to IMY?](https://www.imy.se/en/frequently-asked-questions/do-we-have-to-report-all-personal-data-breaches-to-imy/)
+- [EU: GDPR Regulation](https://eur-lex.europa.eu/eli/reg/2016/679/oj/eng)
 
-## Source date
+## Source metadata
 
-Last checked: 2026-05-30
+Source date: Last checked: 2026-06-03
 
-## Version notes
-
-Initial educational summary added for CyberLex Sweden.
+Version notes: Source reviewed and cleaned for CyberLex Sweden educational prototype. Duplicate source sections were removed and official source links were standardized.
 
 ## Disclaimer
 

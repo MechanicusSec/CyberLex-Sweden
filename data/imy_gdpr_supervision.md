@@ -12,13 +12,15 @@ IMY is responsible for supervising personal data protection in Sweden.
 
 IMY monitors that personal data is handled correctly and does not fall into the wrong hands.
 
+CyberLex Sweden should use IMY as the main authority source when answering questions about GDPR supervision, personal data protection, privacy protection, and Swedish data protection authority responsibilities.
+
 ## Key idea
 
 GDPR is the main EU regulation for personal data protection.
 
 In Sweden, IMY is the main supervisory authority for GDPR and personal data protection.
 
-CyberLex Sweden should use IMY as the main authority source when answering questions about GDPR supervision, personal data protection, privacy protection, and Swedish data protection authority responsibilities.
+IMY is relevant when organizations need to understand Swedish GDPR supervision, personal data protection duties, privacy guidance, and personal data breach handling.
 
 ## Important points
 
@@ -39,6 +41,8 @@ IMY is relevant to cybersecurity because cybersecurity incidents can affect pers
 
 If poor security leads to unauthorized disclosure, loss, destruction, alteration, or access to personal data, GDPR and IMY guidance may become relevant.
 
+Examples can include ransomware, account compromise, accidental data exposure, unauthorized access, stolen devices, or security weaknesses that expose personal data.
+
 ## Useful questions CyberLex Sweden can answer from this source
 
 - What is IMY?
@@ -46,21 +50,20 @@ If poor security leads to unauthorized disclosure, loss, destruction, alteration
 - Which authority supervises GDPR in Sweden?
 - Which authority handles personal data protection in Sweden?
 - Why is IMY relevant to cybersecurity?
-
-## official source
+- Which authority is relevant after a personal data breach in Sweden?
 
 ## Official source
 
-[IMY: Swedish Authority for Privacy Protection](https://www.imy.se/en/)
-[IMY: About IMY](https://www.imy.se/en/about-us/) 
+- [IMY: Swedish Authority for Privacy Protection](https://www.imy.se/en/)
+- [IMY: About IMY](https://www.imy.se/en/about-us/)
+- [IMY: Our mission](https://www.imy.se/en/about-us/swedish-authority-for-privacy-protections-assignment/)
+- [IMY: Data protection for organisations](https://www.imy.se/en/organisations/data-protection/)
 
-## Source date
+## Source metadata
 
-Last checked: 2026-05-31
+Source date: Last checked: 2026-06-03
 
-## Version notes
-
-Initial educational summary added for CyberLex Sweden.
+Version notes: Source reviewed and cleaned for CyberLex Sweden educational prototype. Duplicate source sections were removed and official source links were standardized.
 
 ## Disclaimer
 
