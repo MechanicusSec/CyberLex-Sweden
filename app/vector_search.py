@@ -120,19 +120,22 @@ def score_chunk(question_words, chunk):
     score = 0
 
     useful_sections = {
-    "incident assessment checklist": 35,
-    "key idea": 25,
-    "important points": 20,
-    "main authority": 18,
-    "reporting to imy": 18,
-    "incident reporting": 18,
-    "cybersecurity connection": 15,
-    "swedish connection": 15,
-    "practical explanation": 15,
-    "relationship with gdpr breach reporting": 15,
-    "third-party ict risk": 15,
-    "legal reference": 15,
-}
+        "incident assessment checklist": 35,
+        "data breach assessment checklist": 35,
+        "swedish summary": 30,
+        "key idea": 25,
+        "important points": 20,
+        "main authority": 18,
+        "reporting to imy": 18,
+        "incident reporting": 18,
+        "affected individuals": 18,
+        "cybersecurity connection": 15,
+        "swedish connection": 15,
+        "practical explanation": 15,
+        "relationship with gdpr breach reporting": 15,
+        "third-party ict risk": 15,
+        "legal reference": 15,
+    }
 
     weak_sections = {
         "useful questions": -35,
@@ -182,6 +185,8 @@ def score_chunk(question_words, chunk):
         or "operational resilience" in question_joined
         or "ict risk" in question_joined
         or "financial sector" in question_joined
+        or "finansiella sektorn" in question_joined
+        or "digital operativ motståndskraft" in question_joined
     ):
         if "dora" in filename_text:
             score += 40
@@ -191,15 +196,21 @@ def score_chunk(question_words, chunk):
             score += 25
         if "third-party ict risk" in section_text:
             score += 20
+        if "swedish summary" in section_text:
+            score += 20
         if "official source" in section_text or "useful questions" in section_text:
             score -= 30
 
     # Ransomware, malware, cyber attack, and general cyber incident questions.
     if (
         "ransomware" in question_joined
+        or "ransomwareattack" in question_joined
         or "malware" in question_joined
+        or "skadlig kod" in question_joined
         or "cyber incident" in question_joined
+        or "cybersäkerhetsincident" in question_joined
         or "cyber attack" in question_joined
+        or "cyberattack" in question_joined
         or "attack" in question_joined
         or "incident" in question_joined
     ):
@@ -214,6 +225,8 @@ def score_chunk(question_words, chunk):
 
         if "incident assessment checklist" in section_text:
             score += 80
+        if "swedish summary" in section_text:
+            score += 40
         if "incident reporting" in section_text:
             score += 35
         if "relationship with gdpr breach reporting" in section_text:
@@ -232,7 +245,9 @@ def score_chunk(question_words, chunk):
         "unauthorized" in question_joined
         or "access" in question_joined
         or "dataintrång" in question_joined
+        or "obehörig åtkomst" in question_joined
         or "illegal access" in question_joined
+        or "olaglig åtkomst" in question_joined
     ):
         if "cybercrime_dataintrang" in filename_text:
             score += 70
@@ -241,6 +256,8 @@ def score_chunk(question_words, chunk):
         if "legal reference" in section_text:
             score += 25
         if "practical explanation" in section_text:
+            score += 20
+        if "swedish summary" in section_text:
             score += 20
         if "official source" in section_text or "useful questions" in section_text:
             score -= 30
@@ -251,15 +268,36 @@ def score_chunk(question_words, chunk):
         or "gdpr" in question_joined
         or "personal data" in question_joined
         or "data breach" in question_joined
+        or "personuppgiftsincident" in question_joined
+        or "personuppgifter" in question_joined
+        or "personuppgift" in question_joined
+        or "imy" in question_joined
+        or "72" in question_joined
+        or "72 timmarsregeln" in question_joined
+        or "72-timmarsregeln" in question_joined
+        or "anmälas" in question_joined
+        or "anmäla" in question_joined
+        or "anmälan" in question_joined
+        or "dataläcka" in question_joined
+        or "dataläckor" in question_joined
     ):
         if "gdpr_personal_data_breach" in filename_text:
-            score += 70
+            score += 140
         if "imy_gdpr_supervision" in filename_text:
-            score += 20
+            score += 25
+        if "nis2_incident_reporting" in filename_text:
+            score -= 40
+
+        if "data breach assessment checklist" in section_text:
+            score += 80
+        if "swedish summary" in section_text:
+            score += 60
         if "reporting to imy" in section_text:
+            score += 45
+        if "affected individuals" in section_text:
             score += 30
         if "main authority" in section_text:
-            score += 15
+            score += 20
         if "cybersecurity connection" in section_text:
             score += 15
         if "official source" in section_text or "useful questions" in section_text:

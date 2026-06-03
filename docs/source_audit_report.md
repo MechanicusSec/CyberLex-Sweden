@@ -10,7 +10,7 @@ This audit does not browse the web and does not confirm whether the law is curre
 
 ## Audit Summary
 
-- Generated at: `2026-06-03 13:59:22`
+- Generated at: `2026-06-03 14:02:56`
 - Total source files checked: `9`
 - Files marked OK: `9`
 - Files needing review: `0`
@@ -85,7 +85,7 @@ No issues found.
 - Official source links found: `8`
 - Source date: `Source date: Last checked: 2026-06-03`
 - Source freshness: `Recently checked`
-- Version notes: `Version notes: Source reviewed and cleaned for CyberLex Sweden educational prototype. Duplicate source sections were removed and official source links were standardized.`
+- Version notes: `Version notes: Swedish summary added and GDPR personal data breach source expanded for bilingual CyberLex Sweden testing.`
 
 No issues found.
 
