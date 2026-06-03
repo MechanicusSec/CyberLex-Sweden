@@ -406,6 +406,118 @@ Section: Incident assessment checklist
 
 This shows that the experimental search can be tuned to retrieve better source sections for practical cybersecurity-law questions.
 
+
+---
+
+## Experimental retrieval improvements completed on 2026-06-03
+
+CyberLex Sweden includes an experimental retrieval module in:
+
+```text
+app/vector_search.py
+```
+
+This module is not a true vector search system yet. It does not use embeddings, ChromaDB, FAISS, or a language model.
+
+Instead, it uses:
+
+- Markdown source files from `data/`
+- heading-based chunking
+- keyword matching
+- section boosts
+- weak-section penalties
+- topic-specific routing rules
+- source-specific score boosts and penalties
+
+The purpose is to test better retrieval behavior before adding real vector search or RAG.
+
+### Current supported Swedish retrieval routing
+
+The experimental retrieval module has been improved so Swedish questions route to more accurate local source files.
+
+| Topic | Example question | Expected source |
+|---|---|---|
+| NIS2 law | `Vad är NIS2?` | `nis2_cybersecurity_law.md` |
+| Swedish Cybersecurity Act | `Vad är cybersäkerhetslagen?` | `nis2_cybersecurity_law.md` |
+| NIS2 risk management | `Vad betyder riskhantering enligt NIS2?` | `nis2_cybersecurity_law.md` |
+| Ransomware | `Vad ska ett företag göra efter en ransomwareattack?` | `nis2_incident_reporting.md` |
+| GDPR breach | `Vad ska ett företag göra efter en personuppgiftsincident?` | `gdpr_personal_data_breach.md` |
+| IMY | `Vad är IMY?` | `imy_gdpr_supervision.md` |
+| GDPR principles | `Vilka är GDPR-principerna?` | `gdpr_core_principles.md` |
+| Dataintrång | `Vad är dataintrång?` | `cybercrime_dataintrang.md` |
+| DORA | `Vad är DORA?` | `eu_dora_digital_operational_resilience.md` |
+| Cyber Resilience Act | `Vad betyder cybersäkerhetskrav för digitala produkter?` | `eu_cyber_resilience_act.md` |
+| EU attacks against information systems | `Vad säger EU om attacker mot informationssystem?` | `eu_attacks_against_information_systems.md` |
+| EU illegal access | `Vad är olaglig åtkomst enligt EU-regler?` | `eu_attacks_against_information_systems.md` |
+| EU DDoS rules | `Vad säger EU om DDoS-attacker?` | `eu_attacks_against_information_systems.md` |
+
+### Source separation rules
+
+The retrieval logic is designed to separate similar but legally different topics.
+
+Examples:
+
+- Broad NIS2 questions should route to `nis2_cybersecurity_law.md`.
+- Ransomware and cyber incident questions should route to `nis2_incident_reporting.md`.
+- Personal data breach questions should route to `gdpr_personal_data_breach.md`.
+- Pure IMY authority questions should route to `imy_gdpr_supervision.md`.
+- GDPR principle questions should route to `gdpr_core_principles.md`.
+- Swedish dataintrång questions should route to `cybercrime_dataintrang.md`.
+- EU cybercrime questions about attacks against information systems should route to `eu_attacks_against_information_systems.md`.
+- Product cybersecurity questions should route to `eu_cyber_resilience_act.md`.
+- Financial-sector digital operational resilience questions should route to `eu_dora_digital_operational_resilience.md`.
+
+This separation matters because CyberLex Sweden should not mix different legal frameworks.
+
+For example:
+
+- NIS2 is about cybersecurity duties for covered organizations.
+- DORA is about digital operational resilience in the financial sector.
+- CRA is about cybersecurity requirements for products with digital elements.
+- GDPR is about personal data protection.
+- Directive 2013/40/EU is about EU cybercrime rules for attacks against information systems.
+- Swedish dataintrång is a Swedish criminal-law topic.
+
+### Source improvement phase completed
+
+The main local source-improvement phase completed on 2026-06-03.
+
+The following source areas now have stronger Swedish support and improved experimental retrieval behavior:
+
+- NIS2 cybersecurity law
+- NIS2 incident reporting
+- GDPR personal data breach
+- GDPR core principles
+- IMY GDPR supervision
+- Swedish dataintrång
+- DORA
+- Cyber Resilience Act
+- EU attacks against information systems
+
+The current result is a stronger bilingual source base before the project moves into true vector search and RAG work.
+
+### Current limitation
+
+The experimental retrieval module is still rule-based.
+
+It can improve ranking for known topics, but it does not understand meaning the way an embedding-based search system would.
+
+Future improvements should add:
+
+- `sentence-transformers`
+- embeddings for source chunks
+- ChromaDB or FAISS
+- comparison between keyword search and vector search
+- RAG-style answer generation
+- mandatory source grounding
+- refusal when no trusted local source exists
+
+The current design principle remains:
+
+```text
+Better sources first. Better AI second.
+```
+
 ---
 
 ## Incident assessment checklist source design
@@ -1043,7 +1155,7 @@ The app can display:
 - English freshness labels
 - Swedish freshness labels
 
-The current knowledge base mostly uses English educational summaries, but the project is designed so Swedish source summaries and Swedish answer wording can be expanded later.
+The current knowledge base now includes stronger Swedish summaries and Swedish useful-question sections across the main supported source files. Swedish answer wording and source coverage can still be expanded further, but the project now has a stronger bilingual foundation than the earlier prototype.
 
 This supports the project goal of making CyberLex Sweden useful in both Swedish and English.
 
@@ -1146,7 +1258,7 @@ Current limitations include:
 
 Future improvements may include:
 
-- better Swedish source summaries
+- continued Swedish source refinement
 - more Swedish and EU legal sources
 - vector search with ChromaDB or FAISS
 - local embeddings using sentence-transformers
@@ -1194,5 +1306,9 @@ CyberLex Sweden currently has:
 - a metadata helper script in `scripts/add_missing_metadata.py`
 - a weekly GitHub Actions source audit workflow
 - a source audit report that checks all 9 local source files
+- improved Swedish retrieval routing for NIS2, GDPR, IMY, dataintrång, DORA, CRA, and EU attacks against information systems
+- strengthened local source summaries for the main supported Swedish and EU cybersecurity-law topics
 
-The next major technical step is to continue improving retrieval quality and then later replace or extend the experimental search module with true vector embeddings and a RAG-based answer mode.
+The source-improvement phase is now largely complete for the current prototype scope.
+
+The next major technical step is to start planning and implementing true vector search, then later extend the system with a RAG-based answer mode that remains mandatory-source-grounded.
