@@ -218,6 +218,9 @@ CyberLex Sweden gained a repeatable local source audit process.
 
 ---
 
+| 2026-06-03 | `data/imy_gdpr_supervision.md` | Swedish IMY supervision support | Added Swedish summary for IMY, GDPR supervision, dataskydd, personuppgiftsskydd, tillsyn, klagomål, and cybersecurity incidents involving personal data | Swedish IMY support added |
+| 2026-06-03 | `app/vector_search.py` | Swedish IMY retrieval | Improved retrieval so Swedish questions such as `Vad är IMY?` prefer `imy_gdpr_supervision.md` instead of GDPR breach material | Swedish IMY retrieval improved |
+
 ## 2026-06-03 - Metadata helper script added
 
 A metadata helper script was added:
