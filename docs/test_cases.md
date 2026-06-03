@@ -812,6 +812,15 @@ These test cases verify topic keyword expansion, improved cyber incident handlin
 
 ---
 
+## Test Case 23B: Source Quality Label
+
+### Question
+
+```text
+What should a company do after a ransomware attack?
+```
+---
+
 ## Test Case 24: Ransomware Incident Handling
 
 ### Question
@@ -1127,6 +1136,8 @@ The current prototype successfully demonstrates:
 - Simple source-based answers
 - Source file and section display
 - Official source link display
+- Source quality label in citation details
+- Human-readable source quality labels for Swedish legal sources, Swedish authority guidance, EU regulations, EU  directives, and local educational summaries
 - Source metadata display
 - Legal disclaimer display
 - Out-of-scope question refusal
