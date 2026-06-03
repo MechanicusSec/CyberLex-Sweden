@@ -1,0 +1,31 @@
+name: Weekly Source Audit
+
+on:
+  schedule:
+    - cron: "0 7 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  source-audit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run source audit
+        run: python scripts/source_audit.py
+
+      - name: Commit updated source audit report
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Update source audit report
+          file_pattern: docs/source_audit_report.md
