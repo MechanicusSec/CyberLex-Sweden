@@ -938,6 +938,33 @@ Result:
 
 - Swedish DORA questions such as `Vad är DORA?`, `Vad betyder digital operativ motståndskraft?`, and `Vad betyder tredjepartsrisk enligt DORA?` now correctly return `eu_dora_digital_operational_resilience.md`.
 
+### 2026-06-03 - Swedish Cyber Resilience Act source support
+
+Updated:
+
+- `data/eu_cyber_resilience_act.md`
+- `app/vector_search.py`
+
+Change:
+
+- Expanded the Cyber Resilience Act source with stronger Swedish and English explanations.
+- Added a Swedish summary for CRA and products with digital elements.
+- Added sections for cybersecurity by design, vulnerability handling, security updates, product security, and relationship with NIS2, GDPR, and DORA.
+- Added a CRA assessment checklist for educational analysis.
+- Improved experimental retrieval so Swedish questions about digital products, product cybersecurity, security updates, and CRA route to `eu_cyber_resilience_act.md`.
+- Fixed CRA retrieval logic in `app/vector_search.py` after variable-name errors in the experimental search function.
+
+Reason:
+
+- CyberLex Sweden should distinguish between broad organizational cybersecurity duties under NIS2 and product cybersecurity requirements under the Cyber Resilience Act.
+- Swedish questions such as `Vad betyder cybersäkerhetskrav för digitala produkter?` should not route to the NIS2 source.
+
+Result:
+
+- `Vad är Cyber Resilience Act?` returns `eu_cyber_resilience_act.md`.
+- `Vad betyder cybersäkerhetskrav för digitala produkter?` returns `eu_cyber_resilience_act.md`.
+- `Vad säger CRA om säkerhetsuppdateringar?` returns `eu_cyber_resilience_act.md`.
+
 ## Source Review Rules
 
 When a knowledge base source is added or updated, the following should be checked:
