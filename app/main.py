@@ -1,5 +1,6 @@
 from pathlib import Path
 import streamlit as st
+from vector_search import build_chunk_index, search_chunks as experimental_search_chunks
 
 st.set_page_config(
     page_title="CyberLex Sweden",
@@ -8,6 +9,13 @@ st.set_page_config(
 )
 
 DATA_DIR = Path("data")
+
+
+@st.cache_data
+def load_experimental_search_index():
+    # Loads the experimental search chunks once and keeps them cached.
+    # This avoids rebuilding the test index every time Streamlit refreshes.
+    return build_chunk_index()
 
 
 def clean_words(text):
@@ -2609,6 +2617,67 @@ else:
 
 with st.sidebar.expander(ai_roadmap_header, expanded=False):
     st.markdown(ai_roadmap_text)
+
+st.sidebar.markdown("---")
+
+if interface_language == "Svenska":
+    experimental_search_header = "Experimentell AI-sökning"
+    experimental_search_caption = (
+        "Detta testfält använder den experimentella sökmodulen. "
+        "Det ersätter inte CyberLex huvudsvar ännu."
+    )
+    experimental_search_label = "Testa experimentell sökning"
+    experimental_search_placeholder = "Exempel: Vad är DORA?"
+    experimental_matches_label = "Toppmatchningar från experimentell sökning:"
+    no_experimental_matches_text = "Inga experimentella sökmatchningar hittades."
+    experimental_source_label = "Källa"
+    experimental_section_label = "Sektion"
+    experimental_score_label = "Poäng"
+else:
+    experimental_search_header = "Experimental AI search"
+    experimental_search_caption = (
+        "This test panel uses the experimental search module. "
+        "It does not replace the main CyberLex answer yet."
+    )
+    experimental_search_label = "Test experimental search"
+    experimental_search_placeholder = "Example: What is DORA?"
+    experimental_matches_label = "Top experimental matches:"
+    no_experimental_matches_text = "No experimental search matches found."
+    experimental_source_label = "Source"
+    experimental_section_label = "Section"
+    experimental_score_label = "Score"
+
+st.sidebar.subheader(experimental_search_header)
+st.sidebar.caption(experimental_search_caption)
+
+experimental_question = st.sidebar.text_input(
+    experimental_search_label,
+    placeholder=experimental_search_placeholder,
+    key="experimental_search_question",
+)
+
+if experimental_question:
+    experimental_chunks = load_experimental_search_index()
+    experimental_results = experimental_search_chunks(
+        experimental_question,
+        experimental_chunks,
+        limit=3,
+    )
+
+    if experimental_results:
+        st.sidebar.markdown(f"**{experimental_matches_label}**")
+
+        for result in experimental_results:
+            experimental_card = f"""
+                <div class="match-card">
+                    <strong>{experimental_source_label}:</strong> <code>{result["filename"]}</code><br>
+                    <strong>{experimental_section_label}:</strong> <code>{result["section"]}</code><br>
+                    <strong>{experimental_score_label}:</strong> <code>{result["score"]}</code>
+                </div>
+                """
+            st.sidebar.markdown(experimental_card, unsafe_allow_html=True)
+    else:
+        st.sidebar.info(no_experimental_matches_text)
 
 st.sidebar.markdown("---")
 st.sidebar.subheader(project_resources_header)
