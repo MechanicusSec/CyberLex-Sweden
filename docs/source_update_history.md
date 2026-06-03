@@ -965,6 +965,35 @@ Result:
 - `Vad betyder cybersäkerhetskrav för digitala produkter?` returns `eu_cyber_resilience_act.md`.
 - `Vad säger CRA om säkerhetsuppdateringar?` returns `eu_cyber_resilience_act.md`.
 
+### 2026-06-03 - Swedish EU attacks against information systems support
+
+Updated:
+
+- `data/eu_attacks_against_information_systems.md`
+- `app/vector_search.py`
+
+Change:
+
+- Expanded the EU attacks against information systems source with stronger Swedish and English explanations.
+- Added clearer coverage for Directive 2013/40/EU.
+- Added sections for illegal access, illegal system interference, illegal data interference, misuse of tools, botnets, DDoS, and relationship with Swedish dataintrång.
+- Added a Swedish summary and Swedish useful questions.
+- Added a cybercrime assessment checklist for educational analysis.
+- Added official EUR-Lex source links and source metadata.
+- Improved experimental retrieval so Swedish EU cybercrime questions route to `eu_attacks_against_information_systems.md`.
+
+Reason:
+
+- CyberLex Sweden should distinguish between EU cybercrime framework questions and direct Swedish criminal-law questions.
+- Questions mentioning EU rules, attacks against information systems, DDoS, botnets, illegal access under EU rules, or Directive 2013/40/EU should prefer the EU attacks source.
+- Direct Swedish dataintrång questions should still prefer `cybercrime_dataintrang.md`.
+
+Result:
+
+- `Vad säger EU om attacker mot informationssystem?` returns `eu_attacks_against_information_systems.md`.
+- `Vad är olaglig åtkomst enligt EU-regler?` returns `eu_attacks_against_information_systems.md`.
+- `Vad säger EU om DDoS-attacker?` returns `eu_attacks_against_information_systems.md`.
+
 ## Source Review Rules
 
 When a knowledge base source is added or updated, the following should be checked:
