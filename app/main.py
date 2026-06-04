@@ -2290,6 +2290,209 @@ def generate_assessment_checklist(question, search_results, language="English"):
         f'</div>'
     )
 
+
+def generate_incident_log_template(question, language="English"):
+    # Generates a simple copyable incident log template for defensive incident-response questions.
+    # This helps the user document facts, evidence, decisions, reporting assessment, and next owner.
+    # The template is shown only for practical incident-response questions.
+
+    if not is_practical_incident_response_question(question):
+        return ""
+
+    use_swedish = language == "Svenska"
+
+    if is_suspicious_login_question(question):
+        incident_type_en = "Suspicious login activity"
+        incident_type_sv = "Misstänkt inloggning"
+        extra_fields_en = [
+            "Login timestamp:",
+            "Username / account:",
+            "Source IP / country / device:",
+            "Was login successful or blocked:",
+            "MFA event observed:",
+            "User confirmed activity as legitimate:",
+            "Sessions or tokens revoked:",
+        ]
+        extra_fields_sv = [
+            "Tidpunkt för inloggning:",
+            "Användarnamn / konto:",
+            "Käll-IP / land / enhet:",
+            "Lyckades eller blockerades inloggningen:",
+            "Observerad MFA-händelse:",
+            "Har användaren bekräftat aktiviteten som legitim:",
+            "Återkallade sessioner eller tokens:",
+        ]
+
+    elif is_suspicious_email_question(question):
+        incident_type_en = "Suspicious email or phishing"
+        incident_type_sv = "Misstänkt mejl eller phishing"
+        extra_fields_en = [
+            "Sender address:",
+            "Email subject:",
+            "Received time:",
+            "Links or attachments:",
+            "User clicked link or opened attachment:",
+            "Credentials entered:",
+            "Same email found for other users:",
+        ]
+        extra_fields_sv = [
+            "Avsändaradress:",
+            "Mejlämne:",
+            "Mottagen tidpunkt:",
+            "Länkar eller bilagor:",
+            "Har användaren klickat på länk eller öppnat bilaga:",
+            "Har inloggningsuppgifter skrivits in:",
+            "Samma mejl hittat hos andra användare:",
+        ]
+
+    elif is_compromised_account_question(question):
+        incident_type_en = "Compromised account"
+        incident_type_sv = "Komprometterat konto"
+        extra_fields_en = [
+            "Affected account:",
+            "Account disabled or protected:",
+            "Password reset completed:",
+            "MFA methods reviewed:",
+            "Active sessions revoked:",
+            "Mailbox rules / forwarding / OAuth apps checked:",
+            "Data or systems accessed by the account:",
+        ]
+        extra_fields_sv = [
+            "Berört konto:",
+            "Kontot blockerat eller skyddat:",
+            "Lösenord återställt:",
+            "MFA-metoder granskade:",
+            "Aktiva sessioner återkallade:",
+            "E-postregler / vidarebefordran / OAuth-appar kontrollerade:",
+            "Data eller system som kontot har åtkomst till:",
+        ]
+
+    elif is_data_leak_response_question(question):
+        incident_type_en = "Data leak or personal data breach"
+        incident_type_sv = "Dataläcka eller personuppgiftsincident"
+        extra_fields_en = [
+            "Type of data involved:",
+            "Personal data involved:",
+            "Number of affected people if known:",
+            "Exposure contained:",
+            "Risk to individuals assessed:",
+            "IMY notification assessment:",
+            "Affected individuals notification assessment:",
+        ]
+        extra_fields_sv = [
+            "Typ av data som berörs:",
+            "Personuppgifter berörda:",
+            "Antal berörda personer om känt:",
+            "Exponering begränsad:",
+            "Risk för registrerade bedömd:",
+            "Bedömning av IMY-anmälan:",
+            "Bedömning av information till berörda personer:",
+        ]
+
+    elif is_ransomware_or_malware_question(question):
+        incident_type_en = "Ransomware or malware"
+        incident_type_sv = "Ransomware eller malware"
+        extra_fields_en = [
+            "Affected systems:",
+            "Systems isolated:",
+            "Files encrypted or altered:",
+            "Backups checked:",
+            "Malware sample or alert preserved:",
+            "Lateral movement suspected:",
+            "Recovery owner:",
+        ]
+        extra_fields_sv = [
+            "Berörda system:",
+            "System isolerade:",
+            "Filer krypterade eller ändrade:",
+            "Backuper kontrollerade:",
+            "Malwareprov eller larm sparat:",
+            "Misstänkt lateral rörelse:",
+            "Ansvarig för återställning:",
+        ]
+
+    else:
+        incident_type_en = "Suspected cyber incident"
+        incident_type_sv = "Misstänkt cyberincident"
+        extra_fields_en = [
+            "Affected system / account / service:",
+            "Observed alert or symptom:",
+            "Evidence preserved:",
+            "Containment action:",
+            "Technical impact:",
+            "Business impact:",
+            "Escalation needed:",
+        ]
+        extra_fields_sv = [
+            "Berört system / konto / tjänst:",
+            "Observerat larm eller symptom:",
+            "Sparad bevisning:",
+            "Begränsningsåtgärd:",
+            "Teknisk påverkan:",
+            "Verksamhetspåverkan:",
+            "Behöver eskaleras:",
+        ]
+
+    if use_swedish:
+        title = "Incidentloggmall"
+        intro = (
+            "Använd denna mall för att dokumentera vad som är känt, vilka bevis som har sparats, "
+            "vilka beslut som har tagits och om rapporteringsbedömning behövs."
+        )
+        common_fields = [
+            f"Incidenttyp: {incident_type_sv}",
+            "Tidpunkt för upptäckt:",
+            "Rapporterad av:",
+            "Första mottagare / ansvarig:",
+            "Kort sammanfattning:",
+        ]
+        final_fields = [
+            "Personuppgifter kan vara påverkade: Ja / Nej / Okänt",
+            "GDPR / IMY-bedömning behövs: Ja / Nej / Okänt",
+            "NIS2 / cybersäkerhetslagen-bedömning behövs: Ja / Nej / Okänt",
+            "CERT-SE eller annan eskalering övervägd:",
+            "Beslut och motivering:",
+            "Nästa åtgärd:",
+            "Nästa ansvarig:",
+            "Senast uppdaterad:",
+        ]
+        template_lines = common_fields + extra_fields_sv + final_fields
+
+    else:
+        title = "Incident log template"
+        intro = (
+            "Use this template to document what is known, what evidence has been preserved, "
+            "which decisions were made, and whether reporting assessment is needed."
+        )
+        common_fields = [
+            f"Incident type: {incident_type_en}",
+            "Time discovered:",
+            "Reported by:",
+            "First receiver / owner:",
+            "Short summary:",
+        ]
+        final_fields = [
+            "Personal data may be affected: Yes / No / Unknown",
+            "GDPR / IMY assessment needed: Yes / No / Unknown",
+            "NIS2 / Swedish Cybersecurity Act assessment needed: Yes / No / Unknown",
+            "CERT-SE or other escalation considered:",
+            "Decision and reason:",
+            "Next action:",
+            "Next owner:",
+            "Last updated:",
+        ]
+        template_lines = common_fields + extra_fields_en + final_fields
+
+    template_text = "\n".join(template_lines)
+
+    return (
+        f'<div class="incident-log-card">'
+        f'<div class="incident-log-card-title">{title}</div>'
+        f'<div class="incident-log-card-text">{intro}</div>'
+        f'<div class="incident-log-template">{template_text}</div>'
+        f'</div>'
+    )
+
 def generate_attention_level(question, search_results, language="English"):
     # Generates a simple CyberLex attention level.
     # This is not a legal risk rating. It is an educational signal based on topic and matched sources.
@@ -3862,6 +4065,41 @@ st.markdown(
         line-height: 1.6;
     }
 
+    .incident-log-card {
+        padding: 1rem;
+        border-radius: 12px;
+        border: 1px solid #334155;
+        background-color: #0f172a;
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .incident-log-card-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 0.5rem;
+    }
+
+    .incident-log-card-text {
+        color: #d1d5db;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 0.75rem;
+    }
+
+    .incident-log-template {
+        background-color: #111827;
+        color: #e5e7eb;
+        border: 1px solid #334155;
+        border-radius: 10px;
+        padding: 0.85rem;
+        white-space: pre-wrap;
+        font-family: monospace;
+        font-size: 0.9rem;
+        line-height: 1.55;
+    }
+
     .checklist-card {
         padding: 1rem;
         border-radius: 12px;
@@ -4389,6 +4627,16 @@ if question:
                         generate_assessment_checklist(question, search_results, language),
                         unsafe_allow_html=True
                     )
+
+                if is_practical_incident_response_question(question):
+                    with st.expander(
+                        "Incident log template" if language != "Svenska" else "Incidentloggmall",
+                        expanded=False
+                    ):
+                        st.markdown(
+                            generate_incident_log_template(question, language),
+                            unsafe_allow_html=True
+                        )
 
                 with st.expander(
                     "Relevant source context" if language != "Svenska" else "Relevant källkontext",
