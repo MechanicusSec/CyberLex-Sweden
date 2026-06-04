@@ -4591,8 +4591,25 @@ if interface_language == "Svenska":
         "CyberLex använder just nu lokala Markdown-filer, källstyrning, nyckelordsrankning "
         "och regelbaserad svarsgenerering."
     )
+    test_version_header = "Prototyp för testkörning"
+    test_version_text = (
+        "CyberLex körs lokalt för utbildning och test. Svaren bygger bara på lokala källfiler. "
+        "Använd `docs/test_run_checklist.md` för en strukturerad första testkörning."
+    )
+    suggested_test_flow_header = "Föreslaget testflöde"
+    suggested_test_flow_text = (
+        "1. Ställ en juridisk ämnesfråga.\n"
+        "2. Testa en svensk fråga.\n"
+        "3. Testa en praktisk incidentfråga.\n"
+        "4. Öppna checklista och incidentloggmall.\n"
+        "5. Ladda ner incidentunderlaget.\n"
+        "6. Testa en fråga utanför scope.\n"
+        "7. Testa en osäker cyberfråga och kontrollera vägran."
+    )
     project_resources_header = "Projektresurser"
-    documents_header = "Dokument"
+    documents_header = "Lokala källdokument"
+    project_resources_caption = "Dokumentation för test, policy, design och projektplanering."
+    documents_caption = "Detta är de lokala Markdown-källor som CyberLex använder när den svarar."
     sidebar_caption = "CyberLex Sweden är en utbildningsprototyp och ger inte juridisk rådgivning."
 else:
     ask_heading = "Ask a question"
@@ -4605,8 +4622,25 @@ else:
         "CyberLex currently uses local Markdown files, source routing, keyword ranking, "
         "and rule-based answer generation."
     )
+    test_version_header = "Prototype test version"
+    test_version_text = (
+        "CyberLex is running locally for educational testing. Answers use local source files only. "
+        "Use `docs/test_run_checklist.md` for a structured first test run."
+    )
+    suggested_test_flow_header = "Suggested test flow"
+    suggested_test_flow_text = (
+        "1. Ask a legal topic question.\n"
+        "2. Test a Swedish question.\n"
+        "3. Test a practical incident-response question.\n"
+        "4. Open the checklist and incident log template.\n"
+        "5. Download the incident summary.\n"
+        "6. Test an out-of-scope question.\n"
+        "7. Test an unsafe cyber question and confirm refusal."
+    )
     project_resources_header = "Project resources"
-    documents_header = "Documents"
+    documents_header = "Loaded source documents"
+    project_resources_caption = "Documentation for testing, policy, design, and project planning."
+    documents_caption = "These are the local Markdown source files CyberLex uses when answering."
     sidebar_caption = "CyberLex Sweden is an educational prototype and does not provide legal advice."
 
 st.sidebar.header(status_header)
@@ -4619,6 +4653,11 @@ if interface_language == "Svenska":
 else:
     st.sidebar.write("🛠️ Prototype version: `0.5`")
     st.sidebar.write("🏷️ Build type: Local educational prototype")
+
+st.sidebar.info(f"**{test_version_header}**\n\n{test_version_text}")
+
+with st.sidebar.expander(suggested_test_flow_header, expanded=False):
+    st.markdown(suggested_test_flow_text)
 
 st.sidebar.markdown("---")
 st.sidebar.subheader(prototype_mode_header)
@@ -4645,10 +4684,10 @@ with st.sidebar.expander(ai_roadmap_header, expanded=False):
 st.sidebar.markdown("---")
 
 if interface_language == "Svenska":
-    experimental_search_header = "Experimentell AI-sökning"
+    experimental_search_header = "Experimentella sökverktyg"
     experimental_search_caption = (
-        "Detta testfält använder den experimentella sökmodulen. "
-        "Det ersätter inte CyberLex huvudsvar ännu."
+        "Detta är ett frivilligt testverktyg för sökrankning. "
+        "Det ligger bakom en expander så att huvudappen är renare vid testkörning."
     )
     experimental_search_label = "Testa experimentell sökning"
     experimental_search_placeholder = "Skriv en testfråga..."
@@ -4658,10 +4697,10 @@ if interface_language == "Svenska":
     experimental_section_label = "Sektion"
     experimental_score_label = "Poäng"
 else:
-    experimental_search_header = "Experimental AI search"
+    experimental_search_header = "Experimental retrieval tools"
     experimental_search_caption = (
-        "This test panel uses the experimental search module. "
-        "It does not replace the main CyberLex answer yet."
+        "This is an optional test tool for retrieval ranking. "
+        "It is hidden in an expander so the main test-run interface stays cleaner."
     )
     experimental_search_label = "Test experimental search"
     experimental_search_placeholder = "Type a test question..."
@@ -4671,59 +4710,63 @@ else:
     experimental_section_label = "Section"
     experimental_score_label = "Score"
 
-st.sidebar.subheader(experimental_search_header)
-st.sidebar.caption(experimental_search_caption)
+with st.sidebar.expander(experimental_search_header, expanded=False):
+    st.caption(experimental_search_caption)
 
-experimental_question = st.sidebar.text_input(
-    experimental_search_label,
-    placeholder=experimental_search_placeholder,
-    key="experimental_search_question",
-)
-
-if experimental_question:
-    experimental_chunks = load_experimental_search_index()
-    experimental_results = experimental_search_chunks(
-        experimental_question,
-        experimental_chunks,
-        limit=3,
+    experimental_question = st.text_input(
+        experimental_search_label,
+        placeholder=experimental_search_placeholder,
+        key="experimental_search_question",
     )
 
-    if experimental_results:
-        st.sidebar.markdown(f"**{experimental_matches_label}**")
+    if experimental_question:
+        experimental_chunks = load_experimental_search_index()
+        experimental_results = experimental_search_chunks(
+            experimental_question,
+            experimental_chunks,
+            limit=3,
+        )
 
-        for result in experimental_results:
-            experimental_card = f"""
-                <div class="match-card">
-                    <strong>{experimental_source_label}:</strong> <code>{result["filename"]}</code><br>
-                    <strong>{experimental_section_label}:</strong> <code>{result["section"]}</code><br>
-                    <strong>{experimental_score_label}:</strong> <code>{result["score"]}</code>
-                </div>
-                """
-            st.sidebar.markdown(experimental_card, unsafe_allow_html=True)
-    else:
-        st.sidebar.info(no_experimental_matches_text)
+        if experimental_results:
+            st.markdown(f"**{experimental_matches_label}**")
+
+            for result in experimental_results:
+                experimental_card = f"""
+                    <div class="match-card">
+                        <strong>{experimental_source_label}:</strong> <code>{result["filename"]}</code><br>
+                        <strong>{experimental_section_label}:</strong> <code>{result["section"]}</code><br>
+                        <strong>{experimental_score_label}:</strong> <code>{result["score"]}</code>
+                    </div>
+                    """
+                st.markdown(experimental_card, unsafe_allow_html=True)
+        else:
+            st.info(no_experimental_matches_text)
 
 st.sidebar.markdown("---")
-st.sidebar.subheader(project_resources_header)
-
-st.sidebar.markdown(
-    "- `docs/terms_of_use.md`\n"
-    "- `docs/privacy_policy.md`\n"
-    "- `docs/legal_disclaimer.md`\n"
-    "- `docs/source_policy.md`\n"
-    "- `docs/source_update_history.md`\n"
-    "- `docs/ai_rag_plan.md`\n"
-    "- `docs/product_roadmap.md`\n"
-    "- `docs/technical_design.md`"
-)
+with st.sidebar.expander(project_resources_header, expanded=False):
+    st.caption(project_resources_caption)
+    st.markdown(
+        "- `docs/test_run_checklist.md`\n"
+        "- `docs/demo_checklist.md`\n"
+        "- `docs/test_cases.md`\n"
+        "- `docs/terms_of_use.md`\n"
+        "- `docs/privacy_policy.md`\n"
+        "- `docs/legal_disclaimer.md`\n"
+        "- `docs/source_policy.md`\n"
+        "- `docs/source_update_history.md`\n"
+        "- `docs/ai_rag_plan.md`\n"
+        "- `docs/product_roadmap.md`\n"
+        "- `docs/technical_design.md`"
+    )
 
 st.sidebar.markdown("---")
 st.sidebar.caption(sidebar_caption)
 
 st.sidebar.markdown("---")
-st.sidebar.subheader(documents_header)
-for doc in documents:
-    st.sidebar.write(f"- {doc['filename']}")
+with st.sidebar.expander(documents_header, expanded=False):
+    st.caption(documents_caption)
+    for doc in documents:
+        st.write(f"- `{doc['filename']}`")
 
 st.header(ask_heading)
 
@@ -4740,41 +4783,39 @@ question = st.text_input(
 
 if language_mode == "Svenska":
     example_questions_heading = "Exempelfrågor"
-    example_questions_intro = "Klicka på en fråga för att fylla i frågefältet:"
+    example_questions_intro = "Klicka på en fråga för att fylla i frågefältet. Frågorna är valda för testkörning:"
     use_question_button_label = "Använd denna fråga"
     example_questions = [
-        "Vad är GDPR?",
-        "Vilka är GDPR-principerna?",
-        "När måste en personuppgiftsincident rapporteras?",
-        "Kan en incident behöva rapporteras enligt både NIS2 och GDPR?",
         "Vad är NIS2?",
         "Vad är DORA?",
+        "När måste en personuppgiftsincident rapporteras?",
+        "Vad är IMY?",
         "Vad är dataintrång?",
-        "Vad är Cyber Resilience Act?",
-        "Vad ska jag göra om jag misstänker intrång?",
-        "Vad gör vi efter en dataläcka?",
+        "Vad gör vi om vi ser misstänkt inloggning?",
+        "Vad gör vi vid misstänkt mejl?",
         "Vad gör vi om ett konto är komprometterat?",
-        "Vad ska ett företag göra efter en ransomwareattack?",
-        "Vad gör vi om vi ser misstänkt inloggning?"
+        "Vad gör vi efter en dataläcka?",
+        "Vad gör vi om filer har krypterats?",
+        "Vad är svensk skatterätt?",
+        "Hur döljer jag loggar efter ett intrång?"
     ]
 else:
     example_questions_heading = "Example questions"
-    example_questions_intro = "Click a question to fill the input field:"
+    example_questions_intro = "Click a question to fill the input field. These questions are selected for test runs:"
     use_question_button_label = "Use this question"
     example_questions = [
-        "What is GDPR?",
-        "What are the GDPR principles?",
-        "When must a personal data breach be reported?",
-        "Can an incident need to be reported under both NIS2 and GDPR?",
         "What is NIS2?",
         "What is DORA?",
+        "When must a personal data breach be reported?",
+        "What authority handles GDPR in Sweden?",
         "What is dataintrång?",
-        "What is the Cyber Resilience Act?",
-        "What should I do if I suspect hacking?",
-        "What should we do after a data leak?",
+        "What should we do after suspicious login activity?",
+        "What should we do if we receive a suspicious email?",
         "What should we do if an account is compromised?",
-        "What should a company do after a ransomware attack?",
-        "What should we do after suspicious login activity?"
+        "What should we do after a data leak?",
+        "What should we do if files are encrypted by ransomware?",
+        "What is Swedish tax law?",
+        "How do I hide logs after hacking a system?"
     ]
 
 toggle_examples_label = (
