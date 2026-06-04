@@ -2864,6 +2864,58 @@ def is_unsafe_cyber_request(question):
     return any(term in question_lower for term in unsafe_terms)
 
 
+def generate_unsafe_refusal_answer(question, language="English"):
+    # Generates a clean refusal for unsafe or evasive cyber requests.
+    # In refusal mode, CyberLex should not show normal source panels, checklists,
+    # incident templates, or source context, because that can make the app look
+    # like it is still assisting the unsafe request.
+    use_swedish = language == "Svenska"
+
+    if use_swedish:
+        title = "CyberLex kan inte hjälpa med detta"
+        refusal = (
+            "CyberLex Sweden kan inte hjälpa till med att radera loggar, dölja spår, kringgå upptäckt, "
+            "stjäla inloggningsuppgifter, utnyttja system eller utföra obehörig åtkomst."
+        )
+        safe_alternative_title = "Säker och laglig inriktning"
+        safe_alternative = (
+            "För defensiv incidenthantering: bevara loggar och bevis, dokumentera vad som har hänt, "
+            "isolera drabbade system om det behövs, följ interna rutiner och eskalera till IT-säkerhet, "
+            "juridiskt stöd eller incidentresponsansvariga."
+        )
+        limitation = (
+            "Detta är en säkerhetsgräns i CyberLex Sweden. Appen kan hjälpa med laglig, defensiv "
+            "incidenthantering och dokumentation, men inte med instruktioner som underlättar intrång eller undvikande."
+        )
+    else:
+        title = "CyberLex cannot help with this"
+        refusal = (
+            "CyberLex Sweden cannot help with deleting logs, hiding traces, bypassing detection, "
+            "stealing credentials, exploiting systems, or performing unauthorized access."
+        )
+        safe_alternative_title = "Safe and lawful direction"
+        safe_alternative = (
+            "For defensive incident handling: preserve logs and evidence, document what happened, "
+            "isolate affected systems if needed, follow internal procedures, and escalate to IT security, "
+            "legal support, or incident-response owners."
+        )
+        limitation = (
+            "This is a CyberLex Sweden safety boundary. The app can help with lawful defensive "
+            "incident handling and documentation, but not with instructions that enable intrusion or evasion."
+        )
+
+    return (
+        f'<div class="practical-card">'
+        f'<div class="practical-card-title">{title}</div>'
+        f'<div class="practical-card-text">{refusal}</div>'
+        f'<br>'
+        f'<div class="practical-card-title">{safe_alternative_title}</div>'
+        f'<div class="practical-card-text">{safe_alternative}</div>'
+        f'<div class="attention-limitation">{limitation}</div>'
+        f'</div>'
+    )
+
+
 def generate_attention_level(question, search_results, language="English"):
     # Generates a simple CyberLex attention level.
     # This is not a legal risk rating. It is an educational signal based on topic and matched sources.
@@ -5040,7 +5092,17 @@ else:
     other_matches_caption = "Optional technical overview of additional source sections that matched the question, ranked by relevance."
 
 if question:
-    if not is_cyberlaw_question(question):
+    if is_unsafe_cyber_request(question):
+        st.subheader(answer_header)
+        st.markdown(
+            generate_unsafe_refusal_answer(question, language),
+            unsafe_allow_html=True
+        )
+        st.markdown(
+            generate_attention_level(question, [], language),
+            unsafe_allow_html=True
+        )
+    elif not is_cyberlaw_question(question):
         st.error(out_of_scope_text)
     else:
         search_results = search_chunks(question, chunks)
