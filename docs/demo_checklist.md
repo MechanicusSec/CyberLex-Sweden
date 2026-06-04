@@ -2,11 +2,11 @@
 
 ## Purpose
 
-This checklist is used before demonstrating CyberLex Sweden.
+This checklist is used before and during a CyberLex Sweden demonstration.
 
-The goal is to confirm that the local app runs correctly, the main source files work, supported topics return source-grounded answers, and out-of-scope questions are refused.
+The goal is to confirm that the local app runs correctly, trusted source files load, supported topics return source-grounded answers, practical incident-response questions work, and out-of-scope or unsafe questions are refused.
 
-CyberLex Sweden is an educational prototype and does not provide legal advice.
+CyberLex Sweden is an educational prototype. It does not provide legal advice and should not replace a lawyer, official authority guidance, or a professional incident-response team.
 
 ---
 
