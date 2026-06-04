@@ -37,6 +37,113 @@ def contains_any(text, terms):
     return any(term in text_lower for term in terms)
 
 
+
+def localize_section_name(section_name, language="English"):
+    # Converts internal Markdown section headings into user-facing labels.
+    # The source files intentionally contain mixed English/Swedish headings so
+    # search routing can work, but the UI should not show English section names
+    # inside the Swedish interface or Swedish section names inside the English UI.
+    use_swedish = language == "Svenska"
+    raw_section = str(section_name or "").strip()
+    normalized = raw_section.lower().strip()
+
+    swedish_names = {
+        "introduction": "Introduktion",
+        "topic": "Ämne",
+        "main authority": "Huvudmyndighet",
+        "key idea": "Huvudidé",
+        "important points": "Viktiga punkter",
+        "swedish summary": "Svensk sammanfattning",
+        "useful questions": "Exempelfrågor",
+        "swedish useful questions": "Svenska exempelfrågor",
+        "official source": "Officiella källor",
+        "source metadata": "Källmetadata",
+        "disclaimer": "Ansvarsbegränsning",
+        "suspected hacking first steps": "Första steg vid misstänkt hackning eller intrång",
+        "unauthorized access first steps": "Första steg vid obehörig åtkomst",
+        "suspected data leak first steps": "Första steg vid misstänkt dataläcka",
+        "ransomware first steps": "Första steg vid ransomware",
+        "malware infection first steps": "Första steg vid malware",
+        "compromised account first steps": "Första steg vid komprometterat konto",
+        "first 15 minutes checklist": "Checklista: första 15 minuterna",
+        "first hour checklist": "Checklista: första timmen",
+        "first 24 hours checklist": "Checklista: första dygnet",
+        "first 72 hours checklist": "Checklista: första 72 timmarna",
+        "technical containment examples": "Exempel på teknisk begränsning",
+        "evidence preservation examples": "Exempel på bevarande av bevisning",
+        "documentation template": "Dokumentationsmall",
+        "data leak assessment checklist": "Checklista för dataläckebedömning",
+        "ransomware assessment checklist": "Checklista för ransomwarebedömning",
+        "compromised account checklist": "Checklista för komprometterat konto",
+        "communication guidance": "Kommunikationsstöd",
+        "what not to do": "Vad man inte bör göra",
+        "when to contact cert-se": "När CERT-SE bör övervägas",
+        "when to assess imy reporting": "När IMY-anmälan bör bedömas",
+        "when to assess cybersecurity incident reporting": "När cybersäkerhetsrapportering bör bedömas",
+        "relationship with gdpr": "Relation till GDPR",
+        "relationship with nis2 and the swedish cybersecurity act": "Relation till NIS2 och cybersäkerhetslagen",
+        "relationship with swedish cybercrime and dataintrång": "Relation till dataintrång och cyberbrott",
+        "swedish step-by-step answer for suspected hacking": "Steg för steg vid misstänkt hackning eller intrång",
+        "swedish step-by-step answer for suspected data leak": "Steg för steg vid misstänkt dataläcka",
+        "english step-by-step answer for suspected hacking": "Steg för steg vid misstänkt hackning eller intrång",
+        "english step-by-step answer for suspected data leak": "Steg för steg vid misstänkt dataläcka",
+        "incident assessment checklist": "Checklista för incidentbedömning",
+        "reporting to imy": "Anmälan till IMY",
+        "incident reporting": "Incidentrapportering",
+        "relationship with gdpr breach reporting": "Relation till GDPR och personuppgiftsincidenter",
+        "legal reference": "Rättslig koppling",
+        "practical explanation": "Praktisk förklaring",
+        "cybersecurity connection": "Cybersäkerhetskoppling",
+        "swedish connection": "Svensk koppling",
+        "third-party ict risk": "ICT-tredjepartsrisk",
+    }
+
+    english_names = {
+        "swedish summary": "Swedish summary",
+        "swedish useful questions": "Swedish example questions",
+        "swedish step-by-step answer for suspected hacking": "Step-by-step answer for suspected hacking or intrusion",
+        "swedish step-by-step answer for suspected data leak": "Step-by-step answer for suspected data leak",
+        "english step-by-step answer for suspected hacking": "Step-by-step answer for suspected hacking or intrusion",
+        "english step-by-step answer for suspected data leak": "Step-by-step answer for suspected data leak",
+        "first 15 minutes checklist": "First 15 minutes checklist",
+        "first hour checklist": "First hour checklist",
+        "first 24 hours checklist": "First 24 hours checklist",
+        "first 72 hours checklist": "First 72 hours checklist",
+        "compromised account first steps": "First steps for a compromised account",
+        "suspected hacking first steps": "First steps for suspected hacking or intrusion",
+        "suspected data leak first steps": "First steps for a suspected data leak",
+        "unauthorized access first steps": "First steps for unauthorized access",
+        "malware infection first steps": "First steps for malware infection",
+        "ransomware first steps": "First steps for ransomware",
+    }
+
+    if use_swedish:
+        if normalized in swedish_names:
+            return swedish_names[normalized]
+
+        # Remove leading language markers if a source heading contains them.
+        if normalized.startswith("swedish "):
+            stripped = raw_section[8:].strip()
+            return stripped[:1].upper() + stripped[1:]
+        if normalized.startswith("english "):
+            stripped = raw_section[8:].strip()
+            return stripped[:1].upper() + stripped[1:]
+
+        return raw_section
+
+    if normalized in english_names:
+        return english_names[normalized]
+
+    if normalized.startswith("swedish "):
+        stripped = raw_section[8:].strip()
+        return stripped[:1].upper() + stripped[1:]
+    if normalized.startswith("english "):
+        stripped = raw_section[8:].strip()
+        return stripped[:1].upper() + stripped[1:]
+
+    return raw_section
+
+
 def is_practical_incident_response_question(question):
     # Detects defensive "what should I do now?" incident response questions.
     # This is used to route practical hacking/data leak/ransomware questions
@@ -93,6 +200,21 @@ def is_practical_incident_response_question(question):
         "it-incident",
         "incident response",
         "incidenthantering",
+        "suspicious login",
+        "suspicious sign-in",
+        "unusual login",
+        "unusual sign-in",
+        "impossible travel",
+        "suspicious login activity",
+        "misstänkt inloggning",
+        "ovanlig inloggning",
+        "misstänkta inloggningar",
+        "ovanliga inloggningar",
+        "phishing",
+        "nätfiske",
+        "suspicious email",
+        "misstänkt mejl",
+        "misstänkt e-post",
     ]
 
     action_terms = [
@@ -153,6 +275,16 @@ def is_suspected_hacking_question(question):
             "hackning",
             "intrång",
             "obehörig åtkomst",
+            "suspicious login",
+            "suspicious sign-in",
+            "unusual login",
+            "unusual sign-in",
+            "impossible travel",
+            "suspicious login activity",
+            "misstänkt inloggning",
+            "ovanlig inloggning",
+            "misstänkta inloggningar",
+            "ovanliga inloggningar",
         ],
     )
 
@@ -175,6 +307,83 @@ def is_data_leak_response_question(question):
             "kunddata har exponerats",
             "personuppgifter exponerats",
             "exponerad data",
+        ],
+    )
+
+
+def is_suspicious_login_question(question):
+    # Detects suspicious login/sign-in questions.
+    # This is separate from fully compromised-account questions so CyberLex can give
+    # a more precise triage answer instead of always assuming full compromise.
+    question_lower = question.lower()
+    return contains_any(
+        question_lower,
+        [
+            "suspicious login",
+            "suspicious logins",
+            "suspicious login activity",
+            "suspicious sign-in",
+            "suspicious signins",
+            "suspicious sign in",
+            "unusual login",
+            "unusual logins",
+            "unusual sign-in",
+            "unusual sign in",
+            "impossible travel",
+            "strange login",
+            "unknown login",
+            "login from unknown country",
+            "login from another country",
+            "failed login attempts",
+            "misstänkt inloggning",
+            "misstänkta inloggningar",
+            "misstänkt login",
+            "misstänkt loggning",
+            "ovanlig inloggning",
+            "ovanliga inloggningar",
+            "okänd inloggning",
+            "inloggning från okänt land",
+            "inloggning från annat land",
+            "misslyckade inloggningar",
+        ],
+    )
+
+
+def is_suspicious_email_question(question):
+    # Detects suspicious email / phishing questions.
+    # This is separate from compromised account because a suspicious email may be
+    # only a reported message, not yet an account compromise.
+    question_lower = question.lower()
+    return contains_any(
+        question_lower,
+        [
+            "suspicious email",
+            "suspicious e-mail",
+            "suspicious mail",
+            "phishing email",
+            "phishing mail",
+            "phishing message",
+            "malicious email",
+            "malicious attachment",
+            "suspicious attachment",
+            "suspicious link",
+            "clicked a suspicious link",
+            "clicked phishing link",
+            "received a suspicious email",
+            "receive a suspicious email",
+            "we receive a suspicious email",
+            "we received a suspicious email",
+            "misstänkt mejl",
+            "misstänkt mail",
+            "misstänkt e-post",
+            "nätfiske",
+            "phishing",
+            "skadlig bilaga",
+            "misstänkt bilaga",
+            "misstänkt länk",
+            "klickat på misstänkt länk",
+            "klickat på phishinglänk",
+            "fått ett misstänkt mejl",
         ],
     )
 
@@ -207,6 +416,16 @@ def is_compromised_account_question(question):
             "konto hackat",
             "e-postkonto",
             "mailkonto",
+            "phishing",
+            "nätfiske",
+            "suspicious email",
+            "misstänkt mejl",
+            "misstänkt e-post",
+            "suspicious login",
+            "suspicious sign-in",
+            "unusual login",
+            "misstänkt inloggning",
+            "ovanlig inloggning",
         ],
     )
 
@@ -1136,8 +1355,24 @@ def build_source_context(search_results, language="English", max_results=3):
         excerpt_label = "Short excerpt"
 
     context_blocks = []
+    filtered_results = []
+    opposite_language_section_markers = (
+        ["swedish ", "svensk "] if not use_swedish else ["english ", "engelsk "]
+    )
 
-    for result in search_results[:max_results]:
+    for result in search_results:
+        section_name = str(result.get("section", "")).strip().lower()
+        if any(section_name.startswith(marker) for marker in opposite_language_section_markers):
+            continue
+        filtered_results.append(result)
+
+    # If filtering removed everything, fall back to the original matches.
+    # Better to show some source context than an empty altar to the machine gods.
+    if not filtered_results:
+        filtered_results = search_results
+
+    for result in filtered_results[:max_results]:
+        display_section = localize_section_name(result.get("section", ""), language)
         excerpt_lines = result["content"].strip().splitlines()
 
         # Remove the first Markdown heading if the excerpt already starts with one.
@@ -1152,11 +1387,11 @@ def build_source_context(search_results, language="English", max_results=3):
 
         context_blocks.append(
             f'<div class="context-card">'
-            f'<div class="context-card-title">{result["section"]}</div>'
+            f'<div class="context-card-title">{display_section}</div>'
             f'<div class="context-row"><strong>{file_label}:</strong> '
             f'<span class="context-code">{result["filename"]}</span></div>'
             f'<div class="context-row"><strong>{section_label}:</strong> '
-            f'<span class="context-code">{result["section"]}</span></div>'
+            f'<span class="context-code">{display_section}</span></div>'
             f'<div class="context-row"><strong>{score_label}:</strong> '
             f'<span class="context-code">{result["score"]}</span></div>'
             f'<div class="context-excerpt-label">{excerpt_label}:</div>'
@@ -1327,258 +1562,416 @@ def generate_practical_explanation(question, search_results, language="English")
 
 
 def generate_assessment_checklist(question, search_results, language="English"):
-    # Generates a simple assessment checklist based on the user's question.
-    # This is not legal advice. It gives the user a structured way to review the issue.
+    # Generates a topic-specific verification checklist based on the user's question.
+    # The main CyberLex answer gives the immediate steps.
+    # This checklist asks review questions so the user can verify what has been checked and documented.
+    # This is not legal advice.
 
     question_lower = question.lower()
     use_swedish = language == "Svenska"
 
+    def contains_any(terms):
+        return any(term in question_lower for term in terms)
+
+    suspicious_login_terms = [
+        "suspicious login",
+        "suspicious sign in",
+        "suspicious sign-in",
+        "unusual login",
+        "unusual sign in",
+        "failed login",
+        "impossible travel",
+        "misstänkt inloggning",
+        "ovanlig inloggning",
+        "misslyckad inloggning",
+        "inloggningsförsök",
+        "login activity",
+        "inloggning",
+    ]
+
+    suspicious_email_terms = [
+        "suspicious email",
+        "phishing",
+        "phishing email",
+        "suspicious mail",
+        "malicious email",
+        "misstänkt mejl",
+        "misstänkt mail",
+        "nätfiske",
+        "phishingmejl",
+        "skadligt mejl",
+        "e-post",
+        "email",
+    ]
+
+    compromised_account_terms = [
+        "compromised account",
+        "account compromised",
+        "account is compromised",
+        "account has been compromised",
+        "account hacked",
+        "hacked account",
+        "komprometterat konto",
+        "konto komprometterat",
+        "kontot är komprometterat",
+        "konto hackat",
+        "hackat konto",
+    ]
+
+    data_leak_terms = [
+        "data leak",
+        "data leakage",
+        "leaked data",
+        "exposed data",
+        "customer data exposed",
+        "dataläcka",
+        "läckt data",
+        "exponerad data",
+        "kunddata",
+    ]
+
+    ransomware_terms = [
+        "ransomware",
+        "malware",
+        "encrypted files",
+        "files encrypted",
+        "utpressningsvirus",
+        "skadlig kod",
+        "filer krypterade",
+        "krypterade filer",
+    ]
+
+    hacking_terms = [
+        "hacking",
+        "intrusion",
+        "suspected hacking",
+        "suspected intrusion",
+        "unauthorized access",
+        "hackning",
+        "intrång",
+        "misstänker intrång",
+        "misstänker hackning",
+        "obehörig åtkomst",
+    ]
+
     if use_swedish:
         heading = "CyberLex bedömningschecklista"
 
-        if is_practical_incident_response_question(question):
+        if contains_any(suspicious_login_terms):
             items = [
-                "Starta en incidentlogg och dokumentera upptäckt, tidpunkt, system, konto och ansvariga personer.",
-                "Isolera drabbade klienter, servrar eller konton om det kan göras utan att förstöra bevisning.",
-                "Bevara loggar, larm, skärmbilder, tidsstämplar och annan teknisk bevisning.",
-                "Radera inte loggar och installera inte om system innan en första bedömning.",
-                "Identifiera berörda system, konton, användare, nätverk och data.",
-                "Säkra komprometterade konton, återkalla sessioner och byt lösenord från en ren enhet.",
-                "Bedöm om personuppgifter kan ha påverkats.",
-                "Bedöm om IMY-anmälan enligt GDPR kan krävas.",
-                "Bedöm om NIS2/cybersäkerhetslagen eller annan incidentrapportering kan vara relevant.",
-                "Eskalera till IT, säkerhet, ledning, juridik, dataskyddsansvarig och incidentexpert vid behov.",
-                "Kontakta CERT-SE eller officiellt incidentstöd vid allvarlig incident.",
-                "Dokumentera beslut, tidslinje, åtgärder, källor och kvarstående osäkerhet."
+                "Har vi sparat larmet eller loggposten med tidpunkt, användarkonto, IP-adress, plats, enhet och tjänst?",
+                "Har vi kontrollerat om inloggningen lyckades eller bara var ett misslyckat försök?",
+                "Har vi kontrollerat om samma konto har fler ovanliga inloggningar, MFA-pushar eller misslyckade försök?",
+                "Har vi kontaktat användaren på ett säkert sätt och bekräftat om aktiviteten var legitim?",
+                "Har vi blockerat kontot tillfälligt eller krävt ny autentisering om aktiviteten inte kan förklaras?",
+                "Har vi återkallat aktiva sessioner och tokens i identitetsplattformen, VPN, e-post och molntjänster?",
+                "Har vi bytt lösenord från en ren enhet och granskat MFA-metoder för okända eller angriparstyrda metoder?",
+                "Har vi granskat e-postregler, vidarebefordran, OAuth-appar och delegerad åtkomst?",
+                "Har vi kontrollerat om kontot har använts för att komma åt filer, system, kunddata eller administratörsfunktioner?",
+                "Har vi bedömt om personuppgifter kan ha påverkats och om GDPR/IMY-bedömning krävs?",
+                "Har vi bedömt om händelsen kan vara relevant enligt NIS2/cybersäkerhetslagen vid större påverkan?",
+                "Har vi dokumenterat tidslinje, loggar, beslut och åtgärder?",
             ]
 
-        elif (
-            "data breach" in question_lower
-            or "personal data breach" in question_lower
-            or "personuppgiftsincident" in question_lower
-            or "72" in question_lower
-        ):
+        elif contains_any(suspicious_email_terms):
             items = [
-                "Begränsa incidenten och bevara relevant bevisning.",
-                "Identifiera vilka personuppgifter som kan ha påverkats.",
-                "Bedöm om incidenten kan innebära risk för registrerade personers rättigheter och friheter.",
-                "Kontrollera när organisationen blev medveten om incidenten.",
-                "Bedöm om anmälan till IMY krävs inom 72 timmar.",
-                "Bedöm om berörda personer behöver informeras vid hög risk.",
-                "Dokumentera beslut, tidslinje, åtgärder och källor."
+                "Har vi sagt till användaren att inte klicka fler länkar, öppna bilagor eller svara på mejlet?",
+                "Har vi sparat mejlet som bevis, inklusive avsändare, ämne, tidpunkt, länkar, bilagor och fullständiga headers om möjligt?",
+                "Har mejlet rapporterats till IT/säkerhet enligt organisationens rutin?",
+                "Har vi sökt efter samma mejl hos andra användare och karantänsatt eller tagit bort det via e-postskyddet om möjligt?",
+                "Har vi kontrollerat om någon klickade på länken, öppnade bilagan eller lämnade inloggningsuppgifter?",
+                "Om någon klickade eller skrev in uppgifter: har kontot behandlats som misstänkt komprometterat?",
+                "Har vi återkallat sessioner, bytt lösenord från en ren enhet och kontrollerat MFA om uppgifter kan ha läckt?",
+                "Har vi kontrollerat e-postregler, vidarebefordran, OAuth-appar och misstänkta skickade meddelanden?",
+                "Har vi kontrollerat om mejlet innehöll malware och om någon klient behöver isoleras?",
+                "Har vi bedömt om personuppgifter eller känslig information kan ha påverkats?",
+                "Har vi dokumenterat tidslinje, användare, åtgärder, bevis och beslut?",
             ]
 
-        elif (
-            "ransomware" in question_lower
-            or "malware" in question_lower
-            or "cyberattack" in question_lower
-            or "cyber attack" in question_lower
-            ):
+        elif contains_any(compromised_account_terms):
             items = [
-                "Isolera drabbade system för att begränsa spridning.",
-                "Säkra loggar, systeminformation och annan teknisk bevisning.",
-                "Dokumentera tidslinje, upptäckt, påverkan och vidtagna åtgärder.",
-                "Kontrollera om säkerhetskopior finns och om de är opåverkade.",
-                "Bedöm om personuppgifter har påverkats.",
-                "Bedöm om GDPR-anmälan till IMY kan vara relevant.",
-                "Bedöm om NIS2/cybersäkerhetslagen eller annan incidentrapportering kan vara relevant.",
-                "Jämför bedömningen med aktuella källor och interna incidentrutiner."
+                "Har vi blockerat eller tillfälligt inaktiverat kontot om kompromettering är sannolik?",
+                "Har vi återkallat aktiva sessioner och tokens i identitetssystem, VPN, e-post och molntjänster?",
+                "Har lösenordet bytts från en ren enhet och inte från den misstänkt komprometterade klienten?",
+                "Har vi granskat MFA-metoder och tagit bort okända eller angriparstyrda metoder?",
+                "Har vi granskat e-postregler, vidarebefordran, OAuth-appar, delegerad åtkomst och misstänkta skickade meddelanden?",
+                "Har vi granskat inloggningsloggar, IP-adresser, länder, tidpunkter och ovanlig aktivitet?",
+                "Har vi kontrollerat om kontot hade administratörsrättigheter eller åtkomst till känsliga system?",
+                "Har vi identifierat vilken data kontot kan ha läst, ändrat, laddat ned eller raderat?",
+                "Har vi bedömt om personuppgifter kan ha påverkats och om GDPR/IMY-bedömning krävs?",
+                "Har vi bedömt om händelsen kan vara relevant enligt NIS2/cybersäkerhetslagen?",
+                "Har vi dokumenterat åtgärder, tidslinje, bevis och beslut?",
             ]
 
-        elif (
-            "cyber incident" in question_lower
-            or "cyberincident" in question_lower
-            or "security incident" in question_lower
-            or "incident response" in question_lower
-            or "what should an organization check after" in question_lower
-            or "what should an organisation check after" in question_lower
-        ):
+        elif contains_any(data_leak_terms):
             items = [
-                "Identifiera vad som har hänt och när incidenten upptäcktes.",
-                "Identifiera vilka system, konton, tjänster och data som påverkats.",
-                "Bedöm incidentens tekniska påverkan och allvarlighetsgrad.",
-                "Bedöm om personuppgifter har påverkats.",
-                "Kontrollera om incidenten kan vara rapporteringspliktig.",
-                "Bedöm om GDPR, NIS2 eller den svenska cybersäkerhetslagen kan vara relevanta.",
-                "Dokumentera tidslinje, teknisk påverkan, beslut och åtgärder.",
-                "Jämför bedömningen med officiella källor och interna incidentrutiner."
+                "Har vi bekräftat vad som är känt och vad som fortfarande är oklart?",
+                "Har vi stoppat fortsatt exponering, till exempel publik åtkomst, delningslänkar eller felaktiga behörigheter?",
+                "Har vi sparat bevis innan ändringar gjordes, till exempel skärmbilder, länkar, loggar, tidsstämplar och behörighetsinställningar?",
+                "Har vi identifierat vilken data som kan ha exponerats och hur länge exponeringen pågick?",
+                "Har vi bedömt om datan innehåller personuppgifter, känsliga uppgifter, lösenord, tokens, kunddata eller HR-data?",
+                "Har vi bedömt om obehörig åtkomst faktiskt har skett eller om åtkomst bara var möjlig?",
+                "Har vi säkrat berörda konton, API-nycklar, lösenord och system från en ren administrativ miljö?",
+                "Har vi bedömt risken för registrerade personers rättigheter och friheter?",
+                "Har vi bedömt om anmälan till IMY enligt GDPR krävs, normalt inom 72 timmar efter medvetenhet?",
+                "Har vi bedömt om berörda personer behöver informeras vid hög risk?",
+                "Har vi bedömt om NIS2/cybersäkerhetslagen eller annan incidentrapportering också kan vara relevant?",
+                "Har vi dokumenterat beslut, tidslinje, åtgärder, källor och vem som godkände besluten?",
+            ]
+
+        elif contains_any(ransomware_terms):
+            items = [
+                "Har vi isolerat drabbade system för att begränsa spridning?",
+                "Har vi säkrat loggar, ransom note, filändelser, systeminformation och annan teknisk bevisning?",
+                "Har vi dokumenterat tidslinje, upptäckt, påverkan och vidtagna åtgärder?",
+                "Har vi kontrollerat vilka system, delade ytor, servrar och backupmiljöer som är påverkade?",
+                "Har vi kontrollerat om säkerhetskopior finns och om de är opåverkade?",
+                "Har vi bedömt om data kan ha stulits innan kryptering eller skada?",
+                "Har vi bedömt om personuppgifter har påverkats?",
+                "Har vi bedömt om GDPR-anmälan till IMY kan vara relevant?",
+                "Har vi bedömt om NIS2/cybersäkerhetslagen eller annan incidentrapportering kan vara relevant?",
+                "Har vi jämfört bedömningen med aktuella källor och interna incidentrutiner?",
+            ]
+
+        elif is_practical_incident_response_question(question) or contains_any(hacking_terms):
+            items = [
+                "Har vi startat en incidentlogg med upptäckt, tidpunkt, system, konto och ansvariga personer?",
+                "Har vi isolerat drabbade klienter, servrar eller konton om det kan göras utan att förstöra bevisning?",
+                "Har vi bevarat loggar, larm, skärmbilder, tidsstämplar och annan teknisk bevisning?",
+                "Har vi undvikit att radera loggar eller installera om system innan en första bedömning?",
+                "Har vi identifierat berörda system, konton, användare, nätverk och data?",
+                "Har vi säkrat komprometterade konton, återkallat sessioner och bytt lösenord från en ren enhet?",
+                "Har vi bedömt om personuppgifter kan ha påverkats?",
+                "Har vi bedömt om IMY-anmälan enligt GDPR kan krävas?",
+                "Har vi bedömt om NIS2/cybersäkerhetslagen eller annan incidentrapportering kan vara relevant?",
+                "Har vi eskalerat till IT, säkerhet, ledning, juridik, dataskyddsansvarig och incidentexpert vid behov?",
+                "Har vi övervägt att kontakta CERT-SE eller officiellt incidentstöd vid allvarlig incident?",
+                "Har vi dokumenterat beslut, tidslinje, åtgärder, källor och kvarstående osäkerhet?",
+            ]
+
+        elif "personuppgiftsincident" in question_lower or "72" in question_lower:
+            items = [
+                "Har vi begränsat incidenten och bevarat relevant bevisning?",
+                "Har vi identifierat vilka personuppgifter som kan ha påverkats?",
+                "Har vi bedömt om incidenten kan innebära risk för registrerade personers rättigheter och friheter?",
+                "Har vi kontrollerat när organisationen blev medveten om incidenten?",
+                "Har vi bedömt om anmälan till IMY krävs inom 72 timmar?",
+                "Har vi bedömt om berörda personer behöver informeras vid hög risk?",
+                "Har vi dokumenterat beslut, tidslinje, åtgärder och källor?",
             ]
 
         elif ("nis2" in question_lower or "cybersäkerhetslagen" in question_lower) and "gdpr" in question_lower:
             items = [
-                "Bedöm om incidenten är en cybersäkerhetsincident.",
-                "Bedöm om incidenten även påverkar personuppgifter.",
-                "Kontrollera om NIS2/cybersäkerhetslagen och GDPR kan vara relevanta samtidigt.",
-                "Identifiera vilka myndigheter eller rapporteringsvägar som kan behöva bedömas.",
-                "Dokumentera varför incidenten omfattas eller inte omfattas av respektive regelverk."
+                "Har vi bedömt om incidenten är en cybersäkerhetsincident?",
+                "Har vi bedömt om incidenten även påverkar personuppgifter?",
+                "Har vi kontrollerat om NIS2/cybersäkerhetslagen och GDPR kan vara relevanta samtidigt?",
+                "Har vi identifierat vilka myndigheter eller rapporteringsvägar som kan behöva bedömas?",
+                "Har vi dokumenterat varför incidenten omfattas eller inte omfattas av respektive regelverk?",
             ]
 
         elif "nis2" in question_lower or "cybersäkerhetslagen" in question_lower:
             items = [
-                "Identifiera om organisationen kan omfattas av NIS2 eller svensk cybersäkerhetslag.",
-                "Bedöm om incidenten är betydande eller rapporteringspliktig enligt relevanta kriterier.",
-                "Kontrollera sektor, verksamhetstyp och ansvarig funktion.",
-                "Dokumentera teknisk påverkan, tidslinje och vidtagna åtgärder.",
-                "Jämför bedömningen med aktuella MSB-källor."
+                "Har vi identifierat om organisationen kan omfattas av NIS2 eller svensk cybersäkerhetslag?",
+                "Har vi bedömt om incidenten är betydande eller rapporteringspliktig enligt relevanta kriterier?",
+                "Har vi kontrollerat sektor, verksamhetstyp och ansvarig funktion?",
+                "Har vi dokumenterat teknisk påverkan, tidslinje och vidtagna åtgärder?",
+                "Har vi jämfört bedömningen med aktuella MSB-källor?",
             ]
 
         elif "dora" in question_lower or "digital operational resilience" in question_lower:
             items = [
-                "Identifiera om verksamheten tillhör den finansiella sektorn.",
-                "Bedöm om frågan gäller ICT-risk, incidenthantering, testning eller tredjepartsleverantörer.",
-                "Kontrollera om en ICT-relaterad incident eller störning föreligger.",
-                "Dokumentera påverkan på digital operativ motståndskraft.",
-                "Jämför bedömningen med DORA-källor och relevanta tillsynsmyndigheter."
+                "Har vi identifierat om verksamheten tillhör den finansiella sektorn?",
+                "Har vi bedömt om frågan gäller ICT-risk, incidenthantering, testning eller tredjepartsleverantörer?",
+                "Har vi kontrollerat om en ICT-relaterad incident eller störning föreligger?",
+                "Har vi dokumenterat påverkan på digital operativ motståndskraft?",
+                "Har vi jämfört bedömningen med DORA-källor och relevanta tillsynsmyndigheter?",
             ]
 
-        elif "dataintrång" in question_lower or "unauthorized access" in question_lower or "obehörig åtkomst" in question_lower:
+        elif "dataintrång" in question_lower or "obehörig åtkomst" in question_lower:
             items = [
-                "Identifiera vilken åtkomst eller påverkan som skett.",
-                "Bedöm om åtkomsten var behörig eller obehörig.",
-                "Skilj mellan tillåten säkerhetstestning och otillåten aktivitet.",
-                "Dokumentera system, konton, loggar och tidslinje.",
-                "Jämför situationen med svenska straffrättsliga källor."
+                "Har vi identifierat vilken åtkomst eller påverkan som skett?",
+                "Har vi bedömt om åtkomsten var behörig eller obehörig?",
+                "Har vi skilt mellan tillåten säkerhetstestning och otillåten aktivitet?",
+                "Har vi dokumenterat system, konton, loggar och tidslinje?",
+                "Har vi jämfört situationen med svenska straffrättsliga källor?",
             ]
 
         elif "cyber resilience act" in question_lower or "cyberresiliensakten" in question_lower:
             items = [
-                "Identifiera om frågan gäller en produkt med digitala element.",
-                "Bedöm om produktdesign, säkerhetskrav eller sårbarhetshantering påverkas.",
-                "Kontrollera ansvar för tillverkare, leverantör eller annan aktör.",
-                "Dokumentera säkerhetsåtgärder, uppdateringar och sårbarhetsprocesser.",
-                "Jämför bedömningen med Cyber Resilience Act-källor."
+                "Har vi identifierat om frågan gäller en produkt med digitala element?",
+                "Har vi bedömt om produktdesign, säkerhetskrav eller sårbarhetshantering påverkas?",
+                "Har vi kontrollerat ansvar för tillverkare, leverantör eller annan aktör?",
+                "Har vi dokumenterat säkerhetsåtgärder, uppdateringar och sårbarhetsprocesser?",
+                "Har vi jämfört bedömningen med Cyber Resilience Act-källor?",
             ]
 
         else:
             items = [
-                "Identifiera vilken cyberrättslig eller compliance-fråga som ställs.",
-                "Kontrollera vilka källsektioner CyberLex matchade.",
-                "Läs den praktiska förklaringen tillsammans med källkontexten.",
-                "Kontrollera officiella källor och källdatum.",
-                "Sök juridisk eller myndighetsbaserad vägledning vid viktiga beslut."
+                "Har vi identifierat vilken cyberrättslig eller compliance-fråga som ställs?",
+                "Har vi kontrollerat vilka källsektioner CyberLex matchade?",
+                "Har vi läst den praktiska förklaringen tillsammans med källkontexten?",
+                "Har vi kontrollerat officiella källor och källdatum?",
+                "Behövs juridisk eller myndighetsbaserad vägledning innan viktiga beslut fattas?",
             ]
 
     else:
         heading = "CyberLex assessment checklist"
 
-        if is_practical_incident_response_question(question):
+        if contains_any(suspicious_login_terms):
             items = [
-                "Start an incident log and document discovery time, system, account, and responsible people.",
-                "Isolate affected clients, servers, or accounts if this can be done without destroying evidence.",
-                "Preserve logs, alerts, screenshots, timestamps, and other technical evidence.",
-                "Do not delete logs or reinstall systems before an initial assessment.",
-                "Identify affected systems, accounts, users, networks, and data.",
-                "Secure compromised accounts, revoke sessions, and reset passwords from a clean device.",
-                "Assess whether personal data may have been affected.",
-                "Assess whether GDPR notification to IMY may be required.",
-                "Assess whether NIS2/the Swedish Cybersecurity Act or another incident reporting path may be relevant.",
-                "Escalate to IT, security, management, legal, data protection, and incident response support when needed.",
-                "Contact CERT-SE or official incident support for serious incidents when appropriate.",
-                "Document decisions, timeline, actions, sources, and remaining uncertainty."
+                "Have we preserved the alert or log entry with time, user account, IP address, location, device, and service?",
+                "Have we checked whether the login succeeded or was only a failed attempt?",
+                "Have we checked whether the same account has more unusual logins, MFA prompts, or failed attempts?",
+                "Have we contacted the user through a safe channel to confirm whether the activity was legitimate?",
+                "Have we temporarily blocked the account or required fresh authentication if the activity cannot be explained?",
+                "Have we revoked active sessions and tokens in identity, VPN, email, and cloud services?",
+                "Have we reset the password from a clean device and reviewed MFA methods for unknown or attacker-controlled methods?",
+                "Have we reviewed email rules, forwarding, OAuth apps, and delegated access?",
+                "Have we checked whether the account was used to access files, systems, customer data, or administrator functions?",
+                "Have we assessed whether personal data may have been affected and whether GDPR/IMY assessment is required?",
+                "Have we assessed whether the event may be relevant under NIS2/the Swedish Cybersecurity Act if the impact is larger?",
+                "Have we documented the timeline, logs, decisions, and actions?",
             ]
 
-        elif (
-            "data breach" in question_lower
-            or "personal data breach" in question_lower
-            or "72" in question_lower
-        ):
+        elif contains_any(suspicious_email_terms):
             items = [
-                "Contain the incident and preserve relevant evidence.",
-                "Identify what personal data may have been affected.",
-                "Assess whether the breach may create risk to individuals' rights and freedoms.",
-                "Check when the organization became aware of the breach.",
-                "Assess whether notification to IMY is required within 72 hours.",
-                "Assess whether affected individuals may need to be informed if the risk is high.",
-                "Document the decision, timeline, actions, and sources."
+                "Have we told the user not to click more links, open attachments, or reply to the email?",
+                "Have we preserved the email as evidence, including sender, subject, time, links, attachments, and full headers where possible?",
+                "Has the email been reported to IT/security using the organization’s normal process?",
+                "Have we searched for the same message in other mailboxes and quarantined or removed it through email security tools where possible?",
+                "Have we checked whether anyone clicked the link, opened the attachment, or entered credentials?",
+                "If someone clicked or entered credentials, have we treated the account as suspected compromised?",
+                "Have we revoked sessions, reset passwords from a clean device, and reviewed MFA if credentials may have leaked?",
+                "Have we checked email rules, forwarding, OAuth apps, and suspicious sent messages?",
+                "Have we checked whether the email contained malware and whether any endpoint needs isolation?",
+                "Have we assessed whether personal data or sensitive information may have been affected?",
+                "Have we documented the timeline, users, actions, evidence, and decisions?",
             ]
 
-        elif (
-            "ransomware" in question_lower
-            or "malware" in question_lower
-            or "cyberattack" in question_lower
-            or "cyber attack" in question_lower
-            ):
+        elif contains_any(compromised_account_terms):
             items = [
-                "Isolate affected systems to limit further spread.",
-                "Preserve logs, system information, and other technical evidence.",
-                "Document the timeline, discovery, impact, and actions taken.",
-                "Check whether backups exist and whether they are unaffected.",
-                "Assess whether personal data has been affected.",
-                "Assess whether GDPR notification to IMY may be relevant.",
-                "Assess whether NIS2/Swedish Cybersecurity Act reporting or another incident reporting path may be relevant.",
-                "Compare the assessment with official sources and internal incident response procedures."
+                "Have we blocked or temporarily disabled the account if compromise is likely?",
+                "Have we revoked active sessions and tokens in identity, VPN, email, and cloud services?",
+                "Was the password reset from a clean device, not from the suspected compromised client?",
+                "Have we reviewed MFA methods and removed unknown or attacker-controlled methods?",
+                "Have we reviewed email rules, forwarding, OAuth apps, delegated access, and suspicious sent messages?",
+                "Have we reviewed sign-in logs, IP addresses, countries, timestamps, and unusual activity?",
+                "Have we checked whether the account had administrator rights or access to sensitive systems?",
+                "Have we identified what data the account may have viewed, changed, downloaded, or deleted?",
+                "Have we assessed whether personal data may have been affected and whether GDPR/IMY assessment is required?",
+                "Have we assessed whether the incident may be relevant under NIS2/the Swedish Cybersecurity Act?",
+                "Have we documented actions, timeline, evidence, and decisions?",
             ]
 
-        elif (
-            "cyber incident" in question_lower
-            or "security incident" in question_lower
-            or "incident response" in question_lower
-            or "what should an organization check after" in question_lower
-            or "what should an organisation check after" in question_lower
-        ):
+        elif contains_any(data_leak_terms):
             items = [
-                "Identify what happened and when the incident was discovered.",
-                "Identify which systems, accounts, services, and data were affected.",
-                "Assess the technical impact and severity of the incident.",
-                "Assess whether personal data was involved.",
-                "Check whether the incident may be reportable.",
-                "Assess whether GDPR, NIS2, or the Swedish Cybersecurity Act may be relevant.",
-                "Document the timeline, technical impact, decisions, and actions taken.",
-                "Compare the assessment with official sources and internal incident response procedures."
+                "Have we confirmed what is known and what remains unclear?",
+                "Have we stopped further exposure, such as public access, sharing links, or incorrect permissions?",
+                "Have we preserved evidence before making changes, such as screenshots, URLs, logs, timestamps, and permission settings?",
+                "Have we identified what data may have been exposed and how long the exposure lasted?",
+                "Have we assessed whether the data includes personal data, sensitive data, passwords, tokens, customer data, or HR data?",
+                "Have we assessed whether unauthorized access actually occurred or was only possible?",
+                "Have we secured affected accounts, API keys, passwords, and systems from a clean administrative environment?",
+                "Have we assessed the risk to individuals' rights and freedoms?",
+                "Have we assessed whether GDPR notification to IMY is required, normally within 72 hours after awareness?",
+                "Have we assessed whether affected individuals must be informed if the risk is high?",
+                "Have we assessed whether NIS2/the Swedish Cybersecurity Act or another incident reporting path may also be relevant?",
+                "Have we documented decisions, timeline, actions, sources, and who approved the decisions?",
+            ]
+
+        elif contains_any(ransomware_terms):
+            items = [
+                "Have we isolated affected systems to limit further spread?",
+                "Have we preserved logs, ransom notes, file extensions, system information, and other technical evidence?",
+                "Have we documented the timeline, discovery, impact, and actions taken?",
+                "Have we checked which systems, shares, servers, and backup environments are affected?",
+                "Have we checked whether backups exist and whether they are unaffected?",
+                "Have we assessed whether data may have been stolen before encryption or damage?",
+                "Have we assessed whether personal data has been affected?",
+                "Have we assessed whether GDPR notification to IMY may be relevant?",
+                "Have we assessed whether NIS2/the Swedish Cybersecurity Act or another incident reporting path may be relevant?",
+                "Have we compared the assessment with official sources and internal incident response procedures?",
+            ]
+
+        elif is_practical_incident_response_question(question) or contains_any(hacking_terms):
+            items = [
+                "Have we started an incident log with discovery time, system, account, and responsible people?",
+                "Have we isolated affected clients, servers, or accounts if this can be done without destroying evidence?",
+                "Have we preserved logs, alerts, screenshots, timestamps, and other technical evidence?",
+                "Have we avoided deleting logs or reinstalling systems before an initial assessment?",
+                "Have we identified affected systems, accounts, users, networks, and data?",
+                "Have we secured compromised accounts, revoked sessions, and reset passwords from a clean device?",
+                "Have we assessed whether personal data may have been affected?",
+                "Have we assessed whether GDPR notification to IMY may be required?",
+                "Have we assessed whether NIS2/the Swedish Cybersecurity Act or another incident reporting path may be relevant?",
+                "Have we escalated to IT, security, management, legal, data protection, and incident response support when needed?",
+                "Have we considered contacting CERT-SE or official incident support for serious incidents?",
+                "Have we documented decisions, timeline, actions, sources, and remaining uncertainty?",
+            ]
+
+        elif "data breach" in question_lower or "personal data breach" in question_lower or "72" in question_lower:
+            items = [
+                "Have we contained the incident and preserved relevant evidence?",
+                "Have we identified what personal data may have been affected?",
+                "Have we assessed whether the breach may create risk to individuals' rights and freedoms?",
+                "Have we checked when the organization became aware of the breach?",
+                "Have we assessed whether notification to IMY is required within 72 hours?",
+                "Have we assessed whether affected individuals may need to be informed if the risk is high?",
+                "Have we documented the decision, timeline, actions, and sources?",
             ]
 
         elif ("nis2" in question_lower or "cybersecurity act" in question_lower) and "gdpr" in question_lower:
             items = [
-                "Assess whether the incident is a cybersecurity incident.",
-                "Assess whether the incident also affects personal data.",
-                "Check whether NIS2/the Swedish Cybersecurity Act and GDPR may both be relevant.",
-                "Identify which authorities or reporting paths may need to be considered.",
-                "Document why each legal framework is or is not relevant."
+                "Have we assessed whether the incident is a cybersecurity incident?",
+                "Have we assessed whether the incident also affects personal data?",
+                "Have we checked whether NIS2/the Swedish Cybersecurity Act and GDPR may both be relevant?",
+                "Have we identified which authorities or reporting paths may need to be considered?",
+                "Have we documented why each legal framework is or is not relevant?",
             ]
 
         elif "nis2" in question_lower or "cybersecurity act" in question_lower:
             items = [
-                "Identify whether the organization may be covered by NIS2 or Swedish cybersecurity rules.",
-                "Assess whether the incident may be significant or reportable under relevant criteria.",
-                "Check the sector, organization type, and responsible internal function.",
-                "Document technical impact, timeline, and actions taken.",
-                "Compare the assessment with current MSB source material."
+                "Have we identified whether the organization may be covered by NIS2 or Swedish cybersecurity rules?",
+                "Have we assessed whether the incident may be significant or reportable under relevant criteria?",
+                "Have we checked the sector, organization type, and responsible internal function?",
+                "Have we documented technical impact, timeline, and actions taken?",
+                "Have we compared the assessment with current MSB source material?",
             ]
 
         elif "dora" in question_lower or "digital operational resilience" in question_lower:
             items = [
-                "Identify whether the organization belongs to the financial sector.",
-                "Assess whether the issue concerns ICT risk, incident handling, testing, or third-party providers.",
-                "Check whether an ICT-related incident or disruption exists.",
-                "Document the impact on digital operational resilience.",
-                "Compare the assessment with DORA sources and relevant supervisory guidance."
+                "Have we identified whether the organization belongs to the financial sector?",
+                "Have we assessed whether the issue concerns ICT risk, incident handling, testing, or third-party providers?",
+                "Have we checked whether an ICT-related incident or disruption exists?",
+                "Have we documented the impact on digital operational resilience?",
+                "Have we compared the assessment with DORA sources and relevant supervisory guidance?",
             ]
 
         elif "dataintrång" in question_lower or "unauthorized access" in question_lower or "data intrusion" in question_lower:
             items = [
-                "Identify what access or interference occurred.",
-                "Assess whether the access was authorized or unauthorized.",
-                "Separate authorized security testing from unauthorized activity.",
-                "Document systems, accounts, logs, and timeline.",
-                "Compare the situation with Swedish criminal-law source material."
+                "Have we identified what access or interference occurred?",
+                "Have we assessed whether the access was authorized or unauthorized?",
+                "Have we separated authorized security testing from unauthorized activity?",
+                "Have we documented systems, accounts, logs, and timeline?",
+                "Have we compared the situation with Swedish criminal-law source material?",
             ]
 
         elif "cyber resilience act" in question_lower or "products with digital elements" in question_lower:
             items = [
-                "Identify whether the question concerns a product with digital elements.",
-                "Assess whether product design, security requirements, or vulnerability handling are affected.",
-                "Check responsibility for the manufacturer, supplier, or other actor.",
-                "Document security measures, updates, and vulnerability processes.",
-                "Compare the assessment with Cyber Resilience Act sources."
+                "Have we identified whether the question concerns a product with digital elements?",
+                "Have we assessed whether product design, security requirements, or vulnerability handling are affected?",
+                "Have we checked responsibility for the manufacturer, supplier, or other actor?",
+                "Have we documented security measures, updates, and vulnerability processes?",
+                "Have we compared the assessment with Cyber Resilience Act sources?",
             ]
 
         else:
             items = [
-                "Identify the cybersecurity law or compliance issue.",
-                "Check which source sections CyberLex matched.",
-                "Read the practical explanation together with the source context.",
-                "Check official sources and source dates.",
-                "Use legal or authority-based guidance for important decisions."
+                "Have we identified the cybersecurity law or compliance issue?",
+                "Have we checked which source sections CyberLex matched?",
+                "Have we read the practical explanation together with the source context?",
+                "Have we checked official sources and source dates?",
+                "Is legal or authority-based guidance needed before important decisions are made?",
             ]
 
     checklist_items = "".join([f"<li>{item}</li>" for item in items])
@@ -1588,7 +1981,6 @@ def generate_assessment_checklist(question, search_results, language="English"):
         f'<ul>{checklist_items}</ul>'
         f'</div>'
     )
-
 
 def generate_attention_level(question, search_results, language="English"):
     # Generates a simple CyberLex attention level.
@@ -2021,6 +2413,44 @@ def generate_incident_response_answer(question, language="English"):
                 "Bedöm om NIS2/cybersäkerhetslagen eller annan incidentrapportering också kan vara relevant.",
                 "Dokumentera beslut, tidslinje, åtgärder, källor och vem som godkände besluten.",
             ]
+        elif is_suspicious_login_question(question):
+            title = "Rekommenderade första steg vid misstänkt inloggning"
+            intro = (
+                "En misstänkt inloggning betyder inte alltid att kontot är helt komprometterat, "
+                "men den ska behandlas som en möjlig identitetsincident tills loggarna visar motsatsen."
+            )
+            steps = [
+                "Spara larmet eller loggposten med tidpunkt, användarkonto, IP-adress, plats, enhet och tjänst.",
+                "Kontrollera om inloggningen lyckades eller bara var ett misslyckat försök.",
+                "Kontrollera om samma konto har fler ovanliga inloggningar, MFA-pushar eller misslyckade försök.",
+                "Kontakta användaren och bekräfta om aktiviteten var legitim utan att skicka känsliga uppgifter i klartext.",
+                "Om aktiviteten inte kan förklaras: blockera kontot tillfälligt eller kräv ny autentisering.",
+                "Återkalla aktiva sessioner och tokens i identitetsplattformen, VPN, e-post och molntjänster.",
+                "Byt lösenord från en ren enhet och kontrollera MFA-metoder för okända eller angriparstyrda metoder.",
+                "Granska e-postregler, vidarebefordran, OAuth-appar och delegerad åtkomst.",
+                "Kontrollera om kontot har använts för att komma åt filer, system, kunddata eller administratörsfunktioner.",
+                "Bedöm om personuppgifter kan ha påverkats och om GDPR/IMY-bedömning krävs.",
+                "Bedöm om händelsen kan vara relevant för NIS2/cybersäkerhetslagen vid större påverkan.",
+                "Dokumentera tidslinje, loggar, beslut och åtgärder.",
+            ]
+        elif is_suspicious_email_question(question):
+            title = "Rekommenderade första steg vid misstänkt mejl eller phishing"
+            intro = (
+                "Ett misstänkt mejl bör hanteras så att fler användare skyddas och eventuell klickning eller kontopåverkan kan utredas."
+            )
+            steps = [
+                "Be användaren att inte klicka fler länkar, öppna bilagor eller svara på mejlet.",
+                "Spara mejlet som bevis, inklusive avsändare, ämne, tidpunkt, länkar, bilagor och fullständiga headers om möjligt.",
+                "Rapportera mejlet till IT/säkerhet enligt organisationens rutin.",
+                "Sök efter samma mejl hos andra användare och ta bort eller karantänsätt det via e-postskyddet om möjligt.",
+                "Kontrollera om någon klickade på länken, öppnade bilagan eller lämnade inloggningsuppgifter.",
+                "Om någon klickade eller skrev in uppgifter: behandla kontot som misstänkt komprometterat.",
+                "Återkalla sessioner, byt lösenord från ren enhet och kontrollera MFA om kontouppgifter kan ha läckt.",
+                "Kontrollera e-postregler, vidarebefordran, OAuth-appar och misstänkta skickade meddelanden.",
+                "Kontrollera om mejlet innehöll malware och om någon klient behöver isoleras.",
+                "Bedöm om personuppgifter eller känslig information kan ha påverkats.",
+                "Dokumentera tidslinje, användare, åtgärder, bevis och beslut.",
+            ]
         elif is_compromised_account_question(question):
             title = "Rekommenderade första steg vid komprometterat konto"
             intro = (
@@ -2109,6 +2539,45 @@ def generate_incident_response_answer(question, language="English"):
                 "Assess whether affected individuals must be informed if the risk is high.",
                 "Assess whether NIS2/the Swedish Cybersecurity Act or another incident reporting path may also be relevant.",
                 "Document decisions, timeline, actions, sources, and who approved the decisions.",
+            ]
+        elif is_suspicious_login_question(question):
+            title = "Recommended first steps for suspicious login activity"
+            intro = (
+                "A suspicious login does not always mean full compromise, but it should be treated as a possible identity incident "
+                "until the logs show otherwise."
+            )
+            steps = [
+                "Preserve the alert or log entry with time, user account, IP address, location, device, and service.",
+                "Check whether the login succeeded or was only a failed attempt.",
+                "Check whether the same account has more unusual logins, MFA prompts, or failed attempts.",
+                "Contact the user and confirm whether the activity was legitimate without sharing sensitive data in plain text.",
+                "If the activity cannot be explained, temporarily block the account or require fresh authentication.",
+                "Revoke active sessions and tokens in identity, VPN, email, and cloud services.",
+                "Reset the password from a clean device and review MFA methods for unknown or attacker-controlled methods.",
+                "Review email rules, forwarding, OAuth apps, and delegated access.",
+                "Check whether the account was used to access files, systems, customer data, or administrator functions.",
+                "Assess whether personal data may have been affected and whether GDPR/IMY assessment is required.",
+                "Assess whether the event may be relevant under NIS2/the Swedish Cybersecurity Act if impact is larger.",
+                "Document the timeline, logs, decisions, and actions.",
+            ]
+        elif is_suspicious_email_question(question):
+            title = "Recommended first steps for a suspicious email or phishing"
+            intro = (
+                "A suspicious email should be handled in a way that protects other users and checks whether anyone clicked, "
+                "opened an attachment, or entered credentials."
+            )
+            steps = [
+                "Tell the user not to click more links, open attachments, or reply to the message.",
+                "Preserve the email as evidence, including sender, subject, time, links, attachments, and full headers when possible.",
+                "Report the email to IT/security using the organization’s normal process.",
+                "Search for the same message in other mailboxes and quarantine or remove it through email security tools if possible.",
+                "Check whether anyone clicked the link, opened the attachment, or entered credentials.",
+                "If someone clicked or entered credentials, treat that account as suspected compromised.",
+                "Revoke sessions, reset passwords from a clean device, and review MFA if credentials may have leaked.",
+                "Check email rules, forwarding, OAuth apps, and suspicious sent messages.",
+                "Check whether the email contained malware and whether any endpoint needs isolation.",
+                "Assess whether personal data or sensitive information may have been affected.",
+                "Document timeline, affected users, evidence, actions, and decisions.",
             ]
         elif is_compromised_account_question(question):
             title = "Recommended first steps for a compromised account"
@@ -2615,6 +3084,7 @@ def generate_simple_answer(question, best_match, language="English"):
             "CyberLex Sweden is an educational project and does not provide legal advice."
         )
     detected_topic = detect_question_topic(question, language)
+    display_best_section = localize_section_name(best_match.get("section", ""), language)
     source_quality = detect_source_quality(best_match["filename"], language)
     source_freshness = detect_source_freshness(best_match["source_date"], language)
     confidence = generate_source_confidence(best_match["score"], language)
@@ -2632,7 +3102,7 @@ def generate_simple_answer(question, best_match, language="English"):
         f'<div class="citation-row"><strong>{matched_file_label}:</strong> '
         f'<span class="citation-code">{best_match["filename"]}</span></div>'
         f'<div class="citation-row"><strong>{matched_section_label}:</strong> '
-        f'<span class="citation-code">{best_match["section"]}</span></div>'
+        f'<span class="citation-code">{display_best_section}</span></div>'
         f'<div class="citation-row"><strong>{source_quality_label}:</strong> '
         f'<span class="citation-code">{source_quality}</span></div>'
         f'<div class="citation-row"><strong>{relevance_score_label}:</strong> '
@@ -2707,6 +3177,21 @@ def is_cyberlaw_question(question):
         "preserve evidence",
         "isolate",
         "logs",
+        "suspicious login",
+        "suspicious sign-in",
+        "unusual login",
+        "unusual sign-in",
+        "impossible travel",
+        "suspicious login activity",
+        "phishing",
+        "suspicious email",
+        "misstänkt inloggning",
+        "misstänkta inloggningar",
+        "ovanlig inloggning",
+        "ovanliga inloggningar",
+        "nätfiske",
+        "misstänkt mejl",
+        "misstänkt e-post",
         "svensk cybersäkerhetsrätt",
         "cybersäkerhet",
         "cyberbrott",
@@ -3172,6 +3657,10 @@ if language_mode_preview == "Svenska":
         "GDPR",
         "IMY",
         "Personuppgiftsincidenter",
+        "Incidenthantering",
+        "Misstänkt intrång",
+        "Dataläcka",
+        "Komprometterat konto",
         "NIS2",
         "Svenska cybersäkerhetslagen",
         "Dataintrång",
@@ -3199,6 +3688,10 @@ else:
         "GDPR",
         "IMY",
         "Personal data breaches",
+        "Incident response",
+        "Suspected hacking",
+        "Data leaks",
+        "Compromised accounts",
         "NIS2",
         "Swedish Cybersecurity Act",
         "Dataintrång",
@@ -3442,7 +3935,10 @@ if language_mode == "Svenska":
         "Vad är dataintrång?",
         "Vad är Cyber Resilience Act?",
         "Vad ska jag göra om jag misstänker intrång?",
-        "Vad gör vi efter en dataläcka?"
+        "Vad gör vi efter en dataläcka?",
+        "Vad gör vi om ett konto är komprometterat?",
+        "Vad ska ett företag göra efter en ransomwareattack?",
+        "Vad gör vi om vi ser misstänkt inloggning?"
     ]
 else:
     example_questions_heading = "Example questions"
@@ -3458,7 +3954,10 @@ else:
         "What is dataintrång?",
         "What is the Cyber Resilience Act?",
         "What should I do if I suspect hacking?",
-        "What should we do after a data leak?"
+        "What should we do after a data leak?",
+        "What should we do if an account is compromised?",
+        "What should a company do after a ransomware attack?",
+        "What should we do after suspicious login activity?"
     ]
 
 toggle_examples_label = (
@@ -3578,11 +4077,12 @@ if question:
                 st.caption(other_matches_caption)
 
                 for result in search_results[:5]:
+                    display_result_section = localize_section_name(result.get("section", ""), language)
                     if language == "Svenska":
                         st.markdown(
                             f'<div class="match-card">'
                             f'<strong>Källa:</strong> <span class="match-code">{result["filename"]}</span> '
-                            f'<strong>Sektion:</strong> <span class="match-code">{result["section"]}</span> '
+                            f'<strong>Sektion:</strong> <span class="match-code">{display_result_section}</span> '
                             f'<strong>Relevanspoäng:</strong> <span class="match-code">{result["score"]}</span>'
                             f'</div>',
                             unsafe_allow_html=True
@@ -3591,7 +4091,7 @@ if question:
                         st.markdown(
                             f'<div class="match-card">'
                             f'<strong>Source:</strong> <span class="match-code">{result["filename"]}</span> '
-                            f'<strong>Section:</strong> <span class="match-code">{result["section"]}</span> '
+                            f'<strong>Section:</strong> <span class="match-code">{display_result_section}</span> '
                             f'<strong>Relevance score:</strong> <span class="match-code">{result["score"]}</span>'
                             f'</div>',
                             unsafe_allow_html=True
