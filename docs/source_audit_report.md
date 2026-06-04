@@ -10,10 +10,10 @@ This audit does not browse the web and does not confirm whether the law is curre
 
 ## Audit Summary
 
-- Generated at: `2026-06-04 09:16:07`
+- Generated at: `2026-06-04 09:32:28`
 - Total source files checked: `9`
-- Files marked OK: `8`
-- Files needing review: `1`
+- Files marked OK: `9`
+- Files needing review: `0`
 
 ---
 
@@ -105,20 +105,13 @@ No issues found.
 
 ### nis2_cybersecurity_law.md
 
-- Status: `Needs review`
-- Official source links found: `0`
-- Source date: `Not found`
-- Source freshness: `No review date stored`
-- Version notes: `Not found`
+- Status: `OK`
+- Official source links found: `6`
+- Source date: `Source date: Last checked: 2026-06-03`
+- Source freshness: `Recently checked`
+- Version notes: `Version notes: Source reviewed and expanded for CyberLex Sweden educational prototype. Added Swedish support for NIS2, the Swedish Cybersecurity Act, cybersecurity risk management, covered organizations, security measures, source routing, useful questions, official source links, and relationship with incident reporting.`
 
-#### Issues
-
-- Missing Official source section
-- No official source links found
-- Missing Source metadata section
-- Missing source date
-- Missing version notes
-- Freshness status: No review date stored
+No issues found.
 
 ---
 
