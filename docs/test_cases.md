@@ -19,6 +19,7 @@ The goal is to verify that the application can:
 - Display styled answer cards introduced in prototype version 0.5
 - Handle practical cyber incident questions with more specific short answers
 - Display detected topic labels for supported question categories
+- Display incident log templates for practical incident-response questions
 - Display experimental AI search results in the sidebar
 - Test improved experimental retrieval ranking
 - Verify that ransomware questions match the NIS2 incident assessment checklist
@@ -1730,6 +1731,119 @@ The three answers should not use the same practical explanation, checklist, dete
 
 ---
 
+---
+
+## Test Case 32O: Incident Log Template
+
+### Question
+
+```text
+Vad gör vi om vi ser misstänkt inloggning?
+```
+
+### Expected Result
+
+CyberLex Sweden should show an incident log template for practical incident-response questions.
+
+The template should help the user document:
+
+- time discovered
+- reporter
+- affected user, account, system, or service
+- observed alert or event
+- initial action taken
+- evidence preserved
+- containment action
+- data affected
+- reporting assessment
+- next owner
+
+### Expected UI Element
+
+In Swedish mode:
+
+```text
+Incidentloggmall
+```
+
+In English mode:
+
+```text
+Incident log template
+```
+
+### Pass Condition
+
+The incident log template appears for practical incident-response questions and does not appear for ordinary legal explanation questions such as `What is NIS2?`.
+
+---
+
+## Test Case 32P: English Incident Log Template
+
+### Question
+
+```text
+What should we do if an account is compromised?
+```
+
+### Expected Result
+
+CyberLex Sweden should show an English incident log template for a practical incident-response question.
+
+The template should help the user document:
+
+- time discovered
+- reporter
+- affected account or system
+- observed alert or event
+- initial action taken
+- evidence preserved
+- containment action
+- data affected
+- reporting assessment
+- next owner
+
+### Expected UI Element
+
+```text
+Incident log template
+```
+
+### Pass Condition
+
+The incident log template appears in English and uses English field labels.
+
+---
+
+## Test Case 32Q: Incident Log Template Topic Specificity
+
+### Questions
+
+```text
+Vad gör vi om vi ser misstänkt inloggning?
+Vad gör vi vid misstänkt mejl?
+Vad gör vi om ett konto är komprometterat?
+Vad gör vi efter en dataläcka?
+Vad gör vi om filer har krypterats?
+```
+
+### Expected Result
+
+CyberLex Sweden should show an incident log template for each practical incident-response question.
+
+The template should remain relevant to the detected incident type:
+
+- suspicious login
+- suspicious email or phishing
+- compromised account
+- data leak or personal data breach
+- ransomware or malware
+
+### Pass Condition
+
+The incident log template appears for all supported practical incident-response categories and supports the detected topic.
+
+
 ## Experimental AI Search Test Cases
 
 These test cases verify the experimental AI search sidebar and the experimental retrieval module in `app/vector_search.py`.
@@ -2482,7 +2596,7 @@ docs/source_audit_report.md
 ### Expected Summary
 
 ```text
-Files marked OK: 9
+Files marked OK: 10
 Files needing review: 0
 ```
 
@@ -2502,7 +2616,7 @@ docs/source_audit_report.md
 
 ### Expected Result
 
-The report should list all 9 local source files.
+The report should list all 10 local source files.
 
 Each file should show:
 
@@ -2515,7 +2629,7 @@ Each file should show:
 
 ### Pass Condition
 
-All 9 files are listed and all are marked `OK`.
+All 10 files are listed and all are marked `OK`.
 
 ---
 
@@ -2609,6 +2723,7 @@ The current prototype successfully demonstrates:
 - Styled important limitation card
 - CyberLex attention level card
 - Practical explanation card
+- Incident log template for practical incident-response questions
 - Assessment checklist expander
 - Relevant source context cards
 - Other matching source section cards
@@ -2622,6 +2737,7 @@ The current prototype successfully demonstrates:
 - Improved unauthorized access English answer wording
 - Separated practical short answers for ransomware, cyber incidents, and data breaches
 - Separated assessment checklists for ransomware, cyber incidents, and data breaches
+- Cyber incident response playbook source support
 - Experimental AI search sidebar
 - Experimental retrieval module in `app/vector_search.py`
 - Experimental DORA retrieval test
