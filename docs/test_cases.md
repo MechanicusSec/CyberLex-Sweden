@@ -1843,6 +1843,49 @@ The template should remain relevant to the detected incident type:
 
 The incident log template appears for all supported practical incident-response categories and supports the detected topic.
 
+---
+
+## Test Case 32R: Clean Downloaded Incident Summary
+
+### Question
+
+```text
+What should we do if we receive a suspicious email?
+```
+
+### Expected Result
+
+CyberLex Sweden should allow the user to download a clean incident summary file.
+
+The downloaded file should include:
+
+- question
+- CyberLex answer
+- checklist
+- incident log template
+- short source note
+- educational disclaimer
+
+The downloaded file should not include:
+
+- repeated source sections
+- full official source URLs
+- relevance scores
+- duplicate source entries
+- full source context cards
+- internal search ranking details
+
+### Expected Source Note
+
+```text
+Sources, official links, source metadata, and source context are shown in the CyberLex Sweden app.
+```
+
+### Pass Condition
+
+The downloaded incident summary is readable, practical, and suitable for use as an incident note or ticket attachment.
+
+---
 
 ## Experimental AI Search Test Cases
 
