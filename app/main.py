@@ -65,6 +65,14 @@ def localize_section_name(section_name, language="English"):
         "ransomware first steps": "Första steg vid ransomware",
         "malware infection first steps": "Första steg vid malware",
         "compromised account first steps": "Första steg vid komprometterat konto",
+        "suspicious login activity first steps": "Första steg vid misstänkt inloggning",
+        "swedish suspicious login activity first steps": "Första steg vid misstänkt inloggning",
+        "suspicious email and phishing first steps": "Första steg vid misstänkt mejl eller phishing",
+        "swedish suspicious email and phishing first steps": "Första steg vid misstänkt mejl eller phishing",
+        "suspicious login assessment checklist": "Checklista för misstänkt inloggning",
+        "swedish suspicious login assessment checklist": "Checklista för misstänkt inloggning",
+        "suspicious email assessment checklist": "Checklista för misstänkt mejl eller phishing",
+        "swedish suspicious email assessment checklist": "Checklista för misstänkt mejl eller phishing",
         "first 15 minutes checklist": "Checklista: första 15 minuterna",
         "first hour checklist": "Checklista: första timmen",
         "first 24 hours checklist": "Checklista: första dygnet",
@@ -115,6 +123,14 @@ def localize_section_name(section_name, language="English"):
         "unauthorized access first steps": "First steps for unauthorized access",
         "malware infection first steps": "First steps for malware infection",
         "ransomware first steps": "First steps for ransomware",
+        "suspicious login activity first steps": "First steps for suspicious login activity",
+        "swedish suspicious login activity first steps": "First steps for suspicious login activity",
+        "suspicious email and phishing first steps": "First steps for suspicious email or phishing",
+        "swedish suspicious email and phishing first steps": "First steps for suspicious email or phishing",
+        "suspicious login assessment checklist": "Suspicious login assessment checklist",
+        "swedish suspicious login assessment checklist": "Suspicious login assessment checklist",
+        "suspicious email assessment checklist": "Suspicious email or phishing assessment checklist",
+        "swedish suspicious email assessment checklist": "Suspicious email or phishing assessment checklist",
     }
 
     if use_swedish:
@@ -1334,7 +1350,123 @@ def search_chunks(question, chunks):
     results.sort(key=lambda item: item["score"], reverse=True)
     return results
 
-def build_source_context(search_results, language="English", max_results=3):
+
+def get_source_context_section_priority(question, section_name, language="English"):
+    # Gives extra priority to source context sections that match the user's
+    # exact incident subtype. This affects only the displayed source context,
+    # not the main legal/source search result.
+    question = str(question or "")
+    section = str(section_name or "").lower().strip()
+    use_swedish = language == "Svenska"
+
+    priority = 0
+
+    def language_bonus():
+        if use_swedish and section.startswith("swedish "):
+            return 20
+        if not use_swedish and not section.startswith("swedish "):
+            return 10
+        return 0
+
+    if is_suspicious_login_question(question):
+        if "suspicious login" in section or "misstänkt inloggning" in section:
+            priority += 120
+        if "login activity first steps" in section:
+            priority += 40
+        if "login assessment checklist" in section:
+            priority += 25
+        if "compromised account" in section:
+            priority -= 30
+        if "suspected hacking" in section:
+            priority -= 50
+
+    elif is_suspicious_email_question(question):
+        if "suspicious email" in section or "phishing" in section or "misstänkt mejl" in section:
+            priority += 120
+        if "email and phishing first steps" in section:
+            priority += 40
+        if "email assessment checklist" in section:
+            priority += 25
+        if "compromised account" in section:
+            priority -= 30
+        if "suspected hacking" in section:
+            priority -= 50
+
+    elif is_compromised_account_question(question):
+        if "compromised account" in section or "komprometterat konto" in section:
+            priority += 120
+        if "account first steps" in section:
+            priority += 40
+        if "account checklist" in section:
+            priority += 25
+        if "suspicious login" in section:
+            priority += 10
+        if "suspected hacking" in section:
+            priority -= 25
+
+    elif is_data_leak_response_question(question):
+        if "data leak" in section or "dataläcka" in section:
+            priority += 120
+        if "data leak assessment checklist" in section:
+            priority += 40
+        if "suspected hacking" in section:
+            priority -= 40
+
+    elif is_ransomware_or_malware_question(question):
+        if "ransomware" in section or "malware" in section:
+            priority += 120
+        if "first 15 minutes" in section or "first hour" in section:
+            priority += 15
+        if "suspected hacking" in section:
+            priority -= 20
+
+    elif is_practical_incident_response_question(question):
+        if "suspected hacking" in section or "unauthorized access" in section:
+            priority += 80
+        if "first 15 minutes" in section or "first hour" in section:
+            priority += 20
+
+    if priority > 0:
+        priority += language_bonus()
+
+    return priority
+
+
+def prioritize_source_context_results(search_results, question=None, language="English"):
+    # Sorts source-context cards by topic-specific relevance first, then normal
+    # keyword relevance score. If there are strong exact-topic matches, those
+    # are shown before broader fallback sections.
+    if not question:
+        return search_results
+
+    scored_results = []
+    for result in search_results:
+        section_name = result.get("section", "")
+        topic_priority = get_source_context_section_priority(question, section_name, language)
+        scored_results.append((topic_priority, result.get("score", 0), result))
+
+    has_topic_specific_match = any(topic_priority > 0 for topic_priority, _, _ in scored_results)
+
+    if has_topic_specific_match:
+        topic_matches = [
+            (topic_priority, score, result)
+            for topic_priority, score, result in scored_results
+            if topic_priority > 0
+        ]
+        fallback_matches = [
+            (topic_priority, score, result)
+            for topic_priority, score, result in scored_results
+            if topic_priority <= 0
+        ]
+
+        topic_matches.sort(key=lambda item: (item[0], item[1]), reverse=True)
+        fallback_matches.sort(key=lambda item: item[1], reverse=True)
+
+        return [result for _, _, result in topic_matches + fallback_matches]
+
+    return search_results
+
+def build_source_context(search_results, language="English", max_results=3, question=None):
     # Builds a short source context summary from the top matched source sections.
     # This helps CyberLex show useful supporting material without using an AI model.
     # It also removes repeated Markdown headings from excerpts to avoid duplicate titles.
@@ -1370,6 +1502,12 @@ def build_source_context(search_results, language="English", max_results=3):
     # Better to show some source context than an empty altar to the machine gods.
     if not filtered_results:
         filtered_results = search_results
+
+    filtered_results = prioritize_source_context_results(
+        filtered_results,
+        question=question,
+        language=language
+    )
 
     for result in filtered_results[:max_results]:
         display_section = localize_section_name(result.get("section", ""), language)
@@ -4069,7 +4207,7 @@ if question:
                 ):
                     st.caption(source_context_caption)
                     st.markdown(
-                        build_source_context(search_results, language, max_results=3),
+                        build_source_context(search_results, language, max_results=3, question=question),
                         unsafe_allow_html=True
                     )
 
