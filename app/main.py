@@ -2745,98 +2745,220 @@ def generate_copy_ready_incident_summary(question, best_match, search_results, l
     )
 
 
-def generate_attention_level(question, search_results, language="English"):
-    # Generates a simple CyberLex attention level.
-    # This is not a legal risk rating. It is an educational signal based on topic and matched sources.
+def is_basic_explanation_question(question):
+    # Detects basic "what is" / definition-style questions.
+    # These should normally be informational, not high attention.
+    question_lower = normalize_query_text(question).strip()
 
-    question_lower = question.lower()
-    use_swedish = language == "Svenska"
+    explanation_starts = [
+        "what is ",
+        "what are ",
+        "what does ",
+        "explain ",
+        "vad är ",
+        "vad betyder ",
+        "förklara ",
+    ]
 
-    best_score = 0
-    if search_results:
-        best_score = search_results[0].get("score", 0)
+    explanation_topics = [
+        "nis2",
+        "dora",
+        "imy",
+        "gdpr",
+        "dataintrång",
+        "cyber resilience act",
+        "cyberresiliensakten",
+        "digital operational resilience act",
+        "swedish cybersecurity act",
+        "cybersäkerhetslagen",
+        "attacks against information systems",
+        "attacker mot informationssystem",
+    ]
 
-    high_terms = [
+    return (
+        any(question_lower.startswith(start) for start in explanation_starts)
+        and any(topic in question_lower for topic in explanation_topics)
+    )
+
+
+def is_reporting_or_compliance_assessment_question(question):
+    # Detects questions that are not necessarily active incidents but still need
+    # more careful compliance assessment than a basic definition question.
+    question_lower = normalize_query_text(question)
+
+    assessment_terms = [
+        "when must",
+        "when should",
+        "must be reported",
+        "should be reported",
+        "need to report",
+        "needs to report",
+        "reported under",
+        "reporting obligation",
+        "reporting duties",
+        "72 hours",
+        "72-hour",
+        "72 timmar",
+        "när måste",
+        "när ska",
+        "måste rapporteras",
+        "måste anmälas",
+        "ska rapporteras",
+        "ska anmälas",
+        "behöver rapporteras",
+        "behöver anmälas",
+        "rapporteras enligt",
+        "anmälas till",
+        "både nis2 och gdpr",
+        "both nis2 and gdpr",
+    ]
+
+    compliance_topics = [
         "personal data breach",
         "personuppgiftsincident",
-        "72",
-        "incident reporting",
-        "incidentrapportering",
-        "reported",
-        "rapportera",
-        "rapporteras",
+        "data breach",
+        "gdpr",
+        "imy",
         "nis2",
         "cybersecurity act",
         "cybersäkerhetslagen",
         "dora",
-        "ransomware",
-        "malware",
-        "cyber attack",
-        "cyberattack",
-        "security incident",
-        "incident response",
-        "suspect hacking",
-        "suspect intrusion",
-        "data leak",
-        "compromised account",
-        "misstänker intrång",
-        "misstänker hackning",
-        "dataläcka",
-        "komprometterat konto",
-        "cyberincident",
-        "säkerhetsincident"
+        "incident reporting",
+        "incidentrapportering",
     ]
 
-    medium_terms = [
-        "gdpr",
-        "imy",
-        "dataintrång",
-        "unauthorized access",
-        "obehörig åtkomst",
-        "cyber resilience act",
-        "cyberresiliensakten",
-        "products with digital elements"
+    return (
+        any(term in question_lower for term in assessment_terms)
+        and any(topic in question_lower for topic in compliance_topics)
+    )
+
+
+def is_unsafe_cyber_request(question):
+    # Detects requests that should be treated as unsafe/offensive or evasive.
+    question_lower = normalize_query_text(question)
+
+    unsafe_terms = [
+        "hide logs",
+        "delete logs",
+        "erase logs",
+        "remove logs",
+        "cover tracks",
+        "hide traces",
+        "avoid detection",
+        "bypass detection",
+        "steal credentials",
+        "hack into",
+        "exploit a system",
+        "after hacking",
+        "radera loggar",
+        "ta bort loggar",
+        "dölja loggar",
+        "dölja spår",
+        "undvika upptäckt",
+        "kringgå upptäckt",
+        "stjäla lösenord",
+        "hacka sig in",
+        "efter ett intrång",
     ]
 
-    if any(term in question_lower for term in high_terms) or best_score >= 180:
+    return any(term in question_lower for term in unsafe_terms)
+
+
+def generate_attention_level(question, search_results, language="English"):
+    # Generates a simple CyberLex attention level.
+    # This is not a legal risk rating. It is an educational signal based on topic and matched sources.
+
+    question_lower = normalize_query_text(question)
+    use_swedish = language == "Svenska"
+
+    if is_unsafe_cyber_request(question):
         level = "High"
-
         if use_swedish:
             reason = (
-                "Frågan kan beröra incidentrapportering, tidsfrister, personuppgifter, "
-                "cybersäkerhetskrav eller regler som kräver noggrann bedömning."
+                "Frågan verkar beröra offensiv eller undvikande cyberaktivitet. CyberLex ska inte ge sådana instruktioner "
+                "utan bör styra mot laglig, defensiv incidenthantering."
             )
         else:
             reason = (
-                "The question may involve incident reporting, timelines, personal data, "
-                "cybersecurity duties, or rules that require careful assessment."
+                "The question appears to involve offensive or evasive cyber activity. CyberLex should not provide those instructions "
+                "and should redirect toward lawful defensive incident handling."
             )
 
-    elif any(term in question_lower for term in medium_terms) or best_score >= 100:
-        level = "Medium"
-
+    elif is_practical_incident_response_question(question):
+        level = "High"
         if use_swedish:
             reason = (
-                "Frågan verkar vara relevant för dataskydd, cybersäkerhetsrätt eller digital compliance, "
-                "men den verkar inte nödvändigtvis vara en akut incidentfråga."
+                "Frågan verkar vara en praktisk incidenthanteringsfråga där snabba defensiva åtgärder, bevarande av bevis, "
+                "dokumentation och rapporteringsbedömning kan vara viktiga."
             )
         else:
             reason = (
-                "The question appears relevant to data protection, cybersecurity law, or digital compliance, "
-                "but does not necessarily appear to be an urgent incident issue."
+                "The question appears to be a practical incident-response question where defensive action, evidence preservation, "
+                "documentation, and reporting assessment may be important."
+            )
+
+    elif is_reporting_or_compliance_assessment_question(question):
+        level = "Elevated"
+        if use_swedish:
+            reason = (
+                "Frågan verkar kräva bedömning av rapportering, tidsfrister, personuppgifter eller regelverk. "
+                "Det är inte nödvändigtvis en akut incidentfråga, men svaret bör läsas noggrant tillsammans med källorna."
+            )
+        else:
+            reason = (
+                "The question appears to require assessment of reporting, timelines, personal data, or regulatory duties. "
+                "It is not necessarily an active incident, but the answer should be reviewed carefully with the sources."
+            )
+
+    elif is_basic_explanation_question(question):
+        level = "Informational"
+        if use_swedish:
+            reason = (
+                "Frågan verkar vara en grundläggande förklaringsfråga inom CyberLex Swedens kunskapsområde."
+            )
+        else:
+            reason = (
+                "The question appears to be a basic explanation question within the CyberLex Sweden knowledge area."
             )
 
     else:
-        level = "Normal"
+        standard_terms = [
+            "gdpr",
+            "imy",
+            "dataintrång",
+            "unauthorized access",
+            "obehörig åtkomst",
+            "cyber resilience act",
+            "cyberresiliensakten",
+            "products with digital elements",
+            "nis2",
+            "dora",
+            "cybersecurity act",
+            "cybersäkerhetslagen",
+        ]
 
-        if use_swedish:
-            reason = (
-                "Frågan verkar vara en allmän informationsfråga inom CyberLex Swedens kunskapsområde."
-            )
+        if any(term in question_lower for term in standard_terms):
+            level = "Standard"
+            if use_swedish:
+                reason = (
+                    "Frågan verkar vara relevant för dataskydd, cybersäkerhetsrätt eller digital compliance, "
+                    "men den verkar inte vara en praktisk incidentfråga."
+                )
+            else:
+                reason = (
+                    "The question appears relevant to data protection, cybersecurity law, or digital compliance, "
+                    "but does not appear to be a practical incident-response question."
+                )
         else:
-            reason = (
-                "The question appears to be a general information question within the CyberLex Sweden knowledge area."
-            )
+            level = "Informational"
+            if use_swedish:
+                reason = (
+                    "Frågan verkar vara en allmän informationsfråga inom CyberLex Swedens kunskapsområde."
+                )
+            else:
+                reason = (
+                    "The question appears to be a general information question within the CyberLex Sweden knowledge area."
+                )
 
     css_level = level.lower()
 
@@ -2844,12 +2966,13 @@ def generate_attention_level(question, search_results, language="English"):
         heading = "CyberLex uppmärksamhetsnivå"
         reason_label = "Motivering"
 
-        if level == "High":
-            translated_level = "Hög"
-        elif level == "Medium":
-            translated_level = "Medel"
-        else:
-            translated_level = "Normal"
+        translated_levels = {
+            "Informational": "Information",
+            "Standard": "Standard",
+            "Elevated": "Förhöjd",
+            "High": "Hög",
+        }
+        translated_level = translated_levels.get(level, level)
 
         limitation = (
             "Detta är inte en juridisk riskklassning. Det är en pedagogisk signal baserad på frågans ämne "
@@ -4120,6 +4243,18 @@ st.markdown(
 
     .attention-level-high {
         border-left: 6px solid #ef4444;
+    }
+
+    .attention-level-elevated {
+        border-left: 6px solid #f59e0b;
+    }
+
+    .attention-level-standard {
+        border-left: 6px solid #38bdf8;
+    }
+
+    .attention-level-informational {
+        border-left: 6px solid #22c55e;
     }
 
     .attention-level-medium {
