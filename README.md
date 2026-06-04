@@ -61,6 +61,9 @@ Completed major improvements include:
 - Other matching source section cards
 - Example question panel
 - Practical incident-response guidance
+- Incident log templates for practical incident-response questions
+- Copy-ready incident summaries
+- Clean downloadable incident summary files
 - Defensive cyber safety boundary
 - Out-of-scope refusal handling
 - Offensive cyber request refusal
@@ -206,6 +209,9 @@ The current prototype can:
 - support English and Swedish interface labels
 - provide example questions
 - handle practical incident-response questions
+- display incident log templates for practical incident-response questions
+- generate copy-ready incident summaries
+- download clean incident summary files for use as incident notes or ticket attachments
 - distinguish suspicious login, phishing, compromised account, data leak, and ransomware questions
 - normalize some Swedish typo variants, such as `kontör` toward `konto`
 - refuse out-of-scope questions
@@ -249,6 +255,8 @@ The app should provide practical first steps, such as:
 - assess whether GDPR/IMY reporting may be relevant
 - assess whether NIS2 or the Swedish Cybersecurity Act may be relevant
 - escalate to internal security teams, CERT-SE, legal, or official authorities when appropriate
+
+CyberLex Sweden can also generate a clean downloadable incident summary for practical incident-response questions. The downloaded summary includes the original question, recommended first steps, checklist, incident log template, short source note, and educational disclaimer. It avoids full source dumps, relevance scores, duplicate source sections, and long official URLs because those details are already shown inside the app.
 
 The incident-response guidance is educational and defensive. It is not a replacement for a professional incident-response team.
 
@@ -560,6 +568,8 @@ The current test coverage includes:
 - compromised account tests
 - data leak tests
 - ransomware and malware tests
+- incident log template tests
+- clean downloaded incident summary tests
 - Swedish and English language consistency tests
 - offensive cyber refusal tests
 - out-of-scope refusal tests
@@ -586,6 +596,7 @@ Current limitations:
 - Source freshness labels describe stored local review dates only.
 - The source audit checks file structure, not live legal currency.
 - Incident-response guidance is simplified for educational use.
+- Downloaded incident summaries are documentation aids and do not replace internal incident-response records, legal review, or official reporting.
 
 For serious legal, regulatory, compliance, or security decisions, official sources and qualified professionals should be checked.
 
@@ -595,9 +606,10 @@ For serious legal, regulatory, compliance, or security decisions, official sourc
 
 Planned or possible improvements include:
 
-- Add an incident log template for practical incident documentation
+- Improve the professional formatting of downloaded incident summaries
+- Add optional prepared-by, organization, date/time, and incident ID fields to downloaded summaries
 - Improve relevant source context so excerpts avoid helper text and duplicate checklist content
-- Add copy/export features for answers, checklists, and sources
+- Add copy/export features for broader non-incident answers, checklists, and sources
 - Add more specific attention-level explanations per incident type
 - Revisit vector search using Python 3.12 or another stable AI-compatible environment
 - Add embeddings with `sentence-transformers`
