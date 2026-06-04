@@ -3812,7 +3812,7 @@ def generate_simple_answer(question, best_match, language="English"):
 
     if use_swedish:
         short_answer_heading = "Kort svar"
-        citation_heading = "Källhänvisning"
+        citation_heading = "Detaljer om källmatchning"
         matched_file_label = "Matchad kunskapsfil"
         matched_section_label = "Matchad sektion"
         relevance_score_label = "Relevanspoäng"
@@ -3830,7 +3830,7 @@ def generate_simple_answer(question, best_match, language="English"):
         )
     else:
         short_answer_heading = "Short answer"
-        citation_heading = "Citation details"
+        citation_heading = "Source match details"
         matched_file_label = "Matched knowledge file"
         matched_section_label = "Matched section"
         relevance_score_label = "Relevance score"
@@ -3860,6 +3860,12 @@ def generate_simple_answer(question, best_match, language="English"):
         f'<div class="topic-row"><strong>{topic_heading}:</strong> '
         f'<span class="topic-code">{detected_topic}</span></div>'
         f'</div>\n\n'
+        f'<div class="source-card">'
+        f'<div class="source-card-title">{official_sources_heading}</div>'
+        f'{source_lines}'
+        f'</div>\n\n'
+        f'<details class="technical-details">'
+        f'<summary>{citation_heading}</summary>'
         f'<div class="citation-card">'
         f'<div class="citation-card-title">{citation_heading}</div>'
         f'<div class="citation-row"><strong>{matched_file_label}:</strong> '
@@ -3874,11 +3880,7 @@ def generate_simple_answer(question, best_match, language="English"):
         f'<span class="citation-code">{confidence["level"]}</span></div>'
         f'<div class="citation-note">{confidence["reason"]} '
         f'{"Detta är inte juridisk säkerhet. Det beskriver bara hur stark källmatchningen är." if use_swedish else "This is not legal certainty. It only describes how strong the source match is."}</div>'
-        f'</div>\n\n'
-        f'<div class="source-card">'
-        f'<div class="source-card-title">{official_sources_heading}</div>'
-        f'{source_lines}'
-        f'</div>\n\n'
+        f'</div>'
         f'<div class="metadata-card">'
         f'<div class="metadata-card-title">{metadata_heading}</div>'
         f'<div class="metadata-row"><strong>{source_date_label}:</strong> '
@@ -3887,7 +3889,8 @@ def generate_simple_answer(question, best_match, language="English"):
         f'<span class="metadata-code">{source_freshness}</span></div>'
         f'<div class="metadata-row"><strong>{version_notes_label}:</strong> '
         f'<span class="metadata-code">{version_notes}</span></div>'
-        f'</div>\n\n'
+        f'</div>'
+        f'</details>\n\n'
         f'<div class="limitation-card">'
         f'<div class="limitation-card-title">{limitation_heading}</div>'
         f'<div class="limitation-card-text">{limitation_text}</div>'
@@ -4440,7 +4443,23 @@ st.markdown(
         font-family: monospace;
         font-size: 0.9rem;
     }
-    </style>
+    
+.technical-details {
+    margin: 0.85rem 0 1rem 0;
+    padding: 0.85rem 1rem;
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    border-radius: 0.75rem;
+    background: rgba(15, 23, 42, 0.35);
+}
+.technical-details summary {
+    cursor: pointer;
+    font-weight: 700;
+}
+.technical-details .citation-card,
+.technical-details .metadata-card {
+    margin-top: 0.75rem;
+}
+</style>
     ''',
     unsafe_allow_html=True
 )
@@ -4868,8 +4887,8 @@ if language == "Svenska":
     matched_excerpt_heading = "Matchat källutdrag"
     matched_excerpt_caption = "Detta är den exakta källsektion som CyberLex använde för svaret."
     relevant_section_label = "Relevant källsektion"
-    other_matches_header = "Andra matchande källsektioner"
-    other_matches_caption = "Detta är ytterligare källsektioner som matchade frågan, sorterade efter relevans."
+    other_matches_header = "Ytterligare matchande källsektioner"
+    other_matches_caption = "Valfri teknisk översikt över fler källsektioner som matchade frågan, sorterade efter relevans."
 else:
     source_context_caption = "This shows several source sections CyberLex used as supporting context for the answer."
     empty_question_text = "Enter a question above to search the CyberLex Sweden knowledge base."
@@ -4882,8 +4901,8 @@ else:
     matched_excerpt_heading = "Matched source excerpt"
     matched_excerpt_caption = "This is the exact source section CyberLex used for the answer."
     relevant_section_label = "Relevant source section"
-    other_matches_header = "Other matching source sections"
-    other_matches_caption = "These are additional source sections that matched the question, ranked by relevance."
+    other_matches_header = "Additional matched source sections"
+    other_matches_caption = "Optional technical overview of additional source sections that matched the question, ranked by relevance."
 
 if question:
     if not is_cyberlaw_question(question):
@@ -4972,29 +4991,29 @@ if question:
                         unsafe_allow_html=True
                     )
 
-                st.subheader(other_matches_header)
-                st.caption(other_matches_caption)
+                with st.expander(other_matches_header, expanded=False):
+                    st.caption(other_matches_caption)
 
-                for result in search_results[:5]:
-                    display_result_section = localize_section_name(result.get("section", ""), language)
-                    if language == "Svenska":
-                        st.markdown(
-                            f'<div class="match-card">'
-                            f'<strong>Källa:</strong> <span class="match-code">{result["filename"]}</span> '
-                            f'<strong>Sektion:</strong> <span class="match-code">{display_result_section}</span> '
-                            f'<strong>Relevanspoäng:</strong> <span class="match-code">{result["score"]}</span>'
-                            f'</div>',
-                            unsafe_allow_html=True
-                        )
-                    else:
-                        st.markdown(
-                            f'<div class="match-card">'
-                            f'<strong>Source:</strong> <span class="match-code">{result["filename"]}</span> '
-                            f'<strong>Section:</strong> <span class="match-code">{display_result_section}</span> '
-                            f'<strong>Relevance score:</strong> <span class="match-code">{result["score"]}</span>'
-                            f'</div>',
-                            unsafe_allow_html=True
-                        )
+                    for result in search_results[:5]:
+                        display_result_section = localize_section_name(result.get("section", ""), language)
+                        if language == "Svenska":
+                            st.markdown(
+                                f'<div class="match-card">'
+                                f'<strong>Källa:</strong> <span class="match-code">{result["filename"]}</span> '
+                                f'<strong>Sektion:</strong> <span class="match-code">{display_result_section}</span> '
+                                f'<strong>Relevanspoäng:</strong> <span class="match-code">{result["score"]}</span>'
+                                f'</div>',
+                                unsafe_allow_html=True
+                            )
+                        else:
+                            st.markdown(
+                                f'<div class="match-card">'
+                                f'<strong>Source:</strong> <span class="match-code">{result["filename"]}</span> '
+                                f'<strong>Section:</strong> <span class="match-code">{display_result_section}</span> '
+                                f'<strong>Relevance score:</strong> <span class="match-code">{result["score"]}</span>'
+                                f'</div>',
+                                unsafe_allow_html=True
+                            )
         else:
             st.error(out_of_scope_text)
 else:
