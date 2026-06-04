@@ -1260,6 +1260,593 @@ If you suspect a data leak:
 
 ---
 
+
+## Suspicious login activity first steps
+
+Use this section when the user asks:
+
+- What should we do after suspicious login activity?
+- What should we do if we see an unusual login?
+- What should we do if there are impossible travel alerts?
+- What should we do after repeated failed login attempts?
+- What should we do if MFA prompts look suspicious?
+- What should we do if someone logs in from an unusual country?
+- Vad gör vi om vi ser misstänkt inloggning?
+- Vad gör vi vid ovanlig inloggning?
+- Vad gör vi vid omöjlig resa i inloggningsloggar?
+- Vad gör vi vid många misslyckade inloggningsförsök?
+- Vad gör vi om MFA-pushar ser misstänkta ut?
+- Vad gör vi om någon loggar in från ett ovanligt land?
+
+### Step 1: Preserve the alert or log entry
+
+Save the original alert or log entry before changing anything.
+
+Preserve:
+
+- username
+- account ID
+- timestamp
+- source IP address
+- country or location
+- device name
+- browser or user agent
+- service or application
+- login result: success or failure
+- MFA result
+- risk score if available
+- alert ID
+- screenshots
+- related alerts
+
+The purpose is to make sure later investigation can still see what happened.
+
+### Step 2: Check whether the login succeeded
+
+A failed login attempt is different from a successful suspicious login.
+
+Check:
+
+- Did the login succeed?
+- Was MFA completed?
+- Was the login blocked?
+- Was the login challenged?
+- Was it only a failed password attempt?
+- Did the same account have many failed attempts before success?
+- Did the same source IP target several accounts?
+- Did the login happen outside normal working hours?
+- Did the login come from a new device or country?
+
+If the login succeeded and cannot be explained, treat it as a possible account compromise.
+
+### Step 3: Contact the user carefully
+
+Ask the user whether the activity was expected.
+
+Do not send passwords, tokens, log excerpts with secrets, or sensitive personal data in plain text.
+
+Ask simple verification questions:
+
+- Were you working at that time?
+- Were you travelling?
+- Did you use VPN?
+- Did you approve an MFA prompt?
+- Did you receive unexpected MFA prompts?
+- Did you click a suspicious link recently?
+- Did you enter credentials into a website?
+
+Document the answer.
+
+### Step 4: Contain if suspicious
+
+If the activity cannot be explained, consider containment:
+
+- temporarily block sign-in
+- revoke active sessions
+- require fresh authentication
+- reset password from a clean device
+- review MFA methods
+- remove unknown MFA methods
+- check recovery email and phone
+- check delegated access
+- check suspicious OAuth app consent
+- check mailbox forwarding and inbox rules
+- restrict access until reviewed
+
+Do not reset passwords from the suspected compromised client.
+
+### Step 5: Review account activity
+
+Check:
+
+- recent successful logins
+- failed login patterns
+- IP addresses
+- countries and locations
+- user agents
+- device IDs
+- MFA changes
+- password resets
+- mailbox rules
+- OAuth app consent
+- admin role changes
+- file access
+- cloud storage downloads
+- VPN activity
+- remote desktop activity
+- privilege escalation
+- suspicious sent email
+
+### Step 6: Assess data and reporting impact
+
+Ask:
+
+- Did the account access personal data?
+- Did the account access customer, employee, HR, financial, or sensitive data?
+- Was any data downloaded, copied, deleted, or changed?
+- Did the account have administrator privileges?
+- Did the account access systems covered by cybersecurity duties?
+- Could the incident be relevant under GDPR/IMY?
+- Could the incident be relevant under NIS2/cybersäkerhetslagen?
+
+Document the assessment and escalation.
+
+---
+
+## Swedish suspicious login activity first steps
+
+Använd denna sektion när användaren frågar om misstänkt inloggning, ovanlig inloggning, omöjlig resa, misstänkta MFA-pushar eller många misslyckade inloggningsförsök.
+
+### Steg 1: Spara larmet eller loggposten
+
+Spara den ursprungliga loggen eller varningen innan du ändrar något.
+
+Spara:
+
+- användarkonto
+- konto-ID
+- tidpunkt
+- käll-IP-adress
+- land eller plats
+- enhetsnamn
+- webbläsare eller user agent
+- tjänst eller applikation
+- om inloggningen lyckades eller misslyckades
+- MFA-resultat
+- riskpoäng om det finns
+- larm-ID
+- skärmbilder
+- relaterade larm
+
+Syftet är att utredningen senare ska kunna se vad som faktiskt hände.
+
+### Steg 2: Kontrollera om inloggningen lyckades
+
+En misslyckad inloggning är inte samma sak som en lyckad misstänkt inloggning.
+
+Kontrollera:
+
+- Lyckades inloggningen?
+- Slutfördes MFA?
+- Blockerades inloggningen?
+- Krävdes extra kontroll?
+- Var det bara ett misslyckat lösenordsförsök?
+- Fanns många misslyckade försök före en lyckad inloggning?
+- Försökte samma IP-adress logga in på flera konton?
+- Skedde inloggningen utanför normal arbetstid?
+- Kom inloggningen från ny enhet eller nytt land?
+
+Om inloggningen lyckades och inte kan förklaras bör den behandlas som en möjlig kontokompromettering.
+
+### Steg 3: Kontakta användaren försiktigt
+
+Fråga användaren om aktiviteten var förväntad.
+
+Skicka inte lösenord, tokens, hemligheter eller känsliga uppgifter i klartext.
+
+Fråga till exempel:
+
+- Arbetade du vid den tidpunkten?
+- Var du på resa?
+- Använde du VPN?
+- Godkände du en MFA-push?
+- Fick du oväntade MFA-pushar?
+- Klickade du nyligen på en misstänkt länk?
+- Skrev du in lösenord på en webbplats?
+
+Dokumentera svaret.
+
+### Steg 4: Begränsa åtkomst om aktiviteten är misstänkt
+
+Om aktiviteten inte kan förklaras, överväg att:
+
+- tillfälligt blockera inloggning
+- återkalla aktiva sessioner
+- kräva ny autentisering
+- byta lösenord från en ren enhet
+- granska MFA-metoder
+- ta bort okända MFA-metoder
+- kontrollera återställningsmejl och telefonnummer
+- kontrollera delegerad åtkomst
+- kontrollera misstänkta OAuth-appar
+- kontrollera vidarebefordran och e-postregler
+- begränsa åtkomst tills kontot är granskat
+
+Byt inte lösenord från den misstänkt komprometterade klienten.
+
+### Steg 5: Granska kontoaktivitet
+
+Kontrollera:
+
+- senaste lyckade inloggningar
+- mönster av misslyckade inloggningar
+- IP-adresser
+- länder och platser
+- user agents
+- enhets-ID
+- MFA-ändringar
+- lösenordsåterställningar
+- e-postregler
+- OAuth-appsamtycken
+- administratörsroller
+- filåtkomst
+- nedladdningar från molnlagring
+- VPN-aktivitet
+- fjärrskrivbordsaktivitet
+- behörighetshöjning
+- misstänkt skickad e-post
+
+### Steg 6: Bedöm data och rapportering
+
+Fråga:
+
+- Har kontot haft åtkomst till personuppgifter?
+- Har kontot haft åtkomst till kunddata, HR-data, ekonomisk data eller känslig information?
+- Har data laddats ner, kopierats, raderats eller ändrats?
+- Hade kontot administratörsbehörighet?
+- Gav kontot åtkomst till system som omfattas av cybersäkerhetskrav?
+- Kan incidenten vara relevant enligt GDPR/IMY?
+- Kan incidenten vara relevant enligt NIS2/cybersäkerhetslagen?
+
+Dokumentera bedömningen och eskaleringen.
+
+---
+
+## Suspicious email and phishing first steps
+
+Use this section when the user asks:
+
+- What should we do if we receive a suspicious email?
+- What should we do after a phishing email?
+- What should we do if someone clicked a phishing link?
+- What should we do if someone opened a suspicious attachment?
+- What should we do if someone entered credentials into a fake site?
+- Vad gör vi vid misstänkt mejl?
+- Vad gör vi efter phishing?
+- Vad gör vi om någon klickade på en misstänkt länk?
+- Vad gör vi om någon öppnade en misstänkt bilaga?
+- Vad gör vi om någon skrev in lösenord på en falsk sida?
+
+### Step 1: Stop further interaction
+
+Tell the user not to:
+
+- click more links
+- open more attachments
+- reply to the email
+- forward the email broadly
+- enter credentials
+- approve unexpected MFA prompts
+- download files
+- call suspicious phone numbers in the message
+
+The purpose is to prevent the incident from becoming worse.
+
+### Step 2: Preserve the email as evidence
+
+Preserve:
+
+- sender address
+- display name
+- reply-to address
+- subject
+- received time
+- links
+- attachments
+- full message headers if possible
+- screenshots
+- recipient list
+- whether the message was delivered to other users
+- whether anyone clicked, opened, replied, or entered credentials
+
+Avoid spreading the suspicious email to unnecessary recipients.
+
+### Step 3: Report internally
+
+The user should report the email through the organization's normal process.
+
+Examples:
+
+- report phishing button
+- IT/security mailbox
+- ticket system
+- security operations team
+- helpdesk
+- incident response channel
+
+Document who received the report and when.
+
+### Step 4: Search for other affected mailboxes
+
+Security or IT should check whether the same or similar message was delivered to other users.
+
+Search by:
+
+- sender
+- subject
+- URL
+- attachment hash
+- message ID
+- campaign indicators
+- similar wording
+- delivery time
+
+Quarantine or remove the message through email security tools if appropriate.
+
+### Step 5: Check user interaction
+
+Ask whether the user:
+
+- clicked a link
+- opened an attachment
+- enabled macros
+- entered username or password
+- approved MFA
+- downloaded a file
+- replied with sensitive information
+- forwarded the message
+- entered payment or bank information
+
+If credentials were entered, treat the account as suspected compromised.
+
+### Step 6: Contain if clicked or credentials entered
+
+If the user clicked, opened an attachment, or entered credentials:
+
+- block malicious URLs or domains
+- isolate the endpoint if malware is possible
+- reset password from a clean device
+- revoke active sessions
+- review MFA methods
+- check mailbox forwarding
+- check OAuth app consent
+- check suspicious sent mail
+- check endpoint detection alerts
+- search for additional affected users
+
+### Step 7: Assess data and reporting impact
+
+Ask:
+
+- Were credentials exposed?
+- Was malware executed?
+- Was sensitive information sent?
+- Was personal data exposed?
+- Were customer or employee records affected?
+- Did the account access sensitive systems?
+- Could GDPR/IMY assessment be required?
+- Could NIS2/cybersäkerhetslagen reporting be relevant?
+
+Document decisions and actions.
+
+---
+
+## Swedish suspicious email and phishing first steps
+
+Använd denna sektion när användaren frågar om misstänkt mejl, phishing, nätfiske, misstänkt länk, misstänkt bilaga eller falsk inloggningssida.
+
+### Steg 1: Stoppa fortsatt interaktion
+
+Be användaren att inte:
+
+- klicka fler länkar
+- öppna fler bilagor
+- svara på mejlet
+- vidarebefordra mejlet brett
+- skriva in lösenord
+- godkänna oväntade MFA-pushar
+- ladda ner filer
+- ringa misstänkta telefonnummer i meddelandet
+
+Syftet är att förhindra att händelsen blir värre.
+
+### Steg 2: Spara mejlet som bevis
+
+Spara:
+
+- avsändaradress
+- visningsnamn
+- reply-to-adress
+- ämnesrad
+- mottagningstid
+- länkar
+- bilagor
+- fullständiga mejlheaders om möjligt
+- skärmbilder
+- mottagarlista
+- om mejlet levererades till fler användare
+- om någon klickade, öppnade, svarade eller skrev in lösenord
+
+Sprid inte det misstänkta mejlet till onödiga mottagare.
+
+### Steg 3: Rapportera internt
+
+Användaren bör rapportera mejlet enligt organisationens normala rutin.
+
+Exempel:
+
+- phishing-knapp
+- IT- eller säkerhetsbrevlåda
+- ärendehanteringssystem
+- säkerhetsteam
+- helpdesk
+- incidentkanal
+
+Dokumentera vem som tog emot rapporten och när.
+
+### Steg 4: Sök efter fler drabbade brevlådor
+
+IT eller säkerhet bör kontrollera om samma eller liknande mejl levererades till fler användare.
+
+Sök på:
+
+- avsändare
+- ämnesrad
+- URL
+- bilagehash
+- message-ID
+- kampanjindikatorer
+- liknande formuleringar
+- leveranstid
+
+Karantänsätt eller ta bort mejlet via e-postskydd om det är lämpligt.
+
+### Steg 5: Kontrollera användarens interaktion
+
+Fråga om användaren:
+
+- klickade på länk
+- öppnade bilaga
+- aktiverade makron
+- skrev in användarnamn eller lösenord
+- godkände MFA
+- laddade ner fil
+- svarade med känslig information
+- vidarebefordrade mejlet
+- skrev in betalnings- eller bankuppgifter
+
+Om lösenord skrevs in bör kontot behandlas som misstänkt komprometterat.
+
+### Steg 6: Begränsa skadan om någon klickade eller skrev in uppgifter
+
+Om användaren klickade, öppnade bilaga eller skrev in lösenord:
+
+- blockera skadliga URL:er eller domäner
+- isolera klienten om malware är möjligt
+- byt lösenord från en ren enhet
+- återkalla aktiva sessioner
+- granska MFA-metoder
+- kontrollera vidarebefordran
+- kontrollera OAuth-appsamtycken
+- kontrollera misstänkt skickad e-post
+- kontrollera endpoint-larm
+- sök efter fler drabbade användare
+
+### Steg 7: Bedöm data och rapportering
+
+Fråga:
+
+- Exponerades inloggningsuppgifter?
+- Kördes malware?
+- Skickades känslig information?
+- Exponerades personuppgifter?
+- Påverkades kund- eller medarbetaruppgifter?
+- Gav kontot åtkomst till känsliga system?
+- Kan GDPR/IMY-bedömning krävas?
+- Kan NIS2/cybersäkerhetslagen vara relevant?
+
+Dokumentera beslut och åtgärder.
+
+---
+
+## Suspicious login assessment checklist
+
+Use this checklist to verify suspicious login handling.
+
+1. Have we preserved the original alert or log entry?
+2. Have we saved timestamp, username, source IP address, location, device, and service?
+3. Have we checked whether the login succeeded or failed?
+4. Have we checked whether MFA was completed, failed, or bypassed?
+5. Have we compared the activity with the user's expected work, travel, and VPN use?
+6. Have we checked for repeated failed login attempts before or after the event?
+7. Have we checked for impossible travel or unusual country activity?
+8. Have we revoked sessions if the activity cannot be explained?
+9. Have we reset the password from a clean device if compromise is suspected?
+10. Have we reviewed MFA methods for unknown or attacker-controlled methods?
+11. Have we checked mailbox rules, forwarding, OAuth apps, and delegated access?
+12. Have we checked whether the account accessed files, systems, personal data, or admin functions?
+13. Have we assessed whether GDPR/IMY may be relevant?
+14. Have we assessed whether NIS2/cybersäkerhetslagen reporting may be relevant?
+15. Have we documented the timeline, actions, evidence, and decisions?
+
+---
+
+## Swedish suspicious login assessment checklist
+
+Använd denna checklista för att kontrollera hanteringen av misstänkt inloggning.
+
+1. Har vi sparat det ursprungliga larmet eller loggposten?
+2. Har vi sparat tidpunkt, användarkonto, käll-IP, plats, enhet och tjänst?
+3. Har vi kontrollerat om inloggningen lyckades eller misslyckades?
+4. Har vi kontrollerat om MFA slutfördes, misslyckades eller kringgicks?
+5. Har vi jämfört aktiviteten med användarens normala arbete, resa och VPN-användning?
+6. Har vi kontrollerat upprepade misslyckade inloggningar före eller efter händelsen?
+7. Har vi kontrollerat omöjlig resa eller ovanlig aktivitet från annat land?
+8. Har vi återkallat sessioner om aktiviteten inte kan förklaras?
+9. Har vi bytt lösenord från en ren enhet om kompromettering misstänks?
+10. Har vi granskat MFA-metoder för okända eller angriparstyrda metoder?
+11. Har vi kontrollerat e-postregler, vidarebefordran, OAuth-appar och delegerad åtkomst?
+12. Har vi kontrollerat om kontot användes för att komma åt filer, system, personuppgifter eller administratörsfunktioner?
+13. Har vi bedömt om GDPR/IMY kan vara relevant?
+14. Har vi bedömt om NIS2/cybersäkerhetslagen eller annan incidentrapportering kan vara relevant?
+15. Har vi dokumenterat tidslinje, åtgärder, bevis och beslut?
+
+---
+
+## Suspicious email assessment checklist
+
+Use this checklist to verify suspicious email or phishing handling.
+
+1. Have we told the user not to click more links, open attachments, reply, or enter credentials?
+2. Have we preserved the email, sender, subject, links, attachments, and full headers if possible?
+3. Have we checked who received the email?
+4. Have we searched for the same or similar email in other mailboxes?
+5. Have we quarantined or removed the message if appropriate?
+6. Have we checked whether anyone clicked a link?
+7. Have we checked whether anyone opened an attachment?
+8. Have we checked whether anyone entered credentials or approved MFA?
+9. Have we treated affected accounts as suspected compromised if credentials were entered?
+10. Have we checked endpoint alerts if an attachment was opened?
+11. Have we checked email rules, forwarding, OAuth apps, and suspicious sent mail?
+12. Have we blocked malicious links, domains, or attachments where appropriate?
+13. Have we assessed whether personal data or sensitive information was exposed?
+14. Have we assessed whether GDPR/IMY or NIS2/cybersäkerhetslagen may be relevant?
+15. Have we documented the timeline, affected users, evidence, and decisions?
+
+---
+
+## Swedish suspicious email assessment checklist
+
+Använd denna checklista för att kontrollera hanteringen av misstänkt mejl, phishing eller nätfiske.
+
+1. Har vi sagt till användaren att inte klicka fler länkar, öppna bilagor, svara eller skriva in lösenord?
+2. Har vi sparat mejlet, avsändare, ämne, länkar, bilagor och fullständiga headers om möjligt?
+3. Har vi kontrollerat vilka som fick mejlet?
+4. Har vi sökt efter samma eller liknande mejl i andra brevlådor?
+5. Har vi karantänsatt eller tagit bort mejlet om det är lämpligt?
+6. Har vi kontrollerat om någon klickade på en länk?
+7. Har vi kontrollerat om någon öppnade en bilaga?
+8. Har vi kontrollerat om någon skrev in lösenord eller godkände MFA?
+9. Har vi behandlat berörda konton som misstänkt komprometterade om lösenord skrevs in?
+10. Har vi kontrollerat endpoint-larm om en bilaga öppnades?
+11. Har vi kontrollerat e-postregler, vidarebefordran, OAuth-appar och misstänkt skickad e-post?
+12. Har vi blockerat skadliga länkar, domäner eller bilagor där det är lämpligt?
+13. Har vi bedömt om personuppgifter eller känslig information exponerades?
+14. Har vi bedömt om GDPR/IMY eller NIS2/cybersäkerhetslagen kan vara relevant?
+15. Har vi dokumenterat tidslinje, berörda användare, bevis och beslut?
+
+---
+
 ## Useful questions
 
 CyberLex Sweden should use this source for questions such as:
@@ -1277,6 +1864,14 @@ CyberLex Sweden should use this source for questions such as:
 - Should we contact CERT-SE?
 - What should we not do after a ransomware attack?
 - What should an organization check after unauthorized access?
+- What should we do after suspicious login activity?
+- What should we do if there are unusual logins?
+- What should we do if MFA prompts look suspicious?
+- What should we do if we receive a suspicious email?
+- What should we do after phishing?
+- What should we do if someone clicked a phishing link?
+- What should we do if someone opened a suspicious attachment?
+- What should we do if someone entered credentials into a fake site?
 
 ---
 
@@ -1298,6 +1893,14 @@ CyberLex Sweden should use this source for Swedish questions such as:
 - Ska vi kontakta CERT-SE?
 - Vad ska vi inte göra efter ransomware?
 - Vad ska en organisation kontrollera efter obehörig åtkomst?
+- Vad gör vi om vi ser misstänkt inloggning?
+- Vad gör vi vid ovanlig inloggning?
+- Vad gör vi vid misstänkta MFA-pushar?
+- Vad gör vi vid misstänkt mejl?
+- Vad gör vi efter phishing?
+- Vad gör vi om någon klickade på en misstänkt länk?
+- Vad gör vi om någon öppnade en misstänkt bilaga?
+- Vad gör vi om någon skrev in lösenord på en falsk sida?
 
 ---
 
@@ -1342,7 +1945,7 @@ Use IMY material for Swedish GDPR authority context.
 
 Source date: Last checked: 2026-06-04
 
-Version notes: Initial CyberLex Sweden incident response playbook added. Includes defensive first steps for suspected hacking, unauthorized access, ransomware, malware, compromised accounts, and data leaks. Added Swedish and English step-by-step answer patterns, evidence preservation guidance, GDPR/IMY assessment notes, NIS2/cybersäkerhetslagen assessment notes, CERT-SE escalation notes, official source links, and safety boundaries.
+Version notes: CyberLex Sweden incident response playbook expanded. Includes defensive first steps for suspected hacking, unauthorized access, ransomware, malware, compromised accounts, data leaks, suspicious login activity, suspicious MFA activity, suspicious email, phishing, clicked links, opened attachments, and entered credentials. Added Swedish and English step-by-step answer patterns, topic-specific assessment checklists, evidence preservation guidance, GDPR/IMY assessment notes, NIS2/cybersäkerhetslagen assessment notes, CERT-SE escalation notes, official source links, and safety boundaries.
 
 ---
 
