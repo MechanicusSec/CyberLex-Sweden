@@ -114,3 +114,67 @@ For detailed questions about incident reporting, ransomware, malware, cyber inci
 
 ```text
 data/nis2_incident_reporting.md
+```
+
+## Swedish summary
+
+NIS2 är ett EU-direktiv om cybersäkerhet.
+
+I Sverige genomförs NIS2 genom cybersäkerhetslagen och nationella regler.
+
+Syftet är att höja cybersäkerheten för organisationer och sektorer som är viktiga för samhället och ekonomin.
+
+CyberLex Sweden bör förklara att NIS2 inte bara handlar om incidentrapportering. Det handlar också om riskhantering, säkerhetsåtgärder, ledningsansvar, leverantörsrisker, kontinuitet, motståndskraft och tillsyn.
+
+För detaljerade frågor om incidentrapportering, ransomware, malware och överlapp med GDPR bör CyberLex Sweden även använda:
+
+```text
+data/nis2_incident_reporting.md
+```
+
+## Useful questions
+
+CyberLex Sweden should use this source for questions such as:
+
+- What is NIS2?
+- What is the Swedish Cybersecurity Act?
+- How does NIS2 apply in Sweden?
+- What does cybersecurity risk management mean under NIS2?
+- What responsibilities can covered organizations have under NIS2?
+- What are essential and important entities?
+- What does NIS2 say about supply chain security?
+- How is NIS2 connected to incident reporting?
+- How is NIS2 different from GDPR?
+- Can NIS2 and GDPR both be relevant after a cyber incident?
+
+## Swedish useful questions
+
+CyberLex Sweden should use this source for Swedish questions such as:
+
+- Vad är NIS2?
+- Vad är cybersäkerhetslagen?
+- Hur gäller NIS2 i Sverige?
+- Vad betyder riskhantering enligt NIS2?
+- Vilka cybersäkerhetskrav kan omfattade organisationer ha?
+- Vad är väsentliga och viktiga entiteter?
+- Vad säger NIS2 om leverantörsrisker?
+- Hur hänger NIS2 ihop med incidentrapportering?
+- Vad är skillnaden mellan NIS2 och GDPR?
+- Kan NIS2 och GDPR båda vara relevanta efter en cyberincident?
+
+## Official source
+
+- [MSB - NIS2-direktivet](https://www.msb.se/sv/amnesomraden/informationssakerhet-cybersakerhet-och-sakra-kommunikationer/nis-direktivet/)
+- [MSB - Cybersäkerhetslagen](https://www.msb.se/sv/amnesomraden/informationssakerhet-cybersakerhet-och-sakra-kommunikationer/cybersakerhetslagen/)
+- [EUR-Lex - Directive (EU) 2022/2555 NIS2](https://eur-lex.europa.eu/eli/dir/2022/2555/oj/eng)
+
+## Source metadata
+
+Source date: Last checked: 2026-06-03
+
+Version notes: Source reviewed and expanded for CyberLex Sweden educational prototype. Added Swedish support for NIS2, the Swedish Cybersecurity Act, cybersecurity risk management, covered organizations, security measures, source routing, useful questions, official source links, and relationship with incident reporting.
+
+## Disclaimer
+
+This source is for educational use in the CyberLex Sweden prototype. It does not provide legal advice.
+
