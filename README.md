@@ -72,6 +72,7 @@ Completed major improvements include:
 - Weekly GitHub Actions source audit workflow
 - Manual test documentation
 - Demo checklist documentation
+- Practical test-run checklist documentation
 - Product roadmap
 - Technical design documentation
 - Source update history
@@ -388,6 +389,7 @@ CyberLex-Sweden
 │   ├── technical_design.md
 │   ├── terms_of_use.md
 │   ├── test_cases.md
+│   ├── test_run_checklist.md
 │   └── vector_search_plan.md
 ├── report
 │   └── final_report.md
@@ -532,6 +534,7 @@ Important documents include:
 - `docs/source_audit_report.md` - generated local source audit report
 - `docs/test_cases.md` - manual and experimental retrieval test cases
 - `docs/demo_checklist.md` - demo preparation and presentation checklist
+- `docs/test_run_checklist.md` - practical checklist for running a first test pass
 - `docs/technical_design.md` - application architecture and technical design
 - `docs/product_roadmap.md` - product roadmap and future development plan
 - `docs/vector_search_plan.md` - vector search plan
@@ -556,6 +559,14 @@ The demo checklist is documented in:
 docs/demo_checklist.md
 ```
 
+The practical test-run checklist is documented in:
+
+```text
+docs/test_run_checklist.md
+```
+
+This checklist is intended for a first external or semi-external test run. It covers startup, core legal questions, Swedish and English questions, practical incident-response questions, incident log templates, clean downloaded incident summaries, refusal behavior, source visibility, source audit checks, and tester feedback.
+
 The current test coverage includes:
 
 - core knowledge base tests
@@ -570,6 +581,7 @@ The current test coverage includes:
 - ransomware and malware tests
 - incident log template tests
 - clean downloaded incident summary tests
+- practical test-run checklist
 - Swedish and English language consistency tests
 - offensive cyber refusal tests
 - out-of-scope refusal tests
