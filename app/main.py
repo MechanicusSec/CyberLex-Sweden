@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 import streamlit as st
 from vector_search import build_chunk_index, search_chunks as experimental_search_chunks
 
@@ -2493,6 +2494,257 @@ def generate_incident_log_template(question, language="English"):
         f'</div>'
     )
 
+
+
+def html_to_plain_text(html_text):
+    # Converts CyberLex HTML cards into plain text for the copy-ready incident summary.
+    # Streamlit renders the cards as HTML, but incident notes should be easy to copy
+    # into tickets, reports, or documentation without carrying UI tags with them.
+    text = str(html_text or "")
+
+    replacements = {
+        "<li>": "- ",
+        "</li>": "\n",
+        "<ul>": "\n",
+        "</ul>": "\n",
+        "<br>": "\n",
+        "<br/>": "\n",
+        "<br />": "\n",
+        "</div>": "\n",
+        "</p>": "\n",
+    }
+
+    for old, new in replacements.items():
+        text = text.replace(old, new)
+
+    text = re.sub(r"<[^>]+>", "", text)
+
+    html_entities = {
+        "&nbsp;": " ",
+        "&amp;": "&",
+        "&lt;": "<",
+        "&gt;": ">",
+        "&quot;": '"',
+        "&#39;": "'",
+    }
+
+    for old, new in html_entities.items():
+        text = text.replace(old, new)
+
+    lines = [line.strip() for line in text.splitlines()]
+    cleaned_lines = []
+    previous_blank = False
+
+    for line in lines:
+        if not line:
+            if not previous_blank and cleaned_lines:
+                cleaned_lines.append("")
+            previous_blank = True
+            continue
+
+        cleaned_lines.append(line)
+        previous_blank = False
+
+    return "\n".join(cleaned_lines).strip()
+
+
+def remove_duplicate_lines(text):
+    # Removes repeated consecutive lines from generated plain-text summaries.
+    # This keeps downloaded incident notes readable instead of turning them into
+    # bureaucratic echo chambers.
+    cleaned_lines = []
+    previous_line = None
+
+    for raw_line in str(text or "").splitlines():
+        line = raw_line.rstrip()
+        comparable = line.strip().lower()
+
+        if comparable and comparable == previous_line:
+            continue
+
+        cleaned_lines.append(line)
+        previous_line = comparable if comparable else None
+
+    return "\n".join(cleaned_lines).strip()
+
+
+def clean_answer_for_download(answer_text, language="English"):
+    # Removes educational disclaimer text from the answer block because the
+    # downloaded note already has one short disclaimer at the end.
+    use_swedish = language == "Svenska"
+
+    disclaimer_markers = [
+        "this is defensive educational guidance",
+        "this is educational guidance",
+        "not legal advice",
+        "professional incident response",
+        "for serious incidents",
+        "detta är defensiv pedagogisk vägledning",
+        "detta är pedagogisk vägledning",
+        "inte juridisk rådgivning",
+        "professionell incidenthantering",
+        "vid allvarliga incidenter",
+    ]
+
+    kept_lines = []
+    for raw_line in str(answer_text or "").splitlines():
+        line = raw_line.strip()
+        lower = line.lower()
+
+        if not line:
+            kept_lines.append("")
+            continue
+
+        if any(marker in lower for marker in disclaimer_markers):
+            continue
+
+        kept_lines.append(line)
+
+    return remove_duplicate_lines("\n".join(kept_lines).strip())
+
+
+def clean_incident_log_for_download(incident_log_text, language="English"):
+    # The visual incident log card has a title and explanatory intro.
+    # The downloaded file already has a section title, so keep only the fields.
+    use_swedish = language == "Svenska"
+
+    removable_starts = [
+        "incident log template",
+        "incidentloggmall",
+        "use this template to document",
+        "använd denna mall för att dokumentera",
+    ]
+
+    kept_lines = []
+    for raw_line in str(incident_log_text or "").splitlines():
+        line = raw_line.strip()
+        lower = line.lower()
+
+        if not line:
+            if kept_lines and kept_lines[-1] != "":
+                kept_lines.append("")
+            continue
+
+        if any(lower.startswith(marker) for marker in removable_starts):
+            continue
+
+        kept_lines.append(line)
+
+    return remove_duplicate_lines("\n".join(kept_lines).strip())
+
+
+def build_source_list_for_copy(search_results, language="English", max_sources=3):
+    # Builds a short plain-text source list for copy-ready incident summaries.
+    # The full clickable source links, metadata, source context, and relevance scores
+    # are already shown in the CyberLex app. The downloaded incident note should stay
+    # readable and practical, not become a raw retrieval dump.
+
+    use_swedish = language == "Svenska"
+
+    if use_swedish:
+        no_sources_text = "Inga källor hittades."
+        shown_in_app_note = (
+            "Officiella källor, källmetadata och källkontext visas i CyberLex Sweden-appen."
+        )
+    else:
+        no_sources_text = "No sources found."
+        shown_in_app_note = (
+            "Official source links, source metadata, and source context are shown in the CyberLex Sweden app."
+        )
+
+    if not search_results:
+        return no_sources_text
+
+    unique_sources = []
+    seen_files = set()
+
+    for result in search_results:
+        filename = str(result.get("filename", "")).strip()
+        if not filename or filename in seen_files:
+            continue
+
+        seen_files.add(filename)
+        unique_sources.append(filename)
+
+        if len(unique_sources) >= max_sources:
+            break
+
+    if not unique_sources:
+        return no_sources_text
+
+    source_lines = [f"- {filename}" for filename in unique_sources]
+    source_lines.append("")
+    source_lines.append(shown_in_app_note)
+
+    return "\n".join(source_lines)
+
+
+def generate_copy_ready_incident_summary(question, best_match, search_results, language="English"):
+    # Builds a copy-ready plain-text incident summary.
+    # This is useful for demos, tickets, reports, or incident notes.
+    # It is shown only for practical incident-response questions.
+
+    if not is_practical_incident_response_question(question):
+        return ""
+
+    use_swedish = language == "Svenska"
+
+    if use_swedish:
+        title = "CyberLex incidentunderlag"
+        question_label = "Fråga"
+        answer_label = "CyberLex-svar"
+        checklist_label = "Checklista"
+        incident_log_label = "Incidentloggmall"
+        sources_label = "Källor"
+        limitation = (
+            "Obs: Detta är ett pedagogiskt underlag från CyberLex Sweden. "
+            "Det är inte juridisk rådgivning och ersätter inte officiella källor, jurist eller incidenthanteringsteam."
+        )
+    else:
+        title = "CyberLex incident summary"
+        question_label = "Question"
+        answer_label = "CyberLex answer"
+        checklist_label = "Checklist"
+        incident_log_label = "Incident log template"
+        sources_label = "Sources"
+        limitation = (
+            "Note: This is an educational CyberLex Sweden summary. "
+            "It is not legal advice and does not replace official sources, a lawyer, or an incident response team."
+        )
+
+    answer_text = clean_answer_for_download(
+        html_to_plain_text(generate_simple_answer(question, best_match, language)),
+        language
+    )
+    checklist_text = remove_duplicate_lines(
+        html_to_plain_text(generate_assessment_checklist(question, search_results, language))
+    )
+    incident_log_text = clean_incident_log_for_download(
+        html_to_plain_text(generate_incident_log_template(question, language)),
+        language
+    )
+
+    if use_swedish:
+        app_source_note = (
+            "Källor, officiella länkar, källmetadata och källkontext visas i CyberLex Sweden-appen."
+        )
+    else:
+        app_source_note = (
+            "Sources, official links, source metadata, and source context are shown in the CyberLex Sweden app."
+        )
+
+    return (
+        f"{title}\n"
+        f"{'=' * len(title)}\n\n"
+        f"{question_label}:\n{question}\n\n"
+        f"{answer_label}:\n{answer_text}\n\n"
+        f"{checklist_label}:\n{checklist_text}\n\n"
+        f"{incident_log_label}:\n{incident_log_text}\n\n"
+        f"{app_source_note}\n\n"
+        f"{limitation}"
+    )
+
+
 def generate_attention_level(question, search_results, language="English"):
     # Generates a simple CyberLex attention level.
     # This is not a legal risk rating. It is an educational signal based on topic and matched sources.
@@ -4636,6 +4888,37 @@ if question:
                         st.markdown(
                             generate_incident_log_template(question, language),
                             unsafe_allow_html=True
+                        )
+
+                    copy_ready_summary = generate_copy_ready_incident_summary(
+                        question,
+                        best_match,
+                        search_results,
+                        language
+                    )
+
+                    with st.expander(
+                        "Copy-ready incident summary" if language != "Svenska" else "Kopieringsklart incidentunderlag",
+                        expanded=False
+                    ):
+                        st.caption(
+                            "Copy this into a ticket, report, or incident note."
+                            if language != "Svenska"
+                            else "Kopiera detta till ett ärende, en rapport eller en incidentanteckning."
+                        )
+                        st.text_area(
+                            "Incident summary" if language != "Svenska" else "Incidentunderlag",
+                            value=copy_ready_summary,
+                            height=450,
+                            key=f"copy_ready_incident_summary_{hash(question)}",
+                        )
+                        st.download_button(
+                            "Download incident summary"
+                            if language != "Svenska"
+                            else "Ladda ner incidentunderlag",
+                            data=copy_ready_summary,
+                            file_name="cyberlex_incident_summary.txt",
+                            mime="text/plain",
                         )
 
                 with st.expander(
