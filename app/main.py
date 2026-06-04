@@ -30,11 +30,32 @@ def clean_words(text):
     return text.split()
 
 
+def normalize_query_text(text):
+    # Normalizes common wording and small typos before intent matching.
+    # This keeps CyberLex from refusing a good question because of one tiny human typo.
+    text_lower = str(text or "").lower()
+
+    replacements = {
+        "kontör": "konto",
+        "kontr": "konto",
+        "kontot": "konto",
+        "e post": "e-post",
+        "epost": "e-post",
+        "mail": "mejl",
+    }
+
+    for wrong, right in replacements.items():
+        text_lower = text_lower.replace(wrong, right)
+
+    return text_lower
+
+
 def contains_any(text, terms):
     # Returns True if any phrase in terms exists in text.
     # CyberLex uses this for simple intent detection.
-    text_lower = text.lower()
-    return any(term in text_lower for term in terms)
+    text_lower = normalize_query_text(text)
+    normalized_terms = [normalize_query_text(term) for term in terms]
+    return any(term in text_lower for term in normalized_terms)
 
 
 
@@ -164,7 +185,7 @@ def is_practical_incident_response_question(question):
     # Detects defensive "what should I do now?" incident response questions.
     # This is used to route practical hacking/data leak/ransomware questions
     # to the Cyber Incident Response Playbook.
-    question_lower = question.lower().strip()
+    question_lower = normalize_query_text(question).strip()
 
     incident_terms = [
         "suspect hacking",
@@ -192,6 +213,12 @@ def is_practical_incident_response_question(question):
         "konto är hackat",
         "compromised account",
         "komprometterat konto",
+        "ett konto är komprometterat",
+        "ett kontör är komprometterat",
+        "kontör är komprometterat",
+        "konto är komprometterat",
+        "kontot är komprometterat",
+        "kontot har komprometterats",
         "malware",
         "ransomware",
         "utpressningsvirus",
@@ -272,7 +299,7 @@ def is_practical_incident_response_question(question):
 
 def is_suspected_hacking_question(question):
     # Detects suspected hacking/intrusion questions.
-    question_lower = question.lower()
+    question_lower = normalize_query_text(question)
     return contains_any(
         question_lower,
         [
@@ -307,7 +334,7 @@ def is_suspected_hacking_question(question):
 
 def is_data_leak_response_question(question):
     # Detects practical data leak questions.
-    question_lower = question.lower()
+    question_lower = normalize_query_text(question)
     return contains_any(
         question_lower,
         [
@@ -331,7 +358,7 @@ def is_suspicious_login_question(question):
     # Detects suspicious login/sign-in questions.
     # This is separate from fully compromised-account questions so CyberLex can give
     # a more precise triage answer instead of always assuming full compromise.
-    question_lower = question.lower()
+    question_lower = normalize_query_text(question)
     return contains_any(
         question_lower,
         [
@@ -369,7 +396,7 @@ def is_suspicious_email_question(question):
     # Detects suspicious email / phishing questions.
     # This is separate from compromised account because a suspicious email may be
     # only a reported message, not yet an account compromise.
-    question_lower = question.lower()
+    question_lower = normalize_query_text(question)
     return contains_any(
         question_lower,
         [
@@ -406,7 +433,8 @@ def is_suspicious_email_question(question):
 
 def is_compromised_account_question(question):
     # Detects practical compromised-account questions.
-    question_lower = question.lower()
+    # Keep this focused on actual account compromise, not every phishing or login question.
+    question_lower = normalize_query_text(question)
     return contains_any(
         question_lower,
         [
@@ -421,34 +449,34 @@ def is_compromised_account_question(question):
             "email account is compromised",
             "account hacked",
             "email account hacked",
+            "my account is hacked",
+            "their account is hacked",
             "konto komprometterat",
             "komprometterat konto",
+            "ett konto är komprometterat",
+            "ett kontör är komprometterat",
+            "om ett konto är komprometterat",
+            "om ett kontör är komprometterat",
             "kontot är komprometterat",
+            "kontot har komprometterats",
             "kontot kan vara komprometterat",
             "konto kan vara komprometterat",
             "användarkonto är komprometterat",
             "e-postkonto är komprometterat",
+            "mailkonto är komprometterat",
             "kontot är hackat",
+            "konto är hackat",
             "konto hackat",
-            "e-postkonto",
-            "mailkonto",
-            "phishing",
-            "nätfiske",
-            "suspicious email",
-            "misstänkt mejl",
-            "misstänkt e-post",
-            "suspicious login",
-            "suspicious sign-in",
-            "unusual login",
-            "misstänkt inloggning",
-            "ovanlig inloggning",
+            "mitt konto är hackat",
+            "användarkonto hackat",
+            "e-postkonto hackat",
         ],
     )
 
 
 def is_ransomware_response_question(question):
     # Detects practical ransomware and malware response questions.
-    question_lower = question.lower()
+    question_lower = normalize_query_text(question)
     return contains_any(
         question_lower,
         [
@@ -463,6 +491,11 @@ def is_ransomware_response_question(question):
     )
 
 
+def is_ransomware_or_malware_question(question):
+    # Compatibility helper used by source-context prioritization.
+    return is_ransomware_response_question(question)
+
+
 def expand_question_terms(question):
     """
     Expands a user question with related cybersecurity and legal terms.
@@ -475,7 +508,7 @@ def expand_question_terms(question):
     security measures, and personal data.
     """
 
-    question_lower = question.lower()
+    question_lower = normalize_query_text(question)
     expanded_terms = []
 
     topic_expansions = {
@@ -920,7 +953,7 @@ def load_chunks():
 
 def get_target_source_file(question):
     # Routes clear questions to a specific knowledge file.
-    question_lower = question.lower().strip()
+    question_lower = normalize_query_text(question).strip()
 
 
     if is_practical_incident_response_question(question):
@@ -1137,7 +1170,7 @@ def search_chunks(question, chunks):
         "topic"
     }
 
-    question_lower = question.lower()
+    question_lower = normalize_query_text(question)
     target_source_file = get_target_source_file(question)
 
     question_words = [
@@ -1239,6 +1272,34 @@ def search_chunks(question, chunks):
                 score += 10
             if "nis2" in chunk_text or "cybersäkerhetslagen" in chunk_text:
                 score += 10
+
+        if is_suspicious_login_question(question):
+            if "suspicious login activity first steps" in section_text:
+                score += 100
+            if "swedish suspicious login activity first steps" in section_text:
+                score += 100
+            if "suspicious login assessment checklist" in section_text:
+                score += 60
+            if "swedish suspicious login assessment checklist" in section_text:
+                score += 60
+            if "suspected hacking" in section_text:
+                score -= 35
+            if "compromised account" in section_text:
+                score -= 20
+
+        if is_suspicious_email_question(question):
+            if "suspicious email and phishing first steps" in section_text:
+                score += 100
+            if "swedish suspicious email and phishing first steps" in section_text:
+                score += 100
+            if "suspicious email assessment checklist" in section_text:
+                score += 60
+            if "swedish suspicious email assessment checklist" in section_text:
+                score += 60
+            if "suspected hacking" in section_text:
+                score -= 35
+            if "compromised account" in section_text:
+                score -= 20
 
         if is_suspected_hacking_question(question):
             if "suspected hacking first steps" in section_text:
@@ -1466,21 +1527,107 @@ def prioritize_source_context_results(search_results, question=None, language="E
 
     return search_results
 
+
+def is_checklist_section(section_name):
+    # Source-context cards should not duplicate the CyberLex assessment checklist.
+    # Checklist sections can still be used for search scoring, but they are hidden
+    # from the supporting source preview unless there is no better source.
+    section = str(section_name or "").lower()
+    return "checklist" in section or "checklista" in section
+
+
+def clean_source_excerpt(content, section_name="", language="English", max_chars=700):
+    # Creates a cleaner preview for "Relevant source context".
+    # It removes source-routing examples such as "Use this section when the user asks:"
+    # and skips straight to the actual guidance.
+    lines = str(content or "").splitlines()
+
+    # Remove leading Markdown heading.
+    if lines and lines[0].strip().startswith("#"):
+        lines = lines[1:]
+
+    cleaned = []
+    skip_question_examples = False
+
+    start_markers = [
+        "### step 1",
+        "### steg 1",
+        "step 1:",
+        "steg 1:",
+        "1. ",
+        "- ",
+    ]
+
+    routing_markers = [
+        "use this section when",
+        "använd denna sektion",
+        "use this checklist",
+        "använd denna checklista",
+    ]
+
+    for raw_line in lines:
+        line = raw_line.rstrip()
+        stripped = line.strip()
+        lower = stripped.lower()
+
+        if not stripped:
+            if cleaned:
+                cleaned.append("")
+            continue
+
+        # Skip routing/example-question introductions.
+        if any(marker in lower for marker in routing_markers):
+            skip_question_examples = True
+            continue
+
+        if skip_question_examples:
+            # Keep skipping bullet example questions until actual guidance begins.
+            if lower.startswith("### ") or any(lower.startswith(marker) for marker in start_markers):
+                skip_question_examples = False
+            else:
+                continue
+
+        # Remove leftover example-question bullets if they slipped through.
+        if stripped.startswith("- ") and stripped.endswith("?"):
+            continue
+
+        cleaned.append(line)
+
+    excerpt = "\n".join(cleaned).strip()
+
+    # If the section had only routing text and no step heading, fall back to a short useful body.
+    if not excerpt:
+        fallback_lines = []
+        for raw_line in lines:
+            stripped = raw_line.strip()
+            lower = stripped.lower()
+            if not stripped:
+                continue
+            if any(marker in lower for marker in routing_markers):
+                continue
+            if stripped.startswith("- ") and stripped.endswith("?"):
+                continue
+            fallback_lines.append(raw_line.rstrip())
+        excerpt = "\n".join(fallback_lines).strip()
+
+    if len(excerpt) > max_chars:
+        excerpt = excerpt[:max_chars].rsplit(" ", 1)[0] + "..."
+
+    return excerpt
+
 def build_source_context(search_results, language="English", max_results=3, question=None):
     # Builds a short source context summary from the top matched source sections.
-    # This helps CyberLex show useful supporting material without using an AI model.
-    # It also removes repeated Markdown headings from excerpts to avoid duplicate titles.
+    # The context should support the answer, not repeat the CyberLex checklist.
+    # Therefore checklist sections are hidden unless no non-checklist source context exists.
 
     use_swedish = language == "Svenska"
 
     if use_swedish:
-        context_heading = "Relevant källkontext"
         file_label = "Källa"
         section_label = "Sektion"
         score_label = "Relevanspoäng"
         excerpt_label = "Kort utdrag"
     else:
-        context_heading = "Relevant source context"
         file_label = "Source"
         section_label = "Section"
         score_label = "Relevance score"
@@ -1494,12 +1641,13 @@ def build_source_context(search_results, language="English", max_results=3, ques
 
     for result in search_results:
         section_name = str(result.get("section", "")).strip().lower()
+
+        # Do not show source cards from the opposite language.
         if any(section_name.startswith(marker) for marker in opposite_language_section_markers):
             continue
+
         filtered_results.append(result)
 
-    # If filtering removed everything, fall back to the original matches.
-    # Better to show some source context than an empty altar to the machine gods.
     if not filtered_results:
         filtered_results = search_results
 
@@ -1509,19 +1657,40 @@ def build_source_context(search_results, language="English", max_results=3, ques
         language=language
     )
 
-    for result in filtered_results[:max_results]:
+    # Avoid duplicating the visible CyberLex assessment checklist.
+    non_checklist_results = [
+        result for result in filtered_results
+        if not is_checklist_section(result.get("section", ""))
+    ]
+
+    if non_checklist_results:
+        filtered_results = non_checklist_results
+
+    # Remove near-duplicate cards with the same file and display section.
+    seen_cards = set()
+    selected_results = []
+
+    for result in filtered_results:
         display_section = localize_section_name(result.get("section", ""), language)
-        excerpt_lines = result["content"].strip().splitlines()
+        card_key = (result.get("filename", ""), display_section.lower())
 
-        # Remove the first Markdown heading if the excerpt already starts with one.
-        # Example: "## Reporting to IMY" is removed because the section title is already shown.
-        if excerpt_lines and excerpt_lines[0].strip().startswith("#"):
-            excerpt_lines = excerpt_lines[1:]
+        if card_key in seen_cards:
+            continue
 
-        excerpt = "\n".join(excerpt_lines).strip()
+        seen_cards.add(card_key)
+        selected_results.append(result)
 
-        if len(excerpt) > 700:
-            excerpt = excerpt[:700].rsplit(" ", 1)[0] + "..."
+        if len(selected_results) >= max_results:
+            break
+
+    for result in selected_results:
+        display_section = localize_section_name(result.get("section", ""), language)
+        excerpt = clean_source_excerpt(
+            result.get("content", ""),
+            section_name=result.get("section", ""),
+            language=language,
+            max_chars=700
+        )
 
         context_blocks.append(
             f'<div class="context-card">'
@@ -1538,6 +1707,7 @@ def build_source_context(search_results, language="English", max_results=3, ques
         )
 
     return "\n".join(context_blocks)
+
 
 def generate_practical_explanation(question, search_results, language="English"):
     # Generates a practical explanation based on the question and matched source sections.
@@ -3308,8 +3478,15 @@ def is_cyberlaw_question(question):
         "employee account is compromised",
         "email account is compromised",
         "konto komprometterat",
+        "komprometterat konto",
+        "konto är komprometterat",
+        "ett konto är komprometterat",
+        "ett kontör är komprometterat",
+        "om ett konto är komprometterat",
+        "om ett kontör är komprometterat",
         "kontot är komprometterat",
         "kontot kan vara komprometterat",
+        "kontot har komprometterats",
         "användarkonto är komprometterat",
         "account hacked",
         "preserve evidence",
@@ -3400,7 +3577,19 @@ def is_cyberlaw_question(question):
         "principles"
     }
 
-    question_lower = question.lower()
+    question_lower = normalize_query_text(question)
+
+    # Let the dedicated incident detectors mark practical incident questions as in scope.
+    # Otherwise small word-order differences in Swedish can be refused before search starts.
+    if (
+        is_practical_incident_response_question(question_lower)
+        or is_compromised_account_question(question_lower)
+        or is_suspicious_login_question(question_lower)
+        or is_suspicious_email_question(question_lower)
+        or is_data_leak_response_question(question_lower)
+        or is_ransomware_response_question(question_lower)
+    ):
+        return True
 
     for keyword in allowed_keywords:
         if keyword in question_lower:
