@@ -10,14 +10,26 @@ This audit does not browse the web and does not confirm whether the law is curre
 
 ## Audit Summary
 
-- Generated at: `2026-06-04 09:32:28`
-- Total source files checked: `9`
-- Files marked OK: `9`
+- Generated at: `2026-06-04 09:44:19`
+- Total source files checked: `10`
+- Files marked OK: `10`
 - Files needing review: `0`
 
 ---
 
 ## File Results
+
+### cyber_incident_response_playbook.md
+
+- Status: `OK`
+- Official source links found: `16`
+- Source date: `Source date: Last checked: 2026-06-04`
+- Source freshness: `Recently checked`
+- Version notes: `Version notes: Initial CyberLex Sweden incident response playbook added. Includes defensive first steps for suspected hacking, unauthorized access, ransomware, malware, compromised accounts, and data leaks. Added Swedish and English step-by-step answer patterns, evidence preservation guidance, GDPR/IMY assessment notes, NIS2/cybersäkerhetslagen assessment notes, CERT-SE escalation notes, official source links, and safety boundaries.`
+
+No issues found.
+
+---
 
 ### cybercrime_dataintrang.md
 
