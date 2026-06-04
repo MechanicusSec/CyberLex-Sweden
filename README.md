@@ -2,7 +2,7 @@
 
 CyberLex Sweden is a final school project and educational legal-tech prototype focused on Swedish and EU cybersecurity law, cyber incident response, GDPR, NIS2, DORA, the Cyber Resilience Act, cybercrime, data protection, and digital compliance.
 
-The project works as a local AI-style assistant that helps users search selected cybersecurity-law and incident-response topics through a trusted local Markdown knowledge base. It uses source-based search, source routing, structured answers, citation details, official source links, source metadata, source freshness labels, topic labels, practical explanations, assessment checklists, relevant source context, and an experimental retrieval panel.
+The project works as a local AI-style assistant that helps users search selected cybersecurity-law and incident-response topics through a trusted local Markdown knowledge base. It uses source-based search, source routing, structured answers, official source links, source metadata, source freshness labels, topic labels, CyberLex attention levels, practical explanations, assessment checklists, relevant source context, cleaner collapsed source details, and an experimental retrieval panel.
 
 CyberLex Sweden does **not** provide legal advice. It is built for learning, demonstration, and portfolio use.
 
@@ -55,6 +55,11 @@ Completed major improvements include:
 - Source freshness labels
 - Source match confidence labels
 - Detected topic labels
+- CyberLex attention levels: Informational, Standard, Elevated, and High
+- Cleaner test-run interface
+- Collapsed sidebar project resources and loaded source documents
+- Collapsed experimental retrieval tools
+- Cleaner source match details for normal users
 - Practical explanation cards
 - Topic-based assessment checklists
 - Relevant source context cards
@@ -203,6 +208,10 @@ The current prototype can:
 - display source freshness labels
 - display source match confidence
 - display detected topic labels
+- show CyberLex attention levels for different question types
+- use calmer attention levels for ordinary legal explanation questions
+- keep technical source match details available but collapsed by default
+- keep project resources and loaded source documents available but collapsed in the sidebar
 - show matched source excerpts and supporting source context
 - show practical explanations
 - show topic-based assessment checklists
@@ -220,6 +229,31 @@ The current prototype can:
 - display legal disclaimers
 - run a local source audit
 - run a weekly GitHub Actions source audit workflow
+
+---
+
+## Test-Run Readiness
+
+CyberLex Sweden has been cleaned up for a first practical test run.
+
+The test-run interface is designed to keep the normal user view readable while still preserving transparency. Main answers, detected topics, official source links, limitations, attention levels, and practical explanations are shown clearly. More technical details, such as source match details, source metadata, relevant source context, additional matched sections, sidebar project resources, loaded source documents, and experimental retrieval tools, remain available but are collapsed by default.
+
+CyberLex attention levels are used as educational signals, not legal risk ratings:
+
+| Attention level | Intended use |
+|---|---|
+| Informational | Basic legal or authority explanation questions, such as `What is NIS2?`, `What is DORA?`, or `Vad är IMY?` |
+| Standard | General legal or compliance questions that need source-grounded explanation but are not urgent incident-response questions |
+| Elevated | Reporting, breach assessment, GDPR/NIS2 overlap, and regulatory-duty questions |
+| High | Practical incident-response questions and unsafe/offensive cyber requests that must be refused or redirected |
+
+The practical test-run checklist is stored in:
+
+```text
+docs/test_run_checklist.md
+```
+
+This checklist is intended to help another tester run the prototype without needing developer guidance.
 
 ---
 
@@ -265,7 +299,7 @@ The incident-response guidance is educational and defensive. It is not a replace
 
 ## Experimental AI Search
 
-CyberLex Sweden includes an experimental AI search panel in the sidebar.
+CyberLex Sweden includes an experimental AI search panel in the sidebar. For test runs, this panel is collapsed by default so it does not distract from the main user experience.
 
 This panel uses:
 
@@ -581,6 +615,9 @@ The current test coverage includes:
 - ransomware and malware tests
 - incident log template tests
 - clean downloaded incident summary tests
+- attention-level tests
+- cleaner test-run UI checks
+- collapsed technical source detail checks
 - practical test-run checklist
 - Swedish and English language consistency tests
 - offensive cyber refusal tests
@@ -609,6 +646,7 @@ Current limitations:
 - The source audit checks file structure, not live legal currency.
 - Incident-response guidance is simplified for educational use.
 - Downloaded incident summaries are documentation aids and do not replace internal incident-response records, legal review, or official reporting.
+- Attention levels are educational signals and do not replace legal, regulatory, or incident-response risk assessment.
 
 For serious legal, regulatory, compliance, or security decisions, official sources and qualified professionals should be checked.
 
@@ -623,6 +661,7 @@ Planned or possible improvements include:
 - Improve relevant source context so excerpts avoid helper text and duplicate checklist content
 - Add copy/export features for broader non-incident answers, checklists, and sources
 - Add more specific attention-level explanations per incident type
+- Continue refining the cleaner test-run interface after user feedback
 - Revisit vector search using Python 3.12 or another stable AI-compatible environment
 - Add embeddings with `sentence-transformers`
 - Add ChromaDB or FAISS
