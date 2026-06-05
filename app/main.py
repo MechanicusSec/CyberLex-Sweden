@@ -1863,12 +1863,12 @@ def build_source_context(search_results, language="English", max_results=3, ques
         file_label = "Källa"
         section_label = "Sektion"
         score_label = "Relevanspoäng"
-        excerpt_label = "Kort utdrag"
+        excerpt_label = "Stödjande källtext"
     else:
         file_label = "Source"
         section_label = "Section"
         score_label = "Relevance score"
-        excerpt_label = "Short excerpt"
+        excerpt_label = "Supporting source text"
 
     context_blocks = []
     filtered_results = []
@@ -1973,6 +1973,99 @@ def build_source_context(search_results, language="English", max_results=3, ques
         )
 
     return "\n".join(context_blocks)
+
+
+
+def should_show_practical_explanation(question):
+    # Shows the practical explanation card only when it adds real value.
+    # Simple definition or authority questions already get their explanation in
+    # the CyberLex summary, so another "Practical explanation" card becomes noise.
+    # Reporting, breach, overlap, duty, and incident-response questions still
+    # benefit from a practical explanation.
+    question_lower = normalize_query_text(question).strip()
+
+    if not question_lower:
+        return False
+
+    if is_practical_incident_response_question(question_lower):
+        return True
+
+    practical_markers = [
+        "reported",
+        "reporting",
+        "report ",
+        "notification",
+        "notify",
+        "72 hour",
+        "72-hour",
+        "72 timmar",
+        "breach",
+        "personal data breach",
+        "personuppgiftsincident",
+        "incident need",
+        "incident require",
+        "under both",
+        "both nis2 and gdpr",
+        "både nis2 och gdpr",
+        "gdpr and nis2",
+        "nis2 and gdpr",
+        "must a company",
+        "must an organization",
+        "must an organisation",
+        "requirements",
+        "obligations",
+        "duties",
+        "covered organization",
+        "covered organisation",
+        "security measures",
+        "risk management",
+        "third-party risk",
+        "tredjepartsrisk",
+        "skyldighet",
+        "skyldigheter",
+        "krav",
+        "rapportera",
+        "rapportering",
+        "anmäl",
+        "anmäla",
+        "anmäls",
+        "incidentrapportering",
+        "riskhantering",
+        "säkerhetsåtgärder",
+    ]
+
+    if contains_any(question_lower, practical_markers):
+        return True
+
+    simple_definition_markers = [
+        "what is ",
+        "what are ",
+        "what does ",
+        "which authority",
+        "what authority",
+        "vad är ",
+        "vad betyder ",
+        "vad gör ",
+        "vilken myndighet",
+        "vilka är ",
+    ]
+
+    simple_topic_markers = [
+        "nis2",
+        "dora",
+        "imy",
+        "gdpr",
+        "dataintrång",
+        "cyber resilience act",
+        "cyberresiliensakten",
+        "attacks against information systems",
+        "attacker mot informationssystem",
+    ]
+
+    if contains_any(question_lower, simple_definition_markers) and contains_any(question_lower, simple_topic_markers):
+        return False
+
+    return False
 
 
 def generate_practical_explanation(question, search_results, language="English"):
@@ -5481,10 +5574,11 @@ if question:
                     generate_attention_level(question, search_results, language),
                     unsafe_allow_html=True
                 )
-                st.markdown(
-                    generate_practical_explanation(question, search_results, language),
-                    unsafe_allow_html=True
-                )
+                if should_show_practical_explanation(question):
+                    st.markdown(
+                        generate_practical_explanation(question, search_results, language),
+                        unsafe_allow_html=True
+                    )
 
                 if is_practical_incident_response_question(question):
                     with st.expander(
