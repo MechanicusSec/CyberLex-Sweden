@@ -2,7 +2,7 @@
 
 CyberLex Sweden is a final school project and educational legal-tech prototype focused on Swedish and EU cybersecurity law, cyber incident response, GDPR, NIS2, DORA, the Cyber Resilience Act, cybercrime, data protection, and digital compliance.
 
-The project works as a local AI-style assistant that helps users search selected cybersecurity-law and incident-response topics through a trusted local Markdown knowledge base. It uses source-based search, source routing, structured answers, official source links, source metadata, source freshness labels, topic labels, CyberLex attention levels, practical explanations, assessment checklists, relevant source context, cleaner collapsed source details, and an experimental retrieval panel.
+The project works as a local AI-style assistant that helps users search selected cybersecurity-law and incident-response topics through a trusted local Markdown knowledge base. It uses source-based search, source routing, structured CyberLex summary answers, official source links, source metadata, source freshness labels, topic labels, CyberLex attention levels, practical explanations, incident-response checklists, cleaned relevant source context, cleaner collapsed source details, Swedish/English interface handling, and an experimental retrieval panel.
 
 CyberLex Sweden does **not** provide legal advice. It is built for learning, demonstration, and portfolio use.
 
@@ -46,9 +46,11 @@ Completed major improvements include:
 - Source-based search and chunk ranking
 - Source routing for supported legal and incident-response topics
 - English and Swedish interface support
+- Auto language switching improvements
 - Swedish retrieval improvements
-- Structured answer cards
-- Citation details
+- Swedish metadata display cleanup
+- Structured CyberLex summary cards
+- Source match details
 - Official source links
 - Source metadata display
 - Source quality labels
@@ -61,9 +63,10 @@ Completed major improvements include:
 - Collapsed experimental retrieval tools
 - Cleaner source match details for normal users
 - Practical explanation cards
-- Topic-based assessment checklists
-- Relevant source context cards
-- Other matching source section cards
+- Topic-based assessment checklists for practical incident-response questions
+- Cleaned relevant source context cards
+- Additional matched source section cards
+- Source context cleanup to avoid internal helper text, broken cut-off fragments, code fences, HTML fragments, and file-path junk
 - Example question panel
 - Practical incident-response guidance
 - Incident log templates for practical incident-response questions
@@ -199,11 +202,12 @@ The current prototype can:
 - split source documents into searchable chunks
 - match user questions to relevant source sections
 - route specific questions to the most relevant source file
-- generate simple source-based answers
-- display structured citation details
+- generate simple source-based CyberLex summary answers
+- display structured source match details
 - display the matched source file and section
 - display official source links connected to the matched file
 - display source metadata, including source date and version notes
+- simplify Swedish source metadata so confusing mixed-language version notes are not shown in the Swedish UI
 - display source quality labels
 - display source freshness labels
 - display source match confidence
@@ -213,10 +217,13 @@ The current prototype can:
 - keep technical source match details available but collapsed by default
 - keep project resources and loaded source documents available but collapsed in the sidebar
 - show matched source excerpts and supporting source context
+- clean source context so internal helper notes, code fences, HTML fragments, and file-path junk do not appear in normal user-facing excerpts
+- keep source context excerpts compact and avoid broken mid-sentence cut-offs
 - show practical explanations
-- show topic-based assessment checklists
+- show topic-based assessment checklists for practical incident-response questions
 - show other matching source sections
 - support English and Swedish interface labels
+- improve Auto language behavior so Swedish questions can switch visible answer sections to Swedish
 - provide example questions
 - handle practical incident-response questions
 - display incident log templates for practical incident-response questions
@@ -236,7 +243,9 @@ The current prototype can:
 
 CyberLex Sweden has been cleaned up for a first practical test run.
 
-The test-run interface is designed to keep the normal user view readable while still preserving transparency. Main answers, detected topics, official source links, limitations, attention levels, and practical explanations are shown clearly. More technical details, such as source match details, source metadata, relevant source context, additional matched sections, sidebar project resources, loaded source documents, and experimental retrieval tools, remain available but are collapsed by default.
+The test-run interface is designed to keep the normal user view readable while still preserving transparency. Main answers now use the **CyberLex summary** label instead of the older **Short answer** wording. Detected topics, official source links, limitations, attention levels, and practical explanations are shown clearly. More technical details, such as source match details, source metadata, relevant source context, additional matched sections, sidebar project resources, loaded source documents, and experimental retrieval tools, remain available but are collapsed by default.
+
+Recent test-run cleanup focused on language consistency and source-context readability. Swedish questions should use Swedish visible answer labels where possible, Auto mode should follow the detected question language more consistently, source metadata should avoid confusing mixed-language notes in Swedish mode, and source context cards should avoid internal helper text, broken cut-off fragments, code fences, HTML fragments, and file-path junk.
 
 CyberLex attention levels are used as educational signals, not legal risk ratings:
 
@@ -620,6 +629,9 @@ The current test coverage includes:
 - collapsed technical source detail checks
 - practical test-run checklist
 - Swedish and English language consistency tests
+- Auto language switching tests
+- source context readability tests
+- source metadata language consistency tests
 - offensive cyber refusal tests
 - out-of-scope refusal tests
 - experimental retrieval tests
@@ -647,6 +659,7 @@ Current limitations:
 - Incident-response guidance is simplified for educational use.
 - Downloaded incident summaries are documentation aids and do not replace internal incident-response records, legal review, or official reporting.
 - Attention levels are educational signals and do not replace legal, regulatory, or incident-response risk assessment.
+- Some local source sections are fuller in English than Swedish, so continued bilingual source expansion is still needed.
 
 For serious legal, regulatory, compliance, or security decisions, official sources and qualified professionals should be checked.
 
@@ -658,10 +671,11 @@ Planned or possible improvements include:
 
 - Improve the professional formatting of downloaded incident summaries
 - Add optional prepared-by, organization, date/time, and incident ID fields to downloaded summaries
-- Improve relevant source context so excerpts avoid helper text and duplicate checklist content
+- Add fuller Swedish source sections to the Markdown knowledge base so Swedish source context can rely on real Swedish source text rather than fallback notes
 - Add copy/export features for broader non-incident answers, checklists, and sources
 - Add more specific attention-level explanations per incident type
 - Continue refining the cleaner test-run interface after user feedback
+- Improve source context selection further so the most useful explanatory sections appear first
 - Revisit vector search using Python 3.12 or another stable AI-compatible environment
 - Add embeddings with `sentence-transformers`
 - Add ChromaDB or FAISS
