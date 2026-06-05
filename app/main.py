@@ -1537,7 +1537,183 @@ def is_checklist_section(section_name):
     return "checklist" in section or "checklista" in section
 
 
-def clean_source_excerpt(content, section_name="", language="English", max_chars=700):
+
+def swedish_language_score(text):
+    # Scores how Swedish a source excerpt looks. This is intentionally
+    # stricter than merely finding one Swedish word, because many CyberLex
+    # source sections mix English legal text with Swedish names such as
+    # cybersäkerhetslagen. One Swedish word should not make an English
+    # excerpt appear in the Swedish UI.
+    sample = f" {str(text or '').lower()} "
+
+    common_words = [
+        " och ", " eller ", " inte ", " som ", " att ", " är ", " det ",
+        " den ", " detta ", " denna ", " för ", " med ", " till ",
+        " från ", " kan ", " ska ", " bör ", " måste ", " har ",
+        " personuppgift", " myndighet", " käll", " anmäl", " tillsyn",
+        " vägledning", " rättighet", " lag", " ansvar", " behandl",
+        " sverige", " svensk", " svenska", " organisationen", " krävs",
+    ]
+
+    score = 0
+    score += sum(sample.count(marker) for marker in common_words) * 2
+
+    # Swedish letters help, but they are not enough alone because Swedish names
+    # can appear inside otherwise English source text.
+    score += min(sample.count("å") + sample.count("ä") + sample.count("ö"), 3)
+
+    return score
+
+
+def english_language_score(text):
+    # Scores how English a source excerpt looks.
+    sample = f" {str(text or '').lower()} "
+
+    common_words = [
+        " the ", " and ", " or ", " not ", " this ", " that ",
+        " for ", " with ", " from ", " should ", " must ", " may ",
+        " can ", " is ", " are ", " personal data", " data protection",
+        " supervision", " authority", " guidance", " organization",
+        " organisation", " source", " question", " reporting",
+        " compliance", " relevant", " handles", " works with",
+        " is used", " implemented", " purpose", " across", " european",
+        " cybersecurity", " management", " duties", " sectors",
+    ]
+
+    return sum(sample.count(marker) for marker in common_words) * 2
+
+
+def looks_swedish_text(text):
+    # A source excerpt counts as Swedish only when Swedish signals beat
+    # English signals. This prevents mixed English/Swedish legal snippets from
+    # leaking into the Swedish UI.
+    swedish_score = swedish_language_score(text)
+    english_score = english_language_score(text)
+    return swedish_score >= 3 and swedish_score > english_score
+
+
+def looks_english_text(text):
+    # A source excerpt counts as English only when English signals beat Swedish
+    # signals. Mixed text follows the dominant language.
+    swedish_score = swedish_language_score(text)
+    english_score = english_language_score(text)
+    return english_score >= 3 and english_score >= swedish_score
+
+
+def is_low_value_source_context_section(section_name):
+    # These sections are useful internally for routing and testing, but they are
+    # not helpful as user-facing source context during a demo or test run.
+    section = str(section_name or "").lower().strip()
+    low_value_markers = [
+        "useful questions",
+        "exempelfrågor",
+        "topic",
+        "ämne",
+        "introduction",
+        "introduktion",
+        "official source",
+        "officiella källor",
+        "source metadata",
+        "källmetadata",
+        "source date",
+        "version notes",
+        "disclaimer",
+    ]
+    return any(marker in section for marker in low_value_markers)
+
+
+def localize_source_excerpt_for_ui(excerpt, language="English"):
+    # Keeps the visible UI language consistent.
+    # CyberLex should not silently auto-translate legal/source excerpts, because
+    # that could make a translated sentence look like exact source text.
+    # Instead, when a local source excerpt is only available in the other language,
+    # the UI shows a clear same-language note.
+    text = str(excerpt or "").strip()
+    use_swedish = language == "Svenska"
+
+    if not text:
+        return text
+
+    if use_swedish:
+        if looks_english_text(text) and not looks_swedish_text(text):
+            return (
+                "Den lokala källsektionen är skriven på engelska i kunskapsbasen. "
+                "CyberLex visar därför inte ett engelskt källutdrag i svenskt läge. "
+                "Använd de officiella källänkarna och källmetadata ovan för granskning, "
+                "eller lägg till en svensk version av denna källsektion i Markdown-filen."
+            )
+        return text
+
+    if looks_swedish_text(text) and not looks_english_text(text):
+        return (
+            "This local source section is written in Swedish in the knowledge base. "
+            "CyberLex therefore does not show a Swedish excerpt in English mode. "
+            "Use the official source links and source metadata above for review, "
+            "or add an English version of this source section to the Markdown file."
+        )
+
+    return text
+
+def trim_excerpt_without_cutting_sentence(excerpt, language="English", max_chars=1400):
+    # Trims long source previews only at a natural sentence or paragraph boundary.
+    # This avoids ugly half-sentences ending with "..." in the UI.
+    text = str(excerpt or "").strip()
+
+    if not text or len(text) <= max_chars:
+        return text
+
+    candidate = text[:max_chars].rstrip()
+    boundary_positions = [
+        candidate.rfind(". "),
+        candidate.rfind("? "),
+        candidate.rfind("! "),
+        candidate.rfind(".\n"),
+        candidate.rfind("?\n"),
+        candidate.rfind("!\n"),
+        candidate.rfind("\n\n"),
+    ]
+    boundary = max(boundary_positions)
+
+    # If there is no good boundary, keep the full excerpt rather than showing
+    # a broken sentence. A slightly longer card is better than a cursed cut-off.
+    if boundary < int(max_chars * 0.55):
+        return text
+
+    trimmed = candidate[: boundary + 1].strip()
+
+    if language == "Svenska":
+        return f"{trimmed}\n\n[Utdraget är förkortat vid en naturlig gräns.]"
+
+    return f"{trimmed}\n\n[Excerpt shortened at a natural boundary.]"
+
+def compact_source_excerpt_spacing(excerpt):
+    # Source cards are previews, not full Markdown documents.
+    # Compact empty lines so short excerpts do not look like they are scattered
+    # across the page like a PDF exploded in the warp.
+    text = str(excerpt or "").strip()
+
+    if not text:
+        return text
+
+    lines = [line.strip() for line in text.splitlines() if line.strip()]
+
+    if not lines:
+        return ""
+
+    has_list = any(
+        line.startswith(("- ", "* ", "• ")) or re.match(r"^\d+[.)]\s+", line)
+        for line in lines
+    )
+
+    # Keep list structure readable, but remove empty rows between bullets.
+    if has_list:
+        return "\n".join(lines)
+
+    # For normal explanatory text, make the preview a compact paragraph.
+    return " ".join(lines)
+
+
+def clean_source_excerpt(content, section_name="", language="English", max_chars=1400):
     # Creates a cleaner preview for "Relevant source context".
     # It removes source-routing examples such as "Use this section when the user asks:"
     # and skips straight to the actual guidance.
@@ -1549,6 +1725,7 @@ def clean_source_excerpt(content, section_name="", language="English", max_chars
 
     cleaned = []
     skip_question_examples = False
+    in_fenced_code_block = False
 
     start_markers = [
         "### step 1",
@@ -1566,10 +1743,57 @@ def clean_source_excerpt(content, section_name="", language="English", max_chars
         "använd denna checklista",
     ]
 
+    internal_helper_markers = [
+        "cyberlex should explain",
+        "cyberlex sweden should explain",
+        "cyberlex should use",
+        "cyberlex sweden should use",
+        "this source is used for",
+        "this section is used for",
+        "use this source when",
+        "use this section when",
+        "useful questions",
+        "example questions",
+        "exempelfrågor",
+        "cyberlex bör",
+        "cyberlex sweden bör",
+        "cyberlex ska",
+        "cyberlex sweden ska",
+        "cyberlex bör förklara",
+        "cyberlex sweden bör förklara",
+        "cyberlex bör använda",
+        "cyberlex sweden bör använda",
+        "denna källa används",
+        "den här källan används",
+        "denna sektion används",
+        "den här sektionen används",
+        "för detaljerade frågor",
+        "bör cyberlex även använda",
+        "ska cyberlex även använda",
+    ]
+
     for raw_line in lines:
         line = raw_line.rstrip()
         stripped = line.strip()
         lower = stripped.lower()
+
+        # Remove Markdown code fences and fenced code blocks from source previews.
+        # Source context should show readable source text, not project file paths or leftover HTML.
+        if stripped.startswith("```"):
+            in_fenced_code_block = not in_fenced_code_block
+            continue
+
+        if in_fenced_code_block:
+            continue
+
+        if "<div" in lower or "</div" in lower:
+            continue
+
+        # Hide internal routing and authoring notes. These are useful for the
+        # developer and search logic, but they should not appear as user-facing
+        # source context during a demo or test run.
+        if any(marker in lower for marker in internal_helper_markers):
+            continue
 
         if not stripped:
             if cleaned:
@@ -1599,9 +1823,19 @@ def clean_source_excerpt(content, section_name="", language="English", max_chars
     # If the section had only routing text and no step heading, fall back to a short useful body.
     if not excerpt:
         fallback_lines = []
+        fallback_in_fenced_code_block = False
         for raw_line in lines:
             stripped = raw_line.strip()
             lower = stripped.lower()
+            if stripped.startswith("```"):
+                fallback_in_fenced_code_block = not fallback_in_fenced_code_block
+                continue
+            if fallback_in_fenced_code_block:
+                continue
+            if "<div" in lower or "</div" in lower:
+                continue
+            if any(marker in lower for marker in internal_helper_markers):
+                continue
             if not stripped:
                 continue
             if any(marker in lower for marker in routing_markers):
@@ -1611,8 +1845,10 @@ def clean_source_excerpt(content, section_name="", language="English", max_chars
             fallback_lines.append(raw_line.rstrip())
         excerpt = "\n".join(fallback_lines).strip()
 
-    if len(excerpt) > max_chars:
-        excerpt = excerpt[:max_chars].rsplit(" ", 1)[0] + "..."
+    excerpt = trim_excerpt_without_cutting_sentence(excerpt, language=language, max_chars=max_chars)
+
+    excerpt = localize_source_excerpt_for_ui(excerpt, language)
+    excerpt = compact_source_excerpt_spacing(excerpt)
 
     return excerpt
 
@@ -1658,6 +1894,24 @@ def build_source_context(search_results, language="English", max_results=3, ques
         language=language
     )
 
+    # Prefer source sections whose actual text already matches the selected UI language.
+    # If no matching-language sections exist, keep the best source matches but replace
+    # the excerpt with a same-language note rather than leaking the other language.
+    if use_swedish:
+        same_language_results = [
+            result for result in filtered_results
+            if looks_swedish_text(result.get("content", ""))
+        ]
+    else:
+        same_language_results = [
+            result for result in filtered_results
+            if looks_english_text(result.get("content", ""))
+            and not (looks_swedish_text(result.get("content", "")) and not looks_english_text(result.get("content", "")))
+        ]
+
+    if same_language_results:
+        filtered_results = same_language_results
+
     # Avoid duplicating the visible CyberLex assessment checklist.
     non_checklist_results = [
         result for result in filtered_results
@@ -1666,6 +1920,17 @@ def build_source_context(search_results, language="English", max_results=3, ques
 
     if non_checklist_results:
         filtered_results = non_checklist_results
+
+    # Hide routing/test/helper sections from normal source context if better
+    # explanatory sections are available. The machine-spirit may love helper
+    # headings, but users usually do not.
+    useful_context_results = [
+        result for result in filtered_results
+        if not is_low_value_source_context_section(result.get("section", ""))
+    ]
+
+    if useful_context_results:
+        filtered_results = useful_context_results
 
     # Remove near-duplicate cards with the same file and display section.
     seen_cards = set()
@@ -1690,7 +1955,7 @@ def build_source_context(search_results, language="English", max_results=3, ques
             result.get("content", ""),
             section_name=result.get("section", ""),
             language=language,
-            max_chars=700
+            max_chars=1400
         )
 
         context_blocks.append(
@@ -3248,6 +3513,36 @@ def detect_source_freshness(source_date, language="English"):
     )
 
 
+def localize_metadata_value(value, language="English"):
+    # Localizes metadata for the user interface.
+    # In Swedish mode, avoid showing long mixed-language developer changelogs.
+    # Metadata should reassure the user that the local source was reviewed,
+    # not expose every internal note from the Markdown file.
+
+    text = str(value or "").strip()
+
+    if not text:
+        return text
+
+    if language != "Svenska":
+        return text
+
+    lower_text = text.lower()
+
+    if "last checked:" in lower_text:
+        return text.replace("Last checked:", "Senast kontrollerad:").strip()
+
+    if "no source date" in lower_text:
+        return "Inget källdatum är sparat för detta dokument ännu."
+
+    if "no version notes" in lower_text:
+        return "Inga versionsanteckningar är sparade för detta dokument ännu."
+
+    # For version notes, use a clean Swedish summary instead of trying to
+    # translate every stored developer note phrase-by-phrase. The detailed
+    # source file still exists in the repository for developer review.
+    return "Källan är lokalt granskad och uppdaterad för CyberLex Sweden."
+
 def generate_source_confidence(score, language="English"):
     # Converts the numeric relevance score into a readable confidence note.
     # This is not legal certainty. It only describes how strong the local source match is.
@@ -3687,15 +3982,17 @@ def generate_simple_answer(question, best_match, language="English"):
     ):
         if use_swedish:
             answer = (
-                "IMY, Integritetsskyddsmyndigheten, är Sveriges myndighet för integritetsskydd. "
-                "IMY har tillsyn över GDPR och dataskydd i Sverige. IMY är relevant för cybersäkerhet "
-                "eftersom cyberincidenter kan leda till personuppgiftsincidenter eller andra risker för personuppgifter."
+                "IMY, Integritetsskyddsmyndigheten, är Sveriges myndighet för integritetsskydd och dataskydd. "
+                "IMY har tillsyn över GDPR i Sverige och är därför central när organisationer hanterar personuppgifter. "
+                "Myndigheten är särskilt relevant för CyberLex Sweden eftersom cyberincidenter kan leda till personuppgiftsincidenter, "
+                "riskbedömningar och möjliga anmälningar till IMY."
             )
         else:
             answer = (
                 "IMY, Integritetsskyddsmyndigheten, is the Swedish Authority for Privacy Protection. "
-                "It supervises GDPR and personal data protection in Sweden. IMY is relevant to cybersecurity "
-                "because cyber incidents can involve personal data breaches or other personal data risks."
+                "It supervises GDPR and personal data protection in Sweden, which makes it central when organizations handle personal data. "
+                "IMY is relevant to CyberLex Sweden because cyber incidents can lead to personal data breaches, risk assessments, "
+                "and possible notification duties toward the authority."
             )
 
     elif (
@@ -3708,13 +4005,15 @@ def generate_simple_answer(question, best_match, language="English"):
     ):
         if use_swedish:
             answer = (
-                "I Sverige är det IMY, Integritetsskyddsmyndigheten, som har tillsyn över GDPR "
-                "och dataskydd."
+                "I Sverige är det IMY, Integritetsskyddsmyndigheten, som har tillsyn över GDPR och dataskydd. "
+                "Det innebär att IMY är den centrala myndigheten när organisationer behöver förstå skyldigheter kring personuppgifter, "
+                "personuppgiftsincidenter och dataskyddsarbete. Vid cyberincidenter är IMY särskilt relevant om personuppgifter kan ha påverkats."
             )
         else:
             answer = (
-                "In Sweden, GDPR and personal data protection are supervised by IMY, "
-                "Integritetsskyddsmyndigheten, the Swedish Authority for Privacy Protection."
+                "In Sweden, GDPR and personal data protection are supervised by IMY, Integritetsskyddsmyndigheten, "
+                "the Swedish Authority for Privacy Protection. This makes IMY the key Swedish authority for questions about personal data, "
+                "data protection duties, and personal data breaches. For cyber incidents, IMY becomes especially relevant if personal data may have been affected."
             )
 
     elif (
@@ -3733,15 +4032,16 @@ def generate_simple_answer(question, best_match, language="English"):
         if use_swedish:
             answer = (
                 "DORA, Digital Operational Resilience Act, är en EU-förordning för den finansiella sektorn. "
-                "Den handlar om digital operativ motståndskraft, ICT-riskhantering, rapportering av större ICT-relaterade incidenter, "
-                "testning av digital motståndskraft och hantering av tredjepartsrisker kopplade till ICT-tjänster."
+                "Den handlar om digital operativ motståndskraft, vilket betyder förmågan att förebygga, hantera och återhämta sig från ICT-störningar och cyberincidenter. "
+                "Reglerna fokuserar bland annat på ICT-riskhantering, rapportering av större ICT-relaterade incidenter, testning av motståndskraft och hantering av tredjepartsrisker. "
+                "För CyberLex Sweden är DORA relevant när cybersäkerhet kopplas till banker, finansiella aktörer och deras digitala leverantörer."
             )
         else:
             answer = (
                 "DORA, the Digital Operational Resilience Act, is an EU regulation for the financial sector. "
-                "It focuses on ICT risk management, major ICT-related incident reporting, digital operational resilience testing, "
-                "ICT third-party risk management, and information sharing. Its purpose is to help financial entities withstand, "
-                "respond to, and recover from ICT disruptions and cyber incidents."
+                "It focuses on digital operational resilience, meaning the ability to prevent, manage, and recover from ICT disruptions and cyber incidents. "
+                "The regulation covers ICT risk management, major ICT-related incident reporting, resilience testing, ICT third-party risk management, and information sharing. "
+                "For CyberLex Sweden, DORA is relevant when cybersecurity duties affect financial entities and their digital service providers."
             )
 
     elif (
@@ -3752,14 +4052,16 @@ def generate_simple_answer(question, best_match, language="English"):
         if use_swedish:
             answer = (
                 "Ja, vissa cybersäkerhetsincidenter kan behöva bedömas enligt både NIS2 och GDPR. "
-                "NIS2-incidentrapportering och GDPR-anmälan av personuppgiftsincidenter är olika rättsområden, "
-                "men de kan överlappa om en cybersäkerhetsincident även påverkar personuppgifter."
+                "NIS2 och cybersäkerhetslagen handlar om cybersäkerhetsincidenten, medan GDPR handlar om personuppgifter och risker för registrerade. "
+                "Regelverken kan därför överlappa om en incident både påverkar säkerheten i digitala tjänster och leder till en personuppgiftsincident. "
+                "I praktiken bör organisationen dokumentera båda bedömningarna och kontrollera om flera rapporteringsvägar kan vara relevanta."
             )
         else:
             answer = (
-                "Yes, some cybersecurity incidents may need to be considered under both NIS2 and GDPR. "
-                "NIS2 incident reporting and GDPR personal data breach notification are different legal areas, "
-                "but they can overlap if a cybersecurity incident also affects personal data."
+                "Yes, some cybersecurity incidents may need to be assessed under both NIS2 and GDPR. "
+                "NIS2 and the Swedish Cybersecurity Act concern the cybersecurity incident itself, while GDPR concerns personal data and risks to individuals. "
+                "The rules can overlap if an incident affects digital security and also creates a personal data breach. "
+                "In practice, the organization should document both assessments and check whether more than one reporting path may be relevant."
             )
 
     elif (
@@ -3780,15 +4082,16 @@ def generate_simple_answer(question, best_match, language="English"):
         if use_swedish:
             answer = (
                 "NIS2-incidentrapportering i Sverige är kopplad till cybersäkerhetslagen. "
-                "Organisationer som omfattas kan behöva rapportera betydande cybersäkerhetsincidenter enligt "
-                "särskilda kriterier, rutiner och tidsfrister. Vissa incidenter kan också behöva bedömas enligt GDPR "
-                "om personuppgifter påverkas."
+                "Organisationer som omfattas kan behöva rapportera betydande cybersäkerhetsincidenter enligt särskilda kriterier, rutiner och tidsfrister. "
+                "Bedömningen beror på incidentens påverkan, organisationens sektor och om verksamheten omfattas av reglerna. "
+                "Vissa incidenter kan också behöva bedömas enligt GDPR om personuppgifter påverkas."
             )
         else:
             answer = (
                 "NIS2 incident reporting in Sweden is handled through the Swedish Cybersecurity Act. "
-                "Covered organizations may need to report significant cybersecurity incidents according to reporting criteria, "
-                "procedures, and time limits. Some incidents may also need separate GDPR reporting if personal data is affected."
+                "Covered organizations may need to report significant cybersecurity incidents according to specific criteria, procedures, and time limits. "
+                "The assessment depends on the incident impact, the organization's sector, and whether the organization is covered by the rules. "
+                "Some incidents may also need a separate GDPR assessment if personal data is affected."
             )
 
     elif (
@@ -3814,7 +4117,9 @@ def generate_simple_answer(question, best_match, language="English"):
         else:
             answer = (
                 "A personal data breach may need to be reported to IMY, the Swedish Authority for Privacy Protection. "
-                "If notification is required, the breach should normally be reported within 72 hours after the organization becomes aware of it."
+                "The organization first needs to assess whether the breach is likely to create a risk to individuals' rights and freedoms. "
+                "If notification is required, the breach should normally be reported within 72 hours after the organization becomes aware of it. "
+                "The organization should also document the incident, the risk assessment, and the reasons for any reporting decision."
             )
 
     elif (
@@ -3835,9 +4140,10 @@ def generate_simple_answer(question, best_match, language="English"):
             )
         else:
             answer = (
-                "GDPR includes core principles such as lawfulness, fairness and transparency, "
-                "purpose limitation, data minimisation, accuracy, storage limitation, integrity and confidentiality, "
-                "and accountability."
+                "GDPR includes core principles that guide how personal data may be processed. "
+                "These include lawfulness, fairness and transparency, purpose limitation, data minimisation, accuracy, storage limitation, integrity and confidentiality, and accountability. "
+                "In practice, the principles require organizations to collect only what they need, protect the data properly, and be able to show that they follow the rules. "
+                "For CyberLex Sweden, these principles are relevant because cybersecurity incidents often involve the protection and handling of personal data."
             )
 
     elif (
@@ -3853,8 +4159,10 @@ def generate_simple_answer(question, best_match, language="English"):
             )
         else:
             answer = (
-                "GDPR is the General Data Protection Regulation. It is an EU regulation that controls how personal data "
-                "may be processed and protected. In Sweden, IMY supervises GDPR and personal data protection."
+                "GDPR is the General Data Protection Regulation, the EU regulation that controls how personal data may be processed and protected. "
+                "It sets rules for lawful processing, transparency, data minimisation, security, individual rights, and accountability. "
+                "In Sweden, IMY supervises GDPR and personal data protection. "
+                "For cybersecurity, GDPR is important because incidents can expose, alter, or destroy personal data and may trigger breach-assessment duties."
             )
 
     elif "gdpr" in question_lower or "authority" in question_lower:
@@ -3865,8 +4173,10 @@ def generate_simple_answer(question, best_match, language="English"):
             )
         else:
             answer = (
-                "In Sweden, GDPR and personal data protection are handled by IMY, "
-                "Integritetsskyddsmyndigheten, the Swedish Authority for Privacy Protection."
+                "In Sweden, GDPR and personal data protection are handled by IMY, Integritetsskyddsmyndigheten, the Swedish Authority for Privacy Protection. "
+                "IMY supervises how organizations process and protect personal data. "
+                "For cybersecurity questions, this matters because an incident may affect personal data and require a GDPR breach assessment. "
+                "CyberLex therefore treats IMY as the main Swedish authority source for GDPR supervision and personal data breach questions."
             )
 
     elif (
@@ -3884,8 +4194,10 @@ def generate_simple_answer(question, best_match, language="English"):
             )
         else:
             answer = (
-                "NIS2 is an EU cybersecurity directive. In Sweden, it is connected to the Swedish Cybersecurity Act. "
-                "The rules focus on cybersecurity risk management, security measures, and incident reporting for covered organizations."
+                "NIS2 is an EU cybersecurity directive that aims to raise cybersecurity standards across the European Union. "
+                "In Sweden, it is connected to the Swedish Cybersecurity Act. "
+                "The rules focus on cybersecurity risk management, security measures, governance, and incident reporting for covered organizations. "
+                "Whether a specific organization is covered depends on factors such as sector, size, and role."
             )
 
     elif (
@@ -3898,14 +4210,16 @@ def generate_simple_answer(question, best_match, language="English"):
         if use_swedish:
             answer = (
                 "Dataintrång är ett brott enligt svensk straffrätt. "
-                "Det handlar på en övergripande nivå om obehörig åtkomst till, eller otillåten påverkan på, "
-                "data eller informationssystem."
+                "Det handlar på en övergripande nivå om obehörig åtkomst till, eller otillåten påverkan på, data eller informationssystem. "
+                "Det är därför viktigt att skilja mellan tillåten säkerhetstestning och obehöriga handlingar. "
+                "För CyberLex Sweden är dataintrång relevant eftersom cyberincidenter ofta börjar med frågor om åtkomst, behörighet och påverkan på system."
             )
         else:
             answer = (
                 "Unauthorized access to an information system may be illegal in Sweden. "
-                "In Swedish law, this is commonly connected to the offence called dataintrång, "
-                "which concerns unauthorized access to, or interference with, data or information systems."
+                "In Swedish law, this is commonly connected to the offence called dataintrång, which concerns unauthorized access to, or interference with, data or information systems. "
+                "The key point is the difference between authorized security work and activity performed without permission. "
+                "For CyberLex Sweden, this topic is relevant when cybersecurity questions involve access, intrusion, or interference with systems."
             )
 
     elif (
@@ -3942,14 +4256,16 @@ def generate_simple_answer(question, best_match, language="English"):
         if use_swedish:
             answer = (
                 "Cyber Resilience Act är en EU-förordning om cybersäkerhetskrav för produkter med digitala element. "
-                "Den fokuserar bland annat på säker produktdesign, hantering av sårbarheter och ansvar för aktörer "
-                "som tillverkar eller tillhandahåller digitala produkter."
+                "Den fokuserar bland annat på säker produktdesign, hantering av sårbarheter, uppdateringsansvar och ansvar för aktörer som tillverkar eller tillhandahåller digitala produkter. "
+                "Målet är att stärka säkerheten för uppkopplad hårdvara och mjukvara under produktens livscykel. "
+                "För CyberLex Sweden är reglerna relevanta när juridiska cybersäkerhetskrav kopplas till produktutveckling, leverantörer och sårbarhetshantering."
             )
         else:
             answer = (
                 "The Cyber Resilience Act is an EU regulation about cybersecurity requirements for products with digital elements. "
-                "It focuses on secure product design, vulnerability handling, and cybersecurity responsibilities for actors involved "
-                "with digital products."
+                "It focuses on secure product design, vulnerability handling, update responsibilities, and cybersecurity obligations for actors involved with digital products. "
+                "The goal is to improve the security of connected hardware and software throughout the product lifecycle. "
+                "For CyberLex Sweden, it is relevant when legal cybersecurity duties connect to product development, suppliers, and vulnerability management."
             )
 
     else:
@@ -3986,7 +4302,11 @@ def generate_simple_answer(question, best_match, language="English"):
     version_notes = best_match.get("version_notes", "No version notes stored.")
 
     if use_swedish:
-        short_answer_heading = "Kort svar"
+        source_date = localize_metadata_value(source_date, language)
+        version_notes = localize_metadata_value(version_notes, language)
+
+    if use_swedish:
+        short_answer_heading = "CyberLex-sammanfattning"
         citation_heading = "Detaljer om källmatchning"
         matched_file_label = "Matchad kunskapsfil"
         matched_section_label = "Matchad sektion"
@@ -4004,7 +4324,7 @@ def generate_simple_answer(question, best_match, language="English"):
             "CyberLex Sweden är ett utbildningsprojekt och ger inte juridisk rådgivning."
         )
     else:
-        short_answer_heading = "Short answer"
+        short_answer_heading = "CyberLex summary"
         citation_heading = "Source match details"
         matched_file_label = "Matched knowledge file"
         matched_section_label = "Matched section"
@@ -4605,8 +4925,8 @@ st.markdown(
 
         .context-excerpt {
         color: #d1d5db;
-        line-height: 1.6;
-        white-space: pre-wrap;
+        line-height: 1.45;
+        white-space: pre-line;
     }
 
     .match-card {
@@ -4660,7 +4980,43 @@ language_mode_preview = st.sidebar.selectbox(
     key="language_selector"
 )
 
-if language_mode_preview == "Svenska":
+
+def detect_question_language_preview(question):
+    # Lightweight language detector used before the main page is rendered.
+    # This lets Auto mode switch the whole visible interface after a Swedish question is typed.
+    question_lower = str(question or "").lower().strip()
+
+    swedish_markers = {
+        "vad", "är", "när", "vilken", "vilka", "hur", "varför",
+        "svensk", "svenska", "sverige", "myndighet", "lag",
+        "cybersäkerhet", "dataskydd", "personuppgift",
+        "personuppgifter", "personuppgiftsincident",
+        "rapporteras", "anmälas", "incidentrapportering",
+        "dataintrång", "brott", "tillsyn", "ansvarar",
+        "misstänker", "intrång", "hackning", "hackad", "dataläcka", "läckt",
+        "komprometterat", "komprometterad", "isolera", "bevara", "loggar",
+        "cyberincident", "säkerhetsincident", "it-incident", "incidenthantering",
+    }
+
+    question_words = set(clean_words(question_lower))
+
+    if question_words.intersection(swedish_markers):
+        return "Svenska"
+
+    return "English"
+
+
+preview_question = (
+    st.session_state.get("main_question_input", "")
+    or st.session_state.get("selected_example_question", "")
+)
+
+if language_mode_preview == "Auto" and preview_question:
+    page_language_preview = detect_question_language_preview(preview_question)
+else:
+    page_language_preview = language_mode_preview
+
+if page_language_preview == "Svenska":
     page_subtitle = (
         "Källbaserad assistent för svensk och EU-relaterad cybersäkerhetsrätt, "
         "digital compliance och legal-tech research."
@@ -4779,9 +5135,11 @@ documents, chunks = load_chunks()
 
 language_mode = language_mode_preview
 
-# This controls fixed interface text before the user asks a question.
-# In Auto mode, the interface starts in English until a question is typed.
-if language_mode == "Svenska":
+# This controls fixed interface text.
+# In Auto mode, the whole page follows the detected question language after a question is typed.
+if language_mode == "Auto" and preview_question:
+    interface_language = page_language_preview
+elif language_mode == "Svenska":
     interface_language = "Svenska"
 else:
     interface_language = "English"
@@ -4984,10 +5342,11 @@ if "show_example_questions" not in st.session_state:
 
 question = st.text_input(
     question_label,
-    value=st.session_state.selected_example_question
+    value=st.session_state.selected_example_question,
+    key="main_question_input"
 )
 
-if language_mode == "Svenska":
+if interface_language == "Svenska":
     example_questions_heading = "Exempelfrågor"
     example_questions_intro = "Klicka på en fråga för att fylla i frågefältet. Frågorna är valda för testkörning:"
     use_question_button_label = "Använd denna fråga"
@@ -5026,9 +5385,9 @@ else:
 
 toggle_examples_label = (
     "Dölj exempelfrågor"
-    if language_mode == "Svenska" and st.session_state.show_example_questions
+    if interface_language == "Svenska" and st.session_state.show_example_questions
     else "Visa exempelfrågor"
-    if language_mode == "Svenska"
+    if interface_language == "Svenska"
     else "Hide example questions"
     if st.session_state.show_example_questions
     else "Show example questions"
@@ -5047,9 +5406,10 @@ if st.session_state.show_example_questions:
 
         if st.button(
             use_question_button_label,
-            key=f"example_question_{index}_{language_mode}"
+            key=f"example_question_{index}_{interface_language}"
         ):
             st.session_state.selected_example_question = example_question
+            st.session_state.main_question_input = example_question
             st.session_state.show_example_questions = False
             st.rerun()
 
@@ -5093,7 +5453,6 @@ else:
 
 if question:
     if is_unsafe_cyber_request(question):
-        st.subheader(answer_header)
         st.markdown(
             generate_unsafe_refusal_answer(question, language),
             unsafe_allow_html=True
@@ -5114,7 +5473,6 @@ if question:
             if best_match["score"] < minimum_score:
                 st.error(out_of_scope_text)
             else:
-                st.subheader(answer_header)
                 st.markdown(
                     generate_simple_answer(question, best_match, language),
                     unsafe_allow_html=True
@@ -5128,16 +5486,16 @@ if question:
                     unsafe_allow_html=True
                 )
 
-                with st.expander(
-                    "CyberLex assessment checklist" if language != "Svenska" else "CyberLex bedömningschecklista",
-                    expanded=False
-                ):
-                    st.markdown(
-                        generate_assessment_checklist(question, search_results, language),
-                        unsafe_allow_html=True
-                    )
-
                 if is_practical_incident_response_question(question):
+                    with st.expander(
+                        "CyberLex assessment checklist" if language != "Svenska" else "CyberLex bedömningschecklista",
+                        expanded=False
+                    ):
+                        st.markdown(
+                            generate_assessment_checklist(question, search_results, language),
+                            unsafe_allow_html=True
+                        )
+
                     with st.expander(
                         "Incident log template" if language != "Svenska" else "Incidentloggmall",
                         expanded=False
