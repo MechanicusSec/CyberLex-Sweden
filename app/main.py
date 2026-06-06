@@ -4581,7 +4581,7 @@ def generate_enhanced_basic_summary(question, language="English"):
     return ""
 
 
-def generate_simple_answer(question, best_match, language="English"):
+def generate_simple_answer(question, best_match, language="English", include_technical_details=False):
     # Generates a simple source-based answer from the best matching chunk.
     question_lower = question.lower()
     use_swedish = language == "Svenska"
@@ -5042,50 +5042,91 @@ def generate_simple_answer(question, best_match, language="English"):
     source_freshness = detect_source_freshness(best_match["source_date"], language)
     confidence = generate_source_confidence(best_match["score"], language)
 
-    return (
-        f"## {short_answer_heading}\n\n"
-        f"{answer}\n\n"
-        f'<div class="topic-card">'
-        f'<div class="topic-card-title">{topic_heading}</div>'
-        f'<div class="topic-row"><strong>{topic_heading}:</strong> '
-        f'<span class="topic-code">{detected_topic}</span></div>'
-        f'</div>\n\n'
-        f'<div class="source-card">'
-        f'<div class="source-card-title">{official_sources_heading}</div>'
-        f'{source_lines}'
-        f'</div>\n\n'
-        f'<details class="technical-details">'
-        f'<summary>{citation_heading}</summary>'
-        f'<div class="citation-card">'
-        f'<div class="citation-card-title">{citation_heading}</div>'
-        f'<div class="citation-row"><strong>{matched_file_label}:</strong> '
-        f'<span class="citation-code">{best_match["filename"]}</span></div>'
-        f'<div class="citation-row"><strong>{matched_section_label}:</strong> '
-        f'<span class="citation-code">{display_best_section}</span></div>'
-        f'<div class="citation-row"><strong>{source_quality_label}:</strong> '
-        f'<span class="citation-code">{source_quality}</span></div>'
-        f'<div class="citation-row"><strong>{relevance_score_label}:</strong> '
-        f'<span class="citation-code">{best_match["score"]}</span></div>'
-        f'<div class="citation-row"><strong>{"Källmatchning" if use_swedish else "Source match confidence"}:</strong> '
-        f'<span class="citation-code">{confidence["level"]}</span></div>'
-        f'<div class="citation-note">{confidence["reason"]} '
-        f'{"Detta är inte juridisk säkerhet. Det beskriver bara hur stark källmatchningen är." if use_swedish else "This is not legal certainty. It only describes how strong the source match is."}</div>'
-        f'</div>'
-        f'<div class="metadata-card">'
-        f'<div class="metadata-card-title">{metadata_heading}</div>'
-        f'<div class="metadata-row"><strong>{source_date_label}:</strong> '
-        f'<span class="metadata-code">{source_date}</span></div>'
-        f'<div class="metadata-row"><strong>{source_freshness_label}:</strong> '
-        f'<span class="metadata-code">{source_freshness}</span></div>'
-        f'<div class="metadata-row"><strong>{version_notes_label}:</strong> '
-        f'<span class="metadata-code">{version_notes}</span></div>'
-        f'</div>'
-        f'</details>\n\n'
+    friendly_source_area = get_friendly_source_area_name(best_match.get("filename", ""), language)
+
+    if use_swedish:
+        transparency_heading = "Källöversikt"
+        source_area_label = "Källområde"
+        reviewed_label = "Granskningsstatus"
+        reviewed_text = "Källan är lokalt granskad och uppdaterad för CyberLex Sweden."
+        last_checked_label = "Senast kontrollerad"
+        technical_note = "Tekniska matchningsdetaljer visas eftersom teknisk diagnostik är aktiverad."
+    else:
+        transparency_heading = "Source overview"
+        source_area_label = "Source area"
+        reviewed_label = "Review status"
+        reviewed_text = "Source reviewed and updated for CyberLex Sweden."
+        last_checked_label = "Last checked"
+        technical_note = "Technical match details are shown because technical diagnostics is enabled."
+
+    answer_parts = [
+        f"## {short_answer_heading}\n\n{answer}",
+        (
+            f'<div class="topic-card">'
+            f'<div class="topic-card-title">{topic_heading}</div>'
+            f'<div class="topic-row"><strong>{topic_heading}:</strong> '
+            f'<span>{detected_topic}</span></div>'
+            f'</div>'
+        ),
+        (
+            f'<div class="source-card">'
+            f'<div class="source-card-title">{official_sources_heading}</div>'
+            f'{source_lines}'
+            f'</div>'
+        ),
+        (
+            f'<div class="metadata-card">'
+            f'<div class="metadata-card-title">{transparency_heading}</div>'
+            f'<div class="metadata-row"><strong>{source_area_label}:</strong> '
+            f'<span>{friendly_source_area}</span></div>'
+            f'<div class="metadata-row"><strong>{reviewed_label}:</strong> '
+            f'<span>{reviewed_text}</span></div>'
+            f'<div class="metadata-row"><strong>{last_checked_label}:</strong> '
+            f'<span>{source_date}</span></div>'
+            f'</div>'
+        ),
+    ]
+
+    if include_technical_details:
+        answer_parts.append(
+            f'<details class="technical-details">'
+            f'<summary>{citation_heading}</summary>'
+            f'<div class="citation-card">'
+            f'<div class="citation-card-title">{citation_heading}</div>'
+            f'<div class="citation-note">{technical_note}</div>'
+            f'<div class="citation-row"><strong>{matched_file_label}:</strong> '
+            f'<span class="citation-code">{best_match["filename"]}</span></div>'
+            f'<div class="citation-row"><strong>{matched_section_label}:</strong> '
+            f'<span class="citation-code">{display_best_section}</span></div>'
+            f'<div class="citation-row"><strong>{source_quality_label}:</strong> '
+            f'<span class="citation-code">{source_quality}</span></div>'
+            f'<div class="citation-row"><strong>{relevance_score_label}:</strong> '
+            f'<span class="citation-code">{best_match["score"]}</span></div>'
+            f'<div class="citation-row"><strong>{"Källmatchning" if use_swedish else "Source match confidence"}:</strong> '
+            f'<span class="citation-code">{confidence["level"]}</span></div>'
+            f'<div class="citation-note">{confidence["reason"]} '
+            f'{"Detta är inte juridisk säkerhet. Det beskriver bara hur stark källmatchningen är." if use_swedish else "This is not legal certainty. It only describes how strong the source match is."}</div>'
+            f'</div>'
+            f'<div class="metadata-card">'
+            f'<div class="metadata-card-title">{metadata_heading}</div>'
+            f'<div class="metadata-row"><strong>{source_date_label}:</strong> '
+            f'<span class="metadata-code">{source_date}</span></div>'
+            f'<div class="metadata-row"><strong>{source_freshness_label}:</strong> '
+            f'<span class="metadata-code">{source_freshness}</span></div>'
+            f'<div class="metadata-row"><strong>{version_notes_label}:</strong> '
+            f'<span class="metadata-code">{version_notes}</span></div>'
+            f'</div>'
+            f'</details>'
+        )
+
+    answer_parts.append(
         f'<div class="limitation-card">'
         f'<div class="limitation-card-title">{limitation_heading}</div>'
         f'<div class="limitation-card-text">{limitation_text}</div>'
         f'</div>'
     )
+
+    return "\n\n".join(answer_parts)
 
 
 def is_cyberlaw_question(question):
@@ -5675,6 +5716,16 @@ language_mode_preview = st.sidebar.selectbox(
     key="language_selector"
 )
 
+show_technical_diagnostics = st.sidebar.checkbox(
+    "Show technical diagnostics / Visa teknisk diagnostik",
+    value=False,
+    key="show_technical_diagnostics",
+    help=(
+        "Shows internal source files, matched sections, and relevance scores. "
+        "Use this for testing and development, not for normal user demos."
+    ),
+)
+
 
 def detect_question_language_preview(question):
     # Lightweight language detector used before the main page is rendered.
@@ -6143,8 +6194,8 @@ if language == "Svenska":
     matched_excerpt_heading = "Matchat källutdrag"
     matched_excerpt_caption = "Detta är den exakta källsektion som CyberLex använde för svaret."
     relevant_section_label = "Relevant källsektion"
-    other_matches_header = "Ytterligare matchande källsektioner"
-    other_matches_caption = "Valfri teknisk översikt över fler källsektioner som matchade frågan, sorterade efter relevans."
+    other_matches_header = "Avancerad källdiagnostik"
+    other_matches_caption = "Teknisk utvecklarvy som visar interna källfiler, matchade sektioner och relevanspoäng. Visas bara när teknisk diagnostik är aktiverad."
 else:
     source_context_caption = "This shows several source sections CyberLex used as supporting context for the answer."
     empty_question_text = "Enter a question above to search the CyberLex Sweden knowledge base."
@@ -6157,8 +6208,8 @@ else:
     matched_excerpt_heading = "Matched source excerpt"
     matched_excerpt_caption = "This is the exact source section CyberLex used for the answer."
     relevant_section_label = "Relevant source section"
-    other_matches_header = "Additional matched source sections"
-    other_matches_caption = "Optional technical overview of additional source sections that matched the question, ranked by relevance."
+    other_matches_header = "Advanced source diagnostics"
+    other_matches_caption = "Technical developer view showing internal source files, matched sections, and relevance scores. Only shown when technical diagnostics is enabled."
 
 if question:
     if is_unsafe_cyber_request(question):
@@ -6183,7 +6234,7 @@ if question:
                 st.error(out_of_scope_text)
             else:
                 st.markdown(
-                    generate_simple_answer(question, best_match, language),
+                    generate_simple_answer(question, best_match, language, include_technical_details=show_technical_diagnostics),
                     unsafe_allow_html=True
                 )
                 st.markdown(
@@ -6260,29 +6311,30 @@ if question:
                             unsafe_allow_html=True
                         )
 
-                with st.expander(other_matches_header, expanded=False):
-                    st.caption(other_matches_caption)
+                if show_technical_diagnostics:
+                    with st.expander(other_matches_header, expanded=False):
+                        st.caption(other_matches_caption)
 
-                    for result in search_results[:5]:
-                        display_result_section = localize_section_name(result.get("section", ""), language)
-                        if language == "Svenska":
-                            st.markdown(
-                                f'<div class="match-card">'
-                                f'<strong>Källa:</strong> <span class="match-code">{result["filename"]}</span> '
-                                f'<strong>Sektion:</strong> <span class="match-code">{display_result_section}</span> '
-                                f'<strong>Relevanspoäng:</strong> <span class="match-code">{result["score"]}</span>'
-                                f'</div>',
-                                unsafe_allow_html=True
-                            )
-                        else:
-                            st.markdown(
-                                f'<div class="match-card">'
-                                f'<strong>Source:</strong> <span class="match-code">{result["filename"]}</span> '
-                                f'<strong>Section:</strong> <span class="match-code">{display_result_section}</span> '
-                                f'<strong>Relevance score:</strong> <span class="match-code">{result["score"]}</span>'
-                                f'</div>',
-                                unsafe_allow_html=True
-                            )
+                        for result in search_results[:5]:
+                            display_result_section = localize_section_name(result.get("section", ""), language)
+                            if language == "Svenska":
+                                st.markdown(
+                                    f'<div class="match-card">'
+                                    f'<strong>Källa:</strong> <span class="match-code">{result["filename"]}</span> '
+                                    f'<strong>Sektion:</strong> <span class="match-code">{display_result_section}</span> '
+                                    f'<strong>Relevanspoäng:</strong> <span class="match-code">{result["score"]}</span>'
+                                    f'</div>',
+                                    unsafe_allow_html=True
+                                )
+                            else:
+                                st.markdown(
+                                    f'<div class="match-card">'
+                                    f'<strong>Source:</strong> <span class="match-code">{result["filename"]}</span> '
+                                    f'<strong>Section:</strong> <span class="match-code">{display_result_section}</span> '
+                                    f'<strong>Relevance score:</strong> <span class="match-code">{result["score"]}</span>'
+                                    f'</div>',
+                                    unsafe_allow_html=True
+                                )
         else:
             st.error(out_of_scope_text)
 else:
