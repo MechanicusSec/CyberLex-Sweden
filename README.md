@@ -2,7 +2,7 @@
 
 CyberLex Sweden is a final school project and educational legal-tech prototype focused on Swedish and EU cybersecurity law, cyber incident response, GDPR, NIS2, DORA, the Cyber Resilience Act, cybercrime, data protection, and digital compliance.
 
-The project works as a local AI-style assistant that helps users search selected cybersecurity-law and incident-response topics through a trusted local Markdown knowledge base. It uses source-based search, source routing, structured CyberLex summary answers, official source links, source metadata, source freshness labels, topic labels, CyberLex attention levels, conditional practical explanations, incident-response checklists, cleaned relevant source context with supporting source text, cleaner collapsed source details, Swedish/English interface handling, and an experimental retrieval panel.
+The project works as a local AI-style assistant that helps users search selected cybersecurity-law and incident-response topics through a trusted local Markdown knowledge base. It uses source-based search, source routing, structured CyberLex summary answers, official source links, source metadata, source freshness labels, topic labels, CyberLex attention levels, conditional practical explanations, incident-response checklists, incident-type-filtered relevant source context with supporting source text, cleaner collapsed source details, Swedish/English interface handling, download-ready incident summaries, and an experimental retrieval panel.
 
 CyberLex Sweden does **not** provide legal advice. It is built for learning, demonstration, and portfolio use.
 
@@ -66,14 +66,16 @@ Completed major improvements include:
 - Practical explanation cards hidden for simple definition or authority questions
 - Topic-based assessment checklists for practical incident-response questions
 - Cleaned relevant source context cards
+- Incident-type filtering for practical incident-response source context
 - Supporting source text labels instead of the older Short excerpt / Kort utdrag wording
 - Additional matched source section cards
-- Source context cleanup to avoid internal helper text, broken cut-off fragments, code fences, HTML fragments, and file-path junk
+- Source context cleanup to avoid internal helper text, broken cut-off fragments, code fences, HTML fragments, file-path junk, visible Markdown separators, example-question bullets, empty source-context cards, and developer-style language-warning cards
 - Example question panel
 - Practical incident-response guidance
 - Incident log templates for practical incident-response questions
-- Copy-ready incident summaries
+- Download-ready incident summaries
 - Clean downloadable incident summary files
+- Download-ready incident summary UI that avoids duplicating the full incident template on the page
 - Defensive cyber safety boundary
 - Out-of-scope refusal handling
 - Offensive cyber request refusal
@@ -219,8 +221,11 @@ The current prototype can:
 - keep technical source match details available but collapsed by default
 - keep project resources and loaded source documents available but collapsed in the sidebar
 - show matched supporting source text and relevant source context
-- clean source context so internal helper notes, code fences, HTML fragments, and file-path junk do not appear in normal user-facing excerpts
+- filter practical incident-response source context by detected incident type
+- keep suspicious email, suspicious login, data leak, ransomware, and compromised-account source-context cards separated so unrelated incident types do not appear together
+- clean source context so internal helper notes, code fences, HTML fragments, file-path junk, visible Markdown separators, example-question bullets, empty cards, and developer-style language warnings do not appear in normal user-facing excerpts
 - keep source context excerpts compact and avoid broken mid-sentence cut-offs
+- hide source-context cards when no clean same-language source text is available
 - label source previews as Supporting source text / Stödjande källtext
 - show practical explanations only when they add real value
 - hide practical explanations for simple definition or authority questions, such as `What is NIS2?`, `Vad är IMY?`, or `What is DORA?`
@@ -232,8 +237,9 @@ The current prototype can:
 - provide example questions
 - handle practical incident-response questions
 - display incident log templates for practical incident-response questions
-- generate copy-ready incident summaries
+- generate download-ready incident summaries
 - download clean incident summary files for use as incident notes or ticket attachments
+- avoid duplicating the full incident log template inside the normal download-ready UI section
 - distinguish suspicious login, phishing, compromised account, data leak, and ransomware questions
 - normalize some Swedish typo variants, such as `kontör` toward `konto`
 - refuse out-of-scope questions
@@ -250,7 +256,7 @@ CyberLex Sweden has been cleaned up for a first practical test run.
 
 The test-run interface is designed to keep the normal user view readable while still preserving transparency. Main answers now use the **CyberLex summary** label instead of the older **Short answer** wording. Detected topics, official source links, limitations, and attention levels are shown clearly. Practical explanation cards are conditional: they appear for reporting, breach, regulatory-duty, overlap, and incident-response questions where they add value, but they are hidden for simple definition or authority questions. More technical details, such as source match details, source metadata, relevant source context, additional matched sections, sidebar project resources, loaded source documents, and experimental retrieval tools, remain available but are collapsed by default.
 
-Recent test-run cleanup focused on language consistency and source-context readability. Swedish questions should use Swedish visible answer labels where possible, Auto mode should follow the detected question language more consistently, source metadata should avoid confusing mixed-language notes in Swedish mode, and source context cards should avoid internal helper text, broken cut-off fragments, code fences, HTML fragments, and file-path junk. Source previews now use clearer labels: **Supporting source text** in English and **Stödjande källtext** in Swedish.
+Recent test-run cleanup focused on language consistency, incident UI behavior, and source-context readability. Swedish questions should use Swedish visible answer labels where possible, Auto mode should follow the detected question language more consistently, source metadata should avoid confusing mixed-language notes in Swedish mode, and source context cards should avoid internal helper text, broken cut-off fragments, code fences, HTML fragments, file-path junk, visible Markdown separators, example-question bullets, empty cards, and developer-style language-warning cards. Practical incident-response source context is filtered by detected incident type, so suspicious email questions should not show unrelated hacking or data-leak source cards. Source previews now use clearer labels: **Supporting source text** in English and **Stödjande källtext** in Swedish.
 
 CyberLex attention levels are used as educational signals, not legal risk ratings:
 
@@ -277,9 +283,36 @@ For simple definition or authority questions, such as `What is NIS2?`, `Vad är 
 
 For reporting, breach, compliance-duty, GDPR/NIS2 overlap, and practical incident-response questions, the app may show a practical explanation card because those questions need interpretation or next-step guidance.
 
-For practical incident-response questions, the app may also show assessment checklists, incident log templates, copy-ready incident summaries, and incident summary downloads.
+For practical incident-response questions, the app may also show assessment checklists, incident log templates, download-ready incident summaries, and incident summary downloads. The visible download-ready section should not duplicate the full incident log template or full incident summary text area, because the downloaded file already contains that material.
 
 For unsafe cyber questions, the app should show a clean refusal view and should not show normal source or incident-response panels.
+
+### Source Context Behavior
+
+CyberLex source context is designed to support the answer without overwhelming the normal user view.
+
+For ordinary legal and authority questions, relevant source context should show useful supporting source text from the best-matched legal source.
+
+For practical incident-response questions, relevant source context should be filtered by detected incident type. For example:
+
+- suspicious email questions should show suspicious email or phishing context, not data-leak or hacking cards
+- suspicious login questions should show suspicious-login context, not phishing or ransomware cards
+- data-leak questions should show data-leak or personal-data breach context
+- ransomware or encrypted-files questions should show ransomware or encrypted-files context
+- compromised-account questions should show compromised-account context
+
+If no clean same-language source context exists, the source-context card may be hidden instead of showing a developer-style language warning.
+
+Source context should avoid:
+
+- internal helper notes
+- visible Markdown separators such as `---`
+- example-question bullets
+- empty source-context cards
+- code fences
+- HTML fragments
+- file-path junk
+- confusing Swedish/English mixing in normal user-facing sections
 
 ---
 
@@ -317,7 +350,7 @@ The app should provide practical first steps, such as:
 - assess whether NIS2 or the Swedish Cybersecurity Act may be relevant
 - escalate to internal security teams, CERT-SE, legal, or official authorities when appropriate
 
-CyberLex Sweden can also generate a clean downloadable incident summary for practical incident-response questions. The downloaded summary includes the original question, recommended first steps, checklist, incident log template, short source note, and educational disclaimer. It avoids full source dumps, relevance scores, duplicate source sections, and long official URLs because those details are already shown inside the app.
+CyberLex Sweden can also generate a clean downloadable incident summary for practical incident-response questions. The downloaded summary includes the original question, recommended first steps, checklist, incident log template, short source note, and educational disclaimer. The app shows this as a download-ready incident summary without repeating the full incident log template in the normal UI. The downloaded file avoids full source dumps, relevance scores, duplicate source sections, and long official URLs because those details are already shown inside the app.
 
 The incident-response guidance is educational and defensive. It is not a replacement for a professional incident-response team.
 
@@ -641,6 +674,7 @@ The current test coverage includes:
 - ransomware and malware tests
 - incident log template tests
 - clean downloaded incident summary tests
+- download-ready incident summary UI checks
 - attention-level tests
 - cleaner test-run UI checks
 - collapsed technical source detail checks
@@ -648,7 +682,9 @@ The current test coverage includes:
 - Swedish and English language consistency tests
 - Auto language switching tests
 - source context readability tests
+- incident-type source context filtering tests
 - supporting source text label checks
+- source-context cleanup checks for separators, example-question bullets, empty cards, and language-warning cards
 - conditional practical explanation checks
 - source metadata language consistency tests
 - offensive cyber refusal tests
@@ -679,7 +715,9 @@ Current limitations:
 - Downloaded incident summaries are documentation aids and do not replace internal incident-response records, legal review, or official reporting.
 - Attention levels are educational signals and do not replace legal, regulatory, or incident-response risk assessment.
 - Practical explanation cards are rule-based and conditional, so some question types may still need refinement after tester feedback.
-- Some local source sections are fuller in English than Swedish, so continued bilingual source expansion is still needed.
+- Incident-type source context filtering is rule-based and may need refinement after testing more user wording.
+- Some local source sections are fuller in English than Swedish, so source-context cards may be hidden in Swedish mode until fuller Swedish source sections are added.
+- Continued bilingual source expansion is still needed.
 
 For serious legal, regulatory, compliance, or security decisions, official sources and qualified professionals should be checked.
 
@@ -696,6 +734,8 @@ Planned or possible improvements include:
 - Add more specific attention-level explanations per incident type
 - Continue refining the cleaner test-run interface after user feedback
 - Improve source context selection further so the most useful explanatory sections appear first
+- Continue refining incident-type source context filtering after tester feedback
+- Add fuller Swedish incident-response source sections so Swedish mode can show more supporting source text
 - Continue refining when practical explanation cards should appear or stay hidden
 - Revisit vector search using Python 3.12 or another stable AI-compatible environment
 - Add embeddings with `sentence-transformers`
