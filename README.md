@@ -2,7 +2,7 @@
 
 CyberLex Sweden is a final school project and educational legal-tech prototype focused on Swedish and EU cybersecurity law, cyber incident response, GDPR, NIS2, DORA, the Cyber Resilience Act, cybercrime, data protection, and digital compliance.
 
-The project works as a local AI-style assistant that helps users search selected cybersecurity-law and incident-response topics through a trusted local Markdown knowledge base. It uses source-based search, source routing, structured CyberLex summary answers, official source links, source metadata, source freshness labels, topic labels, CyberLex attention levels, practical explanations, incident-response checklists, cleaned relevant source context, cleaner collapsed source details, Swedish/English interface handling, and an experimental retrieval panel.
+The project works as a local AI-style assistant that helps users search selected cybersecurity-law and incident-response topics through a trusted local Markdown knowledge base. It uses source-based search, source routing, structured CyberLex summary answers, official source links, source metadata, source freshness labels, topic labels, CyberLex attention levels, conditional practical explanations, incident-response checklists, cleaned relevant source context with supporting source text, cleaner collapsed source details, Swedish/English interface handling, and an experimental retrieval panel.
 
 CyberLex Sweden does **not** provide legal advice. It is built for learning, demonstration, and portfolio use.
 
@@ -62,9 +62,11 @@ Completed major improvements include:
 - Collapsed sidebar project resources and loaded source documents
 - Collapsed experimental retrieval tools
 - Cleaner source match details for normal users
-- Practical explanation cards
+- Conditional practical explanation cards that appear only when they add value
+- Practical explanation cards hidden for simple definition or authority questions
 - Topic-based assessment checklists for practical incident-response questions
 - Cleaned relevant source context cards
+- Supporting source text labels instead of the older Short excerpt / Kort utdrag wording
 - Additional matched source section cards
 - Source context cleanup to avoid internal helper text, broken cut-off fragments, code fences, HTML fragments, and file-path junk
 - Example question panel
@@ -216,10 +218,13 @@ The current prototype can:
 - use calmer attention levels for ordinary legal explanation questions
 - keep technical source match details available but collapsed by default
 - keep project resources and loaded source documents available but collapsed in the sidebar
-- show matched source excerpts and supporting source context
+- show matched supporting source text and relevant source context
 - clean source context so internal helper notes, code fences, HTML fragments, and file-path junk do not appear in normal user-facing excerpts
 - keep source context excerpts compact and avoid broken mid-sentence cut-offs
-- show practical explanations
+- label source previews as Supporting source text / Stödjande källtext
+- show practical explanations only when they add real value
+- hide practical explanations for simple definition or authority questions, such as `What is NIS2?`, `Vad är IMY?`, or `What is DORA?`
+- show practical explanations for reporting, breach, regulatory-duty, overlap, and incident-response questions
 - show topic-based assessment checklists for practical incident-response questions
 - show other matching source sections
 - support English and Swedish interface labels
@@ -243,9 +248,9 @@ The current prototype can:
 
 CyberLex Sweden has been cleaned up for a first practical test run.
 
-The test-run interface is designed to keep the normal user view readable while still preserving transparency. Main answers now use the **CyberLex summary** label instead of the older **Short answer** wording. Detected topics, official source links, limitations, attention levels, and practical explanations are shown clearly. More technical details, such as source match details, source metadata, relevant source context, additional matched sections, sidebar project resources, loaded source documents, and experimental retrieval tools, remain available but are collapsed by default.
+The test-run interface is designed to keep the normal user view readable while still preserving transparency. Main answers now use the **CyberLex summary** label instead of the older **Short answer** wording. Detected topics, official source links, limitations, and attention levels are shown clearly. Practical explanation cards are conditional: they appear for reporting, breach, regulatory-duty, overlap, and incident-response questions where they add value, but they are hidden for simple definition or authority questions. More technical details, such as source match details, source metadata, relevant source context, additional matched sections, sidebar project resources, loaded source documents, and experimental retrieval tools, remain available but are collapsed by default.
 
-Recent test-run cleanup focused on language consistency and source-context readability. Swedish questions should use Swedish visible answer labels where possible, Auto mode should follow the detected question language more consistently, source metadata should avoid confusing mixed-language notes in Swedish mode, and source context cards should avoid internal helper text, broken cut-off fragments, code fences, HTML fragments, and file-path junk.
+Recent test-run cleanup focused on language consistency and source-context readability. Swedish questions should use Swedish visible answer labels where possible, Auto mode should follow the detected question language more consistently, source metadata should avoid confusing mixed-language notes in Swedish mode, and source context cards should avoid internal helper text, broken cut-off fragments, code fences, HTML fragments, and file-path junk. Source previews now use clearer labels: **Supporting source text** in English and **Stödjande källtext** in Swedish.
 
 CyberLex attention levels are used as educational signals, not legal risk ratings:
 
@@ -263,6 +268,18 @@ docs/test_run_checklist.md
 ```
 
 This checklist is intended to help another tester run the prototype without needing developer guidance.
+
+### User Interface Behavior
+
+CyberLex uses different visible sections depending on the question type.
+
+For simple definition or authority questions, such as `What is NIS2?`, `Vad är IMY?`, or `What is DORA?`, the app should show the CyberLex summary, detected topic, official source links, limitation notice, attention level, and source context. The practical explanation card is hidden for these questions so the page does not repeat itself.
+
+For reporting, breach, compliance-duty, GDPR/NIS2 overlap, and practical incident-response questions, the app may show a practical explanation card because those questions need interpretation or next-step guidance.
+
+For practical incident-response questions, the app may also show assessment checklists, incident log templates, copy-ready incident summaries, and incident summary downloads.
+
+For unsafe cyber questions, the app should show a clean refusal view and should not show normal source or incident-response panels.
 
 ---
 
@@ -608,7 +625,7 @@ The practical test-run checklist is documented in:
 docs/test_run_checklist.md
 ```
 
-This checklist is intended for a first external or semi-external test run. It covers startup, core legal questions, Swedish and English questions, practical incident-response questions, incident log templates, clean downloaded incident summaries, refusal behavior, source visibility, source audit checks, and tester feedback.
+This checklist is intended for a first external or semi-external test run. It covers startup, core legal questions, Swedish and English questions, conditional practical explanation behavior, practical incident-response questions, incident log templates, clean downloaded incident summaries, refusal behavior, source visibility, source audit checks, and tester feedback.
 
 The current test coverage includes:
 
@@ -631,6 +648,8 @@ The current test coverage includes:
 - Swedish and English language consistency tests
 - Auto language switching tests
 - source context readability tests
+- supporting source text label checks
+- conditional practical explanation checks
 - source metadata language consistency tests
 - offensive cyber refusal tests
 - out-of-scope refusal tests
@@ -659,6 +678,7 @@ Current limitations:
 - Incident-response guidance is simplified for educational use.
 - Downloaded incident summaries are documentation aids and do not replace internal incident-response records, legal review, or official reporting.
 - Attention levels are educational signals and do not replace legal, regulatory, or incident-response risk assessment.
+- Practical explanation cards are rule-based and conditional, so some question types may still need refinement after tester feedback.
 - Some local source sections are fuller in English than Swedish, so continued bilingual source expansion is still needed.
 
 For serious legal, regulatory, compliance, or security decisions, official sources and qualified professionals should be checked.
@@ -676,6 +696,7 @@ Planned or possible improvements include:
 - Add more specific attention-level explanations per incident type
 - Continue refining the cleaner test-run interface after user feedback
 - Improve source context selection further so the most useful explanatory sections appear first
+- Continue refining when practical explanation cards should appear or stay hidden
 - Revisit vector search using Python 3.12 or another stable AI-compatible environment
 - Add embeddings with `sentence-transformers`
 - Add ChromaDB or FAISS
