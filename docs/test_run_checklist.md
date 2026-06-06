@@ -4,7 +4,7 @@
 
 This checklist is used for a practical test run of CyberLex Sweden.
 
-The goal is to confirm that the prototype is ready for testing by another person. The test should check startup, supported legal questions, Swedish and English language support, practical incident-response questions, incident log templates, clean incident summary downloads, attention levels, source visibility, clean unsafe refusal behavior, source-context readability, and out-of-scope refusal behavior.
+The goal is to confirm that the prototype is ready for testing by another person. The test should check startup, supported legal questions, Swedish and English language support, conditional practical explanations, practical incident-response questions, incident log templates, clean incident summary downloads, attention levels, source visibility, clean unsafe refusal behavior, source-context readability, and out-of-scope refusal behavior.
 
 CyberLex Sweden is an educational prototype. It does not provide legal advice and does not replace official authority guidance, a lawyer, or a professional incident-response team.
 
@@ -213,7 +213,7 @@ Check that the answer shows:
 - official source links
 - important limitation
 - attention level
-- practical explanation
+- no Practical explanation card for this simple definition question
 - source match details collapsed by default
 - relevant source context collapsed by default
 - additional matched source sections collapsed by default
@@ -266,7 +266,7 @@ Check that the Swedish view uses Swedish labels where possible:
 - Officiella källor
 - Viktig begränsning
 - CyberLex uppmärksamhetsnivå
-- Praktisk förklaring
+- no Praktisk förklaring card for this simple definition question
 - Relevant källkontext
 - Ytterligare matchande källsektioner
 
@@ -365,6 +365,12 @@ Expected attention level:
 Elevated
 ```
 
+Expected UI behavior:
+
+```text
+Practical explanation should appear because this is a reporting and breach-assessment question.
+```
+
 Pass / fail:
 
 ```text
@@ -402,6 +408,12 @@ Expected attention level:
 
 ```text
 Informational
+```
+
+Expected UI behavior:
+
+```text
+Practical explanation should not appear for this simple authority question.
 ```
 
 Pass / fail:
@@ -443,6 +455,12 @@ Expected attention level:
 Information
 ```
 
+Expected UI behavior:
+
+```text
+Praktisk förklaring should not appear for this simple authority question.
+```
+
 Check that the source metadata and source context do not show mixed Swedish/English text in a confusing way.
 
 Pass / fail:
@@ -482,6 +500,12 @@ Expected attention level:
 
 ```text
 Informational
+```
+
+Expected UI behavior:
+
+```text
+Practical explanation should not appear for this simple definition question.
 ```
 
 Pass / fail:
@@ -531,7 +555,49 @@ Notes:
 
 ---
 
-## 14. Suspicious Login Incident Test
+## 14. Conditional Practical Explanation Test
+
+CyberLex should show Practical explanation / Praktisk förklaring only when it adds value.
+
+For simple definition or authority questions, Practical explanation should not appear.
+
+Test these questions:
+
+| Question | Expected behavior |
+|---|---|
+| `What is NIS2?` | No Practical explanation card |
+| `Vad är NIS2?` | No Praktisk förklaring card |
+| `What is DORA?` | No Practical explanation card |
+| `Vad är IMY?` | No Praktisk förklaring card |
+| `What authority handles GDPR in Sweden?` | No Practical explanation card |
+
+For reporting, assessment, or incident-response questions, Practical explanation should appear where useful.
+
+Test these questions:
+
+| Question | Expected behavior |
+|---|---|
+| `When must a personal data breach be reported?` | Practical explanation appears |
+| `Can an incident need to be reported under both NIS2 and GDPR?` | Practical explanation appears |
+| `What should we do if we receive a suspicious email?` | Practical explanation appears |
+| `Vad gör vi om filer har krypterats?` | Praktisk förklaring appears |
+
+Pass / fail:
+
+```text
+[ ] Pass
+[ ] Fail
+```
+
+Notes:
+
+```text
+
+```
+
+---
+
+## 15. Suspicious Login Incident Test
 
 Ask:
 
@@ -580,7 +646,7 @@ Notes:
 
 ---
 
-## 15. Suspicious Email / Phishing Test
+## 16. Suspicious Email / Phishing Test
 
 Ask:
 
@@ -629,7 +695,7 @@ Notes:
 
 ---
 
-## 16. Compromised Account Test
+## 17. Compromised Account Test
 
 Ask:
 
@@ -679,7 +745,7 @@ Notes:
 
 ---
 
-## 17. Ransomware / Encrypted Files Test
+## 18. Ransomware / Encrypted Files Test
 
 Ask:
 
@@ -728,7 +794,7 @@ Notes:
 
 ---
 
-## 18. Incident Log Template Test
+## 19. Incident Log Template Test
 
 For an incident-response question, open the incident log template section.
 
@@ -767,7 +833,7 @@ Notes:
 
 ---
 
-## 19. Clean Downloaded Incident Summary Test
+## 20. Clean Downloaded Incident Summary Test
 
 Use:
 
@@ -816,7 +882,7 @@ Notes:
 
 ---
 
-## 20. Out-of-Scope Refusal Test
+## 21. Out-of-Scope Refusal Test
 
 Ask:
 
@@ -845,7 +911,7 @@ Notes:
 
 ---
 
-## 21. Offensive Cyber Refusal Test
+## 22. Offensive Cyber Refusal Test
 
 Ask:
 
@@ -894,7 +960,7 @@ Notes:
 
 ---
 
-## 22. Swedish Offensive Cyber Refusal Test
+## 23. Swedish Offensive Cyber Refusal Test
 
 Switch language to Swedish or use Auto mode.
 
@@ -945,7 +1011,7 @@ Notes:
 
 ---
 
-## 23. Source Visibility Test
+## 24. Source Visibility Test
 
 For supported non-refusal questions, confirm that the app shows:
 
@@ -967,6 +1033,13 @@ Expected result:
 - relevant source context is available in an expander
 - additional matched source sections are available in an expander
 - relevance scores are not shown as the main focus of the normal answer
+
+Also confirm that source context uses the user-facing label:
+
+```text
+Supporting source text
+Stödjande källtext
+```
 
 Also confirm that source context excerpts:
 
@@ -995,7 +1068,7 @@ Notes:
 
 ---
 
-## 24. Source Context Language Test
+## 25. Source Context Language Test
 
 Use Swedish mode or Auto mode.
 
@@ -1032,7 +1105,7 @@ Notes:
 
 ---
 
-## 25. Source Metadata Language Test
+## 26. Source Metadata Language Test
 
 Use Swedish mode or Auto mode.
 
@@ -1069,7 +1142,7 @@ Notes:
 
 ---
 
-## 26. Experimental Search Visibility Test
+## 27. Experimental Search Visibility Test
 
 Confirm that experimental retrieval tools are clearly marked as experimental.
 
@@ -1092,7 +1165,7 @@ Notes:
 
 ---
 
-## 27. Source Audit Test
+## 28. Source Audit Test
 
 Stop the app if needed with:
 
@@ -1135,7 +1208,7 @@ Notes:
 
 ---
 
-## 28. Tester Feedback
+## 29. Tester Feedback
 
 Answer these questions after the test run.
 
@@ -1213,7 +1286,7 @@ Answer these questions after the test run.
 
 ---
 
-## 29. Test Run Summary
+## 30. Test Run Summary
 
 | Area | Result |
 |---|---|
@@ -1223,6 +1296,7 @@ Answer these questions after the test run.
 | Auto language switching |  |
 | GDPR / IMY questions |  |
 | Attention levels |  |
+| Conditional practical explanation |  |
 | Incident-response questions |  |
 | Incident log template |  |
 | Downloaded incident summary |  |
@@ -1254,6 +1328,7 @@ CyberLex Sweden currently has these limitations:
 - Source freshness labels describe stored local review dates only.
 - The source audit checks file structure, not live legal currency.
 - Attention levels are educational signals, not legal risk ratings.
+- Practical explanation cards are conditional and may be hidden for simple definition or authority questions.
 - Downloaded incident summaries are documentation aids and do not replace internal incident-response records, legal review, or official reporting.
 - Clean unsafe refusal mode is designed to avoid showing normal source and incident-response panels for offensive or evasive cyber requests.
 - Some source files may still contain more complete English source sections than Swedish sections.
@@ -1269,6 +1344,9 @@ CyberLex Sweden is ready for a first test run if:
 - supported English and Swedish questions work
 - Auto language switching works reasonably
 - CyberLex summary appears instead of the old Short answer label
+- Practical explanation is hidden for simple definition or authority questions
+- Practical explanation appears for reporting, assessment, and incident-response questions where useful
+- source context uses Supporting source text / Stödjande källtext instead of Short excerpt / Kort utdrag
 - attention levels behave reasonably
 - practical incident-response questions work
 - incident log templates appear for incident-response questions
