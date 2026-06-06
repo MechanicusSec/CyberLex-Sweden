@@ -2217,6 +2217,70 @@ def clean_source_excerpt_relaxed(content, language="English", max_chars=1400):
     return excerpt
 
 
+def get_friendly_source_area_name(filename, language="English"):
+    # Converts internal Markdown file names into user-friendly source area names.
+    # Normal users should not need to understand local .md file names.
+    use_swedish = language == "Svenska"
+    filename_key = str(filename or "").strip().lower()
+
+    english_names = {
+        "gdpr_core_principles.md": "GDPR core principles",
+        "gdpr_personal_data_breach.md": "GDPR personal data breach",
+        "imy_gdpr_supervision.md": "IMY and GDPR supervision",
+        "nis2_cybersecurity_law.md": "NIS2 and the Swedish Cybersecurity Act",
+        "nis2_incident_reporting.md": "NIS2 incident reporting",
+        "cybercrime_dataintrang.md": "Swedish cybercrime and data intrusion",
+        "eu_attacks_against_information_systems.md": "EU rules on attacks against information systems",
+        "eu_cyber_resilience_act.md": "EU Cyber Resilience Act",
+        "eu_dora_digital_operational_resilience.md": "DORA and digital operational resilience",
+        "cyber_incident_response_playbook.md": "Cyber incident response playbook",
+    }
+
+    swedish_names = {
+        "gdpr_core_principles.md": "GDPR:s grundprinciper",
+        "gdpr_personal_data_breach.md": "GDPR och personuppgiftsincidenter",
+        "imy_gdpr_supervision.md": "IMY och GDPR-tillsyn",
+        "nis2_cybersecurity_law.md": "NIS2 och cybersäkerhetslagen",
+        "nis2_incident_reporting.md": "NIS2-incidentrapportering",
+        "cybercrime_dataintrang.md": "Svensk cyberbrottslighet och dataintrång",
+        "eu_attacks_against_information_systems.md": "EU-regler om angrepp mot informationssystem",
+        "eu_cyber_resilience_act.md": "EU Cyber Resilience Act",
+        "eu_dora_digital_operational_resilience.md": "DORA och digital operativ motståndskraft",
+        "cyber_incident_response_playbook.md": "Cyberincidenthantering",
+    }
+
+    source_names = swedish_names if use_swedish else english_names
+
+    if filename_key in source_names:
+        return source_names[filename_key]
+
+    fallback = filename_key.replace(".md", "").replace("_", " ").replace("-", " ").strip()
+    return fallback[:1].upper() + fallback[1:]
+
+
+def get_friendly_source_type(filename, language="English"):
+    # Gives the user a plain-language description of what kind of source area
+    # the local knowledge file represents.
+    use_swedish = language == "Svenska"
+    filename_key = str(filename or "").strip().lower()
+
+    if filename_key == "cyber_incident_response_playbook.md":
+        return "Incident response guidance" if not use_swedish else "Stöd för incidenthantering"
+
+    if filename_key.startswith("eu_"):
+        return "EU legal and regulatory source area" if not use_swedish else "EU-rättsligt och regulatoriskt källområde"
+
+    if filename_key.startswith("nis2_"):
+        return "Swedish and EU cybersecurity source area" if not use_swedish else "Svenskt och EU-baserat cybersäkerhetsområde"
+
+    if filename_key.startswith("gdpr_") or filename_key.startswith("imy_"):
+        return "Data protection and supervisory authority source area" if not use_swedish else "Dataskydds- och tillsynsområde"
+
+    if filename_key.startswith("cybercrime_"):
+        return "Swedish cybercrime source area" if not use_swedish else "Svenskt cyberbrottsområde"
+
+    return "Local CyberLex knowledge source" if not use_swedish else "Lokal CyberLex-kunskapskälla"
+
 def build_source_context(search_results, language="English", max_results=3, question=None):
     # Builds a short source context summary from the top matched source sections.
     # The context should support the answer, not repeat the CyberLex checklist.
@@ -2225,14 +2289,14 @@ def build_source_context(search_results, language="English", max_results=3, ques
     use_swedish = language == "Svenska"
 
     if use_swedish:
-        file_label = "Källa"
-        section_label = "Sektion"
-        score_label = "Relevanspoäng"
+        source_area_label = "Källområde"
+        section_label = "Använd sektion"
+        source_type_label = "Källtyp"
         excerpt_label = "Stödjande källtext"
     else:
-        file_label = "Source"
-        section_label = "Section"
-        score_label = "Relevance score"
+        source_area_label = "Source area"
+        section_label = "Used section"
+        source_type_label = "Source type"
         excerpt_label = "Supporting source text"
 
     context_blocks = []
@@ -2347,15 +2411,18 @@ def build_source_context(search_results, language="English", max_results=3, ques
         if not str(excerpt or "").strip():
             continue
 
+        friendly_source_area = get_friendly_source_area_name(result.get("filename", ""), language)
+        friendly_source_type = get_friendly_source_type(result.get("filename", ""), language)
+
         context_blocks.append(
             f'<div class="context-card">'
             f'<div class="context-card-title">{display_section}</div>'
-            f'<div class="context-row"><strong>{file_label}:</strong> '
-            f'<span class="context-code">{result["filename"]}</span></div>'
+            f'<div class="context-row"><strong>{source_area_label}:</strong> '
+            f'<span>{friendly_source_area}</span></div>'
             f'<div class="context-row"><strong>{section_label}:</strong> '
-            f'<span class="context-code">{display_section}</span></div>'
-            f'<div class="context-row"><strong>{score_label}:</strong> '
-            f'<span class="context-code">{result["score"]}</span></div>'
+            f'<span>{display_section}</span></div>'
+            f'<div class="context-row"><strong>{source_type_label}:</strong> '
+            f'<span>{friendly_source_type}</span></div>'
             f'<div class="context-excerpt-label">{excerpt_label}:</div>'
             f'<div class="context-excerpt">{excerpt}</div>'
             f'</div>'
@@ -4373,6 +4440,147 @@ def generate_incident_response_answer(question, language="English"):
     )
 
 
+
+def generate_enhanced_basic_summary(question, language="English"):
+    # Builds a richer main answer for simple definition or authority questions.
+    # Source context stays available as evidence, but the user should not need
+    # to open collapsible panels just to understand the basic concept.
+    question_lower = normalize_query_text(question).strip()
+    use_swedish = language == "Svenska"
+
+    # Only enrich simple explanation questions. Reporting, incident-response,
+    # overlap, and compliance-assessment questions are handled elsewhere.
+    simple_starts = [
+        "what is ",
+        "what are ",
+        "what does ",
+        "explain ",
+        "vad är ",
+        "vad betyder ",
+        "förklara ",
+    ]
+
+    is_simple_question = any(question_lower.startswith(start) for start in simple_starts)
+
+    if not is_simple_question:
+        return ""
+
+    if "dora" in question_lower or "digital operational resilience" in question_lower or "digital operativ motståndskraft" in question_lower:
+        if use_swedish:
+            return (
+                "DORA, Digital Operational Resilience Act, är en EU-förordning för den finansiella sektorn. "
+                "Den handlar om digital operativ motståndskraft, alltså förmågan att förebygga, hantera, återhämta sig från och lära av ICT-störningar och cyberincidenter.\n\n"
+                "Reglerna är viktiga eftersom de samlar krav på ICT-riskhantering, incidentrapportering, testning av digital motståndskraft, tredjepartsrisker och informationsdelning. "
+                "Det betyder att finansiella aktörer inte bara ska ha säker teknik, utan även styrning, processer och dokumentation som fungerar vid störningar.\n\n"
+                "För CyberLex Sweden är DORA relevant när cybersäkerhetsfrågor rör banker, försäkringsbolag, betalningstjänster, investeringsföretag eller deras ICT-leverantörer. "
+                "Om personuppgifter påverkas kan även GDPR behöva bedömas separat."
+            )
+        return (
+            "DORA, the Digital Operational Resilience Act, is an EU regulation for the financial sector. "
+            "It focuses on digital operational resilience, meaning the ability to prevent, handle, recover from, and learn from ICT disruptions and cyber incidents.\n\n"
+            "It matters because it brings together requirements for ICT risk management, ICT incident reporting, resilience testing, third-party ICT risk, and information sharing. "
+            "Financial entities therefore need not only secure technology, but also governance, processes, documentation, and recovery capability.\n\n"
+            "For CyberLex Sweden, DORA is relevant when cybersecurity questions affect banks, insurance companies, payment services, investment firms, or their ICT providers. "
+            "If personal data is also affected, GDPR may also need to be assessed separately."
+        )
+
+    if "nis2" in question_lower or "cybersecurity act" in question_lower or "cybersäkerhetslagen" in question_lower:
+        if use_swedish:
+            return (
+                "NIS2 är ett EU-direktiv om cybersäkerhet. Syftet är att skapa en hög gemensam cybersäkerhetsnivå inom EU, särskilt för organisationer och sektorer som är viktiga för samhället och ekonomin.\n\n"
+                "I Sverige kopplas NIS2 till cybersäkerhetslagen och nationella regler. Reglerna handlar bland annat om riskhantering, säkerhetsåtgärder, ledningsansvar, leverantörsrisker, kontinuitet, dokumentation och incidentrapportering.\n\n"
+                "För CyberLex Sweden är NIS2 relevant när en fråga gäller om en organisation kan omfattas av cybersäkerhetskrav, hur incidenter kan behöva hanteras, eller hur svenska cybersäkerhetsregler överlappar med exempelvis GDPR vid personuppgifter."
+            )
+        return (
+            "NIS2 is an EU cybersecurity directive. Its purpose is to raise the common level of cybersecurity across the European Union, especially for organizations and sectors that are important for society and the economy.\n\n"
+            "In Sweden, NIS2 is connected to the Swedish Cybersecurity Act and national rules. The duties can involve cybersecurity risk management, security measures, management responsibility, supplier risk, continuity, documentation, and incident reporting.\n\n"
+            "For CyberLex Sweden, NIS2 is relevant when a question concerns whether an organization may be covered by cybersecurity duties, how incidents may need to be handled, or how Swedish cybersecurity rules can overlap with GDPR when personal data is affected."
+        )
+
+    if "imy" in question_lower or "integritetsskyddsmyndigheten" in question_lower:
+        if use_swedish:
+            return (
+                "IMY, Integritetsskyddsmyndigheten, är Sveriges myndighet för integritetsskydd och dataskydd. "
+                "Myndigheten har tillsyn över GDPR i Sverige och är därför central när organisationer hanterar personuppgifter.\n\n"
+                "IMY är relevant vid frågor om dataskydd, personuppgiftsbehandling, registrerades rättigheter, klagomål, vägledning och personuppgiftsincidenter. "
+                "Vid en cyberincident blir IMY särskilt viktig om personuppgifter kan ha röjts, ändrats, förstörts, gått förlorade eller blivit otillgängliga.\n\n"
+                "För CyberLex Sweden används IMY som huvudkälla när frågan gäller svensk GDPR-tillsyn, dataskyddsansvar eller om en personuppgiftsincident kan behöva anmälas."
+            )
+        return (
+            "IMY, Integritetsskyddsmyndigheten, is the Swedish Authority for Privacy Protection. "
+            "It supervises GDPR and personal data protection in Sweden, which makes it central when organizations handle personal data.\n\n"
+            "IMY is relevant for questions about data protection, personal-data processing, individual rights, complaints, guidance, and personal data breaches. "
+            "During a cyber incident, IMY becomes especially important if personal data may have been disclosed, altered, destroyed, lost, or made unavailable.\n\n"
+            "For CyberLex Sweden, IMY is treated as the main Swedish authority source for GDPR supervision, Swedish data protection duties, and personal-data breach notification questions."
+        )
+
+    if "gdpr" in question_lower:
+        if use_swedish:
+            return (
+                "GDPR är EU:s dataskyddsförordning. Den reglerar hur personuppgifter får samlas in, användas, lagras, skyddas och dokumenteras av organisationer, företag och myndigheter.\n\n"
+                "Reglerna är viktiga eftersom de ställer krav på laglig grund, transparens, ändamålsbegränsning, uppgiftsminimering, säkerhet, registrerades rättigheter och ansvarsskyldighet. "
+                "Organisationer måste därför kunna visa att personuppgifter hanteras korrekt och skyddas på ett rimligt sätt.\n\n"
+                "För CyberLex Sweden är GDPR särskilt relevant vid cyberincidenter, eftersom incidenter kan leda till att personuppgifter röjs, ändras, förstörs eller blir otillgängliga. "
+                "I Sverige är IMY tillsynsmyndighet för GDPR och dataskydd."
+            )
+        return (
+            "GDPR is the EU General Data Protection Regulation. It governs how personal data may be collected, used, stored, protected, and documented by organizations, companies, and public authorities.\n\n"
+            "It matters because it sets requirements for lawful processing, transparency, purpose limitation, data minimisation, security, individual rights, and accountability. "
+            "Organizations therefore need to show that personal data is handled properly and protected with suitable measures.\n\n"
+            "For CyberLex Sweden, GDPR is especially relevant in cyber incidents because personal data may be disclosed, altered, destroyed, lost, or made unavailable. "
+            "In Sweden, IMY supervises GDPR and personal data protection."
+        )
+
+    if "dataintrång" in question_lower or "data intrusion" in question_lower or "unauthorized access" in question_lower or "obehörig åtkomst" in question_lower:
+        if use_swedish:
+            return (
+                "Dataintrång är ett svenskt straffrättsligt begrepp som rör obehörig åtkomst till, eller obehörig påverkan på, data eller informationssystem. "
+                "Det kan till exempel handla om att ta sig in i ett system utan tillstånd, använda inloggningsuppgifter utan behörighet eller påverka data på ett otillåtet sätt.\n\n"
+                "Det viktiga är skillnaden mellan tillåtet säkerhetsarbete och obehöriga handlingar. Penetrationstestning och felsökning behöver därför ha tydligt uppdrag, tydlig omfattning och tydligt tillstånd.\n\n"
+                "För CyberLex Sweden är dataintrång relevant eftersom många cyberincidenter börjar med frågor om åtkomst, behörighet, kontoövertagande, loggar och påverkan på system eller information."
+            )
+        return (
+            "Data intrusion is connected to unauthorized access to, or unauthorized interference with, data or information systems. "
+            "In Swedish criminal law, this is commonly connected to the offence called dataintrång.\n\n"
+            "The key issue is authorization. Security testing, troubleshooting, and investigation should have clear permission, scope, and rules, while access or interference without permission may create legal risk.\n\n"
+            "For CyberLex Sweden, data intrusion is relevant because many cyber incidents involve questions about access, permissions, account compromise, logs, and interference with systems or information."
+        )
+
+    if "cyber resilience act" in question_lower or "cyberresiliensakten" in question_lower or "products with digital elements" in question_lower or "produkter med digitala element" in question_lower:
+        if use_swedish:
+            return (
+                "Cyber Resilience Act är en EU-förordning om cybersäkerhetskrav för produkter med digitala element. "
+                "Den är relevant för uppkopplad hårdvara, mjukvara och andra digitala produkter som kan påverka cybersäkerheten.\n\n"
+                "Reglerna fokuserar bland annat på säker produktdesign, sårbarhetshantering, säkerhetsuppdateringar, dokumentation och ansvar för tillverkare och andra aktörer i produktkedjan. "
+                "Målet är att produkter ska vara säkrare under hela livscykeln, inte bara när de släpps.\n\n"
+                "För CyberLex Sweden är Cyber Resilience Act relevant när cybersäkerhetsfrågor rör produktutveckling, leverantörer, sårbarheter, uppdateringar eller ansvar för digitala produkter."
+            )
+        return (
+            "The Cyber Resilience Act is an EU regulation setting cybersecurity requirements for products with digital elements. "
+            "It is relevant for connected hardware, software, and other digital products that can affect cybersecurity.\n\n"
+            "The regulation focuses on secure product design, vulnerability handling, security updates, documentation, and duties for manufacturers and other actors in the product chain. "
+            "The goal is for products to remain more secure throughout their lifecycle, not only at release.\n\n"
+            "For CyberLex Sweden, the Cyber Resilience Act is relevant when cybersecurity questions involve product development, suppliers, vulnerabilities, updates, or responsibility for digital products."
+        )
+
+    if "attacks against information systems" in question_lower or "attacker mot informationssystem" in question_lower or "eu cybercrime" in question_lower or "eu cyberbrott" in question_lower:
+        if use_swedish:
+            return (
+                "EU-reglerna om attacker mot informationssystem handlar om cyberbrott som riktas mot data, system och digital infrastruktur. "
+                "De är kopplade till olaglig åtkomst, systemstörningar, datastörningar och verktyg eller handlingar som möjliggör sådana angrepp.\n\n"
+                "Reglerna är viktiga eftersom de hjälper EU-länder att behandla centrala former av cyberangrepp som brott och samarbeta kring bekämpning av cyberbrottslighet.\n\n"
+                "För CyberLex Sweden är detta relevant när en fråga rör gränsen mellan cybersäkerhetsarbete och brottsliga handlingar, eller när en incident kan ha koppling till obehörig åtkomst eller angrepp mot system."
+            )
+        return (
+            "The EU rules on attacks against information systems concern cybercrime directed at data, systems, and digital infrastructure. "
+            "They connect to illegal access, system interference, data interference, and tools or actions that enable such attacks.\n\n"
+            "They matter because they help EU countries treat core forms of cyber attacks as criminal conduct and support cooperation against cybercrime.\n\n"
+            "For CyberLex Sweden, this is relevant when a question concerns the boundary between authorized cybersecurity work and criminal activity, or when an incident may involve unauthorized access or attacks against systems."
+        )
+
+    return ""
+
+
 def generate_simple_answer(question, best_match, language="English"):
     # Generates a simple source-based answer from the best matching chunk.
     question_lower = question.lower()
@@ -4381,7 +4589,12 @@ def generate_simple_answer(question, best_match, language="English"):
     if is_practical_incident_response_question(question):
         return generate_incident_response_answer(question, language)
 
-    if (
+    enhanced_basic_answer = generate_enhanced_basic_summary(question, language)
+
+    if enhanced_basic_answer:
+        answer = enhanced_basic_answer
+
+    elif (
         "data breach" in question_lower
         or "personal data breach" in question_lower
         or "personuppgiftsincident" in question_lower
