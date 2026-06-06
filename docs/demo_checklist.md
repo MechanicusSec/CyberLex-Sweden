@@ -4,7 +4,7 @@
 
 This checklist is used before and during a CyberLex Sweden demonstration.
 
-The goal is to confirm that the local app runs correctly, trusted source files load, supported topics return source-grounded answers, Swedish and English language behavior works, practical incident-response questions work, incident log templates appear for incident questions, clean incident summaries can be downloaded, attention levels behave reasonably, source context is readable, and out-of-scope or unsafe questions are refused.
+The goal is to confirm that the local app runs correctly, trusted source files load, supported topics return source-grounded answers, Swedish and English language behavior works, practical incident-response questions work, incident log templates appear for incident questions, download-ready incident summaries can be downloaded without duplicating the full template in the UI, attention levels behave reasonably, source context is filtered by incident type, source context is readable, and out-of-scope or unsafe questions are refused.
 
 CyberLex Sweden is an educational prototype. It does not provide legal advice and should not replace a lawyer, official authority guidance, or a professional incident-response team.
 
@@ -191,7 +191,7 @@ Check that the answer includes:
 - source match details collapsed by default
 - important limitation
 - CyberLex attention level
-- practical explanation
+- no Practical explanation card for this simple definition question
 - relevant source context collapsed by default
 - additional matched source sections collapsed by default
 
@@ -236,7 +236,7 @@ Check that the Swedish view uses Swedish labels where possible:
 - Officiella källor
 - Viktig begränsning
 - CyberLex uppmärksamhetsnivå
-- Praktisk förklaring
+- no Praktisk förklaring card for simple definition or authority questions
 - Relevant källkontext
 - Ytterligare matchande källsektioner
 
@@ -322,6 +322,12 @@ Expected attention level:
 Informational
 ```
 
+Expected UI behavior:
+
+```text
+Practical explanation should not appear for this simple definition question.
+```
+
 The answer should mention:
 
 - ICT risk management
@@ -368,6 +374,12 @@ Expected attention level:
 Elevated
 ```
 
+Expected UI behavior:
+
+```text
+Practical explanation should appear because this is a reporting and breach-assessment question.
+```
+
 Pass condition:
 
 ```text
@@ -398,6 +410,12 @@ Expected attention level:
 
 ```text
 Information
+```
+
+Expected UI behavior:
+
+```text
+Praktisk förklaring should not appear for this simple authority question.
 ```
 
 Pass condition:
@@ -431,7 +449,42 @@ Attention levels are useful and do not mark simple definition questions as High.
 
 ---
 
-## 15. Test suspicious login incident
+## 15. Test conditional practical explanation behavior
+
+CyberLex should show Practical explanation / Praktisk förklaring only when it adds useful interpretation.
+
+For simple definition or authority questions, the Practical explanation card should not appear.
+
+Test these questions:
+
+| Question | Expected behavior |
+|---|---|
+| `What is NIS2?` | No Practical explanation card |
+| `Vad är NIS2?` | No Praktisk förklaring card |
+| `What is DORA?` | No Practical explanation card |
+| `Vad är IMY?` | No Praktisk förklaring card |
+| `What authority handles GDPR in Sweden?` | No Practical explanation card |
+
+For reporting, assessment, or incident-response questions, Practical explanation should appear where useful.
+
+Test these questions:
+
+| Question | Expected behavior |
+|---|---|
+| `When must a personal data breach be reported?` | Practical explanation appears |
+| `Can an incident need to be reported under both NIS2 and GDPR?` | Practical explanation appears |
+| `What should we do if we receive a suspicious email?` | Practical explanation appears |
+| `Vad gör vi om filer har krypterats?` | Praktisk förklaring appears |
+
+Pass condition:
+
+```text
+The app hides Practical explanation for simple definition or authority questions and shows it for reporting, assessment, or incident-response questions where useful.
+```
+
+---
+
+## 16. Test suspicious login incident
 
 Ask:
 
@@ -465,6 +518,14 @@ Expected attention level:
 Hög
 ```
 
+Expected source context behavior:
+
+```text
+Relevant source context should show suspicious-login source sections only.
+It should not show suspicious email, data leak, ransomware, or generic hacking cards.
+If no clean same-language source context exists, the source-context expander may be hidden.
+```
+
 Pass condition:
 
 ```text
@@ -473,7 +534,7 @@ The answer is specific to suspicious login and does not reuse the generic hackin
 
 ---
 
-## 16. Test suspicious email or phishing incident
+## 17. Test suspicious email or phishing incident
 
 Ask:
 
@@ -507,6 +568,13 @@ Expected attention level:
 High
 ```
 
+Expected source context behavior:
+
+```text
+Relevant source context should show suspicious email or phishing source sections only.
+It should not show data leak, suspected hacking, ransomware, suspicious login, or compromised-account cards.
+```
+
 Pass condition:
 
 ```text
@@ -515,7 +583,7 @@ The answer is specific to suspicious email or phishing and does not reuse the su
 
 ---
 
-## 17. Test compromised account incident
+## 18. Test compromised account incident
 
 Ask:
 
@@ -558,7 +626,7 @@ The answer is specific to compromised accounts and does not reuse the phishing o
 
 ---
 
-## 18. Test compromised account typo handling
+## 19. Test compromised account typo handling
 
 Ask:
 
@@ -590,7 +658,7 @@ The question is not rejected as out-of-scope and the answer gives compromised-ac
 
 ---
 
-## 19. Test data leak incident
+## 20. Test data leak incident
 
 Ask:
 
@@ -626,6 +694,14 @@ Expected attention level:
 High
 ```
 
+Expected source context behavior:
+
+```text
+Relevant source context should show data leak or personal-data breach source sections only.
+It should not show suspicious email, suspicious login, ransomware, or generic hacking cards.
+Source context should not end with visible Markdown separators such as ---.
+```
+
 Pass condition:
 
 ```text
@@ -634,7 +710,7 @@ The answer focuses on data leak handling and GDPR assessment.
 
 ---
 
-## 20. Test ransomware or encrypted files incident
+## 21. Test ransomware or encrypted files incident
 
 Ask:
 
@@ -669,6 +745,15 @@ Expected attention level:
 Hög
 ```
 
+Expected source context behavior:
+
+```text
+Relevant source context should show ransomware or encrypted-files source sections only.
+It should not show suspicious email, suspicious login, data leak, or compromised-account cards.
+Source context should not show language-warning cards in normal UI.
+If no clean Swedish source context exists, Relevant källkontext may be hidden instead of showing a developer-style warning.
+```
+
 Pass condition:
 
 ```text
@@ -677,7 +762,7 @@ The answer is specific to ransomware or encrypted files.
 
 ---
 
-## 21. Check CyberLex assessment checklist
+## 22. Check CyberLex assessment checklist
 
 For any incident-response question, open the CyberLex assessment checklist.
 
@@ -713,7 +798,7 @@ The checklist supports practical incident handling, does not simply duplicate th
 
 ---
 
-## 22. Check incident log template
+## 23. Check incident log template
 
 For a practical incident-response question, open the incident log template section.
 
@@ -756,7 +841,7 @@ The incident log template appears for practical incident-response questions.
 
 ---
 
-## 23. Check incident log template topic specificity
+## 24. Check incident log template topic specificity
 
 Test these questions:
 
@@ -788,7 +873,7 @@ The incident log template changes depending on the detected incident type.
 
 ---
 
-## 24. Check clean downloaded incident summary
+## 25. Check download-ready incident summary
 
 Use this question:
 
@@ -796,7 +881,9 @@ Use this question:
 What should we do if we receive a suspicious email?
 ```
 
-Download the incident summary.
+Open the download-ready incident summary section and download the incident summary.
+
+The download-ready section in the UI should not repeat the full incident log template or full incident summary text area.
 
 The downloaded file should include:
 
@@ -825,12 +912,12 @@ Sources, official links, source metadata, and source context are shown in the Cy
 Pass condition:
 
 ```text
-The downloaded incident summary is clean, readable, and useful as an incident note.
+The download-ready UI section is not duplicated, and the downloaded incident summary is clean, readable, and useful as an incident note.
 ```
 
 ---
 
-## 25. Confirm incident log template does not appear for ordinary legal questions
+## 26. Confirm incident log template does not appear for ordinary legal questions
 
 Ask:
 
@@ -850,14 +937,14 @@ Incident log template is hidden for ordinary legal explanation questions.
 
 ---
 
-## 26. Check source visibility and cleaner UI
+## 27. Check source visibility and cleaner UI
 
 For supported questions, check that CyberLex shows:
 
 - official source links clearly
 - source match details collapsed by default
 - source metadata inside source match details
-- relevant source context available in an expander
+- relevant source context available in an expander when clean same-language source context exists
 - additional matched source sections available in an expander
 
 Technical match information should be available, but it should not dominate the normal answer view.
@@ -870,7 +957,7 @@ The main answer is easy to read, while technical source details remain available
 
 ---
 
-## 27. Check relevant source context readability
+## 28. Check relevant source context readability
 
 Open the relevant source context section.
 
@@ -890,24 +977,35 @@ Useful questions
 Exempelfrågor
 ```
 
+Source context should use these labels:
+
+```text
+Supporting source text
+Stödjande källtext
+```
+
 Source context should also avoid:
 
 - broken sentence endings
 - ugly cut-off `...` fragments
+- visible Markdown separators such as `---`
+- example-question bullets
 - code fences
 - HTML fragments
 - file-path junk such as `data/example_file.md`
+- language-warning cards in normal UI
+- empty source-context cards
 - huge empty spacing between short sentences
 
 Pass condition:
 
 ```text
-The source context supports the answer, is compact enough to read during a demo, and does not expose internal routing or helper notes.
+The source context supports the answer, is compact enough to read during a demo, and does not expose internal routing, helper notes, language-warning cards, separators, or empty cards.
 ```
 
 ---
 
-## 28. Check source context language behavior
+## 29. Check source context language behavior
 
 Use Swedish mode or Auto mode.
 
@@ -927,7 +1025,7 @@ Expected result:
 
 The visible source context should prefer Swedish source sections when available.
 
-The source context should not show mostly English paragraphs in Swedish mode unless there is no Swedish equivalent. If a local source section is only available in English, the app should avoid presenting it as normal Swedish source text.
+The source context should not show mostly English paragraphs in Swedish mode. If a local source section is only available in English, the app should hide that source-context card or hide the source-context expander instead of showing a developer-style language warning.
 
 Pass condition:
 
@@ -937,7 +1035,7 @@ Swedish mode prefers Swedish source context where available and avoids confusing
 
 ---
 
-## 29. Check source metadata language behavior
+## 30. Check source metadata language behavior
 
 Use Swedish mode or Auto mode.
 
@@ -967,7 +1065,7 @@ Source metadata does not show confusing mixed Swedish/English text in Swedish mo
 
 ---
 
-## 30. Test out-of-scope refusal
+## 31. Test out-of-scope refusal
 
 Ask:
 
@@ -993,7 +1091,7 @@ No official cyber/legal source should be displayed for the tax law question.
 
 ---
 
-## 31. Test offensive cyber refusal
+## 32. Test offensive cyber refusal
 
 Ask:
 
@@ -1025,7 +1123,7 @@ The refusal view should be clean and should not show:
 - source match details
 - CyberLex assessment checklist
 - incident log template
-- copy-ready incident summary
+- download-ready incident summary
 - relevant source context
 - additional matched source sections
 
@@ -1037,7 +1135,7 @@ CyberLex refuses the unsafe request, redirects toward lawful defensive handling,
 
 ---
 
-## 32. Test Swedish offensive cyber refusal
+## 33. Test Swedish offensive cyber refusal
 
 Ask:
 
@@ -1061,7 +1159,7 @@ The refusal view should be clean and should not show:
 - source match details
 - CyberLex assessment checklist
 - incident log template
-- copy-ready incident summary
+- download-ready incident summary
 - relevant source context
 - additional matched source sections
 
@@ -1073,7 +1171,7 @@ CyberLex refuses log deletion or trace-hiding instructions in Swedish and redire
 
 ---
 
-## 33. Check official source links
+## 34. Check official source links
 
 For supported questions, check that official source links appear.
 
@@ -1095,7 +1193,7 @@ Official source links are visible, readable, and clickable.
 
 ---
 
-## 34. Check source metadata
+## 35. Check source metadata
 
 For supported questions, open source match details and check that source metadata appears.
 
@@ -1123,7 +1221,7 @@ The metadata appears inside source match details and shows the stored local revi
 
 ---
 
-## 35. Run the source audit
+## 36. Run the source audit
 
 Stop the Streamlit app if needed with:
 
@@ -1157,7 +1255,7 @@ docs/source_audit_report.md is created or updated.
 
 ---
 
-## 36. Check source audit report
+## 37. Check source audit report
 
 Open:
 
@@ -1188,7 +1286,7 @@ The report clearly explains that it checks only local project files.
 
 ---
 
-## 37. Final Git check
+## 38. Final Git check
 
 Run:
 
@@ -1210,7 +1308,7 @@ If everything is ready, stage, commit, and push:
 
 ```powershell
 git add docs/demo_checklist.md docs/source_audit_report.md
-git commit -m "Update demo checklist for summary and source context cleanup"
+git commit -m "Update demo checklist for incident UI cleanup"
 git push
 ```
 
@@ -1261,15 +1359,21 @@ The demo is ready if CyberLex Sweden can show:
 - source quality labels
 - legal limitation notice
 - CyberLex attention level
-- practical explanation
+- conditional practical explanation
 - CyberLex assessment checklist only for practical incident-response questions
 - incident log template only for practical incident-response questions
-- clean downloaded incident summary
+- download-ready incident summary without duplicated full template in the UI
 - cleaner technical source details
 - readable and compact relevant source context
+- incident source context filtered by detected incident type
+- source context using Supporting source text / Stödjande källtext labels
 - source context without internal helper text
 - source context without broken cut-off fragments
+- source context without visible Markdown separators such as ---
+- source context without example-question bullets
 - source context without code fences, HTML fragments, or file-path junk
+- source context without developer-style language-warning cards
+- source context without empty cards
 - Swedish source metadata without confusing mixed-language text
 - out-of-scope refusal
 - clean offensive cyber refusal
