@@ -85,7 +85,7 @@ def localize_section_name(section_name, language="English"):
         "unauthorized access first steps": "Första steg vid obehörig åtkomst",
         "suspected data leak first steps": "Första steg vid misstänkt dataläcka",
         "ransomware first steps": "Första steg vid ransomware",
-        "malware infection first steps": "Första steg vid malware",
+        "malware infection first steps": "Första steg vid skadlig kod",
         "compromised account first steps": "Första steg vid komprometterat konto",
         "suspicious login activity first steps": "Första steg vid misstänkt inloggning",
         "swedish suspicious login activity first steps": "Första steg vid misstänkt inloggning",
@@ -1413,6 +1413,204 @@ def search_chunks(question, chunks):
     return results
 
 
+
+def get_incident_source_context_profile(question):
+    # Returns the incident subtype for source-context filtering.
+    # This keeps the visible "Relevant source context" focused on the user's
+    # exact incident type instead of showing nearby incident playbook sections.
+    question = str(question or "")
+
+    if is_suspicious_email_question(question):
+        return "suspicious_email"
+
+    if is_suspicious_login_question(question):
+        return "suspicious_login"
+
+    if is_compromised_account_question(question):
+        return "compromised_account"
+
+    if is_data_leak_response_question(question):
+        return "data_leak"
+
+    if is_ransomware_or_malware_question(question):
+        return "ransomware_or_malware"
+
+    if is_suspected_hacking_question(question):
+        return "suspected_hacking"
+
+    return None
+
+
+def is_incident_source_context_match(result, question):
+    # Returns True when a source-context result belongs to the same incident
+    # subtype as the user's practical incident-response question.
+    # Search ranking may still use broader sections, but the visible source
+    # context should not make CyberLex look confused by mixing phishing,
+    # login, data-leak, hacking, ransomware, and account-compromise cards together.
+    profile = get_incident_source_context_profile(question)
+
+    if not profile:
+        return True
+
+    section = str(result.get("section", "")).lower().strip()
+    filename = str(result.get("filename", "")).lower().strip()
+
+    # Strict subtype filtering is only for the incident-response playbook.
+    # For practical incident questions, the normal source context should focus
+    # on the exact playbook subtype instead of mixing in other playbook incidents.
+    if "cyber_incident_response_playbook" not in filename:
+        return False
+
+    profiles = {
+        "suspicious_email": {
+            "allow": [
+                "suspicious email",
+                "phishing",
+                "misstänkt mejl",
+                "misstänkt e-post",
+                "nätfiske",
+            ],
+            "block": [
+                "suspicious login",
+                "misstänkt inloggning",
+                "suspected hacking",
+                "hacking",
+                "intrusion",
+                "data leak",
+                "dataläcka",
+                "ransomware",
+                "malware",
+                "compromised account",
+                "komprometterat konto",
+            ],
+        },
+        "suspicious_login": {
+            "allow": [
+                "suspicious login",
+                "login activity",
+                "misstänkt inloggning",
+                "ovanlig inloggning",
+            ],
+            "block": [
+                "suspicious email",
+                "phishing",
+                "misstänkt mejl",
+                "data leak",
+                "dataläcka",
+                "ransomware",
+                "malware",
+                "compromised account",
+                "komprometterat konto",
+                "suspected hacking",
+            ],
+        },
+        "compromised_account": {
+            "allow": [
+                "compromised account",
+                "komprometterat konto",
+                "account checklist",
+            ],
+            "block": [
+                "suspicious email",
+                "phishing",
+                "suspicious login",
+                "data leak",
+                "dataläcka",
+                "ransomware",
+                "malware",
+            ],
+        },
+        "data_leak": {
+            "allow": [
+                "data leak",
+                "dataläcka",
+            ],
+            "block": [
+                "suspicious email",
+                "phishing",
+                "suspicious login",
+                "suspected hacking",
+                "hacking",
+                "intrusion",
+                "ransomware",
+                "malware",
+                "compromised account",
+            ],
+        },
+        "ransomware_or_malware": {
+            "allow": [
+                "ransomware",
+                "malware",
+                "encrypted files",
+                "krypterade filer",
+                "filer har krypterats",
+            ],
+            "block": [
+                "suspicious email",
+                "phishing",
+                "suspicious login",
+                "data leak",
+                "dataläcka",
+                "compromised account",
+            ],
+        },
+        "suspected_hacking": {
+            "allow": [
+                "suspected hacking",
+                "hacking",
+                "intrusion",
+                "unauthorized access",
+                "obehörig åtkomst",
+                "misstänkt hackning",
+                "misstänkt intrång",
+            ],
+            "block": [
+                "suspicious email",
+                "phishing",
+                "suspicious login",
+                "data leak",
+                "dataläcka",
+                "ransomware",
+                "malware",
+                "compromised account",
+            ],
+        },
+    }
+
+    rule = profiles.get(profile)
+
+    if not rule:
+        return True
+
+    if any(marker in section for marker in rule["block"]):
+        return False
+
+    return any(marker in section for marker in rule["allow"])
+
+
+def filter_source_context_by_incident_type(search_results, question):
+    # Strictly filters visible source-context cards for practical incident
+    # questions when CyberLex detects a clear incident subtype.
+    # If the strict filter finds nothing, fall back to the original results
+    # so the UI never becomes empty because of one odd source heading.
+    if not is_practical_incident_response_question(question):
+        return search_results
+
+    profile = get_incident_source_context_profile(question)
+
+    if not profile:
+        return search_results
+
+    focused_results = [
+        result for result in search_results
+        if is_incident_source_context_match(result, question)
+    ]
+
+    if focused_results:
+        return focused_results
+
+    return search_results
+
 def get_source_context_section_priority(question, section_name, language="English"):
     # Gives extra priority to source context sections that match the user's
     # exact incident subtype. This affects only the displayed source context,
@@ -1622,12 +1820,55 @@ def is_low_value_source_context_section(section_name):
     return any(marker in section for marker in low_value_markers)
 
 
+
+def is_noise_source_context_line(stripped_line):
+    # Removes separators and example-question bullets from source previews.
+    # Those lines are useful in Markdown authoring, but look broken in the UI.
+    stripped = str(stripped_line or "").strip()
+    if not stripped:
+        return False
+
+    if stripped in {"---", "----", "-----", "***", "___"}:
+        return True
+
+    without_bullet = re.sub(r"^[-*•]\s*", "", stripped).strip()
+    lower = without_bullet.lower()
+
+    question_starters = [
+        "what should", "what do", "when must", "when should", "how do", "how should",
+        "vad ska", "vad bör", "vad gör", "hur gör", "hur ska", "hur bör", "när måste", "när ska",
+    ]
+
+    if without_bullet.endswith("?") and any(lower.startswith(starter) for starter in question_starters):
+        return True
+
+    return False
+
+
+def clean_source_context_tail(text):
+    # Removes leftover Markdown separators and repeated blank tail junk after compacting.
+    lines = [line.rstrip() for line in str(text or "").splitlines()]
+
+    while lines and not lines[-1].strip():
+        lines.pop()
+
+    while lines and lines[-1].strip() in {"---", "----", "-----", "***", "___"}:
+        lines.pop()
+        while lines and not lines[-1].strip():
+            lines.pop()
+
+    return "\n".join(lines).strip()
+
 def localize_source_excerpt_for_ui(excerpt, language="English"):
     # Keeps the visible UI language consistent.
     # CyberLex should not silently auto-translate legal/source excerpts, because
     # that could make a translated sentence look like exact source text.
-    # Instead, when a local source excerpt is only available in the other language,
-    # the UI shows a clear same-language note.
+    #
+    # Earlier versions showed a developer-style warning when a source section
+    # existed only in the other language. That was accurate, but ugly in a
+    # user-facing test run. The cleaner behavior is to hide that source-context
+    # card and let the answer, official links, metadata, checklist, and incident
+    # template carry the normal UI.
     text = str(excerpt or "").strip()
     use_swedish = language == "Svenska"
 
@@ -1636,21 +1877,11 @@ def localize_source_excerpt_for_ui(excerpt, language="English"):
 
     if use_swedish:
         if looks_english_text(text) and not looks_swedish_text(text):
-            return (
-                "Den lokala källsektionen är skriven på engelska i kunskapsbasen. "
-                "CyberLex visar därför inte ett engelskt källutdrag i svenskt läge. "
-                "Använd de officiella källänkarna och källmetadata ovan för granskning, "
-                "eller lägg till en svensk version av denna källsektion i Markdown-filen."
-            )
+            return ""
         return text
 
     if looks_swedish_text(text) and not looks_english_text(text):
-        return (
-            "This local source section is written in Swedish in the knowledge base. "
-            "CyberLex therefore does not show a Swedish excerpt in English mode. "
-            "Use the official source links and source metadata above for review, "
-            "or add an English version of this source section to the Markdown file."
-        )
+        return ""
 
     return text
 
@@ -1777,6 +2008,9 @@ def clean_source_excerpt(content, section_name="", language="English", max_chars
         stripped = line.strip()
         lower = stripped.lower()
 
+        if is_noise_source_context_line(stripped):
+            continue
+
         # Remove Markdown code fences and fenced code blocks from source previews.
         # Source context should show readable source text, not project file paths or leftover HTML.
         if stripped.startswith("```"):
@@ -1827,6 +2061,8 @@ def clean_source_excerpt(content, section_name="", language="English", max_chars
         for raw_line in lines:
             stripped = raw_line.strip()
             lower = stripped.lower()
+            if is_noise_source_context_line(stripped):
+                continue
             if stripped.startswith("```"):
                 fallback_in_fenced_code_block = not fallback_in_fenced_code_block
                 continue
@@ -1851,6 +2087,77 @@ def clean_source_excerpt(content, section_name="", language="English", max_chars
     excerpt = compact_source_excerpt_spacing(excerpt)
 
     return excerpt
+
+
+def clean_source_excerpt_relaxed(content, language="English", max_chars=1400):
+    # Fallback preview cleaner used only when the stricter cleaner removes too
+    # much text. This prevents an expanded source-context section from becoming
+    # empty while still removing obvious internal/helper junk.
+    lines = str(content or "").splitlines()
+
+    if lines and lines[0].strip().startswith("#"):
+        lines = lines[1:]
+
+    cleaned = []
+    in_fenced_code_block = False
+    internal_helper_markers = [
+        "cyberlex should explain",
+        "cyberlex sweden should explain",
+        "cyberlex should use",
+        "cyberlex sweden should use",
+        "this source is used for",
+        "this section is used for",
+        "use this source when",
+        "use this section when",
+        "useful questions",
+        "example questions",
+        "exempelfrågor",
+        "cyberlex bör",
+        "cyberlex sweden bör",
+        "cyberlex ska",
+        "cyberlex sweden ska",
+        "denna källa används",
+        "den här källan används",
+        "denna sektion används",
+        "den här sektionen används",
+    ]
+
+    for raw_line in lines:
+        line = raw_line.rstrip()
+        stripped = line.strip()
+        lower = stripped.lower()
+
+        if is_noise_source_context_line(stripped):
+            continue
+
+        if stripped.startswith("```"):
+            in_fenced_code_block = not in_fenced_code_block
+            continue
+
+        if in_fenced_code_block:
+            continue
+
+        if "<div" in lower or "</div" in lower:
+            continue
+
+        if any(marker in lower for marker in internal_helper_markers):
+            continue
+
+        if not stripped:
+            if cleaned and cleaned[-1] != "":
+                cleaned.append("")
+            continue
+
+        cleaned.append(line)
+
+    excerpt = "\n".join(cleaned).strip()
+    excerpt = trim_excerpt_without_cutting_sentence(excerpt, language=language, max_chars=max_chars)
+    excerpt = localize_source_excerpt_for_ui(excerpt, language)
+    excerpt = compact_source_excerpt_spacing(excerpt)
+    excerpt = clean_source_context_tail(excerpt)
+
+    return excerpt
+
 
 def build_source_context(search_results, language="English", max_results=3, question=None):
     # Builds a short source context summary from the top matched source sections.
@@ -1894,20 +2201,34 @@ def build_source_context(search_results, language="English", max_results=3, ques
         language=language
     )
 
-    # Prefer source sections whose actual text already matches the selected UI language.
-    # If no matching-language sections exist, keep the best source matches but replace
-    # the excerpt with a same-language note rather than leaking the other language.
-    if use_swedish:
-        same_language_results = [
-            result for result in filtered_results
-            if looks_swedish_text(result.get("content", ""))
-        ]
-    else:
-        same_language_results = [
-            result for result in filtered_results
-            if looks_english_text(result.get("content", ""))
-            and not (looks_swedish_text(result.get("content", "")) and not looks_english_text(result.get("content", "")))
-        ]
+    # For practical incident-response questions, keep the visible source context
+    # focused on the detected incident subtype. A phishing question should not
+    # display hacking or data-leak source cards unless the user actually asked
+    # about those topics.
+    filtered_results = filter_source_context_by_incident_type(
+        filtered_results,
+        question
+    )
+
+    # Prefer source sections whose cleaned visible preview matches the selected UI language.
+    # Use the cleaned excerpt, not the raw Markdown, because some sections contain
+    # English/Swedish example questions before the actual source text.
+    same_language_results = []
+    for result in filtered_results:
+        preview = clean_source_excerpt(
+            result.get("content", ""),
+            section_name=result.get("section", ""),
+            language=language,
+            max_chars=1400,
+        )
+
+        if not str(preview or "").strip():
+            continue
+
+        if use_swedish and looks_swedish_text(preview):
+            same_language_results.append(result)
+        elif not use_swedish and looks_english_text(preview) and not (looks_swedish_text(preview) and not looks_english_text(preview)):
+            same_language_results.append(result)
 
     if same_language_results:
         filtered_results = same_language_results
@@ -1957,6 +2278,16 @@ def build_source_context(search_results, language="English", max_results=3, ques
             language=language,
             max_chars=1400
         )
+
+        if not str(excerpt or "").strip():
+            excerpt = clean_source_excerpt_relaxed(
+                result.get("content", ""),
+                language=language,
+                max_chars=1400
+            )
+
+        if not str(excerpt or "").strip():
+            continue
 
         context_blocks.append(
             f'<div class="context-card">'
@@ -2350,7 +2681,7 @@ def generate_assessment_checklist(question, search_results, language="English"):
                 "Om någon klickade eller skrev in uppgifter: har kontot behandlats som misstänkt komprometterat?",
                 "Har vi återkallat sessioner, bytt lösenord från en ren enhet och kontrollerat MFA om uppgifter kan ha läckt?",
                 "Har vi kontrollerat e-postregler, vidarebefordran, OAuth-appar och misstänkta skickade meddelanden?",
-                "Har vi kontrollerat om mejlet innehöll malware och om någon klient behöver isoleras?",
+                "Har vi kontrollerat om mejlet innehöll skadlig kod och om någon klient behöver isoleras?",
                 "Har vi bedömt om personuppgifter eller känslig information kan ha påverkats?",
                 "Har vi dokumenterat tidslinje, användare, åtgärder, bevis och beslut?",
             ]
@@ -2750,7 +3081,7 @@ def generate_incident_log_template(question, language="English"):
 
     elif is_ransomware_or_malware_question(question):
         incident_type_en = "Ransomware or malware"
-        incident_type_sv = "Ransomware eller malware"
+        incident_type_sv = "Ransomware eller skadlig kod"
         extra_fields_en = [
             "Affected systems:",
             "Systems isolated:",
@@ -2765,7 +3096,7 @@ def generate_incident_log_template(question, language="English"):
             "System isolerade:",
             "Filer krypterade eller ändrade:",
             "Backuper kontrollerade:",
-            "Malwareprov eller larm sparat:",
+            "Prov på skadlig kod eller larm sparat:",
             "Misstänkt lateral rörelse:",
             "Ansvarig för återställning:",
         ]
@@ -3436,7 +3767,7 @@ def detect_question_topic(question, language="English"):
         or "cyberattack" in question_lower
         or "cyber attack" in question_lower
     ):
-        return "Ransomware- eller malwareincident" if use_swedish else "Ransomware or malware incident"
+        return "Ransomware- eller skadlig kod-incident" if use_swedish else "Ransomware or malware incident"
 
     if (
         "cyber incident" in question_lower
@@ -3773,7 +4104,7 @@ def generate_incident_response_answer(question, language="English"):
                 "Om någon klickade eller skrev in uppgifter: behandla kontot som misstänkt komprometterat.",
                 "Återkalla sessioner, byt lösenord från ren enhet och kontrollera MFA om kontouppgifter kan ha läckt.",
                 "Kontrollera e-postregler, vidarebefordran, OAuth-appar och misstänkta skickade meddelanden.",
-                "Kontrollera om mejlet innehöll malware och om någon klient behöver isoleras.",
+                "Kontrollera om mejlet innehöll skadlig kod och om någon klient behöver isoleras.",
                 "Bedöm om personuppgifter eller känslig information kan ha påverkats.",
                 "Dokumentera tidslinje, användare, åtgärder, bevis och beslut.",
             ]
@@ -3797,9 +4128,9 @@ def generate_incident_response_answer(question, language="English"):
                 "Dokumentera åtgärder, tidslinje, bevis och beslut.",
             ]
         elif is_ransomware_response_question(question):
-            title = "Rekommenderade första steg vid ransomware eller malware"
+            title = "Rekommenderade första steg vid ransomware eller skadlig kod"
             intro = (
-                "Vid ransomware eller malware är målet att begränsa spridning, bevara bevis, "
+                "Vid ransomware eller skadlig kod är målet att begränsa spridning, bevara bevis, "
                 "förstå omfattningen och återställa kontrollerat. Rensa inte blint innan bevis och tidslinje säkrats."
             )
             steps = [
@@ -4029,7 +4360,7 @@ def generate_simple_answer(question, best_match, language="English"):
     ):
         if use_swedish:
             answer = (
-                "Efter en ransomwareattack eller malwareincident bör organisationen först isolera drabbade system, "
+                "Efter en ransomwareattack eller incident med skadlig kod bör organisationen först isolera drabbade system, "
                 "begränsa vidare spridning, säkra loggar och bevis, och dokumentera tidslinjen. Därefter bör organisationen "
                 "bedöma om personuppgifter har påverkats, om anmälan till IMY enligt GDPR kan krävas, och om "
                 "incidentrapportering enligt NIS2 eller den svenska cybersäkerhetslagen kan vara relevant."
@@ -5607,19 +5938,15 @@ if question:
                     )
 
                     with st.expander(
-                        "Copy-ready incident summary" if language != "Svenska" else "Kopieringsklart incidentunderlag",
+                        "Download-ready incident summary" if language != "Svenska" else "Nedladdningsklart incidentunderlag",
                         expanded=False
                     ):
                         st.caption(
-                            "Copy this into a ticket, report, or incident note."
+                            "The downloaded file contains the answer, checklist, incident log template, source note, and disclaimer. "
+                            "The checklist and log template are shown separately above, so they are not repeated here in full."
                             if language != "Svenska"
-                            else "Kopiera detta till ett ärende, en rapport eller en incidentanteckning."
-                        )
-                        st.text_area(
-                            "Incident summary" if language != "Svenska" else "Incidentunderlag",
-                            value=copy_ready_summary,
-                            height=450,
-                            key=f"copy_ready_incident_summary_{hash(question)}",
+                            else "Den nedladdade filen innehåller svar, checklista, incidentloggmall, källnotering och ansvarsbegränsning. "
+                            "Checklistan och incidentloggmallen visas separat ovan, därför upprepas de inte här i full längd."
                         )
                         st.download_button(
                             "Download incident summary"
@@ -5630,15 +5957,23 @@ if question:
                             mime="text/plain",
                         )
 
-                with st.expander(
-                    "Relevant source context" if language != "Svenska" else "Relevant källkontext",
-                    expanded=False
-                ):
-                    st.caption(source_context_caption)
-                    st.markdown(
-                        build_source_context(search_results, language, max_results=3, question=question),
-                        unsafe_allow_html=True
-                    )
+                source_context_html = build_source_context(
+                    search_results,
+                    language,
+                    max_results=3,
+                    question=question,
+                )
+
+                if str(source_context_html or "").strip():
+                    with st.expander(
+                        "Relevant source context" if language != "Svenska" else "Relevant källkontext",
+                        expanded=False
+                    ):
+                        st.caption(source_context_caption)
+                        st.markdown(
+                            source_context_html,
+                            unsafe_allow_html=True
+                        )
 
                 with st.expander(other_matches_header, expanded=False):
                     st.caption(other_matches_caption)
