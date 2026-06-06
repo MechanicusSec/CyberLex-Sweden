@@ -60,6 +60,64 @@ def contains_any(text, terms):
 
 
 
+
+
+
+def get_current_ui_language():
+    # Safely returns the current CyberLex UI language for places where the
+    # normal language variable may not yet be available.
+    # This prevents example-question rendering from crashing with NameError.
+    for variable_name in ("selected_language", "answer_language", "language"):
+        if variable_name in globals():
+            value = globals().get(variable_name)
+            if value in ("English", "Svenska"):
+                return value
+
+    for state_key in ("selected_language", "answer_language", "language", "ui_language"):
+        value = st.session_state.get(state_key)
+        if value in ("English", "Svenska"):
+            return value
+
+    return "English"
+
+
+def clean_example_question_for_language(question, language="English"):
+    # Keeps example questions aligned with the selected UI language.
+    # English examples should not contain Swedish legal terms unless the term is
+    # the official name/acronym being explained, such as IMY or NIS2.
+    # Swedish examples should stay Swedish.
+    question_text = str(question or "").strip()
+
+    if language == "Svenska":
+        return question_text
+
+    english_replacements = {
+        "dataintrång": "data intrusion",
+        "cybersäkerhetslagen": "the Swedish Cybersecurity Act",
+        "personuppgiftsincident": "personal data breach",
+        "misstänkt mejl": "suspicious email",
+        "misstänkt inloggning": "suspicious login activity",
+        "dataläcka": "data leak",
+        "komprometterat konto": "compromised account",
+        "krypterade filer": "encrypted files",
+    }
+
+    cleaned = question_text
+    for swedish_term, english_term in english_replacements.items():
+        cleaned = re.sub(
+            re.escape(swedish_term),
+            english_term,
+            cleaned,
+            flags=re.IGNORECASE,
+        )
+
+    # Polish a few common phrasing outcomes.
+    cleaned = cleaned.replace("What is data intrusion?", "What is data intrusion?")
+    cleaned = cleaned.replace("What is the Swedish Cybersecurity Act?", "What is the Swedish Cybersecurity Act?")
+
+    return cleaned
+
+
 def localize_section_name(section_name, language="English"):
     # Converts internal Markdown section headings into user-facing labels.
     # The source files intentionally contain mixed English/Swedish headings so
@@ -5764,9 +5822,25 @@ if "selected_example_question" not in st.session_state:
 if "show_example_questions" not in st.session_state:
     st.session_state.show_example_questions = False
 
+if "main_question_input" not in st.session_state:
+    st.session_state.main_question_input = st.session_state.selected_example_question
+
+if "pending_example_question" in st.session_state:
+    st.session_state.selected_example_question = st.session_state.pending_example_question
+    st.session_state.main_question_input = st.session_state.pending_example_question
+    del st.session_state.pending_example_question
+
+def select_example_question(example_question):
+    # Store the clicked example question and apply it before the text input
+    # widget is created on the next Streamlit rerun.
+    # This avoids StreamlitAPIException from modifying a widget key after
+    # the widget has already been instantiated.
+    st.session_state.selected_example_question = example_question
+    st.session_state.pending_example_question = example_question
+    st.session_state.show_example_questions = False
+
 question = st.text_input(
     question_label,
-    value=st.session_state.selected_example_question,
     key="main_question_input"
 )
 
@@ -5797,7 +5871,7 @@ else:
         "What is DORA?",
         "When must a personal data breach be reported?",
         "What authority handles GDPR in Sweden?",
-        "What is dataintrång?",
+        "What is data intrusion?",
         "What should we do after suspicious login activity?",
         "What should we do if we receive a suspicious email?",
         "What should we do if an account is compromised?",
@@ -5828,14 +5902,12 @@ if st.session_state.show_example_questions:
     for index, example_question in enumerate(example_questions):
         st.code(example_question, language=None)
 
-        if st.button(
+        st.button(
             use_question_button_label,
-            key=f"example_question_{index}_{interface_language}"
-        ):
-            st.session_state.selected_example_question = example_question
-            st.session_state.main_question_input = example_question
-            st.session_state.show_example_questions = False
-            st.rerun()
+            key=f"example_question_{index}_{interface_language}",
+            on_click=select_example_question,
+            args=(clean_example_question_for_language(example_question, get_current_ui_language()),),
+        )
 
 # This controls the answer language.
 # Auto detects Swedish or English only after the user has typed a question.
