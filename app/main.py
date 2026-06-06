@@ -60,6 +60,96 @@ def contains_any(text, terms):
 
 
 
+def detect_ui_language_from_question(question):
+    # Detects whether a user question should be handled in Swedish or English.
+    # This is intentionally broader than a strict dictionary lookup because users
+    # often mix Swedish grammar with English security words such as malware,
+    # ransomware, phishing, GDPR, NIS2, DORA, or MFA.
+    question_lower = normalize_query_text(question).strip()
+
+    if not question_lower:
+        return "English"
+
+    words = set(clean_words(question_lower))
+
+    strong_swedish_markers = {
+        "är", "å", "ä", "ö", "vårt", "vårat", "vår", "våra",
+        "misstänker", "misstänkt", "hackning", "hackad", "hackade",
+        "intrång", "dataläcka", "läckt", "komprometterat", "komprometterad",
+        "personuppgift", "personuppgifter", "personuppgiftsincident",
+        "cybersäkerhet", "cybersäkerhetslagen", "dataintrång", "nätfiske",
+        "mejl", "e-post", "inloggning", "inloggningar", "obehörig",
+        "åtkomst", "krypterats", "krypterade", "utpressningsvirus",
+        "anmälas", "rapporteras", "tillsyn", "myndighet", "svensk", "svenska",
+    }
+
+    common_swedish_markers = {
+        "jag", "vi", "du", "ni", "han", "hon", "de", "det", "den",
+        "har", "haft", "fått", "fick", "blev", "blivit", "tror", "verkar",
+        "någon", "nagon", "oss", "vårt", "vårat", "system", "konto",
+        "vad", "när", "vilken", "vilka", "hur", "varför", "ska", "bör",
+        "måste", "kan", "efter", "om", "i", "på", "av", "för", "med",
+        "sverige", "lag", "brott", "ansvarar", "isolera", "bevara", "loggar",
+        "cyberincident", "säkerhetsincident", "it-incident", "incidenthantering",
+    }
+
+    english_markers = {
+        "what", "when", "which", "how", "why", "should", "must", "can",
+        "we", "our", "have", "had", "been", "got", "received", "think",
+        "believe", "someone", "system", "account", "hacked", "breach",
+        "incident", "authority", "law", "report", "reporting", "source",
+    }
+
+    language_neutral_cyber_terms = {
+        "gdpr", "nis2", "dora", "imy", "mfa", "cert-se", "malware",
+        "ransomware", "phishing", "it", "api", "vpn", "oauth",
+    }
+
+    swedish_score = 0
+    english_score = 0
+
+    swedish_score += 4 * len(words.intersection(strong_swedish_markers))
+    swedish_score += 2 * len(words.intersection(common_swedish_markers))
+    english_score += 2 * len(words.intersection(english_markers))
+
+    # Swedish letters are a strong signal even when the rest of the question
+    # contains English cyber terminology.
+    if any(letter in question_lower for letter in "åäö"):
+        swedish_score += 4
+
+    # Common Swedish sentence patterns that users type during incident reports.
+    swedish_phrases = [
+        "vi har", "vi har fått", "vi har haft", "vi har blivit",
+        "jag tror", "jag tror att vi", "det verkar", "någon har",
+        "någon tagit sig in", "vårt system", "vårat system",
+        "i vårt system", "i vårat system", "vad gör vi", "vad ska vi",
+        "vad bör vi", "hur ska vi", "hur bör vi",
+    ]
+    english_phrases = [
+        "what should", "what do we", "we have", "we had", "we got",
+        "i think", "i believe", "someone hacked", "our system",
+    ]
+
+    for phrase in swedish_phrases:
+        if phrase in question_lower:
+            swedish_score += 5
+
+    for phrase in english_phrases:
+        if phrase in question_lower:
+            english_score += 4
+
+    # If the grammar is Swedish but the incident word is language-neutral
+    # or English, keep the UI and answer in Swedish.
+    if words.intersection(language_neutral_cyber_terms) and swedish_score >= 4:
+        return "Svenska"
+
+    if swedish_score > english_score and swedish_score >= 3:
+        return "Svenska"
+
+    return "English"
+
+
+
 
 
 
@@ -308,7 +398,25 @@ def is_practical_incident_response_question(question):
         "unusual sign-in",
         "impossible travel",
         "suspicious login activity",
+        "suspicious account login",
+        "suspicious login on an account",
+        "received a suspicious login",
+        "got a suspicious login",
         "misstänkt inloggning",
+        "misstänkt login",
+        "misstänkt loggning",
+        "fått en misstänkt login",
+        "fått misstänkt login",
+        "misstänkt login på ett konto",
+        "misstänkt login på konto",
+        "loggat in på ett konto",
+        "loggat in på konto",
+        "verkar ha loggat in",
+        "någon har loggat in",
+        "någon verkar ha loggat in",
+        "inloggning på ett konto",
+        "login på ett konto",
+        "login på konto",
         "ovanlig inloggning",
         "misstänkta inloggningar",
         "ovanliga inloggningar",
@@ -353,7 +461,33 @@ def is_practical_incident_response_question(question):
         "misstänkt",
     ]
 
-    return contains_any(question_lower, incident_terms) and contains_any(question_lower, action_terms)
+    # Users often report an incident as a statement instead of asking a neat
+    # question. CyberLex should still treat that as practical incident response.
+    # Example: "Vi har fått en misstänkt login på ett konto".
+    statement_terms = [
+        "we have", "we had", "we got", "we received", "we have received",
+        "i think we", "i believe we", "it looks like", "someone has",
+        "someone hacked", "our system", "our account",
+        "vi har", "vi hade", "vi fick", "vi har fått", "vi har haft",
+        "vi har blivit", "jag tror att vi", "jag tror vi", "det verkar som",
+        "någon har", "någon verkar", "vårt system", "vårat system",
+        "på ett konto", "på konto", "i ett konto",
+    ]
+
+    definition_question_starters = [
+        "what is", "what are", "what does", "explain", "define",
+        "vad är", "vad betyder", "förklara", "definiera",
+    ]
+
+    has_incident = contains_any(question_lower, incident_terms)
+    has_action = contains_any(question_lower, action_terms)
+    has_statement = contains_any(question_lower, statement_terms)
+    is_definition_question = any(question_lower.startswith(starter) for starter in definition_question_starters)
+
+    if is_definition_question and not has_statement:
+        return False
+
+    return has_incident and (has_action or has_statement)
 
 
 def is_suspected_hacking_question(question):
@@ -441,6 +575,16 @@ def is_suspicious_login_question(question):
             "misstänkta inloggningar",
             "misstänkt login",
             "misstänkt loggning",
+            "misstänkt login på ett konto",
+            "misstänkt login på konto",
+            "loggat in på ett konto",
+            "loggat in på konto",
+            "verkar ha loggat in",
+            "någon har loggat in",
+            "någon verkar ha loggat in",
+            "login på ett konto",
+            "login på konto",
+            "inloggning på ett konto",
             "ovanlig inloggning",
             "ovanliga inloggningar",
             "okänd inloggning",
@@ -617,6 +761,53 @@ def expand_question_terms(question):
             "bevara bevis",
             "begränsa exponering",
             "incidenthantering",
+        ],
+        "misstänkt login": [
+            "suspicious login activity",
+            "suspicious sign-in",
+            "account security",
+            "incident response",
+            "preserve logs",
+            "mfa",
+            "revoke sessions",
+        ],
+        "misstänkt inloggning": [
+            "suspicious login activity",
+            "suspicious sign-in",
+            "account security",
+            "incident response",
+            "bevara loggar",
+            "mfa",
+            "återkalla sessioner",
+        ],
+        "loggat in på ett konto": [
+            "misstänkt inloggning",
+            "suspicious login activity",
+            "account security",
+            "incident response",
+            "bevara loggar",
+            "mfa",
+            "återkalla sessioner",
+            "obehörig åtkomst",
+        ],
+        "någon verkar ha loggat in": [
+            "misstänkt inloggning",
+            "suspicious login activity",
+            "account security",
+            "incident response",
+            "bevara loggar",
+            "mfa",
+            "återkalla sessioner",
+            "obehörig åtkomst",
+        ],
+        "suspicious login": [
+            "suspicious login activity",
+            "suspicious sign-in",
+            "account security",
+            "incident response",
+            "preserve logs",
+            "mfa",
+            "revoke sessions",
         ],
         "compromised account": [
             "revoke sessions",
@@ -2534,7 +2725,14 @@ def generate_practical_explanation(question, search_results, language="English")
     if use_swedish:
         heading = "Praktisk förklaring"
 
-        if is_practical_incident_response_question(question):
+        if is_suspicious_login_question(question):
+            explanation = (
+                "Börja med att avgöra om inloggningen var godkänd eller förväntad. Om den var legitim krävs normalt ingen incidenthantering. "
+                "Om den är obehörig, okänd eller inte kan förklaras bör ni bevara loggar, kontakta användaren, kontrollera MFA och sessioner, "
+                "och behandla kontot som misstänkt påverkat tills motsatsen är klarlagd."
+            )
+
+        elif is_practical_incident_response_question(question):
             explanation = (
                 "Det här är en praktisk incidenthanteringsfråga. CyberLex bör därför ge defensiva första steg: "
                 "begränsa skadan, isolera drabbade system eller konton, bevara loggar och bevis, bedöma om personuppgifter påverkas, "
@@ -2607,7 +2805,14 @@ def generate_practical_explanation(question, search_results, language="English")
     else:
         heading = "Practical explanation"
 
-        if is_practical_incident_response_question(question):
+        if is_suspicious_login_question(question):
+            explanation = (
+                "Start by deciding whether the login was approved or expected. If it was legitimate, it is usually not an incident. "
+                "If it is unauthorized, unknown, or cannot be explained, preserve logs, contact the user, review MFA and sessions, "
+                "and treat the account as potentially affected until proven otherwise."
+            )
+
+        elif is_practical_incident_response_question(question):
             explanation = (
                 "This is a practical incident response question. CyberLex should therefore give defensive first steps: "
                 "limit harm, isolate affected systems or accounts, preserve logs and evidence, assess whether personal data is affected, "
@@ -4198,11 +4403,13 @@ def generate_incident_response_answer(question, language="English"):
         elif is_suspicious_login_question(question):
             title = "Rekommenderade första steg vid misstänkt inloggning"
             intro = (
-                "En misstänkt inloggning betyder inte alltid att kontot är helt komprometterat, "
-                "men den ska behandlas som en möjlig identitetsincident tills loggarna visar motsatsen."
+                "Om inloggningen var godkänd av användaren är det normalt ingen incident. "
+                "Om den däremot är obehörig, okänd eller inte kan förklaras bör den behandlas som en misstänkt identitetsincident "
+                "tills loggarna och användaren visar motsatsen."
             )
             steps = [
                 "Spara larmet eller loggposten med tidpunkt, användarkonto, IP-adress, plats, enhet och tjänst.",
+                "Kontrollera om inloggningen var godkänd av användaren, förväntad enligt schema eller kopplad till en känd tjänst eller plats.",
                 "Kontrollera om inloggningen lyckades eller bara var ett misslyckat försök.",
                 "Kontrollera om samma konto har fler ovanliga inloggningar, MFA-pushar eller misslyckade försök.",
                 "Kontakta användaren och bekräfta om aktiviteten var legitim utan att skicka känsliga uppgifter i klartext.",
@@ -5728,28 +5935,9 @@ show_technical_diagnostics = st.sidebar.checkbox(
 
 
 def detect_question_language_preview(question):
-    # Lightweight language detector used before the main page is rendered.
-    # This lets Auto mode switch the whole visible interface after a Swedish question is typed.
-    question_lower = str(question or "").lower().strip()
-
-    swedish_markers = {
-        "vad", "är", "när", "vilken", "vilka", "hur", "varför",
-        "svensk", "svenska", "sverige", "myndighet", "lag",
-        "cybersäkerhet", "dataskydd", "personuppgift",
-        "personuppgifter", "personuppgiftsincident",
-        "rapporteras", "anmälas", "incidentrapportering",
-        "dataintrång", "brott", "tillsyn", "ansvarar",
-        "misstänker", "intrång", "hackning", "hackad", "dataläcka", "läckt",
-        "komprometterat", "komprometterad", "isolera", "bevara", "loggar",
-        "cyberincident", "säkerhetsincident", "it-incident", "incidenthantering",
-    }
-
-    question_words = set(clean_words(question_lower))
-
-    if question_words.intersection(swedish_markers):
-        return "Svenska"
-
-    return "English"
+    # Lightweight detector used before the main page is rendered.
+    # Auto mode should follow Swedish grammar even when the user uses English cyber terms.
+    return detect_ui_language_from_question(question)
 
 
 preview_question = (
@@ -5854,27 +6042,9 @@ st.warning(warning_text)
 st.divider()
 
 def detect_question_language(question):
-    # Detects whether the user question is likely Swedish or English.
-    question_lower = question.lower().strip()
-
-    swedish_markers = {
-        "vad", "är", "när", "vilken", "vilka", "hur", "varför",
-        "svensk", "svenska", "sverige", "myndighet", "lag",
-        "cybersäkerhet", "dataskydd", "personuppgift",
-        "personuppgifter", "personuppgiftsincident",
-        "rapporteras", "anmälas", "incidentrapportering",
-        "dataintrång", "brott", "tillsyn", "ansvarar",
-        "misstänker", "intrång", "hackning", "hackad", "dataläcka", "läckt",
-        "komprometterat", "komprometterad", "isolera", "bevara", "loggar",
-        "cyberincident", "säkerhetsincident", "it-incident", "incidenthantering",
-    }
-
-    question_words = set(clean_words(question_lower))
-
-    if question_words.intersection(swedish_markers):
-        return "Svenska"
-
-    return "English"
+    # Detects whether the answer should be Swedish or English.
+    # Uses the same scoring logic as the preview detector so the page and answer stay aligned.
+    return detect_ui_language_from_question(question)
 
 
 documents, chunks = load_chunks()
