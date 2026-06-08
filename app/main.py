@@ -7167,6 +7167,56 @@ st.markdown(
 .technical-details .metadata-card {
     margin-top: 0.75rem;
 }
+
+    .main-header.compact-hero {
+        padding: 1.6rem 2rem;
+        margin-top: 0.25rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .hero-label {
+        margin-top: 1rem;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #ffffff;
+    }
+
+    .hero-description {
+        margin-top: 0.15rem;
+        color: #cbd5e1;
+        font-size: 0.98rem;
+        line-height: 1.5;
+    }
+
+    .topic-area-wrapper {
+        margin-top: 1.25rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .topic-area-heading {
+        font-size: 1.35rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .footer-note {
+        text-align: center;
+        color: #94a3b8;
+        font-size: 0.85rem;
+        padding: 1.25rem 0 0.5rem 0;
+        border-top: 1px solid rgba(148, 163, 184, 0.2);
+        margin-top: 2rem;
+    }
+
+    .footer-note a {
+        color: #93c5fd;
+        text-decoration: none;
+    }
+
+    .footer-note a:hover {
+        text-decoration: underline;
+    }
+
 </style>
     ''',
     unsafe_allow_html=True
@@ -7181,14 +7231,25 @@ language_mode_preview = st.sidebar.selectbox(
     key="language_selector"
 )
 
+diagnostics_label = (
+    "Visa teknisk diagnostik"
+    if language_mode_preview == "Svenska"
+    else "Show technical diagnostics"
+)
+
+diagnostics_help = (
+    "Visar interna källfiler, matchade sektioner och relevanspoäng. "
+    "Använd detta för test och utveckling, inte för vanlig användardemo."
+    if language_mode_preview == "Svenska"
+    else "Shows internal source files, matched sections, and relevance scores. "
+    "Use this for testing and development, not for normal user demos."
+)
+
 show_technical_diagnostics = st.sidebar.checkbox(
-    "Show technical diagnostics / Visa teknisk diagnostik",
+    diagnostics_label,
     value=False,
     key="show_technical_diagnostics",
-    help=(
-        "Shows internal source files, matched sections, and relevance scores. "
-        "Use this for testing and development, not for normal user demos."
-    ),
+    help=diagnostics_help,
 )
 
 
@@ -7272,32 +7333,20 @@ else:
     ]
 
 st.markdown(
-    f'<div class="main-header"><h1>CyberLex Sweden</h1><p>{page_subtitle}</p></div>',
+    f'''
+    <div class="main-header compact-hero">
+        <h1>CyberLex Sweden</h1>
+        <p>{page_subtitle}</p>
+        <div class="hero-label">{info_card_heading}</div>
+        <div class="hero-description">{info_card_text}</div>
+    </div>
+    ''',
     unsafe_allow_html=True
 )
-
-st.markdown(
-    '<div class="info-card">'
-    f'<strong>{info_card_heading}</strong><br>'
-    f'{info_card_text}'
-    '</div>',
-    unsafe_allow_html=True
-)
-
-st.markdown(f"### {supported_topics_heading}")
 
 badge_html = "".join(
     [f'<span class="topic-badge">{topic}</span>' for topic in topic_badges]
 )
-
-st.markdown(
-    badge_html,
-    unsafe_allow_html=True
-)
-
-st.warning(warning_text)
-
-st.divider()
 
 def detect_question_language(question):
     # Detects whether the answer should be Swedish or English.
@@ -7397,115 +7446,6 @@ st.sidebar.info(f"**{test_version_header}**\n\n{test_version_text}")
 with st.sidebar.expander(suggested_test_flow_header, expanded=False):
     st.markdown(suggested_test_flow_text)
 
-st.sidebar.markdown("---")
-st.sidebar.subheader(prototype_mode_header)
-st.sidebar.write(prototype_mode_text)
-
-if interface_language == "Svenska":
-    ai_roadmap_header = "Framtida AI-läge"
-    ai_roadmap_text = (
-        "**Nuvarande version:** lokala Markdown-filer, källstyrning, nyckelordsrankning "
-        "och regelbaserade svar.\n\n"
-        "**Framtida version:** vektorsökning, RAG och AI-genererade svar baserade på betrodda källor."
-    )
-else:
-    ai_roadmap_header = "Future AI mode"
-    ai_roadmap_text = (
-        "**Current version:** local Markdown files, source routing, keyword ranking, "
-        "and rule-based answers.\n\n"
-        "**Future version:** vector search, RAG, and AI-generated answers based on trusted sources."
-    )
-
-with st.sidebar.expander(ai_roadmap_header, expanded=False):
-    st.markdown(ai_roadmap_text)
-
-st.sidebar.markdown("---")
-
-if interface_language == "Svenska":
-    experimental_search_header = "Experimentella sökverktyg"
-    experimental_search_caption = (
-        "Detta är ett frivilligt testverktyg för sökrankning. "
-        "Det ligger bakom en expander så att huvudappen är renare vid testkörning."
-    )
-    experimental_search_label = "Testa experimentell sökning"
-    experimental_search_placeholder = "Skriv en testfråga..."
-    experimental_matches_label = "Toppmatchningar från experimentell sökning:"
-    no_experimental_matches_text = "Inga experimentella sökmatchningar hittades."
-    experimental_source_label = "Källa"
-    experimental_section_label = "Sektion"
-    experimental_score_label = "Poäng"
-else:
-    experimental_search_header = "Experimental retrieval tools"
-    experimental_search_caption = (
-        "This is an optional test tool for retrieval ranking. "
-        "It is hidden in an expander so the main test-run interface stays cleaner."
-    )
-    experimental_search_label = "Test experimental search"
-    experimental_search_placeholder = "Type a test question..."
-    experimental_matches_label = "Top experimental matches:"
-    no_experimental_matches_text = "No experimental search matches found."
-    experimental_source_label = "Source"
-    experimental_section_label = "Section"
-    experimental_score_label = "Score"
-
-with st.sidebar.expander(experimental_search_header, expanded=False):
-    st.caption(experimental_search_caption)
-
-    experimental_question = st.text_input(
-        experimental_search_label,
-        placeholder=experimental_search_placeholder,
-        key="experimental_search_question",
-    )
-
-    if experimental_question:
-        experimental_chunks = load_experimental_search_index()
-        experimental_results = experimental_search_chunks(
-            experimental_question,
-            experimental_chunks,
-            limit=3,
-        )
-
-        if experimental_results:
-            st.markdown(f"**{experimental_matches_label}**")
-
-            for result in experimental_results:
-                experimental_card = f"""
-                    <div class="match-card">
-                        <strong>{experimental_source_label}:</strong> <code>{result["filename"]}</code><br>
-                        <strong>{experimental_section_label}:</strong> <code>{result["section"]}</code><br>
-                        <strong>{experimental_score_label}:</strong> <code>{result["score"]}</code>
-                    </div>
-                    """
-                st.markdown(experimental_card, unsafe_allow_html=True)
-        else:
-            st.info(no_experimental_matches_text)
-
-st.sidebar.markdown("---")
-with st.sidebar.expander(project_resources_header, expanded=False):
-    st.caption(project_resources_caption)
-    st.markdown(
-        "- `docs/test_run_checklist.md`\n"
-        "- `docs/demo_checklist.md`\n"
-        "- `docs/test_cases.md`\n"
-        "- `docs/terms_of_use.md`\n"
-        "- `docs/privacy_policy.md`\n"
-        "- `docs/legal_disclaimer.md`\n"
-        "- `docs/source_policy.md`\n"
-        "- `docs/source_update_history.md`\n"
-        "- `docs/ai_rag_plan.md`\n"
-        "- `docs/product_roadmap.md`\n"
-        "- `docs/technical_design.md`"
-    )
-
-st.sidebar.markdown("---")
-st.sidebar.caption(sidebar_caption)
-
-st.sidebar.markdown("---")
-with st.sidebar.expander(documents_header, expanded=False):
-    st.caption(documents_caption)
-    for doc in documents:
-        st.write(f"- `{doc['filename']}`")
-
 st.header(ask_heading)
 
 if "selected_example_question" not in st.session_state:
@@ -7531,9 +7471,17 @@ def select_example_question(example_question):
     st.session_state.pending_example_question = example_question
     st.session_state.show_example_questions = False
 
+question_placeholder = (
+    "Skriv en fråga för att söka i CyberLex Swedens kunskapsbas"
+    if interface_language == "Svenska"
+    else "Enter a question to search the CyberLex Sweden knowledge base"
+)
+
 question = st.text_input(
     question_label,
-    key="main_question_input"
+    key="main_question_input",
+    placeholder=question_placeholder,
+    label_visibility="collapsed",
 )
 
 if interface_language == "Svenska":
@@ -7600,6 +7548,20 @@ if st.session_state.show_example_questions:
             on_click=select_example_question,
             args=(clean_example_question_for_language(example_question, get_current_ui_language()),),
         )
+
+st.markdown(
+    f'''
+    <div class="topic-area-wrapper">
+        <div class="topic-area-heading">{supported_topics_heading}</div>
+        <div>{badge_html}</div>
+    </div>
+    ''',
+    unsafe_allow_html=True
+)
+
+st.warning(warning_text)
+
+st.divider()
 
 # This controls the answer language.
 # Auto detects Swedish or English only after the user has typed a question.
@@ -7759,4 +7721,17 @@ if question:
         else:
             st.error(out_of_scope_text)
 else:
-    st.write(empty_question_text)
+    # Keep the empty state clean. The input placeholder already explains what to do.
+    pass
+
+
+footer_label = (
+    "© 2026 CyberLex Sweden · Policy · Om · Copyright"
+    if interface_language == "Svenska"
+    else "© 2026 CyberLex Sweden · Policy · About · Copyright"
+)
+
+st.markdown(
+    f'<div class="footer-note">{footer_label}</div>',
+    unsafe_allow_html=True,
+)
