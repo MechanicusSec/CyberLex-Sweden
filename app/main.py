@@ -7213,7 +7213,8 @@ st.markdown(
         font-size: 0.85rem;
         padding: 1.25rem 0 0.5rem 0;
         border-top: 1px solid rgba(148, 163, 184, 0.2);
-        margin-top: 2rem;
+        margin-top: 7.5rem;
+        margin-bottom: 1rem;
     }
 
     .footer-note a {
