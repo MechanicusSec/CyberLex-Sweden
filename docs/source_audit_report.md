@@ -10,10 +10,10 @@ This audit does not browse the web and does not confirm whether the law is curre
 
 ## Audit Summary
 
-- Generated at: `2026-06-06 13:42:52`
-- Total source files checked: `10`
-- Files marked OK: `10`
-- Files needing review: `0`
+- Generated at: `2026-06-08 11:49:34`
+- Total source files checked: `13`
+- Files marked OK: `12`
+- Files needing review: `1`
 
 ---
 
@@ -91,6 +91,25 @@ No issues found.
 
 ---
 
+### gdpr_imy_edpb_security_guidance.md
+
+- Status: `Needs review`
+- Official source links found: `0`
+- Source date: `Not found`
+- Source freshness: `No review date stored`
+- Version notes: `Not found`
+
+#### Issues
+
+- Missing Official source section
+- No official source links found
+- Missing Source metadata section
+- Missing source date
+- Missing version notes
+- Freshness status: No review date stored
+
+---
+
 ### gdpr_personal_data_breach.md
 
 - Status: `OK`
@@ -98,6 +117,18 @@ No issues found.
 - Source date: `Source date: Last checked: 2026-06-03`
 - Source freshness: `Recently checked`
 - Version notes: `Version notes: Swedish summary added and GDPR personal data breach source expanded for bilingual CyberLex Sweden testing.`
+
+No issues found.
+
+---
+
+### imy_gdpr_security_measures.md
+
+- Status: `OK`
+- Official source links found: `8`
+- Source date: `Source date: Last checked: 2026-06-08`
+- Source freshness: `Recently checked`
+- Version notes: `Version notes: Initial CyberLex Sweden educational summary based on IMY guidance on GDPR security measures, basic GDPR principles, and personal data breach handling.`
 
 No issues found.
 
@@ -134,6 +165,18 @@ No issues found.
 - Source date: `Source date: Last checked: 2026-06-03`
 - Source freshness: `Recently checked`
 - Version notes: `Version notes: Swedish summary added and NIS2 incident reporting source expanded for bilingual CyberLex Sweden testing.`
+
+No issues found.
+
+---
+
+### nis2_sector_scope_guidance.md
+
+- Status: `OK`
+- Official source links found: `8`
+- Source date: `Source date: Last checked: 2026-06-08`
+- Source freshness: `Recently checked`
+- Version notes: `Version notes: Initial CyberLex Sweden educational summary based on current MCF guidance on cybersäkerhetslagen, NIS2 scope, covered sectors, size assessment, jurisdiction, registration, and essential or important entities.`
 
 No issues found.
 
