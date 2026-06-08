@@ -276,6 +276,11 @@ def localize_section_name(section_name, language="English"):
         "relationship with gdpr breach reporting": "Relation till GDPR och personuppgiftsincidenter",
         "legal reference": "Rättslig koppling",
         "practical explanation": "Praktisk förklaring",
+        "swedish practical explanation": "Praktisk förklaring",
+        "english practical explanation": "Praktisk förklaring",
+        "answer guidance": "Svarsstöd",
+        "swedish answer guidance": "Svarsstöd",
+        "english answer guidance": "Svarsstöd",
         "cybersecurity connection": "Cybersäkerhetskoppling",
         "swedish connection": "Svensk koppling",
         "third-party ict risk": "ICT-tredjepartsrisk",
@@ -328,6 +333,12 @@ def localize_section_name(section_name, language="English"):
         "swedish essential and important entities": "Essential and important entities",
         "registration": "Registration",
         "swedish registration": "Registration",
+        "practical explanation": "Practical explanation",
+        "swedish practical explanation": "Practical explanation",
+        "english practical explanation": "Practical explanation",
+        "answer guidance": "Answer guidance",
+        "swedish answer guidance": "Answer guidance",
+        "english answer guidance": "Answer guidance",
         "cyberlex answer guidance": "Answer guidance",
         "swedish cyberlex answer guidance": "Answer guidance",
     }
@@ -339,9 +350,15 @@ def localize_section_name(section_name, language="English"):
         # Remove leading language markers if a source heading contains them.
         if normalized.startswith("swedish "):
             stripped = raw_section[8:].strip()
+            stripped_normalized = stripped.lower().strip()
+            if stripped_normalized in swedish_names:
+                return swedish_names[stripped_normalized]
             return stripped[:1].upper() + stripped[1:]
         if normalized.startswith("english "):
             stripped = raw_section[8:].strip()
+            stripped_normalized = stripped.lower().strip()
+            if stripped_normalized in swedish_names:
+                return swedish_names[stripped_normalized]
             return stripped[:1].upper() + stripped[1:]
 
         return raw_section
@@ -351,9 +368,15 @@ def localize_section_name(section_name, language="English"):
 
     if normalized.startswith("swedish "):
         stripped = raw_section[8:].strip()
+        stripped_normalized = stripped.lower().strip()
+        if stripped_normalized in english_names:
+            return english_names[stripped_normalized]
         return stripped[:1].upper() + stripped[1:]
     if normalized.startswith("english "):
         stripped = raw_section[8:].strip()
+        stripped_normalized = stripped.lower().strip()
+        if stripped_normalized in english_names:
+            return english_names[stripped_normalized]
         return stripped[:1].upper() + stripped[1:]
 
     return raw_section
@@ -5858,9 +5881,9 @@ def generate_simple_answer(question, best_match, language="English", include_tec
                 )
             else:
                 answer = (
-                    "Om NIS2 eller cybersäkerhetslagen gäller för en organisation beror normalt på tre saker: verksamhetstyp, storlek och jurisdiktion. "
-                    "Börja med att identifiera vilken juridisk person som bedöms, vilka aktiviteter den utför, om någon aktivitet finns i en av de 18 sektorerna, om organisationen är medelstor eller stor eller omfattas av ett undantag, och om den faller under svensk jurisdiktion. "
-                    "CyberLex bör därför inte ge ett enkelt ja eller nej utan fakta om organisationen. Bedömningen bör dokumenteras."
+                    "Om NIS2 eller cybersäkerhetslagen gäller för en organisation beror främst på verksamhetstyp, sektor, storlek och svensk jurisdiktion. "
+                    "Börja med att identifiera vilken juridisk person som bedöms, vilken verksamhet den bedriver och om verksamheten finns inom någon av de 18 sektorerna. "
+                    "Bedöm också om organisationen är medelstor eller större, eller om den kan omfattas av undantag. Dokumentera bedömningen och varför organisationen anses omfattas eller inte omfattas."
                 )
         else:
             if "sector" in question_lower or "sectors" in question_lower:
@@ -5885,9 +5908,9 @@ def generate_simple_answer(question, best_match, language="English", include_tec
                 )
             else:
                 answer = (
-                    "Whether NIS2 or the Swedish Cybersecurity Act applies to an organization normally depends on three things: activity type, size, and jurisdiction. "
-                    "Start by identifying the legal entity, what activities it performs, whether any activity falls within one of the covered sectors, whether the organization is medium-sized or large or covered by an exception, and whether it falls under Swedish jurisdiction. "
-                    "CyberLex should not give a simple yes or no without those facts. The scope assessment should be documented."
+                    "Whether NIS2 or the Swedish Cybersecurity Act applies to an organization mainly depends on activity type, sector, size, and Swedish jurisdiction. "
+                    "Start by identifying the legal entity, what activity it performs, and whether that activity falls within one of the 18 covered sectors. "
+                    "Also assess whether the organization is medium-sized or larger, or whether an exception may apply. Document the assessment and why the organization is considered covered or not covered."
                 )
 
         if include_technical_details:
