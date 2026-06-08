@@ -48,6 +48,8 @@ def normalize_query_text(text):
         "ransomewere": "ransomware",
         "ransomwere": "ransomware",
         "kryptats": "krypterats",
+        "kund data": "kunddata",
+        "customerdata": "customer data",
     }
 
     for wrong, right in replacements.items():
@@ -440,6 +442,9 @@ def is_practical_incident_response_question(question):
         "ransomware",
         "utpressningsvirus",
         "files encrypted",
+        "files are encrypted",
+        "our files are encrypted",
+        "our files have been encrypted",
         "files have been encrypted",
         "encrypted files",
         "filer har krypterats",
@@ -453,8 +458,15 @@ def is_practical_incident_response_question(question):
         "läckt data",
         "data har läckt",
         "customer data exposed",
+        "customer data leaked",
+        "customer data may have leaked",
+        "customer data might have leaked",
+        "customer data has leaked",
+        "customer data have leaked",
         "kunddata har exponerats",
         "kunddata har läckt",
+        "kunddata kan ha läckt",
+        "kunddata kan ha exponerats",
         "data och personinformation har läckt",
         "personinformation har läckt",
         "personuppgifter har läckt",
@@ -573,12 +585,14 @@ def is_practical_incident_response_question(question):
     statement_terms = [
         "we have", "we had", "we got", "we received", "we have received",
         "i think we", "i believe we", "it looks like", "someone has",
-        "someone hacked", "our system", "our account",
+        "someone hacked", "our system", "our account", "our files", "files are encrypted",
         "vi har", "vi hade", "vi fick", "vi har fått", "vi har haft",
         "vi har blivit", "vi tror", "vi tror att", "jag tror att vi", "jag tror vi", "det verkar som",
         "någon har", "någon verkar", "vårt system", "vårat system",
         "på ett konto", "på konto", "i ett konto",
-        "våra filer", "filerna", "kunddata", "personuppgifter", "personinformation",
+        "våra filer", "filerna", "files are encrypted", "our files are encrypted",
+        "kunddata", "kunddata kan ha läckt", "customer data may have leaked",
+        "personuppgifter", "personinformation",
         "någon klickade", "someone clicked", "länk i sms", "länk på en webbsida", "link on a website",
     ]
 
@@ -656,6 +670,10 @@ def is_data_leak_response_question(question):
             "data leakage",
             "data leaked",
             "customer data exposed",
+            "customer data leaked",
+            "customer data may have leaked",
+            "customer data might have leaked",
+            "customer data has leaked",
             "personal data exposed",
             "exposed data",
             "dataläcka",
@@ -663,6 +681,8 @@ def is_data_leak_response_question(question):
             "läckt data",
             "kunddata har exponerats",
             "kunddata har läckt",
+            "kunddata kan ha läckt",
+            "kunddata kan ha exponerats",
             "vi tror att kunddata har läckt",
             "personinformation har läckt",
             "personuppgifter har läckt",
@@ -867,6 +887,9 @@ def is_ransomware_response_question(question):
             "malware",
             "utpressningsvirus",
             "files encrypted",
+            "files are encrypted",
+            "our files are encrypted",
+            "our files have been encrypted",
             "files have been encrypted",
             "filer har krypterats",
             "filerna har krypterats",
@@ -1048,6 +1071,28 @@ def expand_question_terms(question):
             "breach",
             "reporting",
         ],
+        "our files are encrypted": [
+            "ransomware",
+            "malware",
+            "cyber incident",
+            "incident response",
+            "preserve evidence",
+            "backups",
+            "containment",
+            "imy",
+            "nis2",
+        ],
+        "files are encrypted": [
+            "ransomware",
+            "malware",
+            "cyber incident",
+            "incident response",
+            "preserve evidence",
+            "backups",
+            "containment",
+            "imy",
+            "nis2",
+        ],
         "våra filer har krypterats": [
             "ransomware",
             "malware",
@@ -1104,7 +1149,34 @@ def expand_question_terms(question):
             "browser downloads",
             "web filtering",
         ],
+        "kunddata kan ha läckt": [
+            "data leak",
+            "personal data breach",
+            "gdpr",
+            "imy",
+            "72 hours",
+            "incident response",
+            "preserve evidence",
+        ],
         "kunddata har läckt": [
+            "data leak",
+            "personal data breach",
+            "gdpr",
+            "imy",
+            "72 hours",
+            "incident response",
+            "preserve evidence",
+        ],
+        "customer data may have leaked": [
+            "data leak",
+            "personal data breach",
+            "gdpr",
+            "imy",
+            "72 hours",
+            "incident response",
+            "preserve evidence",
+        ],
+        "customer data leaked": [
             "data leak",
             "personal data breach",
             "gdpr",
@@ -1741,6 +1813,10 @@ def get_target_source_file(question):
         "nis2 incident reporting" in question_lower
         or "ransomware" in question_lower
         or "malware" in question_lower
+        or "files are encrypted" in question_lower
+        or "our files are encrypted" in question_lower
+        or "files have been encrypted" in question_lower
+        or "encrypted files" in question_lower
         or "cyber attack" in question_lower
         or "cyberattack" in question_lower
         or "security incident" in question_lower
@@ -3865,10 +3941,14 @@ def generate_assessment_checklist(question, search_results, language="English"):
         "leaked data",
         "exposed data",
         "customer data exposed",
+        "customer data leaked",
+        "customer data may have leaked",
+        "customer data might have leaked",
         "dataläcka",
         "läckt data",
         "exponerad data",
         "kunddata",
+        "kunddata kan ha läckt",
     ]
 
     ransomware_terms = [
@@ -5852,7 +5932,11 @@ def generate_simple_answer(question, best_match, language="English", include_tec
     question_lower = normalize_query_text(question)
     use_swedish = language == "Svenska"
 
-    if is_practical_incident_response_question(question):
+    if (
+        is_practical_incident_response_question(question)
+        or is_data_leak_response_question(question)
+        or is_ransomware_response_question(question)
+    ):
         return generate_incident_response_answer(question, language)
 
     enhanced_basic_answer = ""
@@ -6082,6 +6166,10 @@ def generate_simple_answer(question, best_match, language="English", include_tec
     elif (
         "ransomware" in question_lower
         or "malware" in question_lower
+        or "files are encrypted" in question_lower
+        or "our files are encrypted" in question_lower
+        or "files have been encrypted" in question_lower
+        or "encrypted files" in question_lower
         or "cyber attack" in question_lower
         or "cyberattack" in question_lower
     ):
