@@ -1413,6 +1413,54 @@ def load_chunks():
 
 
 
+def is_imy_gdpr_security_measures_question(question):
+    # Detects GDPR security-measure questions that should prefer the dedicated
+    # IMY security-measures source instead of general breach or authority files.
+    q = normalize_query_text(question)
+
+    direct_phrases = [
+        "vad säger imy om säkerhetsåtgärder",
+        "vilka säkerhetsåtgärder är viktiga enligt gdpr",
+        "säkerhetsåtgärder enligt gdpr",
+        "hur bör vi skydda personuppgifter",
+        "hur ska vi skydda personuppgifter",
+        "skydda personuppgifter",
+        "skydd av personuppgifter",
+        "kräver gdpr mfa",
+        "kräver gdpr multifaktor",
+        "mfa enligt gdpr",
+        "kräver gdpr kryptering",
+        "kryptering enligt gdpr",
+        "does gdpr require mfa",
+        "does gdpr require multi-factor",
+        "does gdpr require multifactor",
+        "mfa under gdpr",
+        "does gdpr require encryption",
+        "encryption under gdpr",
+        "what security measures matter under gdpr",
+        "security measures under gdpr",
+        "what does imy say about security measures",
+        "how should we protect personal data",
+        "protect personal data",
+    ]
+
+    if contains_any(q, direct_phrases):
+        return True
+
+    security_terms = [
+        "säkerhetsåtgärd", "säkerhetsåtgärder", "tekniska åtgärder",
+        "organisatoriska åtgärder", "mfa", "multifaktor", "kryptering",
+        "åtkomstkontroll", "loggning", "säkerhetskopior", "skydda",
+        "security measure", "security measures", "technical measures",
+        "organizational measures", "organisational measures", "encryption",
+        "multi-factor", "multifactor", "access control", "logging",
+        "backups", "protect",
+    ]
+    gdpr_or_imy_terms = ["gdpr", "imy", "personuppgifter", "personal data", "dataskydd", "data protection"]
+
+    return contains_any(q, gdpr_or_imy_terms) and contains_any(q, security_terms)
+
+
 def is_gdpr_security_guidance_question(question):
     # Routes GDPR security, IMY/EDPB guidance, and breach assessment questions
     # to the richer GDPR/IMY/EDPB source file instead of generic incident or NIS2 files.
@@ -1440,6 +1488,16 @@ def is_gdpr_security_guidance_question(question):
         "säkerhetsåtgärder enligt gdpr",
         "what security measures matter under gdpr",
         "security measures under gdpr",
+        "vad säger imy om säkerhetsåtgärder",
+        "hur bör vi skydda personuppgifter",
+        "hur ska vi skydda personuppgifter",
+        "skydda personuppgifter",
+        "does gdpr require mfa",
+        "does gdpr require multi-factor",
+        "does gdpr require multifactor",
+        "does gdpr require encryption",
+        "kräver gdpr mfa",
+        "kräver gdpr kryptering",
         "data protection by design",
         "dataskydd genom design",
         "data protection by default",
@@ -1453,6 +1511,8 @@ def is_gdpr_security_guidance_question(question):
         "gdpr", "imy", "edpb", "personuppgiftsincident", "personuppgifter",
         "personal data breach", "personal data", "data protection", "dataskydd",
         "registrerade", "rights and freedoms", "rättigheter och friheter",
+        "säkerhetsåtgärder", "säkerhetsåtgärd", "mfa", "kryptering",
+        "encryption", "security measures", "skydda personuppgifter",
     ]
 
     assessment_markers = [
@@ -1462,7 +1522,8 @@ def is_gdpr_security_guidance_question(question):
         "assess", "assessment", "risk", "documentation", "document", "notify",
         "notification", "report", "reporting", "security measures", "incident response",
         "72 timmar", "72 hours", "informera", "informed", "affected individuals",
-        "berörda personer", "design", "default",
+        "berörda personer", "design", "default", "require", "requires",
+        "kräver", "protect", "skydda", "mfa", "encryption", "kryptering",
     ]
 
     return contains_any(q, gdpr_markers) and contains_any(q, assessment_markers)
@@ -1473,6 +1534,7 @@ def is_gdpr_assessment_or_security_file(filename):
     filename_lower = str(filename or "").lower()
     return (
         "gdpr_imy_edpb_security_guidance" in filename_lower
+        or "imy_gdpr_security_measures" in filename_lower
         or "gdpr_personal_data_breach" in filename_lower
         or "imy_gdpr_supervision" in filename_lower
         or "gdpr_core_principles" in filename_lower
@@ -1481,6 +1543,11 @@ def is_gdpr_assessment_or_security_file(filename):
 def get_target_source_file(question):
     # Routes clear questions to a specific knowledge file.
     question_lower = normalize_query_text(question).strip()
+
+    # IMY/GDPR security-measure questions should use the dedicated IMY security file
+    # instead of the general breach/incident guidance source.
+    if is_imy_gdpr_security_measures_question(question_lower):
+        return "imy_gdpr_security_measures.md"
 
     # GDPR assessment/security questions are informational or compliance questions,
     # not generic incident playbook questions. Route them before incident routing.
@@ -1510,6 +1577,9 @@ def get_target_source_file(question):
         or "dataskyddsmyndighet" in question_lower
     ):
         return "imy_gdpr_supervision.md"
+
+    if is_imy_gdpr_security_measures_question(question_lower):
+        return "imy_gdpr_security_measures.md"
 
     if is_gdpr_security_guidance_question(question_lower):
         return "gdpr_imy_edpb_security_guidance.md"
@@ -1755,7 +1825,9 @@ def search_chunks(question, chunks):
                     score -= 80
 
         if is_gdpr_security_guidance_question(question_lower):
-            if "gdpr_imy_edpb_security_guidance" in filename_lower:
+            if "imy_gdpr_security_measures" in filename_lower and is_imy_gdpr_security_measures_question(question_lower):
+                score += 420
+            elif "gdpr_imy_edpb_security_guidance" in filename_lower:
                 score += 320
             elif "gdpr_personal_data_breach" in filename_lower:
                 score += 90
@@ -1783,6 +1855,8 @@ def search_chunks(question, chunks):
                 score -= 10
 
         if is_gdpr_security_guidance_question(question_lower):
+            if "imy_gdpr_security_measures" in filename_lower and is_imy_gdpr_security_measures_question(question_lower):
+                score += 170
             if "gdpr_imy_edpb_security_guidance" in filename_lower:
                 score += 90
             if "practical explanation" in section_text or "swedish practical explanation" in section_text:
@@ -1846,6 +1920,8 @@ def search_chunks(question, chunks):
                 score += 10
 
         if is_gdpr_security_guidance_question(question):
+            if "imy_gdpr_security_measures" in filename_lower and is_imy_gdpr_security_measures_question(question):
+                score += 220
             if "gdpr_imy_edpb_security_guidance" in filename_lower:
                 score += 140
             if "gdpr_personal_data_breach" in filename_lower:
@@ -2010,14 +2086,12 @@ def get_incident_source_context_profile(question):
     question = str(question or "")
 
     if is_gdpr_security_guidance_question(question):
-        if "practical explanation" in section or "data protection by design" in section or "relationship with incident response" in section:
-            priority += 120
-        if "personal data breach" in section or "personuppgiftsincident" in section:
-            priority += 80
-        if "suspected hacking" in section or "ransomware" in section or "suspicious login" in section:
-            priority -= 80
+        # GDPR security and IMY guidance questions are compliance/source questions,
+        # not practical incident-response subtypes. Returning None prevents the
+        # incident playbook filter from dragging in hacking or login source cards.
+        return None
 
-    elif is_suspicious_link_question(question):
+    if is_suspicious_link_question(question):
         return "suspicious_link"
 
     if is_suspicious_email_question(question):
@@ -2810,6 +2884,7 @@ def get_friendly_source_area_name(filename, language="English"):
         "gdpr_core_principles.md": "GDPR core principles",
         "gdpr_personal_data_breach.md": "GDPR personal data breach",
         "gdpr_imy_edpb_security_guidance.md": "GDPR, IMY and EDPB security guidance",
+        "imy_gdpr_security_measures.md": "IMY GDPR security measures",
         "imy_gdpr_supervision.md": "IMY and GDPR supervision",
         "nis2_cybersecurity_law.md": "NIS2 and the Swedish Cybersecurity Act",
         "nis2_incident_reporting.md": "NIS2 incident reporting",
@@ -2824,6 +2899,7 @@ def get_friendly_source_area_name(filename, language="English"):
         "gdpr_core_principles.md": "GDPR:s grundprinciper",
         "gdpr_personal_data_breach.md": "GDPR och personuppgiftsincidenter",
         "gdpr_imy_edpb_security_guidance.md": "GDPR, IMY och EDPB:s säkerhetsvägledning",
+        "imy_gdpr_security_measures.md": "IMY:s GDPR-säkerhetsåtgärder",
         "imy_gdpr_supervision.md": "IMY och GDPR-tillsyn",
         "nis2_cybersecurity_law.md": "NIS2 och cybersäkerhetslagen",
         "nis2_incident_reporting.md": "NIS2-incidentrapportering",
@@ -2912,6 +2988,8 @@ def build_source_context(search_results, language="English", max_results=3, ques
                 filename = str(result.get("filename", "")).lower()
                 section_name = str(result.get("section", "")).lower()
                 priority = 0
+                if "imy_gdpr_security_measures" in filename:
+                    priority += 650 if is_imy_gdpr_security_measures_question(question) else 150
                 if "gdpr_imy_edpb_security_guidance" in filename:
                     priority += 500
                 if "practical explanation" in section_name or "relationship with incident response" in section_name:
@@ -4620,6 +4698,13 @@ def detect_source_quality(filename, language="English"):
             else "Swedish legal source / criminal-law topic"
         )
 
+    if "imy_gdpr_security_measures" in filename_lower:
+        return (
+            "IMY-vägledning om GDPR-säkerhetsåtgärder"
+            if use_swedish
+            else "IMY guidance on GDPR security measures"
+        )
+
     if "gdpr_imy_edpb_security_guidance" in filename_lower:
         return (
             "IMY- och EDPB-vägledning om GDPR-säkerhet"
@@ -5359,12 +5444,37 @@ def generate_simple_answer(question, best_match, language="English", include_tec
     enhanced_basic_answer = ""
 
     if is_gdpr_security_guidance_question(question):
+        is_mfa_question = (
+            "mfa" in question_lower
+            or "multifaktor" in question_lower
+            or "multi-factor" in question_lower
+            or "multifactor" in question_lower
+        )
+        is_encryption_question = (
+            "kryptering" in question_lower
+            or "kryptera" in question_lower
+            or "encryption" in question_lower
+            or "encrypt" in question_lower
+        )
+        is_imy_security_question = (
+            "vad säger imy" in question_lower
+            or "what does imy say" in question_lower
+        )
+        is_protect_personal_data_question = (
+            "skydda personuppgifter" in question_lower
+            or "skydd av personuppgifter" in question_lower
+            or "protect personal data" in question_lower
+        )
         is_security_measure_question = (
             "säkerhetsåtgärd" in question_lower
             or "security measure" in question_lower
             or "dataskydd genom design" in question_lower
             or "data protection by design" in question_lower
             or "privacy by design" in question_lower
+            or is_mfa_question
+            or is_encryption_question
+            or is_imy_security_question
+            or is_protect_personal_data_question
         )
         is_gdpr_incident_connection_question = (
             "connect to incident response" in question_lower
@@ -5376,7 +5486,31 @@ def generate_simple_answer(question, best_match, language="English", include_tec
         )
 
         if use_swedish:
-            if is_security_measure_question:
+            if is_mfa_question:
+                answer = (
+                    "GDPR säger normalt inte att MFA alltid måste användas i varje situation. Däremot kräver GDPR en lämplig säkerhetsnivå utifrån risk, typ av personuppgifter, system och möjliga konsekvenser för registrerade personer. "
+                    "MFA kan därför vara en viktig och rimlig teknisk säkerhetsåtgärd, särskilt för administratörskonton, fjärråtkomst, molntjänster, e-postkonton, system med känsliga personuppgifter eller konton där obehörig åtkomst kan få stor påverkan. "
+                    "Organisationen bör dokumentera var MFA används, var den inte används, varför nivån bedöms tillräcklig och vilka kompletterande skydd som finns, till exempel loggning, behörighetsstyrning och incidentrutiner."
+                )
+            elif is_encryption_question:
+                answer = (
+                    "GDPR kräver inte kryptering i exakt alla situationer, men kryptering är en tydlig teknisk säkerhetsåtgärd som ofta kan vara lämplig när personuppgifter behöver skyddas mot obehörig åtkomst, förlust eller röjande. "
+                    "Behovet beror på risk, datatyp, systemmiljö, åtkomst, lagring, överföring och möjliga konsekvenser för registrerade personer. Kryptering kan vara särskilt viktig för känsliga uppgifter, bärbara enheter, säkerhetskopior, databaser, filöverföring och molnlagring. "
+                    "Organisationen bör även dokumentera nyckelhantering, åtkomstkontroll, backupskydd och varför vald skyddsnivå är rimlig."
+                )
+            elif is_imy_security_question:
+                answer = (
+                    "IMY:s vägledning innebär att säkerhetsåtgärder enligt GDPR ska väljas riskbaserat. Det finns alltså inte en enda universell checklista som passar alla organisationer. "
+                    "Organisationen bör bedöma vilka personuppgifter som behandlas, var de finns, vem som har åtkomst, vilka system och leverantörer som används och vad konsekvenserna kan bli vid obehörig åtkomst, förlust, ändring eller röjande. "
+                    "Praktiskt handlar det om både tekniska åtgärder, till exempel åtkomstkontroll, MFA, loggning, kryptering och säkerhetskopior, och organisatoriska åtgärder, till exempel rutiner, ansvar, utbildning, leverantörskrav, uppföljning och dokumentation."
+                )
+            elif is_protect_personal_data_question:
+                answer = (
+                    "Personuppgifter bör skyddas genom en riskbaserad kombination av tekniska och organisatoriska åtgärder. Börja med att kartlägga vilka personuppgifter som behandlas, var de lagras, vilka system och leverantörer som används och vem som behöver åtkomst. "
+                    "Begränsa åtkomst efter behov, använd stark autentisering där risken motiverar det, logga och följ upp åtkomst, skydda data med kryptering där det är lämpligt, säkra backup och ha rutiner för incidenter och personuppgiftsincidenter. "
+                    "Organisationen bör också utbilda användare, granska behörigheter regelbundet och dokumentera både riskbedömningar och valda skyddsåtgärder."
+                )
+            elif is_security_measure_question:
                 answer = (
                     "Enligt GDPR bör säkerhetsåtgärder väljas utifrån risk, typ av personuppgifter, systemens användning och möjliga konsekvenser för registrerade personer. "
                     "Praktiskt innebär det ofta åtkomstkontroll, stark autentisering där det är lämpligt, loggning, kryptering, säkerhetskopior, behörighetsseparering, dataminimering, säkra standardinställningar och rutiner för incidenthantering. "
@@ -5395,7 +5529,31 @@ def generate_simple_answer(question, best_match, language="English", include_tec
                     "Därefter bör organisationen avgöra om IMY ska underrättas inom 72 timmar, om berörda personer behöver informeras vid hög risk, vilka skyddsåtgärder som minskar skadan och hur beslutet ska dokumenteras."
                 )
         else:
-            if is_security_measure_question:
+            if is_mfa_question:
+                answer = (
+                    "GDPR does not usually say that MFA is mandatory in every situation. Instead, it requires an appropriate level of security based on risk, the type of personal data, the systems used, and the possible impact on individuals. "
+                    "MFA can therefore be an appropriate and important technical security measure, especially for administrator accounts, remote access, cloud services, email accounts, systems with sensitive personal data, or accounts where unauthorized access could cause serious harm. "
+                    "The organization should document where MFA is used, where it is not used, why the chosen level is considered appropriate, and which supporting controls exist, such as logging, access control, monitoring, and incident routines."
+                )
+            elif is_encryption_question:
+                answer = (
+                    "GDPR does not require encryption in every single situation, but encryption is a clear technical security measure that can be appropriate when personal data needs protection against unauthorized access, loss, disclosure, or misuse. "
+                    "Whether encryption is needed depends on risk, data type, storage, transfer, access, system design, and the possible impact on individuals. It is especially relevant for sensitive data, portable devices, backups, databases, file transfers, and cloud storage. "
+                    "The organization should also document key management, access control, backup protection, and why the selected protection level is appropriate."
+                )
+            elif is_imy_security_question:
+                answer = (
+                    "IMY's guidance means that GDPR security measures should be selected based on risk. There is no single universal checklist that fits every organization. "
+                    "The organization should assess what personal data it processes, where it is stored, who has access, which systems and suppliers are involved, and what the consequences could be if the data is accessed, lost, changed, disclosed, or made unavailable. "
+                    "In practice, this includes technical measures such as access control, MFA, logging, encryption, and backups, and organizational measures such as policies, routines, responsibility, training, supplier requirements, follow-up, and documentation."
+                )
+            elif is_protect_personal_data_question:
+                answer = (
+                    "Personal data should be protected through a risk-based mix of technical and organizational measures. Start by mapping what personal data is processed, where it is stored, which systems and suppliers are involved, and who needs access. "
+                    "Limit access to what is necessary, use strong authentication where risk justifies it, log and review access, use encryption where appropriate, protect backups, and maintain routines for incidents and personal data breaches. "
+                    "The organization should also train users, review permissions regularly, and document both the risk assessment and the selected security measures."
+                )
+            elif is_security_measure_question:
                 answer = (
                     "Under GDPR, security measures should be selected based on risk, the type of personal data, how systems are used, and the possible impact on individuals. "
                     "In practice, this can include access control, strong authentication where appropriate, logging, encryption, backups, separation of privileges, data minimisation, secure defaults, and incident-response routines. "
@@ -6659,7 +6817,7 @@ else:
         "Compromised accounts",
         "NIS2",
         "Swedish Cybersecurity Act",
-        "Dataintrång",
+        "Unauthorized access",
         "EU Cyber Resilience Act",
         "DORA",
         "Digital compliance"
