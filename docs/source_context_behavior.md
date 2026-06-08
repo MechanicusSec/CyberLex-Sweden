@@ -2,13 +2,13 @@
 
 CyberLex Sweden is designed to show where answers come from without overwhelming the user.
 
-This document explains how source matching, routing, official links, metadata, and relevant source context should behave.
+This document explains how source matching, routing, official links, metadata, relevant source context, source-card language, and incident-context behavior should work.
 
 ---
 
 ## Source-Based Search
 
-CyberLex uses a local Markdown knowledge base stored in the data/ folder.
+CyberLex uses a local Markdown knowledge base stored in the `data/` folder.
 
 When a user asks a question, the app searches local source chunks and tries to find relevant source sections.
 
@@ -78,7 +78,7 @@ Source context should avoid developer-style noise.
 It should not show:
 
 - internal helper notes
-- visible Markdown separators such as ---
+- visible Markdown separators such as `---`
 - example-question bullets
 - empty source-context cards
 - code fences
@@ -89,6 +89,47 @@ It should not show:
 - raw relevance-score details in normal user view
 
 Technical diagnostics can still show deeper details when explicitly enabled.
+
+---
+
+## Language-Aware Source Context Labels
+
+Source-context labels should follow the active answer language.
+
+In Swedish mode, source context should use Swedish labels such as:
+
+- `Relevant källkontext`
+- `Källområde`
+- `Använd sektion`
+- `Källtyp`
+- `Stödjande källtext`
+- `Praktisk förklaring`
+- `Svarsstöd`
+
+In English mode, source context should use English labels such as:
+
+- `Relevant source context`
+- `Source area`
+- `Used section`
+- `Source type`
+- `Supporting source text`
+- `Practical explanation`
+- `Answer guidance`
+
+For example, a Swedish question such as:
+
+```text
+Gäller NIS2 för oss?
+```
+
+should show source-context sections such as:
+
+```text
+Praktisk förklaring
+Svarsstöd
+```
+
+It should not show the raw English section label `Practical explanation` as the visible card title or used-section value in Swedish mode.
 
 ---
 
@@ -108,6 +149,90 @@ Examples:
 | suspected hacking or intrusion | hacking, intrusion, containment, evidence preservation sections |
 
 CyberLex should avoid showing unrelated incident cards.
+
+---
+
+## Incident Statement Detection and Fallback Avoidance
+
+Users often report incidents as short statements rather than neat questions.
+
+Examples:
+
+```text
+Kunddata kan ha läckt
+Kund data kan ha läckt
+Customer data may have leaked
+Våra filer har krypterats
+Our files are encrypted
+```
+
+CyberLex should treat these as practical incident-response inputs when they fall inside the supported cybersecurity scope.
+
+For supported incident statements, CyberLex should not fall back to a generic summary such as:
+
+```text
+CyberLex Sweden found a relevant trusted source section, but this prototype cannot yet generate a detailed legal explanation for this question.
+```
+
+or the Swedish equivalent.
+
+Instead, the answer should provide topic-specific guidance and relevant source context.
+
+---
+
+## Data Leak and Customer Data Source Filtering
+
+Data-leak questions should connect to data-leak, personal data breach, GDPR, and IMY source context.
+
+Examples:
+
+| User question | Preferred source context |
+|---|---|
+| Kunddata kan ha läckt | suspected data leak / personal data breach guidance |
+| Kund data kan ha läckt | suspected data leak / personal data breach guidance |
+| Customer data may have leaked | suspected data leak / personal data breach guidance |
+| What should we assess after a personal data breach? | personal data breach assessment |
+
+The answer should guide the user to:
+
+- contain the incident
+- preserve evidence
+- identify what data may have leaked
+- check whether personal data is involved
+- assess risk to individuals' rights and freedoms
+- assess whether IMY notification may be needed within 72 hours
+- assess whether affected individuals need to be informed if the risk is high
+- document the timeline, facts, decisions, and uncertainty
+
+---
+
+## Ransomware and Encrypted Files Source Filtering
+
+Encrypted files can be normal in ordinary IT.
+
+However, in a cybersecurity incident context, unexpected encrypted files should be treated as a possible ransomware or malware incident until proven otherwise.
+
+Examples:
+
+| User question | Preferred source context |
+|---|---|
+| Våra filer har krypterats | ransomware or malware sections |
+| Vad gör vi om filer har krypterats? | ransomware or malware sections |
+| Our files are encrypted | ransomware or malware sections |
+| Files are encrypted | ransomware or malware sections |
+| Our files have been encrypted | ransomware or malware sections |
+| Encrypted files | ransomware or malware sections |
+
+The answer should guide the user to:
+
+- isolate affected systems
+- stop further spread
+- preserve logs, ransom notes, screenshots, filenames, timestamps, and alerts
+- avoid wiping or reinstalling systems before evidence is preserved
+- check backups before restore
+- assess whether data was also stolen or exposed
+- assess GDPR/IMY and NIS2/Swedish Cybersecurity Act reporting relevance
+- document the timeline, facts, actions, and uncertainty
 
 ---
 
@@ -159,6 +284,34 @@ CyberLex should avoid showing hacking or generic incident-response cards for pur
 
 ---
 
+## Source Context Length and Readability
+
+Source context should be useful but not overwhelming.
+
+Long checklists and long source sections may be shortened in normal user view when needed.
+
+Preferred behavior:
+
+- show the most relevant part of the source text
+- prefer one to three useful source cards
+- avoid repeating near-identical source cards
+- avoid very long source dumps in normal view
+- keep full technical details behind diagnostics when needed
+
+If source text is shortened, the app may show a user-friendly note such as:
+
+```text
+Excerpt shortened for readability.
+```
+
+or in Swedish:
+
+```text
+Utdraget har förkortats för läsbarhet.
+```
+
+---
+
 ## Technical Diagnostics
 
 Technical diagnostics can show deeper information such as:
@@ -171,6 +324,8 @@ Technical diagnostics can show deeper information such as:
 - technical retrieval behavior
 
 Diagnostics are useful for developers and testers, but they should not dominate the normal user interface.
+
+Diagnostics should stay hidden by default.
 
 ---
 
@@ -185,3 +340,7 @@ The current source context goal is:
 - avoid repeated or unrelated source sections
 - make official source links easy to find
 - keep legal and incident-response answers grounded in local trusted source material
+- localize source-context labels according to Swedish or English mode
+- avoid generic fallback summaries for supported incident-response statements
+- treat unexpected encrypted files as a possible ransomware or malware incident in cybersecurity context
+- treat customer-data leak statements as possible data-leak or personal-data-breach incidents

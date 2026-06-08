@@ -43,6 +43,11 @@ The goal is to verify that the application can:
 - Verify ransomware and data leak incident responses stay specific
 - Verify user-friendly source context labels and hidden diagnostics by default
 - Verify README documentation links
+- Verify spaced Swedish data-leak wording such as `Kund data kan ha läckt` normalizes correctly
+- Verify English customer-data leak statements trigger practical data-leak incident guidance
+- Verify English encrypted-files statements trigger ransomware or malware incident guidance
+- Verify NIS2 source-context section labels localize correctly in Swedish and English
+- Verify generic fallback summaries do not appear when a supported incident-response route exists
 
 ---
 
@@ -3462,6 +3467,276 @@ The app opens in the browser and the interface loads normally.
 ---
 
 
+---
+
+## Recent Regression Tests After Incident Detection and Source-Context Localization Fixes
+
+These tests verify the latest behavior after the NIS2 source-context localization fix and the incident-summary detection fixes for data leaks and encrypted files.
+
+The purpose is to make sure CyberLex Sweden does not fall back to a generic CyberLex summary when the question is actually a supported incident-response scenario.
+
+---
+
+## Test Case 85: Swedish NIS2 Source Context Localization
+
+### Question
+
+```text
+Gäller NIS2 för oss?
+```
+
+### Expected Result
+
+CyberLex Sweden should answer in Swedish and explain that NIS2 or the Swedish Cybersecurity Act depends on facts such as legal entity, activity, sector, size, exceptions, and Swedish jurisdiction.
+
+The relevant source context should use Swedish labels.
+
+### Expected Source
+
+```text
+nis2_sector_scope_and_applicability.md
+```
+
+### Expected Section Examples
+
+```text
+Praktisk förklaring
+Svarsstöd
+```
+
+### Pass Condition
+
+The source context should show `Praktisk förklaring` and `Använd sektion: Praktisk förklaring`, not the raw English label `Practical explanation` in Swedish mode.
+
+---
+
+## Test Case 86: English NIS2 Source Context Localization
+
+### Question
+
+```text
+Does NIS2 apply to us?
+```
+
+### Expected Result
+
+CyberLex Sweden should answer in English and explain that NIS2 or the Swedish Cybersecurity Act depends on the organization's activity type, sector, size, and Swedish jurisdiction.
+
+### Expected Source
+
+```text
+nis2_sector_scope_and_applicability.md
+```
+
+### Expected Section Examples
+
+```text
+Practical explanation
+Answer guidance
+```
+
+### Pass Condition
+
+The source context should remain in English in English mode and should not show Swedish-only labels unless the source excerpt itself contains Swedish text.
+
+---
+
+## Test Case 87: Swedish Spaced Customer Data Leak Wording
+
+### Question
+
+```text
+Kund data kan ha läckt
+```
+
+### Expected Result
+
+CyberLex Sweden should normalize the spaced wording `kund data` toward `kunddata` and treat the question as a possible data leak or personal data breach.
+
+The answer should explain that the organization should contain the incident, preserve evidence, identify what data may have leaked, check whether personal data is involved, assess risk to individuals, assess whether IMY notification may be required within 72 hours, and document the decision.
+
+### Expected Source
+
+```text
+cyber_incident_response_playbook.md
+gdpr_personal_data_breach.md
+```
+
+### Expected Section Examples
+
+```text
+Steg för steg vid misstänkt dataläcka
+Data breach assessment checklist
+Reporting to IMY
+```
+
+### Pass Condition
+
+The answer should not show the generic fallback message `CyberLex Sweden hittade en relevant betrodd källa, men prototypen kan ännu inte generera...`. It should show practical suspected data-leak guidance.
+
+---
+
+## Test Case 88: Swedish Customer Data Leak Wording
+
+### Question
+
+```text
+Kunddata kan ha läckt
+```
+
+### Expected Result
+
+CyberLex Sweden should treat this as a possible data leak or personal data breach and answer in Swedish.
+
+The answer should connect clearly to containment, evidence preservation, personal data assessment, GDPR/IMY breach notification assessment, possible communication to affected individuals, and documentation.
+
+### Expected Source
+
+```text
+cyber_incident_response_playbook.md
+gdpr_personal_data_breach.md
+```
+
+### Expected Section Examples
+
+```text
+Steg för steg vid misstänkt dataläcka
+Data breach assessment checklist
+Reporting to IMY
+```
+
+### Pass Condition
+
+The answer should be a specific data-leak incident-response answer and should not be categorized only as a general cyber law question.
+
+---
+
+## Test Case 89: English Customer Data Leak Statement
+
+### Question
+
+```text
+Customer data may have leaked
+```
+
+### Expected Result
+
+CyberLex Sweden should treat this as a possible data leak or personal data breach and answer in English.
+
+The answer should explain that the organization should contain the exposure, preserve evidence, identify what data and individuals may be affected, assess whether personal data is involved, assess GDPR notification duties, and document the timeline and decisions.
+
+### Expected Source
+
+```text
+cyber_incident_response_playbook.md
+gdpr_personal_data_breach.md
+```
+
+### Expected Section Examples
+
+```text
+Step-by-step answer for suspected data leak
+Data breach assessment checklist
+Reporting to IMY
+```
+
+### Pass Condition
+
+The answer should not show the generic `CyberLex summary` fallback. It should show practical suspected data-leak guidance.
+
+---
+
+## Test Case 90: English Encrypted Files Statement
+
+### Question
+
+```text
+Our files are encrypted
+```
+
+### Expected Result
+
+CyberLex Sweden should treat unexpected encrypted files as a possible ransomware or malware incident until proven otherwise.
+
+The answer should explain that encryption can be normal in ordinary IT, but in a cybersecurity incident context unexpected encrypted files should trigger ransomware triage: isolate affected systems, preserve ransom notes, logs, screenshots, timestamps and alerts, avoid wiping systems before evidence is preserved, check backups, assess whether data was stolen, and assess GDPR/IMY and NIS2/Swedish Cybersecurity Act relevance.
+
+### Expected Source
+
+```text
+cyber_incident_response_playbook.md
+```
+
+### Expected Section Examples
+
+```text
+Ransomware first steps
+Malware infection first steps
+Encrypted files
+Step 6: Assess data theft risk
+```
+
+### Pass Condition
+
+The answer should not be rejected as out-of-scope and should not show a generic CyberLex summary. It should show ransomware or malware incident guidance.
+
+---
+
+## Test Case 91: English Alternative Encrypted Files Wording
+
+### Questions
+
+```text
+Files are encrypted
+Our files have been encrypted
+Files have been encrypted
+Encrypted files
+```
+
+### Expected Result
+
+CyberLex Sweden should treat these as possible ransomware or malware incident statements when asked in the cybersecurity context.
+
+### Expected Source
+
+```text
+cyber_incident_response_playbook.md
+```
+
+### Expected Section Examples
+
+```text
+Ransomware first steps
+Malware infection first steps
+Encrypted files
+```
+
+### Pass Condition
+
+Each wording should trigger ransomware or malware incident guidance instead of an out-of-scope refusal or generic fallback.
+
+---
+
+## Test Case 92: Supported Incident Questions Should Not Use Generic Fallback
+
+### Questions
+
+```text
+Kund data kan ha läckt
+Customer data may have leaked
+Our files are encrypted
+Våra filer har krypterats
+Någon klickade på en länk i SMS
+```
+
+### Expected Result
+
+CyberLex Sweden should detect each question as a supported practical incident-response question.
+
+### Pass Condition
+
+None of these questions should display the generic fallback summary that says the prototype found a relevant source but cannot yet generate a detailed explanation. Each should show a practical, topic-specific answer and relevant source context.
+
+
 ## Test Summary
 
 The current prototype successfully demonstrates:
@@ -3545,5 +3820,12 @@ The current prototype successfully demonstrates:
 - Clean Git state check after documentation updates
 - Streamlit cache clearing before regression testing
 - Local app startup after documentation updates
+- NIS2 source-context labels localized correctly in Swedish and English
+- Swedish `Praktisk förklaring` and `Svarsstöd` source-context display for NIS2 applicability questions
+- English `Practical explanation` and `Answer guidance` source-context display for NIS2 applicability questions
+- Spaced Swedish customer-data wording such as `Kund data kan ha läckt` normalized toward data-leak handling
+- Customer-data leak statements trigger practical suspected data-leak guidance
+- English encrypted-files statements trigger ransomware or malware incident guidance
+- Generic CyberLex summary fallback avoided for supported incident-response statements
 
 The test results show that CyberLex Sweden can answer supported questions from trusted local knowledge files, display transparent source information, provide styled answer sections, test experimental retrieval behavior, audit local source files, and refuse unsupported questions outside the project scope.
