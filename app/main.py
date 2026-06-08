@@ -43,6 +43,11 @@ def normalize_query_text(text):
         "e post": "e-post",
         "epost": "e-post",
         "mail": "mejl",
+        "vårat": "vårt",
+        "inlogning": "inloggning",
+        "ransomewere": "ransomware",
+        "ransomwere": "ransomware",
+        "kryptats": "krypterats",
     }
 
     for wrong, right in replacements.items():
@@ -342,12 +347,28 @@ def is_practical_incident_response_question(question):
         "hacked",
         "hackad",
         "hackning",
+        "blivit hackade",
+        "vi har blivit hackade",
+        "hackat vårt system",
+        "hackat vårat system",
+        "någon hackade",
+        "någon har hackat",
+        "someone hacked",
+        "someone hacked our system",
+        "breached our system",
+        "breach into our system",
+        "someone breached",
         "misstänker hackning",
         "misstänkt hackning",
         "suspect intrusion",
         "suspected intrusion",
         "intrusion",
         "intrång",
+        "tagit sig in",
+        "tagit sig in i vårt system",
+        "tagit sig in i vårat system",
+        "någon verkar ha tagit sig in",
+        "någon har tagit sig in",
         "misstänker intrång",
         "misstänkt intrång",
         "unauthorized access",
@@ -372,7 +393,13 @@ def is_practical_incident_response_question(question):
         "ransomware",
         "utpressningsvirus",
         "files encrypted",
+        "files have been encrypted",
+        "encrypted files",
         "filer har krypterats",
+        "filerna har krypterats",
+        "våra filer har krypterats",
+        "krypterade filer",
+        "krypterats",
         "data leak",
         "data leakage",
         "dataläcka",
@@ -380,6 +407,10 @@ def is_practical_incident_response_question(question):
         "data har läckt",
         "customer data exposed",
         "kunddata har exponerats",
+        "kunddata har läckt",
+        "data och personinformation har läckt",
+        "personinformation har läckt",
+        "personuppgifter har läckt",
         "exposed data",
         "exponerad data",
         "personal data exposed",
@@ -425,6 +456,25 @@ def is_practical_incident_response_question(question):
         "suspicious email",
         "misstänkt mejl",
         "misstänkt e-post",
+        "misstänkt länk",
+        "skadlig länk",
+        "suspicious link",
+        "clicked a suspicious link",
+        "clicked a link on a website",
+        "someone clicked a suspicious link",
+        "someone clicked a link on a website",
+        "link on a website",
+        "klickade på en misstänkt länk",
+        "klickade på misstänkt länk",
+        "klickat på en misstänkt länk",
+        "klickat på misstänkt länk",
+        "klickade på en länk på en webbsida",
+        "någon klickade på en länk på en webbsida",
+        "länk på en webbsida",
+        "länk i sms",
+        "länk i chatt",
+        "länk i teams",
+        "länk i dokument",
     ]
 
     action_terms = [
@@ -457,8 +507,17 @@ def is_practical_incident_response_question(question):
         "om vi misstänker",
         "jag misstänker",
         "vi misstänker",
+        "vi tror",
+        "vi tror att",
         "misstänker",
         "misstänkt",
+        "har läckt",
+        "har krypterats",
+        "klickade",
+        "klickat",
+        "clicked",
+        "clicked a link",
+        "clicked a suspicious link",
     ]
 
     # Users often report an incident as a statement instead of asking a neat
@@ -467,11 +526,13 @@ def is_practical_incident_response_question(question):
     statement_terms = [
         "we have", "we had", "we got", "we received", "we have received",
         "i think we", "i believe we", "it looks like", "someone has",
-        "someone hacked", "our system", "our account",
+        "someone hacked", "someone clicked", "our system", "our account",
         "vi har", "vi hade", "vi fick", "vi har fått", "vi har haft",
-        "vi har blivit", "jag tror att vi", "jag tror vi", "det verkar som",
+        "vi har blivit", "vi tror", "vi tror att", "jag tror att vi", "jag tror vi", "det verkar som",
         "någon har", "någon verkar", "vårt system", "vårat system",
         "på ett konto", "på konto", "i ett konto",
+        "på en webbsida", "i sms", "i chatt", "i teams", "i dokument",
+        "våra filer", "filerna", "kunddata", "personuppgifter", "personinformation",
     ]
 
     definition_question_starters = [
@@ -509,7 +570,17 @@ def is_suspected_hacking_question(question):
             "misstänkt intrång",
             "hackad",
             "hackning",
+            "blivit hackade",
+            "hackat vårt system",
+            "hackat vårat system",
+            "någon har hackat",
+            "someone hacked",
+            "breached our system",
+            "someone breached",
             "intrång",
+            "tagit sig in",
+            "tagit sig in i vårt system",
+            "någon verkar ha tagit sig in",
             "obehörig åtkomst",
             "suspicious login",
             "suspicious sign-in",
@@ -541,6 +612,10 @@ def is_data_leak_response_question(question):
             "data har läckt",
             "läckt data",
             "kunddata har exponerats",
+            "kunddata har läckt",
+            "vi tror att kunddata har läckt",
+            "personinformation har läckt",
+            "personuppgifter har läckt",
             "personuppgifter exponerats",
             "exponerad data",
         ],
@@ -595,6 +670,58 @@ def is_suspicious_login_question(question):
     )
 
 
+
+def is_suspicious_link_question(question):
+    # Detects suspicious-link clicks without assuming the link came from email.
+    # A link can come from email, SMS, chat, social media, a website, QR code,
+    # or a document, so this must be handled before suspicious-email logic.
+    question_lower = normalize_query_text(question)
+    return contains_any(
+        question_lower,
+        [
+            "suspicious link",
+            "clicked a suspicious link",
+            "clicked suspicious link",
+            "clicked a link on a website",
+            "someone clicked a suspicious link",
+            "someone clicked a link on a website",
+            "clicked a link in sms",
+            "clicked a link in chat",
+            "clicked a link in teams",
+            "clicked a link in slack",
+            "clicked an unknown link",
+            "malicious link",
+            "unknown link",
+            "link on a website",
+            "misstänkt länk",
+            "skadlig länk",
+            "okänd länk",
+            "klickade på en misstänkt länk",
+            "klickade på misstänkt länk",
+            "klickat på en misstänkt länk",
+            "klickat på misstänkt länk",
+            "någon klickade på en misstänkt länk",
+            "någon klickade på misstänkt länk",
+            "klickade på en länk på en webbsida",
+            "någon klickade på en länk på en webbsida",
+            "klickat på en länk på en webbsida",
+            "länk på en webbsida",
+            "länk från en webbsida",
+            "länk i sms",
+            "länk via sms",
+            "klickade på en länk i sms",
+            "klickat på en länk i sms",
+            "länk i chatt",
+            "länk i teams",
+            "länk i slack",
+            "länk i discord",
+            "länk i sociala medier",
+            "qr-kod",
+            "qr kod",
+            "länk i dokument",
+        ],
+    )
+
 def is_suspicious_email_question(question):
     # Detects suspicious email / phishing questions.
     # This is separate from compromised account because a suspicious email may be
@@ -628,7 +755,11 @@ def is_suspicious_email_question(question):
             "misstänkt bilaga",
             "misstänkt länk",
             "klickat på misstänkt länk",
+            "klickade på misstänkt länk",
+            "klickade på en misstänkt länk",
+            "någon klickade på en misstänkt länk",
             "klickat på phishinglänk",
+            "klickade på phishinglänk",
             "fått ett misstänkt mejl",
         ],
     )
@@ -687,9 +818,13 @@ def is_ransomware_response_question(question):
             "malware",
             "utpressningsvirus",
             "files encrypted",
+            "files have been encrypted",
             "filer har krypterats",
+            "filerna har krypterats",
+            "våra filer har krypterats",
             "encrypted files",
             "krypterade filer",
+            "krypterats",
         ],
     )
 
@@ -863,6 +998,44 @@ def expand_question_terms(question):
             "gdpr",
             "breach",
             "reporting",
+        ],
+        "våra filer har krypterats": [
+            "ransomware",
+            "malware",
+            "cyber incident",
+            "incident response",
+            "preserve evidence",
+            "backups",
+            "containment",
+            "imy",
+            "nis2",
+        ],
+        "någon klickade på en misstänkt länk": [
+            "phishing",
+            "suspicious email",
+            "incident response",
+            "compromised account",
+            "revoke sessions",
+            "mfa",
+            "preserve evidence",
+        ],
+        "kunddata har läckt": [
+            "data leak",
+            "personal data breach",
+            "gdpr",
+            "imy",
+            "72 hours",
+            "incident response",
+            "preserve evidence",
+        ],
+        "tagit sig in": [
+            "suspected hacking",
+            "intrusion",
+            "unauthorized access",
+            "incident response",
+            "preserve evidence",
+            "logs",
+            "cert-se",
         ],
         "ransomware": [
             "cyber incident",
@@ -1537,6 +1710,22 @@ def search_chunks(question, chunks):
             if "compromised account" in section_text:
                 score -= 20
 
+        if is_suspicious_link_question(question):
+            if "suspicious link" in section_text:
+                score += 120
+            if "phishing" in section_text:
+                score += 60
+            if "suspicious email" in section_text:
+                score += 25
+            if "incident" in section_text:
+                score += 20
+            if "compromised account" in section_text:
+                score += 20
+            if "ransomware" in section_text or "malware" in section_text:
+                score -= 25
+            if "suspicious login" in section_text:
+                score -= 25
+
         if is_suspicious_email_question(question):
             if "suspicious email and phishing first steps" in section_text:
                 score += 100
@@ -1669,6 +1858,9 @@ def get_incident_source_context_profile(question):
     # exact incident type instead of showing nearby incident playbook sections.
     question = str(question or "")
 
+    if is_suspicious_link_question(question):
+        return "suspicious_link"
+
     if is_suspicious_email_question(question):
         return "suspicious_email"
 
@@ -1711,6 +1903,26 @@ def is_incident_source_context_match(result, question):
         return False
 
     profiles = {
+        "suspicious_link": {
+            "allow": [
+                "suspicious link",
+                "misstänkt länk",
+                "skadlig länk",
+                "phishing",
+                "suspicious email",
+            ],
+            "block": [
+                "suspicious login",
+                "misstänkt inloggning",
+                "data leak",
+                "dataläcka",
+                "ransomware",
+                "malware",
+                "compromised account",
+                "komprometterat konto",
+                "suspected hacking",
+            ],
+        },
         "suspicious_email": {
             "allow": [
                 "suspicious email",
@@ -1888,6 +2100,18 @@ def get_source_context_section_priority(question, section_name, language="Englis
             priority -= 30
         if "suspected hacking" in section:
             priority -= 50
+
+    elif is_suspicious_link_question(question):
+        if "suspicious link" in section or "misstänkt länk" in section or "phishing" in section:
+            priority += 130
+        if "email and phishing first steps" in section:
+            priority += 25
+        if "email assessment checklist" in section:
+            priority += 15
+        if "suspicious login" in section:
+            priority -= 30
+        if "compromised account" in section:
+            priority += 5
 
     elif is_suspicious_email_question(question):
         if "suspicious email" in section or "phishing" in section or "misstänkt mejl" in section:
@@ -2961,6 +3185,8 @@ def generate_assessment_checklist(question, search_results, language="English"):
     ransomware_terms = [
         "ransomware",
         "malware",
+        "krypterats",
+        "våra filer",
         "encrypted files",
         "files encrypted",
         "utpressningsvirus",
@@ -2977,6 +3203,11 @@ def generate_assessment_checklist(question, search_results, language="English"):
         "unauthorized access",
         "hackning",
         "intrång",
+        "tagit sig in",
+        "tagit sig in i vårt system",
+        "tagit sig in i vårat system",
+        "någon verkar ha tagit sig in",
+        "någon har tagit sig in",
         "misstänker intrång",
         "misstänker hackning",
         "obehörig åtkomst",
@@ -3865,7 +4096,10 @@ def is_unsafe_cyber_request(question):
         "hide traces",
         "avoid detection",
         "bypass detection",
+        "bypass mfa",
+        "bypass multi-factor",
         "steal credentials",
+        "steal passwords",
         "hack into",
         "exploit a system",
         "after hacking",
@@ -3875,6 +4109,9 @@ def is_unsafe_cyber_request(question):
         "dölja spår",
         "undvika upptäckt",
         "kringgå upptäckt",
+        "kringgå mfa",
+        "kringgår jag mfa",
+        "kringgå multifaktor",
         "stjäla lösenord",
         "hacka sig in",
         "efter ett intrång",
@@ -4079,6 +4316,9 @@ def detect_question_topic(question, language="English"):
 
     question_lower = question.lower()
     use_swedish = language == "Svenska"
+
+    if is_suspicious_link_question(question):
+        return "Klick på misstänkt länk" if use_swedish else "Suspicious link click"
 
     if is_practical_incident_response_question(question):
         return "Incidenthantering och första åtgärder" if use_swedish else "Incident response and first steps"
@@ -4370,6 +4610,51 @@ def generate_source_confidence(score, language="English"):
     }
 
 
+
+def is_confirmed_or_strong_incident_statement(question):
+    # Distinguishes statements like "we have been hacked" from softer reports
+    # like "we think" or "we suspect" so CyberLex can give firmer blue-team
+    # containment guidance when the user states that the incident happened.
+    q = normalize_query_text(question)
+    strong_markers = [
+        "vi har blivit hackade",
+        "vi har blivit hackad",
+        "vi har blivit utsatta",
+        "någon hackade",
+        "någon har hackat",
+        "någon har tagit sig in",
+        "någon verkar ha tagit sig in",
+        "hackat vårt system",
+        "hackat vårat system",
+        "tagit sig in i vårt system",
+        "tagit sig in i vårat system",
+        "someone hacked",
+        "someone hacked our system",
+        "we have been hacked",
+        "we were hacked",
+        "our system was hacked",
+        "someone breached",
+        "breached our system",
+    ]
+    return contains_any(q, strong_markers)
+
+
+def is_explicit_suspicious_login_statement(question):
+    # If the user already says the login is suspicious, the answer should not
+    # lead with "if approved". It should treat the event as suspicious until verified.
+    q = normalize_query_text(question)
+    explicit_markers = [
+        "misstänkt login",
+        "misstänkt inloggning",
+        "misstänkt loggning",
+        "ovanlig inloggning",
+        "okänd inloggning",
+        "suspicious login",
+        "unusual login",
+        "unknown login",
+    ]
+    return contains_any(q, explicit_markers)
+
 def generate_incident_response_answer(question, language="English"):
     # Generates a longer defensive first-response answer for suspected hacking,
     # data leaks, ransomware, malware, and compromised accounts.
@@ -4402,11 +4687,16 @@ def generate_incident_response_answer(question, language="English"):
             ]
         elif is_suspicious_login_question(question):
             title = "Rekommenderade första steg vid misstänkt inloggning"
-            intro = (
-                "Om inloggningen var godkänd av användaren är det normalt ingen incident. "
-                "Om den däremot är obehörig, okänd eller inte kan förklaras bör den behandlas som en misstänkt identitetsincident "
-                "tills loggarna och användaren visar motsatsen."
-            )
+            if is_explicit_suspicious_login_statement(question):
+                intro = (
+                    "Eftersom inloggningen beskrivs som misstänkt bör den behandlas som en möjlig identitetsincident tills den är verifierad. "
+                    "Om loggar och användare senare visar att inloggningen var godkänd, förväntad och kopplad till en känd plats eller tjänst kan ärendet normalt stängas som legitim aktivitet."
+                )
+            else:
+                intro = (
+                    "En inloggning är inte automatiskt en incident. Om den var godkänd, förväntad eller kopplad till en känd plats eller tjänst är den normalt ofarlig. "
+                    "Om den däremot är obehörig, okänd eller inte kan förklaras bör den behandlas som en misstänkt identitetsincident tills loggarna och användaren visar motsatsen."
+                )
             steps = [
                 "Spara larmet eller loggposten med tidpunkt, användarkonto, IP-adress, plats, enhet och tjänst.",
                 "Kontrollera om inloggningen var godkänd av användaren, förväntad enligt schema eller kopplad till en känd tjänst eller plats.",
@@ -4421,6 +4711,24 @@ def generate_incident_response_answer(question, language="English"):
                 "Bedöm om personuppgifter kan ha påverkats och om GDPR/IMY-bedömning krävs.",
                 "Bedöm om händelsen kan vara relevant för NIS2/cybersäkerhetslagen vid större påverkan.",
                 "Dokumentera tidslinje, loggar, beslut och åtgärder.",
+            ]
+        elif is_suspicious_link_question(question):
+            title = "Rekommenderade första steg efter klick på misstänkt länk"
+            intro = (
+                "En misstänkt länk kan komma från mejl, SMS, chatt, sociala medier, en webbsida, QR-kod eller ett dokument. "
+                "Börja med att ta reda på om användaren bara klickade, skrev in lösenord eller MFA-kod, laddade ned något, eller om konto/enhet kan ha påverkats."
+            )
+            steps = [
+                "Be användaren att inte klicka vidare, inte skriva in uppgifter, inte ladda ned filer och inte godkänna MFA-prompter från flödet.",
+                "Spara URL, sida/skärmbild, kanal, tidpunkt, användare, enhet, webbläsare och eventuella omdirigeringar om det går.",
+                "Identifiera var länken kom ifrån: mejl, SMS, chatt, webbsida, QR-kod, dokument, annons eller annan källa.",
+                "Kontrollera om lösenord, MFA-kod, personuppgifter, betalningsuppgifter eller annan känslig information skrevs in.",
+                "Om inloggningsuppgifter eller MFA angavs: behandla kontot som misstänkt komprometterat, byt lösenord från ren enhet, granska MFA och återkalla sessioner.",
+                "Kontrollera enheten för nedladdningar, webbläsarvarningar, nya filer, misstänkta tillägg, skadlig kod eller endpoint-larm.",
+                "Blockera URL/domän i e-postskydd, DNS/webbfilter, proxy, brandvägg eller endpoint-verktyg där det är relevant.",
+                "Sök om fler användare har fått eller klickat på samma länk och varna dem vid behov.",
+                "Bedöm om personuppgifter, kunddata, system eller konton kan ha påverkats.",
+                "Dokumentera tidslinje, användarens åtgärder, bevis, begränsning, beslut och rapporteringsbedömning.",
             ]
         elif is_suspicious_email_question(question):
             title = "Rekommenderade första steg vid misstänkt mejl eller phishing"
@@ -4481,10 +4789,16 @@ def generate_incident_response_answer(question, language="English"):
             ]
         else:
             title = "Rekommenderade första steg vid misstänkt hackning eller intrång"
-            intro = (
-                "Om du misstänker hackning eller intrång bör du behandla händelsen som en möjlig incident. "
-                "Första målet är att begränsa skadan utan att förstöra bevisning."
-            )
+            if is_confirmed_or_strong_incident_statement(question):
+                intro = (
+                    "När frågan beskriver att någon har hackat eller tagit sig in i systemet bör fokus direkt ligga på skadebegränsning, bevisbevarande och att stoppa fortsatt åtkomst. "
+                    "Agera som vid en aktiv säkerhetsincident tills teknisk utredning visar något annat."
+                )
+            else:
+                intro = (
+                    "Om du misstänker hackning eller intrång bör du behandla händelsen som en möjlig incident. "
+                    "Första målet är att begränsa skadan utan att förstöra bevisning."
+                )
             steps = [
                 "Starta en incidentlogg med tidpunkt, upptäckt, berört system, berört konto och vem som gör vad.",
                 "Isolera drabbad klient, server eller konto om det går utan att förstöra bevisning.",
@@ -4531,10 +4845,16 @@ def generate_incident_response_answer(question, language="English"):
             ]
         elif is_suspicious_login_question(question):
             title = "Recommended first steps for suspicious login activity"
-            intro = (
-                "A suspicious login does not always mean full compromise, but it should be treated as a possible identity incident "
-                "until the logs show otherwise."
-            )
+            if is_explicit_suspicious_login_statement(question):
+                intro = (
+                    "Because the login is described as suspicious, treat it as a possible identity incident until it is verified. "
+                    "If logs and the user later confirm it was approved, expected, and tied to a known service or location, it can usually be closed as legitimate activity."
+                )
+            else:
+                intro = (
+                    "A login is not automatically bad. If it was approved, expected, or tied to a known service or location, it is usually not an incident. "
+                    "If it was unauthorized, unknown, or cannot be explained, treat it as a possible identity incident until logs show otherwise."
+                )
             steps = [
                 "Preserve the alert or log entry with time, user account, IP address, location, device, and service.",
                 "Check whether the login succeeded or was only a failed attempt.",
@@ -4548,6 +4868,24 @@ def generate_incident_response_answer(question, language="English"):
                 "Assess whether personal data may have been affected and whether GDPR/IMY assessment is required.",
                 "Assess whether the event may be relevant under NIS2/the Swedish Cybersecurity Act if impact is larger.",
                 "Document the timeline, logs, decisions, and actions.",
+            ]
+        elif is_suspicious_link_question(question):
+            title = "Recommended first steps after clicking a suspicious link"
+            intro = (
+                "A suspicious link can come from email, SMS, chat, social media, a website, QR code, or a document. "
+                "First determine whether the user only clicked, entered credentials or MFA codes, downloaded a file, or exposed an account or device."
+            )
+            steps = [
+                "Tell the user not to click further, enter information, download files, or approve MFA prompts from that flow.",
+                "Preserve the URL, page/screenshot, source channel, time, user, device, browser, and any redirect chain if available.",
+                "Identify where the link came from: email, SMS, chat, website, QR code, document, ad, or another source.",
+                "Check whether credentials, MFA codes, personal data, payment data, or other sensitive information were entered.",
+                "If credentials or MFA were entered, treat the account as suspected compromised, reset password from a clean device, review MFA, and revoke sessions.",
+                "Check the device for downloads, browser warnings, new files, suspicious extensions, malware alerts, or endpoint detections.",
+                "Block the URL/domain in email protection, DNS/web filtering, proxy, firewall, or endpoint tools where relevant.",
+                "Search whether other users received or clicked the same link and warn them if needed.",
+                "Assess whether personal data, customer data, systems, or accounts may have been affected.",
+                "Document timeline, user actions, evidence, containment, decisions, and reporting assessment.",
             ]
         elif is_suspicious_email_question(question):
             title = "Recommended first steps for a suspicious email or phishing"
@@ -4609,10 +4947,16 @@ def generate_incident_response_answer(question, language="English"):
             ]
         else:
             title = "Recommended first steps for suspected hacking or intrusion"
-            intro = (
-                "If you suspect hacking or intrusion, treat it as a possible incident. "
-                "The first goal is to limit harm without destroying evidence."
-            )
+            if is_confirmed_or_strong_incident_statement(question):
+                intro = (
+                    "Because the question states that the system was hacked or breached, focus immediately on containment, evidence preservation, and stopping continued access. "
+                    "Treat it as an active security incident until technical review proves otherwise."
+                )
+            else:
+                intro = (
+                    "If you suspect hacking or intrusion, treat it as a possible incident. "
+                    "The first goal is to limit harm without destroying evidence."
+                )
             steps = [
                 "Start an incident log with time, discovery, affected system, affected account, and who is doing what.",
                 "Isolate the affected client, server, or account if possible without destroying evidence.",
@@ -4799,7 +5143,9 @@ def generate_simple_answer(question, best_match, language="English", include_tec
     enhanced_basic_answer = generate_enhanced_basic_summary(question, language)
 
     if enhanced_basic_answer:
-        answer = enhanced_basic_answer
+        # Keep basic summaries visually compact in the main answer card.
+        # Detailed source context remains available below.
+        answer = re.sub(r"\s*\n\s*\n\s*", " ", enhanced_basic_answer).strip()
 
     elif (
         "data breach" in question_lower
@@ -5347,8 +5693,14 @@ def is_cyberlaw_question(question):
         "intrång",
         "hackning",
         "hackad",
+        "blivit hackade",
+        "hackat vårt system",
+        "tagit sig in",
         "dataläcka",
         "läckt data",
+        "kunddata har läckt",
+        "personinformation har läckt",
+        "personuppgifter har läckt",
         "komprometterat konto",
         "komprometterad",
         "säkerhetsincident",
@@ -5403,11 +5755,15 @@ def is_cyberlaw_question(question):
         "nätfiske",
         "misstänkt mejl",
         "misstänkt e-post",
+        "misstänkt länk",
+        "klickade på en misstänkt länk",
         "svensk cybersäkerhetsrätt",
         "cybersäkerhet",
         "cyberbrott",
         "ransomware",
         "malware",
+        "krypterats",
+        "våra filer",
         "cyber attack",
         "cyberattack",
         "security incident",
@@ -5481,6 +5837,7 @@ def is_cyberlaw_question(question):
         is_practical_incident_response_question(question_lower)
         or is_compromised_account_question(question_lower)
         or is_suspicious_login_question(question_lower)
+        or is_suspicious_link_question(question_lower)
         or is_suspicious_email_question(question_lower)
         or is_data_leak_response_question(question_lower)
         or is_ransomware_response_question(question_lower)
@@ -6427,15 +6784,6 @@ if question:
                             unsafe_allow_html=True
                         )
 
-                    with st.expander(
-                        "Incident log template" if language != "Svenska" else "Incidentloggmall",
-                        expanded=False
-                    ):
-                        st.markdown(
-                            generate_incident_log_template(question, language),
-                            unsafe_allow_html=True
-                        )
-
                     copy_ready_summary = generate_copy_ready_incident_summary(
                         question,
                         best_match,
@@ -6444,15 +6792,17 @@ if question:
                     )
 
                     with st.expander(
-                        "Download-ready incident summary" if language != "Svenska" else "Nedladdningsklart incidentunderlag",
+                        "Incident log and download" if language != "Svenska" else "Incidentlogg och nedladdning",
                         expanded=False
                     ):
+                        st.markdown(
+                            generate_incident_log_template(question, language),
+                            unsafe_allow_html=True
+                        )
                         st.caption(
-                            "The downloaded file contains the answer, checklist, incident log template, source note, and disclaimer. "
-                            "The checklist and log template are shown separately above, so they are not repeated here in full."
+                            "Use the log template above to document the incident. The downloaded file also contains the answer, checklist, source note, and disclaimer."
                             if language != "Svenska"
-                            else "Den nedladdade filen innehåller svar, checklista, incidentloggmall, källnotering och ansvarsbegränsning. "
-                            "Checklistan och incidentloggmallen visas separat ovan, därför upprepas de inte här i full längd."
+                            else "Använd incidentloggen ovan för att dokumentera händelsen. Den nedladdade filen innehåller även svaret, checklistan, källnotering och ansvarsbegränsning."
                         )
                         st.download_button(
                             "Download incident summary"
