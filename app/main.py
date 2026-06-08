@@ -458,23 +458,25 @@ def is_practical_incident_response_question(question):
         "misstänkt e-post",
         "misstänkt länk",
         "skadlig länk",
+        "okänd länk",
         "suspicious link",
+        "malicious link",
         "clicked a suspicious link",
-        "clicked a link on a website",
         "someone clicked a suspicious link",
+        "someone clicked a link",
         "someone clicked a link on a website",
-        "link on a website",
-        "klickade på en misstänkt länk",
-        "klickade på misstänkt länk",
-        "klickat på en misstänkt länk",
-        "klickat på misstänkt länk",
-        "klickade på en länk på en webbsida",
+        "clicked a link on a website",
+        "clicked a link in sms",
+        "någon klickade på en länk",
         "någon klickade på en länk på en webbsida",
+        "klickade på en länk på en webbsida",
+        "klickade på en länk i sms",
+        "klickat på en länk i sms",
         "länk på en webbsida",
         "länk i sms",
         "länk i chatt",
-        "länk i teams",
-        "länk i dokument",
+        "qr-kod",
+        "klickade på en misstänkt länk",
     ]
 
     action_terms = [
@@ -516,8 +518,6 @@ def is_practical_incident_response_question(question):
         "klickade",
         "klickat",
         "clicked",
-        "clicked a link",
-        "clicked a suspicious link",
     ]
 
     # Users often report an incident as a statement instead of asking a neat
@@ -526,19 +526,22 @@ def is_practical_incident_response_question(question):
     statement_terms = [
         "we have", "we had", "we got", "we received", "we have received",
         "i think we", "i believe we", "it looks like", "someone has",
-        "someone hacked", "someone clicked", "our system", "our account",
+        "someone hacked", "our system", "our account",
         "vi har", "vi hade", "vi fick", "vi har fått", "vi har haft",
         "vi har blivit", "vi tror", "vi tror att", "jag tror att vi", "jag tror vi", "det verkar som",
         "någon har", "någon verkar", "vårt system", "vårat system",
         "på ett konto", "på konto", "i ett konto",
-        "på en webbsida", "i sms", "i chatt", "i teams", "i dokument",
         "våra filer", "filerna", "kunddata", "personuppgifter", "personinformation",
+        "någon klickade", "someone clicked", "länk i sms", "länk på en webbsida", "link on a website",
     ]
 
     definition_question_starters = [
         "what is", "what are", "what does", "explain", "define",
         "vad är", "vad betyder", "förklara", "definiera",
     ]
+
+    if is_suspicious_link_question(question_lower):
+        return True
 
     has_incident = contains_any(question_lower, incident_terms)
     has_action = contains_any(question_lower, action_terms)
@@ -672,53 +675,52 @@ def is_suspicious_login_question(question):
 
 
 def is_suspicious_link_question(question):
-    # Detects suspicious-link clicks without assuming the link came from email.
-    # A link can come from email, SMS, chat, social media, a website, QR code,
-    # or a document, so this must be handled before suspicious-email logic.
+    # Detects suspicious link clicks without assuming the link came from email.
+    # Links can come from email, SMS, chat, social media, websites, QR codes,
+    # documents, ads, or collaboration tools. This needs its own route so the
+    # answer does not become too email-specific.
     question_lower = normalize_query_text(question)
     return contains_any(
         question_lower,
         [
             "suspicious link",
+            "malicious link",
+            "unknown link",
             "clicked a suspicious link",
-            "clicked suspicious link",
-            "clicked a link on a website",
+            "clicked a malicious link",
+            "clicked an unknown link",
             "someone clicked a suspicious link",
+            "someone clicked a link",
             "someone clicked a link on a website",
+            "clicked a link on a website",
             "clicked a link in sms",
             "clicked a link in chat",
             "clicked a link in teams",
             "clicked a link in slack",
-            "clicked an unknown link",
-            "malicious link",
-            "unknown link",
-            "link on a website",
+            "clicked a qr code",
+            "suspicious url",
+            "malicious url",
             "misstänkt länk",
             "skadlig länk",
             "okänd länk",
-            "klickade på en misstänkt länk",
-            "klickade på misstänkt länk",
-            "klickat på en misstänkt länk",
             "klickat på misstänkt länk",
+            "klickade på misstänkt länk",
+            "klickade på en misstänkt länk",
             "någon klickade på en misstänkt länk",
-            "någon klickade på misstänkt länk",
-            "klickade på en länk på en webbsida",
+            "någon klickade på en länk",
             "någon klickade på en länk på en webbsida",
-            "klickat på en länk på en webbsida",
+            "klickade på en länk på en webbsida",
             "länk på en webbsida",
-            "länk från en webbsida",
             "länk i sms",
-            "länk via sms",
             "klickade på en länk i sms",
             "klickat på en länk i sms",
             "länk i chatt",
             "länk i teams",
             "länk i slack",
-            "länk i discord",
-            "länk i sociala medier",
             "qr-kod",
             "qr kod",
-            "länk i dokument",
+            "klickade på en qr",
+            "klickat på en qr",
         ],
     )
 
@@ -1011,13 +1013,49 @@ def expand_question_terms(question):
             "nis2",
         ],
         "någon klickade på en misstänkt länk": [
+            "suspicious link",
+            "malicious url",
             "phishing",
-            "suspicious email",
             "incident response",
             "compromised account",
             "revoke sessions",
             "mfa",
             "preserve evidence",
+            "browser downloads",
+            "web filtering",
+        ],
+        "någon klickade på en länk": [
+            "suspicious link",
+            "malicious url",
+            "phishing",
+            "incident response",
+            "compromised account",
+            "preserve evidence",
+            "mfa",
+            "browser downloads",
+            "web filtering",
+        ],
+        "someone clicked a suspicious link": [
+            "suspicious link",
+            "malicious url",
+            "phishing",
+            "incident response",
+            "compromised account",
+            "preserve evidence",
+            "mfa",
+            "browser downloads",
+            "web filtering",
+        ],
+        "someone clicked a link": [
+            "suspicious link",
+            "malicious url",
+            "phishing",
+            "incident response",
+            "compromised account",
+            "preserve evidence",
+            "mfa",
+            "browser downloads",
+            "web filtering",
         ],
         "kunddata har läckt": [
             "data leak",
@@ -1374,10 +1412,80 @@ def load_chunks():
     return documents, all_chunks
 
 
+
+def is_gdpr_security_guidance_question(question):
+    # Routes GDPR security, IMY/EDPB guidance, and breach assessment questions
+    # to the richer GDPR/IMY/EDPB source file instead of generic incident or NIS2 files.
+    q = normalize_query_text(question)
+
+    direct_phrases = [
+        "vad bör vi bedöma efter en personuppgiftsincident",
+        "vad ska vi bedöma efter en personuppgiftsincident",
+        "vad bör man bedöma efter en personuppgiftsincident",
+        "bedöma efter en personuppgiftsincident",
+        "efter en personuppgiftsincident",
+        "what should we assess after a personal data breach",
+        "what should an organization assess after a personal data breach",
+        "what do we assess after a personal data breach",
+        "what should be assessed after a personal data breach",
+        "after a personal data breach",
+        "how does gdpr connect to incident response",
+        "how does gdpr relate to incident response",
+        "gdpr connect to incident response",
+        "gdpr incident response",
+        "hur kopplas gdpr till incidenthantering",
+        "hur hänger gdpr ihop med incidenthantering",
+        "gdpr och incidenthantering",
+        "vilka säkerhetsåtgärder är viktiga enligt gdpr",
+        "säkerhetsåtgärder enligt gdpr",
+        "what security measures matter under gdpr",
+        "security measures under gdpr",
+        "data protection by design",
+        "dataskydd genom design",
+        "data protection by default",
+        "dataskydd som standard",
+    ]
+
+    if contains_any(q, direct_phrases):
+        return True
+
+    gdpr_markers = [
+        "gdpr", "imy", "edpb", "personuppgiftsincident", "personuppgifter",
+        "personal data breach", "personal data", "data protection", "dataskydd",
+        "registrerade", "rights and freedoms", "rättigheter och friheter",
+    ]
+
+    assessment_markers = [
+        "bedöma", "bedömning", "bedömas", "bedömt", "risk", "dokumentera",
+        "dokumentation", "anmälan", "anmälas", "rapportera", "rapporteras",
+        "säkerhetsåtgärder", "säkerhetsåtgärd", "incidenthantering",
+        "assess", "assessment", "risk", "documentation", "document", "notify",
+        "notification", "report", "reporting", "security measures", "incident response",
+        "72 timmar", "72 hours", "informera", "informed", "affected individuals",
+        "berörda personer", "design", "default",
+    ]
+
+    return contains_any(q, gdpr_markers) and contains_any(q, assessment_markers)
+
+
+def is_gdpr_assessment_or_security_file(filename):
+    # User-facing GDPR/IMY/EDPB guidance should prefer these files.
+    filename_lower = str(filename or "").lower()
+    return (
+        "gdpr_imy_edpb_security_guidance" in filename_lower
+        or "gdpr_personal_data_breach" in filename_lower
+        or "imy_gdpr_supervision" in filename_lower
+        or "gdpr_core_principles" in filename_lower
+    )
+
 def get_target_source_file(question):
     # Routes clear questions to a specific knowledge file.
     question_lower = normalize_query_text(question).strip()
 
+    # GDPR assessment/security questions are informational or compliance questions,
+    # not generic incident playbook questions. Route them before incident routing.
+    if is_gdpr_security_guidance_question(question_lower):
+        return "gdpr_imy_edpb_security_guidance.md"
 
     if is_practical_incident_response_question(question):
         return "cyber_incident_response_playbook.md"
@@ -1402,6 +1510,9 @@ def get_target_source_file(question):
         or "dataskyddsmyndighet" in question_lower
     ):
         return "imy_gdpr_supervision.md"
+
+    if is_gdpr_security_guidance_question(question_lower):
+        return "gdpr_imy_edpb_security_guidance.md"
 
     # Data breach questions should route to GDPR breach material before broader incident routing.
     if (
@@ -1596,6 +1707,15 @@ def search_chunks(question, chunks):
     question_lower = normalize_query_text(question)
     target_source_file = get_target_source_file(question)
 
+    # If routing points to a newer source file that is not present in data/,
+    # do not penalize every other file. This keeps CyberLex usable while the
+    # knowledge base is being expanded. Because apparently missing scrolls
+    # should not make the whole library catch fire.
+    if target_source_file:
+        available_source_files = {str(chunk.get("filename", "")).lower() for chunk in chunks}
+        if target_source_file.lower() not in available_source_files:
+            target_source_file = None
+
     question_words = [
         word for word in clean_words(question)
         if len(word) > 2 and word not in stopwords
@@ -1625,9 +1745,24 @@ def search_chunks(question, chunks):
 
         if target_source_file:
             if filename_lower == target_source_file.lower():
-                score += 100
+                score += 180
             else:
-                score -= 100
+                # Do not punish related GDPR/IMY/EDPB files when the preferred
+                # source exists only as one part of a broader GDPR answer.
+                if is_gdpr_security_guidance_question(question_lower) and is_gdpr_assessment_or_security_file(filename_lower):
+                    score += 60
+                else:
+                    score -= 80
+
+        if is_gdpr_security_guidance_question(question_lower):
+            if "gdpr_imy_edpb_security_guidance" in filename_lower:
+                score += 320
+            elif "gdpr_personal_data_breach" in filename_lower:
+                score += 90
+            elif "imy_gdpr_supervision" in filename_lower or "gdpr_core_principles" in filename_lower:
+                score += 60
+            if "cyber_incident_response_playbook" in filename_lower or "nis2_incident_reporting" in filename_lower:
+                score -= 140
 
         for word in question_words:
             if word in chunk_words:
@@ -1646,6 +1781,20 @@ def search_chunks(question, chunks):
         for weak_section in weak_sections:
             if weak_section in section_text:
                 score -= 10
+
+        if is_gdpr_security_guidance_question(question_lower):
+            if "gdpr_imy_edpb_security_guidance" in filename_lower:
+                score += 90
+            if "practical explanation" in section_text or "swedish practical explanation" in section_text:
+                score += 35
+            if "data protection by design" in section_text or "swedish data protection" in section_text:
+                score += 35
+            if "relationship with incident response" in section_text:
+                score += 35
+            if "incident response playbook" in filename_lower or "cyber_incident_response_playbook" in filename_lower:
+                score -= 80
+            if "nis2_incident_reporting" in filename_lower:
+                score -= 35
 
         if "authority" in question_lower or "handles" in question_lower or "supervises" in question_lower:
             if "main authority" in section_text:
@@ -1696,6 +1845,24 @@ def search_chunks(question, chunks):
             if "nis2" in chunk_text or "cybersäkerhetslagen" in chunk_text:
                 score += 10
 
+        if is_gdpr_security_guidance_question(question):
+            if "gdpr_imy_edpb_security_guidance" in filename_lower:
+                score += 140
+            if "gdpr_personal_data_breach" in filename_lower:
+                score += 90
+            if "gdpr_core_principles" in filename_lower or "imy_gdpr_supervision" in filename_lower:
+                score += 60
+            if "practical explanation" in section_text or "data protection by design" in section_text:
+                score += 45
+            if "relationship with incident response" in section_text:
+                score += 45
+            if "swedish practical explanation" in section_text or "swedish relationship" in section_text:
+                score += 35
+            if "personal data breach" in section_text or "personuppgiftsincident" in section_text:
+                score += 30
+            if "cyber_incident_response_playbook" in filename_lower or "nis2_incident_reporting" in filename_lower:
+                score -= 80
+
         if is_suspicious_login_question(question):
             if "suspicious login activity first steps" in section_text:
                 score += 100
@@ -1709,22 +1876,6 @@ def search_chunks(question, chunks):
                 score -= 35
             if "compromised account" in section_text:
                 score -= 20
-
-        if is_suspicious_link_question(question):
-            if "suspicious link" in section_text:
-                score += 120
-            if "phishing" in section_text:
-                score += 60
-            if "suspicious email" in section_text:
-                score += 25
-            if "incident" in section_text:
-                score += 20
-            if "compromised account" in section_text:
-                score += 20
-            if "ransomware" in section_text or "malware" in section_text:
-                score -= 25
-            if "suspicious login" in section_text:
-                score -= 25
 
         if is_suspicious_email_question(question):
             if "suspicious email and phishing first steps" in section_text:
@@ -1858,7 +2009,15 @@ def get_incident_source_context_profile(question):
     # exact incident type instead of showing nearby incident playbook sections.
     question = str(question or "")
 
-    if is_suspicious_link_question(question):
+    if is_gdpr_security_guidance_question(question):
+        if "practical explanation" in section or "data protection by design" in section or "relationship with incident response" in section:
+            priority += 120
+        if "personal data breach" in section or "personuppgiftsincident" in section:
+            priority += 80
+        if "suspected hacking" in section or "ransomware" in section or "suspicious login" in section:
+            priority -= 80
+
+    elif is_suspicious_link_question(question):
         return "suspicious_link"
 
     if is_suspicious_email_question(question):
@@ -1906,10 +2065,11 @@ def is_incident_source_context_match(result, question):
         "suspicious_link": {
             "allow": [
                 "suspicious link",
+                "suspicious email",
+                "phishing",
                 "misstänkt länk",
                 "skadlig länk",
-                "phishing",
-                "suspicious email",
+                "nätfiske",
             ],
             "block": [
                 "suspicious login",
@@ -1918,9 +2078,11 @@ def is_incident_source_context_match(result, question):
                 "dataläcka",
                 "ransomware",
                 "malware",
+                "suspected hacking",
+                "hacking",
+                "intrusion",
                 "compromised account",
                 "komprometterat konto",
-                "suspected hacking",
             ],
         },
         "suspicious_email": {
@@ -2089,7 +2251,25 @@ def get_source_context_section_priority(question, section_name, language="Englis
             return 10
         return 0
 
-    if is_suspicious_login_question(question):
+    if is_gdpr_security_guidance_question(question):
+        if "practical explanation" in section or "data protection by design" in section or "relationship with incident response" in section:
+            priority += 120
+        if "personal data breach" in section or "personuppgiftsincident" in section:
+            priority += 80
+        if "suspected hacking" in section or "ransomware" in section or "suspicious login" in section:
+            priority -= 80
+
+    elif is_suspicious_link_question(question):
+        if "suspicious link" in section or "misstänkt länk" in section or "phishing" in section or "nätfiske" in section:
+            priority += 140
+        if "suspicious email" in section or "misstänkt mejl" in section:
+            priority += 20
+        if "suspected hacking" in section:
+            priority -= 50
+        if "suspicious login" in section:
+            priority -= 40
+
+    elif is_suspicious_login_question(question):
         if "suspicious login" in section or "misstänkt inloggning" in section:
             priority += 120
         if "login activity first steps" in section:
@@ -2100,18 +2280,6 @@ def get_source_context_section_priority(question, section_name, language="Englis
             priority -= 30
         if "suspected hacking" in section:
             priority -= 50
-
-    elif is_suspicious_link_question(question):
-        if "suspicious link" in section or "misstänkt länk" in section or "phishing" in section:
-            priority += 130
-        if "email and phishing first steps" in section:
-            priority += 25
-        if "email assessment checklist" in section:
-            priority += 15
-        if "suspicious login" in section:
-            priority -= 30
-        if "compromised account" in section:
-            priority += 5
 
     elif is_suspicious_email_question(question):
         if "suspicious email" in section or "phishing" in section or "misstänkt mejl" in section:
@@ -2641,6 +2809,7 @@ def get_friendly_source_area_name(filename, language="English"):
     english_names = {
         "gdpr_core_principles.md": "GDPR core principles",
         "gdpr_personal_data_breach.md": "GDPR personal data breach",
+        "gdpr_imy_edpb_security_guidance.md": "GDPR, IMY and EDPB security guidance",
         "imy_gdpr_supervision.md": "IMY and GDPR supervision",
         "nis2_cybersecurity_law.md": "NIS2 and the Swedish Cybersecurity Act",
         "nis2_incident_reporting.md": "NIS2 incident reporting",
@@ -2654,6 +2823,7 @@ def get_friendly_source_area_name(filename, language="English"):
     swedish_names = {
         "gdpr_core_principles.md": "GDPR:s grundprinciper",
         "gdpr_personal_data_breach.md": "GDPR och personuppgiftsincidenter",
+        "gdpr_imy_edpb_security_guidance.md": "GDPR, IMY och EDPB:s säkerhetsvägledning",
         "imy_gdpr_supervision.md": "IMY och GDPR-tillsyn",
         "nis2_cybersecurity_law.md": "NIS2 och cybersäkerhetslagen",
         "nis2_incident_reporting.md": "NIS2-incidentrapportering",
@@ -2731,6 +2901,36 @@ def build_source_context(search_results, language="English", max_results=3, ques
 
     if not filtered_results:
         filtered_results = search_results
+
+    if question and is_gdpr_security_guidance_question(question):
+        gdpr_focused = [
+            result for result in filtered_results
+            if is_gdpr_assessment_or_security_file(result.get("filename", ""))
+        ]
+        if gdpr_focused:
+            def gdpr_context_sort_key(result):
+                filename = str(result.get("filename", "")).lower()
+                section_name = str(result.get("section", "")).lower()
+                priority = 0
+                if "gdpr_imy_edpb_security_guidance" in filename:
+                    priority += 500
+                if "practical explanation" in section_name or "relationship with incident response" in section_name:
+                    priority += 120
+                if "swedish practical explanation" in section_name or "swedish relationship with incident response" in section_name:
+                    priority += 120 if use_swedish else -20
+                if "data protection by design" in section_name:
+                    priority += 90
+                if "gdpr_personal_data_breach" in filename:
+                    priority += 70
+                return (priority, result.get("score", 0))
+
+            filtered_results = sorted(gdpr_focused, key=gdpr_context_sort_key, reverse=True)
+        else:
+            filtered_results = [
+                result for result in filtered_results
+                if "cyber_incident_response_playbook" not in str(result.get("filename", "")).lower()
+                and "nis2_incident_reporting" not in str(result.get("filename", "")).lower()
+            ] or filtered_results
 
     filtered_results = prioritize_source_context_results(
         filtered_results,
@@ -4314,7 +4514,7 @@ def detect_question_topic(question, language="English"):
     # This helps users understand how CyberLex interpreted the question.
     # It does not replace source matching or legal analysis.
 
-    question_lower = question.lower()
+    question_lower = normalize_query_text(question)
     use_swedish = language == "Svenska"
 
     if is_suspicious_link_question(question):
@@ -4322,6 +4522,9 @@ def detect_question_topic(question, language="English"):
 
     if is_practical_incident_response_question(question):
         return "Incidenthantering och första åtgärder" if use_swedish else "Incident response and first steps"
+
+    if is_gdpr_security_guidance_question(question_lower):
+        return "GDPR, IMY och säkerhetsbedömning" if use_swedish else "GDPR, IMY and security assessment"
 
     if (
         "data breach" in question_lower
@@ -4382,6 +4585,8 @@ def detect_question_topic(question, language="English"):
         or "imy" in question_lower
         or "data protection" in question_lower
         or "privacy" in question_lower
+        or "dataskydd" in question_lower
+        or "personuppgift" in question_lower
     ):
         return "GDPR och dataskydd" if use_swedish else "GDPR and data protection"
 
@@ -4413,6 +4618,13 @@ def detect_source_quality(filename, language="English"):
             "Svensk rättskälla / straffrättsligt ämne"
             if use_swedish
             else "Swedish legal source / criminal-law topic"
+        )
+
+    if "gdpr_imy_edpb_security_guidance" in filename_lower:
+        return (
+            "IMY- och EDPB-vägledning om GDPR-säkerhet"
+            if use_swedish
+            else "IMY and EDPB guidance on GDPR security"
         )
 
     if "gdpr_personal_data_breach" in filename_lower:
@@ -4716,19 +4928,21 @@ def generate_incident_response_answer(question, language="English"):
             title = "Rekommenderade första steg efter klick på misstänkt länk"
             intro = (
                 "En misstänkt länk kan komma från mejl, SMS, chatt, sociala medier, en webbsida, QR-kod eller ett dokument. "
-                "Börja med att ta reda på om användaren bara klickade, skrev in lösenord eller MFA-kod, laddade ned något, eller om konto/enhet kan ha påverkats."
+                "Utred först om användaren bara klickade, om inloggningsuppgifter eller MFA-kod skrevs in, om något laddades ned, "
+                "och om ett konto eller en enhet kan ha påverkats."
             )
             steps = [
-                "Be användaren att inte klicka vidare, inte skriva in uppgifter, inte ladda ned filer och inte godkänna MFA-prompter från flödet.",
-                "Spara URL, sida/skärmbild, kanal, tidpunkt, användare, enhet, webbläsare och eventuella omdirigeringar om det går.",
-                "Identifiera var länken kom ifrån: mejl, SMS, chatt, webbsida, QR-kod, dokument, annons eller annan källa.",
-                "Kontrollera om lösenord, MFA-kod, personuppgifter, betalningsuppgifter eller annan känslig information skrevs in.",
-                "Om inloggningsuppgifter eller MFA angavs: behandla kontot som misstänkt komprometterat, byt lösenord från ren enhet, granska MFA och återkalla sessioner.",
-                "Kontrollera enheten för nedladdningar, webbläsarvarningar, nya filer, misstänkta tillägg, skadlig kod eller endpoint-larm.",
-                "Blockera URL/domän i e-postskydd, DNS/webbfilter, proxy, brandvägg eller endpoint-verktyg där det är relevant.",
-                "Sök om fler användare har fått eller klickat på samma länk och varna dem vid behov.",
-                "Bedöm om personuppgifter, kunddata, system eller konton kan ha påverkats.",
-                "Dokumentera tidslinje, användarens åtgärder, bevis, begränsning, beslut och rapporteringsbedömning.",
+                "Be användaren att inte klicka vidare, inte skriva in fler uppgifter och inte ladda ned något mer.",
+                "Spara länken, sidan eller meddelandet som bevis: URL, tidpunkt, användare, enhet, webbläsare och var länken fanns.",
+                "Ta reda på om länken kom från mejl, SMS, chatt, sociala medier, webbsida, QR-kod eller dokument.",
+                "Kontrollera om användaren skrev in lösenord, MFA-kod, personuppgifter, betalningsuppgifter eller annan känslig information.",
+                "Om inloggningsuppgifter angavs: byt lösenord från en ren enhet, återkalla sessioner och kontrollera MFA-metoder.",
+                "Kontrollera kontot för ovanliga inloggningar, OAuth-appar, vidarebefordringsregler och ändrade säkerhetsinställningar.",
+                "Kontrollera enheten för nedladdningar, nya filer, webbläsarvarningar eller tecken på skadlig kod.",
+                "Blockera URL/domän i e-postskydd, DNS/webbfilter, proxy eller brandvägg där det är relevant.",
+                "Sök efter om samma länk har skickats till fler användare och varna dem vid behov.",
+                "Bedöm om personuppgifter, kunddata eller systemåtkomst kan ha påverkats.",
+                "Dokumentera tidslinje, källa, användare, åtgärder och beslut samt om IMY/GDPR eller NIS2/cybersäkerhetslagen kan bli relevant.",
             ]
         elif is_suspicious_email_question(question):
             title = "Rekommenderade första steg vid misstänkt mejl eller phishing"
@@ -4872,20 +5086,22 @@ def generate_incident_response_answer(question, language="English"):
         elif is_suspicious_link_question(question):
             title = "Recommended first steps after clicking a suspicious link"
             intro = (
-                "A suspicious link can come from email, SMS, chat, social media, a website, QR code, or a document. "
-                "First determine whether the user only clicked, entered credentials or MFA codes, downloaded a file, or exposed an account or device."
+                "A suspicious link may come from email, SMS, chat, social media, a website, QR code, or a document. "
+                "First determine whether the user only clicked, entered credentials or an MFA code, downloaded something, "
+                "or affected an account or device."
             )
             steps = [
-                "Tell the user not to click further, enter information, download files, or approve MFA prompts from that flow.",
-                "Preserve the URL, page/screenshot, source channel, time, user, device, browser, and any redirect chain if available.",
-                "Identify where the link came from: email, SMS, chat, website, QR code, document, ad, or another source.",
-                "Check whether credentials, MFA codes, personal data, payment data, or other sensitive information were entered.",
-                "If credentials or MFA were entered, treat the account as suspected compromised, reset password from a clean device, review MFA, and revoke sessions.",
-                "Check the device for downloads, browser warnings, new files, suspicious extensions, malware alerts, or endpoint detections.",
-                "Block the URL/domain in email protection, DNS/web filtering, proxy, firewall, or endpoint tools where relevant.",
-                "Search whether other users received or clicked the same link and warn them if needed.",
-                "Assess whether personal data, customer data, systems, or accounts may have been affected.",
-                "Document timeline, user actions, evidence, containment, decisions, and reporting assessment.",
+                "Tell the user not to continue clicking, entering information, or downloading anything else.",
+                "Preserve the link, page, or message as evidence: URL, time, user, device, browser, and where the link appeared.",
+                "Identify whether the link came from email, SMS, chat, social media, website, QR code, or document.",
+                "Check whether the user entered a password, MFA code, personal data, payment data, or other sensitive information.",
+                "If credentials were entered: reset the password from a clean device, revoke sessions, and review MFA methods.",
+                "Check the account for unusual sign-ins, OAuth apps, forwarding rules, and changed security settings.",
+                "Check the device for downloads, new files, browser warnings, or signs of malware.",
+                "Block the URL/domain in email security, DNS/web filtering, proxy, or firewall where relevant.",
+                "Search for whether the same link was sent to other users and warn them if needed.",
+                "Assess whether personal data, customer data, or system access may have been affected.",
+                "Document the timeline, source, user, actions, and decisions, including whether GDPR/IMY or NIS2/the Swedish Cybersecurity Act may be relevant.",
             ]
         elif is_suspicious_email_question(question):
             title = "Recommended first steps for a suspicious email or phishing"
@@ -5134,13 +5350,72 @@ def generate_enhanced_basic_summary(question, language="English"):
 
 def generate_simple_answer(question, best_match, language="English", include_technical_details=False):
     # Generates a simple source-based answer from the best matching chunk.
-    question_lower = question.lower()
+    question_lower = normalize_query_text(question)
     use_swedish = language == "Svenska"
 
     if is_practical_incident_response_question(question):
         return generate_incident_response_answer(question, language)
 
-    enhanced_basic_answer = generate_enhanced_basic_summary(question, language)
+    enhanced_basic_answer = ""
+
+    if is_gdpr_security_guidance_question(question):
+        is_security_measure_question = (
+            "säkerhetsåtgärd" in question_lower
+            or "security measure" in question_lower
+            or "dataskydd genom design" in question_lower
+            or "data protection by design" in question_lower
+            or "privacy by design" in question_lower
+        )
+        is_gdpr_incident_connection_question = (
+            "connect to incident response" in question_lower
+            or "relate to incident response" in question_lower
+            or "gdpr incident response" in question_lower
+            or "kopplas" in question_lower
+            or "incidenthantering" in question_lower
+            or "hänger" in question_lower
+        )
+
+        if use_swedish:
+            if is_security_measure_question:
+                answer = (
+                    "Enligt GDPR bör säkerhetsåtgärder väljas utifrån risk, typ av personuppgifter, systemens användning och möjliga konsekvenser för registrerade personer. "
+                    "Praktiskt innebär det ofta åtkomstkontroll, stark autentisering där det är lämpligt, loggning, kryptering, säkerhetskopior, behörighetsseparering, dataminimering, säkra standardinställningar och rutiner för incidenthantering. "
+                    "Organisationen bör också dokumentera vilka åtgärder som finns, varför de är rimliga och hur de följs upp. Det stödjer ansvarsskyldighet, dataskydd genom design och dataskydd som standard."
+                )
+            elif is_gdpr_incident_connection_question:
+                answer = (
+                    "GDPR kopplas till incidenthantering när en säkerhetsincident kan påverka personuppgifter. IT- och säkerhetsteamet behöver begränsa händelsen, säkra loggar och förstå vilka system, konton och data som berörts. "
+                    "Samtidigt behöver dataskydds- eller ansvarig funktion bedöma om personuppgifter har lästs, kopierats, ändrats, raderats, krypterats, röjts obehörigt eller blivit otillgängliga. "
+                    "Bedömningen ska också omfatta risk för registrerade personer, om IMY behöver underrättas inom 72 timmar, om berörda personer måste informeras vid hög risk och hur beslut, åtgärder och kvarstående osäkerheter dokumenteras."
+                )
+            else:
+                answer = (
+                    "Efter en personuppgiftsincident bör organisationen bedöma vad som hänt, när det upptäcktes, vilka system och uppgifter som berördes, och om personuppgifter har lästs, kopierats, ändrats, raderats, krypterats, röjts obehörigt eller blivit otillgängliga. "
+                    "Bedöm också vilka personer som kan påverkas, vilka möjliga konsekvenser incidenten kan få, och om det finns risk för exempelvis identitetsstöld, bedrägeri, ekonomisk skada eller sekretessförlust. "
+                    "Därefter bör organisationen avgöra om IMY ska underrättas inom 72 timmar, om berörda personer behöver informeras vid hög risk, vilka skyddsåtgärder som minskar skadan och hur beslutet ska dokumenteras."
+                )
+        else:
+            if is_security_measure_question:
+                answer = (
+                    "Under GDPR, security measures should be selected based on risk, the type of personal data, how systems are used, and the possible impact on individuals. "
+                    "In practice, this can include access control, strong authentication where appropriate, logging, encryption, backups, separation of privileges, data minimisation, secure defaults, and incident-response routines. "
+                    "The organization should document which measures exist, why they are appropriate, and how they are reviewed. This supports accountability, data protection by design, and data protection by default."
+                )
+            elif is_gdpr_incident_connection_question:
+                answer = (
+                    "GDPR connects to incident response when a security incident may affect personal data. The technical team should contain the incident, preserve logs, identify affected systems/accounts, and determine what data was accessed, copied, changed, deleted, encrypted, disclosed, or made unavailable. "
+                    "At the same time, the privacy or responsible function should assess the risk to individuals, whether IMY must be notified within 72 hours, whether affected individuals must be informed if the risk is high, and what mitigation steps reduce harm. "
+                    "The organization should document the timeline, evidence, decisions, reporting assessment, and remaining uncertainty, because fixing the technical issue does not replace the GDPR assessment."
+                )
+            else:
+                answer = (
+                    "After a personal data breach, an organization should assess what happened, when it was discovered, which systems and data were affected, and whether personal data was accessed, copied, changed, deleted, encrypted, disclosed, or made unavailable. "
+                    "It should also assess which people may be affected, the likely consequences, and whether there is risk of identity theft, fraud, financial loss, confidentiality loss, or other harm. "
+                    "The organization should then decide whether IMY must be notified within 72 hours, whether affected individuals must be informed if the risk is high, which protective measures reduce harm, and how the decision should be documented."
+                )
+        enhanced_basic_answer = answer
+    else:
+        enhanced_basic_answer = generate_enhanced_basic_summary(question, language)
 
     if enhanced_basic_answer:
         # Keep basic summaries visually compact in the main answer card.
@@ -5756,6 +6031,25 @@ def is_cyberlaw_question(question):
         "misstänkt mejl",
         "misstänkt e-post",
         "misstänkt länk",
+        "skadlig länk",
+        "okänd länk",
+        "suspicious link",
+        "malicious link",
+        "clicked a suspicious link",
+        "someone clicked a suspicious link",
+        "someone clicked a link",
+        "someone clicked a link on a website",
+        "clicked a link on a website",
+        "clicked a link in sms",
+        "någon klickade på en länk",
+        "någon klickade på en länk på en webbsida",
+        "klickade på en länk på en webbsida",
+        "klickade på en länk i sms",
+        "klickat på en länk i sms",
+        "länk på en webbsida",
+        "länk i sms",
+        "länk i chatt",
+        "qr-kod",
         "klickade på en misstänkt länk",
         "svensk cybersäkerhetsrätt",
         "cybersäkerhet",
@@ -5834,11 +6128,12 @@ def is_cyberlaw_question(question):
     # Let the dedicated incident detectors mark practical incident questions as in scope.
     # Otherwise small word-order differences in Swedish can be refused before search starts.
     if (
-        is_practical_incident_response_question(question_lower)
+        is_gdpr_security_guidance_question(question_lower)
+        or is_practical_incident_response_question(question_lower)
         or is_compromised_account_question(question_lower)
         or is_suspicious_login_question(question_lower)
-        or is_suspicious_link_question(question_lower)
         or is_suspicious_email_question(question_lower)
+        or is_suspicious_link_question(question_lower)
         or is_data_leak_response_question(question_lower)
         or is_ransomware_response_question(question_lower)
     ):
