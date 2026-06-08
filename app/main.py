@@ -279,6 +279,18 @@ def localize_section_name(section_name, language="English"):
         "cybersecurity connection": "Cybersäkerhetskoppling",
         "swedish connection": "Svensk koppling",
         "third-party ict risk": "ICT-tredjepartsrisk",
+        "covered sectors": "Omfattade sektorer",
+        "swedish covered sectors": "Omfattade sektorer",
+        "size assessment": "Storleksbedömning",
+        "swedish size assessment": "Storleksbedömning",
+        "public administration, municipalities and regions": "Offentlig förvaltning, kommuner och regioner",
+        "swedish public administration, municipalities and regions": "Offentlig förvaltning, kommuner och regioner",
+        "essential and important entities": "Väsentliga och viktiga verksamhetsutövare",
+        "swedish essential and important entities": "Väsentliga och viktiga verksamhetsutövare",
+        "registration": "Anmälan och registrering",
+        "swedish registration": "Anmälan och registrering",
+        "cyberlex answer guidance": "Svarsstöd",
+        "swedish cyberlex answer guidance": "Svarsstöd",
     }
 
     english_names = {
@@ -306,6 +318,18 @@ def localize_section_name(section_name, language="English"):
         "swedish suspicious login assessment checklist": "Suspicious login assessment checklist",
         "suspicious email assessment checklist": "Suspicious email or phishing assessment checklist",
         "swedish suspicious email assessment checklist": "Suspicious email or phishing assessment checklist",
+        "covered sectors": "Covered sectors",
+        "swedish covered sectors": "Covered sectors",
+        "size assessment": "Size assessment",
+        "swedish size assessment": "Size assessment",
+        "public administration, municipalities and regions": "Public administration, municipalities and regions",
+        "swedish public administration, municipalities and regions": "Public administration, municipalities and regions",
+        "essential and important entities": "Essential and important entities",
+        "swedish essential and important entities": "Essential and important entities",
+        "registration": "Registration",
+        "swedish registration": "Registration",
+        "cyberlex answer guidance": "Answer guidance",
+        "swedish cyberlex answer guidance": "Answer guidance",
     }
 
     if use_swedish:
@@ -1449,7 +1473,7 @@ def is_imy_gdpr_security_measures_question(question):
 
     security_terms = [
         "säkerhetsåtgärd", "säkerhetsåtgärder", "tekniska åtgärder",
-        "organisatoriska åtgärder", "mfa", "multifaktor", "kryptering",
+        "organisatoriska åtgärder", "multifaktor", "kryptering",
         "åtkomstkontroll", "loggning", "säkerhetskopior", "skydda",
         "security measure", "security measures", "technical measures",
         "organizational measures", "organisational measures", "encryption",
@@ -1458,7 +1482,8 @@ def is_imy_gdpr_security_measures_question(question):
     ]
     gdpr_or_imy_terms = ["gdpr", "imy", "personuppgifter", "personal data", "dataskydd", "data protection"]
 
-    return contains_any(q, gdpr_or_imy_terms) and contains_any(q, security_terms)
+    has_security_marker = contains_any(q, security_terms) or has_mfa_term(q)
+    return contains_any(q, gdpr_or_imy_terms) and has_security_marker
 
 
 def is_gdpr_security_guidance_question(question):
@@ -1511,7 +1536,7 @@ def is_gdpr_security_guidance_question(question):
         "gdpr", "imy", "edpb", "personuppgiftsincident", "personuppgifter",
         "personal data breach", "personal data", "data protection", "dataskydd",
         "registrerade", "rights and freedoms", "rättigheter och friheter",
-        "säkerhetsåtgärder", "säkerhetsåtgärd", "mfa", "kryptering",
+        "säkerhetsåtgärder", "säkerhetsåtgärd", "kryptering",
         "encryption", "security measures", "skydda personuppgifter",
     ]
 
@@ -1523,10 +1548,12 @@ def is_gdpr_security_guidance_question(question):
         "notification", "report", "reporting", "security measures", "incident response",
         "72 timmar", "72 hours", "informera", "informed", "affected individuals",
         "berörda personer", "design", "default", "require", "requires",
-        "kräver", "protect", "skydda", "mfa", "encryption", "kryptering",
+        "kräver", "protect", "skydda", "encryption", "kryptering",
     ]
 
-    return contains_any(q, gdpr_markers) and contains_any(q, assessment_markers)
+    has_gdpr_marker = contains_any(q, gdpr_markers)
+    has_assessment_marker = contains_any(q, assessment_markers) or has_mfa_term(q)
+    return has_gdpr_marker and has_assessment_marker
 
 
 def is_gdpr_assessment_or_security_file(filename):
@@ -1540,9 +1567,95 @@ def is_gdpr_assessment_or_security_file(filename):
         or "gdpr_core_principles" in filename_lower
     )
 
+
+
+def is_nis2_sector_scope_question(question):
+    # Detects NIS2 / Swedish Cybersecurity Act scope questions.
+    # These should use the dedicated sector-scope source, not the generic NIS2 file
+    # and definitely not the GDPR/MFA route just because Swedish "omfattas" contains "mfa".
+    q = normalize_query_text(question)
+
+    direct_phrases = [
+        "vilka sektorer omfattas av cybersäkerhetslagen",
+        "vilka sektorer omfattas av nis2",
+        "sektorer omfattas av cybersäkerhetslagen",
+        "sektorer omfattas av nis2",
+        "gäller nis2 för oss",
+        "galler nis2 for oss",
+        "omfattas vi av nis2",
+        "omfattas vi av cybersäkerhetslagen",
+        "omfattas kommuner av cybersäkerhetslagen",
+        "omfattas kommuner av nis2",
+        "omfattas regioner av cybersäkerhetslagen",
+        "behöver vi anmäla oss enligt cybersäkerhetslagen",
+        "behöver vi registrera oss enligt cybersäkerhetslagen",
+        "ska vi anmäla oss enligt cybersäkerhetslagen",
+        "ska vi registrera oss enligt cybersäkerhetslagen",
+        "anmälan enligt cybersäkerhetslagen",
+        "registrering enligt cybersäkerhetslagen",
+        "väsentliga verksamhetsutövare",
+        "viktiga verksamhetsutövare",
+        "väsentlig verksamhetsutövare",
+        "viktig verksamhetsutövare",
+        "does nis2 apply to us",
+        "are we covered by nis2",
+        "which sectors are covered by nis2",
+        "which sectors are covered by the swedish cybersecurity act",
+        "are municipalities covered by the swedish cybersecurity act",
+        "are municipalities covered by nis2",
+        "are small companies covered by nis2",
+        "small companies covered by nis2",
+        "micro companies covered by nis2",
+        "do we need to register under the swedish cybersecurity act",
+        "registration under the swedish cybersecurity act",
+        "essential entities",
+        "important entities",
+        "essential or important entities",
+    ]
+
+    if contains_any(q, direct_phrases):
+        return True
+
+    nis2_terms = [
+        "nis2", "cybersäkerhetslagen", "cybersecurity act",
+        "swedish cybersecurity act",
+    ]
+    scope_terms = [
+        "omfattas", "gäller", "sektor", "sektorer", "kommun", "kommuner",
+        "region", "regioner", "kommunalförbund", "anmäla", "anmälan",
+        "registrera", "registrering", "väsentlig", "väsentliga",
+        "viktig", "viktiga", "verksamhetsutövare", "storlek", "små företag",
+        "covered", "apply", "applies", "sector", "sectors", "municipality",
+        "municipalities", "region", "regions", "register", "registration",
+        "essential", "important", "entity", "entities", "small companies",
+        "micro companies", "size", "scope",
+    ]
+
+    return contains_any(q, nis2_terms) and contains_any(q, scope_terms)
+
+
+def has_mfa_term(question):
+    # Avoid substring bugs: the Swedish word "omfattas" contains the letters "mfa".
+    # MFA should only trigger when it appears as its own token or as a real MFA synonym.
+    q = normalize_query_text(question)
+    words = set(clean_words(q))
+    return (
+        "mfa" in words
+        or "multifaktor" in q
+        or "multi-factor" in q
+        or "multifactor" in q
+        or "tvåfaktor" in q
+        or "2fa" in words
+    )
+
 def get_target_source_file(question):
     # Routes clear questions to a specific knowledge file.
     question_lower = normalize_query_text(question).strip()
+
+    # NIS2 sector/scope/applicability questions should use the dedicated scope file
+    # before generic NIS2 and before GDPR security routing.
+    if is_nis2_sector_scope_question(question_lower):
+        return "nis2_sector_scope_guidance.md"
 
     # IMY/GDPR security-measure questions should use the dedicated IMY security file
     # instead of the general breach/incident guidance source.
@@ -1760,7 +1873,19 @@ def search_chunks(question, chunks):
         "swedish step-by-step answer for suspected data leak",
         "english step-by-step answer for suspected data leak",
         "technical containment examples",
-        "evidence preservation examples"
+        "evidence preservation examples",
+        "covered sectors",
+        "swedish covered sectors",
+        "size assessment",
+        "swedish size assessment",
+        "public administration, municipalities and regions",
+        "swedish public administration, municipalities and regions",
+        "registration",
+        "swedish registration",
+        "essential and important entities",
+        "swedish essential and important entities",
+        "cyberlex answer guidance",
+        "swedish cyberlex answer guidance"
     }
 
     weak_sections = {
@@ -1999,6 +2124,23 @@ def search_chunks(question, chunks):
             if "ransomware assessment checklist" in section_text:
                 score += 35
 
+        if is_nis2_sector_scope_question(question_lower):
+            if "nis2_sector_scope_guidance" in filename_lower:
+                score += 420
+            elif "nis2_cybersecurity_law" in filename_lower:
+                score += 60
+            elif "nis2_incident_reporting" in filename_lower:
+                score -= 60
+            elif is_gdpr_assessment_or_security_file(filename_lower):
+                score -= 140
+
+            if any(key in section_text for key in [
+                "covered sectors", "swedish covered sectors", "size assessment",
+                "public administration", "municipalities", "registration",
+                "essential and important", "practical explanation", "cyberlex answer guidance"
+            ]):
+                score += 80
+
         if "nis2" in question_lower or "cybersecurity act" in question_lower or "cybersäkerhetslagen" in question_lower:
             if "nis2" in filename_lower:
                 score += 50
@@ -2006,7 +2148,7 @@ def search_chunks(question, chunks):
                 score += 15
             if "important points" in section_text:
                 score += 15
-            if "incident reporting" in section_text:
+            if "incident reporting" in section_text and not is_nis2_sector_scope_question(question_lower):
                 score += 10
 
         if "dataintrång" in question_lower or "data intrusion" in question_lower or "unauthorized access" in question_lower:
@@ -2308,6 +2450,178 @@ def filter_source_context_by_incident_type(search_results, question):
 
     return search_results
 
+
+def get_nis2_scope_context_profile(question):
+    # Returns the exact NIS2 scope subtype for visible source-context cards.
+    # This is stricter than normal search routing because the source context is
+    # meant to explain the answer, not show every nearby NIS2 section like a
+    # bureaucratic confetti cannon.
+    q = normalize_query_text(question)
+
+    if contains_any(q, ["kommun", "kommuner", "region", "regioner", "kommunalförbund", "municipality", "municipalities", "public administration"]):
+        return "municipality"
+
+    if contains_any(q, ["anmäla", "anmälan", "registrera", "registrering", "register", "registration"]):
+        return "registration"
+
+    if contains_any(q, ["små företag", "mikro", "small companies", "small company", "micro companies", "micro company"]):
+        return "small_company"
+
+    if contains_any(q, ["väsentlig", "väsentliga", "viktig", "viktiga", "essential", "important", "entities", "entity", "verksamhetsutövare"]):
+        return "essential_important"
+
+    # Sector-list questions should win over broad apply/scope wording.
+    if contains_any(q, ["vilka sektorer", "sektorer omfattas", "which sectors", "covered sectors", "sector", "sectors", "sektor", "sektorer"]):
+        return "sectors"
+
+    if contains_any(q, ["gäller", "galler", "omfattas", "apply", "applies", "covered", "scope", "oss", "us"]):
+        return "applies"
+
+    return "scope_general"
+
+
+def get_nis2_scope_allowed_sections(question):
+    # Strict allow-list for displayed NIS2 source-context sections.
+    # Search can still use the whole file, but the user-facing context should
+    # not repeat the same generic cards for every NIS2 question.
+    profile = get_nis2_scope_context_profile(question)
+
+    allowed = {
+        "sectors": [
+            "covered sectors",
+            "swedish covered sectors",
+        ],
+        "applies": [
+            "practical explanation",
+            "swedish practical explanation",
+            "cyberlex answer guidance",
+            "swedish cyberlex answer guidance",
+        ],
+        "municipality": [
+            "public administration, municipalities and regions",
+            "swedish public administration, municipalities and regions",
+        ],
+        "registration": [
+            "registration",
+            "swedish registration",
+        ],
+        "small_company": [
+            "size assessment",
+            "swedish size assessment",
+            "essential and important entities",
+            "swedish essential and important entities",
+        ],
+        "essential_important": [
+            "essential and important entities",
+            "swedish essential and important entities",
+        ],
+        "scope_general": [
+            "practical explanation",
+            "swedish practical explanation",
+            "cyberlex answer guidance",
+            "swedish cyberlex answer guidance",
+            "covered sectors",
+            "swedish covered sectors",
+            "size assessment",
+            "swedish size assessment",
+        ],
+    }
+
+    return allowed.get(profile, allowed["scope_general"])
+
+
+def is_nis2_scope_allowed_context_section(result, question):
+    filename = str(result.get("filename", "")).lower().strip()
+    section = str(result.get("section", "")).lower().strip()
+
+    if "nis2_sector_scope_guidance" not in filename:
+        return False
+
+    allowed_sections = get_nis2_scope_allowed_sections(question)
+    return any(section == allowed or allowed in section for allowed in allowed_sections)
+
+
+def get_nis2_scope_max_context_cards(question):
+    # Specific NIS2 questions usually need only one source card. Broad scope
+    # questions can show two because the answer depends on several facts.
+    profile = get_nis2_scope_context_profile(question)
+    if profile in {"sectors", "municipality", "registration", "essential_important"}:
+        return 1
+    return 2
+
+
+def get_nis2_scope_source_context_priority(result, question, language="English"):
+    # Gives NIS2 scope/source-context cards a subtype-specific priority.
+    # This keeps "covered sectors", "municipalities", "registration", and
+    # "does NIS2 apply to us" from all showing the same generic source cards.
+    q = normalize_query_text(question)
+    filename = str(result.get("filename", "")).lower()
+    section = str(result.get("section", "")).lower().strip()
+    use_swedish = language == "Svenska"
+
+    if "nis2_sector_scope_guidance" not in filename:
+        return -1000
+
+    if not is_nis2_scope_allowed_context_section(result, question):
+        return -500
+
+    profile = get_nis2_scope_context_profile(question)
+    priority = 100
+
+    exact_priorities = {
+        "sectors": {
+            "covered sectors": 900,
+            "swedish covered sectors": 900,
+        },
+        "applies": {
+            "practical explanation": 850,
+            "swedish practical explanation": 850,
+            "cyberlex answer guidance": 760,
+            "swedish cyberlex answer guidance": 760,
+        },
+        "municipality": {
+            "public administration, municipalities and regions": 900,
+            "swedish public administration, municipalities and regions": 900,
+        },
+        "registration": {
+            "registration": 900,
+            "swedish registration": 900,
+        },
+        "small_company": {
+            "size assessment": 900,
+            "swedish size assessment": 900,
+            "essential and important entities": 720,
+            "swedish essential and important entities": 720,
+        },
+        "essential_important": {
+            "essential and important entities": 900,
+            "swedish essential and important entities": 900,
+        },
+        "scope_general": {
+            "practical explanation": 850,
+            "swedish practical explanation": 850,
+            "cyberlex answer guidance": 760,
+            "swedish cyberlex answer guidance": 760,
+            "covered sectors": 550,
+            "swedish covered sectors": 550,
+            "size assessment": 520,
+            "swedish size assessment": 520,
+        },
+    }
+
+    for marker, value in exact_priorities.get(profile, exact_priorities["scope_general"]).items():
+        if section == marker or marker in section:
+            priority += value
+            break
+
+    if use_swedish and section.startswith("swedish "):
+        priority += 60
+    elif not use_swedish and not section.startswith("swedish "):
+        priority += 60
+
+    return priority
+
+
 def get_source_context_section_priority(question, section_name, language="English"):
     # Gives extra priority to source context sections that match the user's
     # exact incident subtype. This affects only the displayed source context,
@@ -2325,7 +2639,23 @@ def get_source_context_section_priority(question, section_name, language="Englis
             return 10
         return 0
 
-    if is_gdpr_security_guidance_question(question):
+    if is_nis2_sector_scope_question(question):
+        if "covered sectors" in section:
+            priority += 120
+        if "public administration" in section or "municipalities" in section or "regions" in section:
+            priority += 120
+        if "registration" in section:
+            priority += 120
+        if "size assessment" in section:
+            priority += 110
+        if "essential and important" in section:
+            priority += 100
+        if "practical explanation" in section or "cyberlex answer guidance" in section:
+            priority += 90
+        if "gdpr" in section or "personal data breach" in section:
+            priority -= 120
+
+    elif is_gdpr_security_guidance_question(question):
         if "practical explanation" in section or "data protection by design" in section or "relationship with incident response" in section:
             priority += 120
         if "personal data breach" in section or "personuppgiftsincident" in section:
@@ -2887,6 +3217,7 @@ def get_friendly_source_area_name(filename, language="English"):
         "imy_gdpr_security_measures.md": "IMY GDPR security measures",
         "imy_gdpr_supervision.md": "IMY and GDPR supervision",
         "nis2_cybersecurity_law.md": "NIS2 and the Swedish Cybersecurity Act",
+        "nis2_sector_scope_guidance.md": "NIS2 sector scope and applicability",
         "nis2_incident_reporting.md": "NIS2 incident reporting",
         "cybercrime_dataintrang.md": "Swedish cybercrime and data intrusion",
         "eu_attacks_against_information_systems.md": "EU rules on attacks against information systems",
@@ -2901,7 +3232,8 @@ def get_friendly_source_area_name(filename, language="English"):
         "gdpr_imy_edpb_security_guidance.md": "GDPR, IMY och EDPB:s säkerhetsvägledning",
         "imy_gdpr_security_measures.md": "IMY:s GDPR-säkerhetsåtgärder",
         "imy_gdpr_supervision.md": "IMY och GDPR-tillsyn",
-        "nis2_cybersecurity_law.md": "NIS2 och cybersäkerhetslagen",
+        "nis2_cybersecurity_law.md": "NIS2 och cybersäkerhetslagens omfattning",
+        "nis2_sector_scope_guidance.md": "NIS2 sektorer och omfattning",
         "nis2_incident_reporting.md": "NIS2-incidentrapportering",
         "cybercrime_dataintrang.md": "Svensk cyberbrottslighet och dataintrång",
         "eu_attacks_against_information_systems.md": "EU-regler om angrepp mot informationssystem",
@@ -2978,7 +3310,37 @@ def build_source_context(search_results, language="English", max_results=3, ques
     if not filtered_results:
         filtered_results = search_results
 
-    if question and is_gdpr_security_guidance_question(question):
+    if question and is_nis2_sector_scope_question(question):
+        nis2_focused = [
+            result for result in filtered_results
+            if "nis2_sector_scope_guidance" in str(result.get("filename", "")).lower()
+        ]
+
+        if nis2_focused:
+            allowed_nis2_focused = [
+                result for result in nis2_focused
+                if is_nis2_scope_allowed_context_section(result, question)
+            ]
+            if allowed_nis2_focused:
+                nis2_focused = allowed_nis2_focused
+
+            filtered_results = sorted(
+                nis2_focused,
+                key=lambda result: (
+                    get_nis2_scope_source_context_priority(result, question, language),
+                    result.get("score", 0)
+                ),
+                reverse=True
+            )
+        else:
+            filtered_results = [
+                result for result in filtered_results
+                if "gdpr_" not in str(result.get("filename", "")).lower()
+                and "imy_" not in str(result.get("filename", "")).lower()
+                and "cyber_incident_response_playbook" not in str(result.get("filename", "")).lower()
+            ] or filtered_results
+
+    elif question and is_gdpr_security_guidance_question(question):
         gdpr_focused = [
             result for result in filtered_results
             if is_gdpr_assessment_or_security_file(result.get("filename", ""))
@@ -3024,6 +3386,28 @@ def build_source_context(search_results, language="English", max_results=3, ques
         filtered_results,
         question
     )
+
+    if question and is_nis2_sector_scope_question(question):
+        nis2_only_results = [
+            result for result in filtered_results
+            if "nis2_sector_scope_guidance" in str(result.get("filename", "")).lower()
+        ]
+        if nis2_only_results:
+            allowed_nis2_only_results = [
+                result for result in nis2_only_results
+                if is_nis2_scope_allowed_context_section(result, question)
+            ]
+            if allowed_nis2_only_results:
+                nis2_only_results = allowed_nis2_only_results
+
+            filtered_results = sorted(
+                nis2_only_results,
+                key=lambda result: (
+                    get_nis2_scope_source_context_priority(result, question, language),
+                    result.get("score", 0)
+                ),
+                reverse=True
+            )
 
     # Prefer source sections whose cleaned visible preview matches the selected UI language.
     # Use the cleaned excerpt, not the raw Markdown, because some sections contain
@@ -3082,7 +3466,11 @@ def build_source_context(search_results, language="English", max_results=3, ques
         seen_cards.add(card_key)
         selected_results.append(result)
 
-        if len(selected_results) >= max_results:
+        effective_max_results = max_results
+        if question and is_nis2_sector_scope_question(question):
+            effective_max_results = min(max_results, get_nis2_scope_max_context_cards(question))
+
+        if len(selected_results) >= effective_max_results:
             break
 
     for result in selected_results:
@@ -4595,6 +4983,9 @@ def detect_question_topic(question, language="English"):
     question_lower = normalize_query_text(question)
     use_swedish = language == "Svenska"
 
+    if is_nis2_sector_scope_question(question):
+        return "NIS2 och cybersäkerhetslagens omfattning" if use_swedish else "NIS2 scope and applicability"
+
     if is_suspicious_link_question(question):
         return "Klick på misstänkt länk" if use_swedish else "Suspicious link click"
 
@@ -5443,13 +5834,69 @@ def generate_simple_answer(question, best_match, language="English", include_tec
 
     enhanced_basic_answer = ""
 
+    if is_nis2_sector_scope_question(question):
+        if use_swedish:
+            if "sektor" in question_lower or "sektorer" in question_lower:
+                answer = (
+                    "Cybersäkerhetslagen omfattar verksamhet inom 18 sektorer, bland annat energi, transporter, bank, finansmarknadsinfrastruktur, hälso- och sjukvård, dricksvatten, avloppsvatten, digital infrastruktur, IKT-tjänstehantering mellan företag, offentlig förvaltning, rymd, post- och budtjänster, avfallshantering, kemikalier, livsmedel, tillverkning, digitala leverantörer och forskning. "
+                    "Det betyder inte att varje organisation nära en sektor automatiskt omfattas. Bedömningen behöver göras utifrån den konkreta verksamhetstypen, organisationens storlek och svensk jurisdiktion. Organisationen bör dokumentera varför den bedömer att den omfattas eller inte omfattas."
+                )
+            elif "kommun" in question_lower or "region" in question_lower:
+                answer = (
+                    "Kommuner, regioner och kommunalförbund kan omfattas av cybersäkerhetslagen inom sektorn offentlig förvaltning, normalt oberoende av storlek. "
+                    "De kan dessutom ha verksamheter som berör andra sektorer, till exempel vatten, avlopp, vård, digital infrastruktur eller andra samhällsviktiga funktioner. Bedömningen bör därför göras per juridisk person och verksamhet, och dokumenteras."
+                )
+            elif "anmäla" in question_lower or "registrera" in question_lower or "registrering" in question_lower:
+                answer = (
+                    "Verksamhetsutövare som bedömer att de omfattas av cybersäkerhetslagen ska anmäla eller registrera verksamheten enligt de regler och instruktioner som gäller. "
+                    "Först bör organisationen bedöma sektor, verksamhetstyp, storlek och jurisdiktion. Om bedömningen talar för att organisationen omfattas bör skälen dokumenteras och anmälan göras enligt den officiella processen."
+                )
+            elif "små" in question_lower or "mikro" in question_lower:
+                answer = (
+                    "Små företag och mikroföretag omfattas normalt inte som huvudregel, men undantag finns. Vissa verksamhetstyper kan omfattas oavsett storlek om de har särskild betydelse eller omfattas av särskilda regler. "
+                    "Organisationen bör därför inte bara titta på antal anställda eller omsättning, utan även sektor, faktisk verksamhet, kopplade företag och eventuell roll i samhällsviktiga tjänster."
+                )
+            else:
+                answer = (
+                    "Om NIS2 eller cybersäkerhetslagen gäller för en organisation beror normalt på tre saker: verksamhetstyp, storlek och jurisdiktion. "
+                    "Börja med att identifiera vilken juridisk person som bedöms, vilka aktiviteter den utför, om någon aktivitet finns i en av de 18 sektorerna, om organisationen är medelstor eller stor eller omfattas av ett undantag, och om den faller under svensk jurisdiktion. "
+                    "CyberLex bör därför inte ge ett enkelt ja eller nej utan fakta om organisationen. Bedömningen bör dokumenteras."
+                )
+        else:
+            if "sector" in question_lower or "sectors" in question_lower:
+                answer = (
+                    "The Swedish Cybersecurity Act covers activities in 18 sectors, including energy, transport, banking, financial market infrastructure, healthcare, drinking water, wastewater, digital infrastructure, ICT service management between businesses, public administration, space, postal and courier services, waste management, chemicals, food, manufacturing, digital providers, and research. "
+                    "Being near a sector is not enough by itself. The organization must assess its exact activity type, size, and jurisdiction, and document why it believes it is or is not covered."
+                )
+            elif "municipal" in question_lower or "region" in question_lower:
+                answer = (
+                    "Municipalities, regions, and municipal associations can be covered under the public administration sector of the Swedish Cybersecurity Act, normally regardless of size. "
+                    "They may also perform activities connected to other sectors, such as water, healthcare, digital infrastructure, or other socially important services. The assessment should be made per legal entity and activity and should be documented."
+                )
+            elif "register" in question_lower or "registration" in question_lower:
+                answer = (
+                    "Operators that assess that they are covered by the Swedish Cybersecurity Act must register according to the official process. "
+                    "Before registering, the organization should assess sector, activity type, size, and jurisdiction. If the assessment indicates that the organization is covered, it should document the reasoning and submit the registration."
+                )
+            elif "small" in question_lower or "micro" in question_lower:
+                answer = (
+                    "Small and micro companies are usually not covered as a main rule, but there are exceptions. Some operators can be covered regardless of size because of their role or activity type. "
+                    "A company should therefore assess not only employee count or turnover, but also sector, exact activity, linked or partner enterprises, and whether it performs a role that falls under the rules."
+                )
+            else:
+                answer = (
+                    "Whether NIS2 or the Swedish Cybersecurity Act applies to an organization normally depends on three things: activity type, size, and jurisdiction. "
+                    "Start by identifying the legal entity, what activities it performs, whether any activity falls within one of the covered sectors, whether the organization is medium-sized or large or covered by an exception, and whether it falls under Swedish jurisdiction. "
+                    "CyberLex should not give a simple yes or no without those facts. The scope assessment should be documented."
+                )
+
+        if include_technical_details:
+            answer += "\n\n" + build_match_details(best_match, language)
+
+        return answer
+
     if is_gdpr_security_guidance_question(question):
-        is_mfa_question = (
-            "mfa" in question_lower
-            or "multifaktor" in question_lower
-            or "multi-factor" in question_lower
-            or "multifactor" in question_lower
-        )
+        is_mfa_question = has_mfa_term(question_lower)
         is_encryption_question = (
             "kryptering" in question_lower
             or "kryptera" in question_lower
@@ -6286,7 +6733,8 @@ def is_cyberlaw_question(question):
     # Let the dedicated incident detectors mark practical incident questions as in scope.
     # Otherwise small word-order differences in Swedish can be refused before search starts.
     if (
-        is_gdpr_security_guidance_question(question_lower)
+        is_nis2_sector_scope_question(question_lower)
+        or is_gdpr_security_guidance_question(question_lower)
         or is_practical_incident_response_question(question_lower)
         or is_compromised_account_question(question_lower)
         or is_suspicious_login_question(question_lower)
