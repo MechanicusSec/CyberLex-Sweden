@@ -36,6 +36,13 @@ The goal is to verify that the application can:
 - Verify Swedish Cyber Resilience Act retrieval
 - Verify Swedish EU attacks against information systems retrieval
 - Verify the weekly GitHub Actions source audit workflow
+- Verify GDPR/IMY security-measure answer separation
+- Verify NIS2 sector, municipality, size, and registration answer separation
+- Verify suspicious link handling for email, SMS, and website contexts
+- Verify confirmed hacking statements receive immediate defensive guidance
+- Verify ransomware and data leak incident responses stay specific
+- Verify user-friendly source context labels and hidden diagnostics by default
+- Verify README documentation links
 
 ---
 
@@ -2742,6 +2749,719 @@ The report states that it only checks the local project files.
 
 ---
 
+
+---
+
+## Recent Manual Regression Tests After Source Context and Documentation Updates
+
+These tests verify the newer behavior improvements added after the friendly source-context update, README restructuring, behavior documentation updates, GDPR/IMY security-answer improvements, and NIS2 scope-answer improvements.
+
+The goal is to make sure CyberLex Sweden gives more specific answers, avoids repeated generic summaries, keeps source context relevant to the question, and keeps Swedish and English interface behavior consistent.
+
+---
+
+## Test Case 61: Swedish GDPR Security Measures
+
+### Question
+
+```text
+Vad säger IMY om säkerhetsåtgärder?
+```
+
+### Expected Result
+
+CyberLex Sweden should answer in Swedish and explain that security measures should be chosen based on risk, type of personal data, system use, and possible consequences for registered persons.
+
+The answer may mention measures such as access control, strong authentication, logging, encryption, backups, authorization management, data minimisation, secure default settings, and incident routines.
+
+### Expected Source
+
+```text
+gdpr_imy_edpb_security_guidance.md
+```
+
+### Expected Section Examples
+
+```text
+IMY security measures
+GDPR security assessment
+Practical explanation
+```
+
+### Pass Condition
+
+The answer is specific to GDPR/IMY security measures and does not reuse a generic IMY authority answer or a generic incident-response answer.
+
+---
+
+## Test Case 62: English GDPR MFA Answer
+
+### Question
+
+```text
+Does GDPR require MFA?
+```
+
+### Expected Result
+
+CyberLex Sweden should explain that GDPR does not always require MFA in every situation, but that MFA can be an important and reasonable security measure depending on risk, role, account type, personal data, and system sensitivity.
+
+The answer should mention that MFA is especially relevant for administrator accounts, remote access, email accounts, systems containing sensitive personal data, and accounts where unauthorized access could have serious consequences.
+
+### Expected Source
+
+```text
+gdpr_imy_edpb_security_guidance.md
+```
+
+### Expected Section Examples
+
+```text
+MFA and authentication
+Security measures
+Practical explanation
+```
+
+### Pass Condition
+
+The answer is specific to MFA and does not repeat the same answer used for general GDPR, encryption, or IMY questions.
+
+---
+
+## Test Case 63: English GDPR Encryption Answer
+
+### Question
+
+```text
+Does GDPR require encryption?
+```
+
+### Expected Result
+
+CyberLex Sweden should explain that GDPR does not always require encryption in every case, but encryption can be an appropriate security measure depending on risk, personal data type, system use, and possible harm.
+
+The answer should mention that encryption is especially relevant for laptops, backups, sensitive data, transferred data, stored personal data, and situations where unauthorized access or loss could create risk.
+
+### Expected Source
+
+```text
+gdpr_imy_edpb_security_guidance.md
+```
+
+### Expected Section Examples
+
+```text
+Encryption
+Security measures
+Practical explanation
+```
+
+### Pass Condition
+
+The answer is specific to encryption and does not reuse the MFA answer or a generic IMY answer.
+
+---
+
+## Test Case 64: Swedish Personal Data Protection Question
+
+### Question
+
+```text
+Hur bör vi skydda personuppgifter?
+```
+
+### Expected Result
+
+CyberLex Sweden should answer in Swedish and give a practical GDPR security explanation.
+
+The answer should explain that the organization should assess what personal data is handled, where it is stored, who has access, which systems and suppliers are used, whether access is limited to those who need it, whether MFA or encryption is appropriate, whether logging and backups exist, and whether incident routines are documented.
+
+### Expected Source
+
+```text
+gdpr_imy_edpb_security_guidance.md
+```
+
+### Expected Section Examples
+
+```text
+Practical explanation
+Security measures
+Data protection by design
+```
+
+### Pass Condition
+
+The answer is specific to protecting personal data and the relevant source context is GDPR/IMY security context, not NIS2 sector scope or hacking context.
+
+---
+
+## Test Case 65: Swedish NIS2 Sector List
+
+### Question
+
+```text
+Vilka sektorer omfattas av cybersäkerhetslagen?
+```
+
+### Expected Result
+
+CyberLex Sweden should answer in Swedish and list the 18 covered sectors.
+
+The answer should also explain that working near a sector does not automatically mean the organization is covered. The organization must check whether its specific activity matches covered entity types and whether size, role, and Swedish jurisdiction matter.
+
+### Expected Source
+
+```text
+nis2_sector_scope_and_applicability.md
+```
+
+### Expected Section Examples
+
+```text
+Omfattade sektorer
+Covered sectors
+```
+
+### Pass Condition
+
+The top source context should focus on covered sectors and should not show unrelated GDPR security or generic practical assessment content first.
+
+---
+
+## Test Case 66: Swedish NIS2 Applicability Depends on Facts
+
+### Question
+
+```text
+Gäller NIS2 för oss?
+```
+
+### Expected Result
+
+CyberLex Sweden should not answer with a simple yes or no.
+
+The answer should explain that NIS2 or the Swedish Cybersecurity Act may apply depending on the legal entity, activity, sector, size, exceptions, and Swedish jurisdiction.
+
+### Expected Source
+
+```text
+nis2_sector_scope_and_applicability.md
+```
+
+### Expected Section Examples
+
+```text
+Practical explanation
+Answer guidance
+Storleksbedömning
+```
+
+### Pass Condition
+
+The answer tells the user what facts are needed and does not claim coverage without enough information.
+
+---
+
+## Test Case 67: Swedish Municipality Scope
+
+### Question
+
+```text
+Omfattas kommuner av cybersäkerhetslagen?
+```
+
+### Expected Result
+
+CyberLex Sweden should answer in Swedish and explain that municipalities, regions, and municipal associations can be covered within public administration, normally depending on activity and legal role.
+
+The answer should also mention that municipalities may operate activities that touch other sectors, such as water, healthcare, digital infrastructure, or other socially important functions.
+
+### Expected Source
+
+```text
+nis2_sector_scope_and_applicability.md
+```
+
+### Expected Section Examples
+
+```text
+Offentlig förvaltning, kommuner och regioner
+Public administration, municipalities and regions
+```
+
+### Pass Condition
+
+The top source context should focus on municipalities/public administration and not only show the full generic sector list.
+
+---
+
+## Test Case 68: English Small Company NIS2 Scope
+
+### Question
+
+```text
+Are small companies covered by NIS2?
+```
+
+### Expected Result
+
+CyberLex Sweden should answer in English and explain that small and micro companies are usually not covered as a main rule, but there are exceptions.
+
+The answer should mention that some operators can be covered regardless of size because of role, activity, sector, importance to society, linked enterprises, partner enterprises, or special rules.
+
+### Expected Source
+
+```text
+nis2_sector_scope_and_applicability.md
+```
+
+### Expected Section Examples
+
+```text
+Size assessment
+Small companies
+Practical explanation
+```
+
+### Pass Condition
+
+The answer is specific to size assessment and does not only show the full sector list.
+
+---
+
+## Test Case 69: English Registration Under Swedish Cybersecurity Act
+
+### Question
+
+```text
+Do we need to register under the Swedish Cybersecurity Act?
+```
+
+### Expected Result
+
+CyberLex Sweden should answer in English and explain that operators that assess themselves as covered must register according to the official process.
+
+The answer should also say that before registration, the organization should assess sector, activity type, size, jurisdiction, and document its reasoning.
+
+### Expected Source
+
+```text
+nis2_sector_scope_and_applicability.md
+```
+
+### Expected Section Examples
+
+```text
+Registration
+Practical explanation
+Covered sectors
+```
+
+### Pass Condition
+
+The top source context should include registration-specific content.
+
+---
+
+## Test Case 70: Swedish Suspicious Link by Email
+
+### Question
+
+```text
+Någon klickade på en misstänkt länk i mejl
+```
+
+### Expected Result
+
+CyberLex Sweden should answer in Swedish and treat this as a suspicious email or phishing-link incident.
+
+The answer should explain that the organization should preserve the email, stop further clicking, identify who clicked, check whether credentials were entered, check whether malware ran, review mailbox rules or forwarding, reset credentials if needed, revoke sessions, preserve logs, and document actions.
+
+### Expected Source
+
+```text
+cyber_incident_response_playbook.md
+```
+
+### Expected Section Examples
+
+```text
+Suspicious email
+Phishing
+Suspicious link
+```
+
+### Pass Condition
+
+The answer is email/phishing specific and does not give only a generic suspicious-link answer.
+
+---
+
+## Test Case 71: Swedish Suspicious Link by SMS
+
+### Question
+
+```text
+Någon klickade på en länk i SMS
+```
+
+### Expected Result
+
+CyberLex Sweden should answer in Swedish and treat this as a suspicious SMS/smishing incident.
+
+The answer should explain that the organization should save the SMS, record sender and time, identify the clicked URL, check whether credentials or MFA codes were entered, check whether the device or account may be affected, revoke sessions or reset credentials where needed, and document the incident.
+
+### Expected Source
+
+```text
+cyber_incident_response_playbook.md
+```
+
+### Expected Section Examples
+
+```text
+Suspicious SMS
+Smishing
+Suspicious link
+```
+
+### Pass Condition
+
+The answer is SMS-specific and does not reuse the exact email phishing answer.
+
+---
+
+## Test Case 72: Swedish Suspicious Link on Website
+
+### Question
+
+```text
+Någon klickade på en länk på en webbsida
+```
+
+### Expected Result
+
+CyberLex Sweden should answer in Swedish and treat this as a suspicious website-link incident.
+
+The answer should explain that the organization should record the website and URL, avoid further interaction, check whether a file was downloaded, check browser/device alerts, check whether credentials were entered, preserve evidence, and assess whether malware, account compromise, or data exposure may be involved.
+
+### Expected Source
+
+```text
+cyber_incident_response_playbook.md
+```
+
+### Expected Section Examples
+
+```text
+Suspicious website link
+Suspicious link
+Web link
+```
+
+### Pass Condition
+
+The answer is website-link specific and does not reuse the exact email or SMS answer.
+
+---
+
+## Test Case 73: Swedish Confirmed Hacking Statement
+
+### Question
+
+```text
+Vi har blivit hackade
+```
+
+### Expected Result
+
+CyberLex Sweden should answer as a confirmed or strongly suspected incident, not as a vague hypothetical.
+
+The answer should focus on immediate defensive actions: isolate affected systems, preserve logs, avoid wiping or reinstalling before evidence is collected, revoke suspicious sessions, reset credentials from clean devices, identify affected systems and data, check backups, document timeline, assess GDPR/IMY and NIS2/Swedish Cybersecurity Act reporting, and escalate to internal security, legal, management, and incident-response support.
+
+### Expected Source
+
+```text
+cyber_incident_response_playbook.md
+```
+
+### Expected Section Examples
+
+```text
+Suspected hacking or intrusion
+Confirmed hacking
+Incident response
+```
+
+### Pass Condition
+
+The answer should not begin with wording like "If you suspect..." when the user states that the hacking has happened.
+
+---
+
+## Test Case 74: English Confirmed Hacking Statement
+
+### Question
+
+```text
+Someone hacked our system
+```
+
+### Expected Result
+
+CyberLex Sweden should answer as a confirmed or strongly suspected incident, not as a vague hypothetical.
+
+The answer should focus on immediate defensive containment, evidence preservation, account and session control, affected data assessment, reporting assessment, and escalation.
+
+### Expected Source
+
+```text
+cyber_incident_response_playbook.md
+```
+
+### Expected Section Examples
+
+```text
+Suspected hacking or intrusion
+Confirmed hacking
+Incident response
+```
+
+### Pass Condition
+
+The answer should not begin with wording like "If you think..." when the user states that the hacking happened.
+
+---
+
+## Test Case 75: Swedish Ransomware or Encrypted Files
+
+### Question
+
+```text
+Våra filer har krypterats
+```
+
+### Expected Result
+
+CyberLex Sweden should answer in Swedish and treat this as ransomware or malware until proven otherwise.
+
+The answer should focus on isolating affected systems, stopping spread, preserving logs and ransom notes, avoiding unsafe recovery actions, checking backups before restore, identifying affected data and systems, assessing personal data impact, assessing GDPR/IMY and NIS2/Swedish Cybersecurity Act relevance, and documenting timeline and actions.
+
+### Expected Source
+
+```text
+cyber_incident_response_playbook.md
+```
+
+### Expected Section Examples
+
+```text
+Ransomware
+Encrypted files
+Malware
+```
+
+### Pass Condition
+
+The answer is ransomware-specific and not a generic cyber incident answer.
+
+---
+
+## Test Case 76: Swedish Data Leak
+
+### Question
+
+```text
+Kunddata kan ha läckt
+```
+
+### Expected Result
+
+CyberLex Sweden should answer in Swedish and treat this as a possible data leak or personal data breach.
+
+The answer should explain that the organization should contain the incident, preserve evidence, identify what data may have leaked, check whether personal data is involved, assess risk to individuals, assess whether IMY notification may be required within 72 hours, assess whether affected individuals must be informed if risk is high, and document decisions.
+
+### Expected Source
+
+```text
+gdpr_personal_data_breach.md
+```
+
+### Expected Section Examples
+
+```text
+Data breach assessment checklist
+Reporting to IMY
+Swedish summary
+```
+
+### Pass Condition
+
+The answer should connect clearly to GDPR/IMY personal data breach assessment and should not only give generic incident-response text.
+
+---
+
+## Test Case 77: Summary Formatting
+
+### Question
+
+```text
+Vad är NIS2?
+```
+
+### Expected Result
+
+CyberLex Sweden should display the CyberLex summary as compact paragraph text without unnecessary blank lines between every sentence.
+
+### Pass Condition
+
+The summary is readable and does not spread one sentence per separate large row unless the answer intentionally uses a list.
+
+---
+
+## Test Case 78: Friendly Source Context Labels
+
+### Question
+
+```text
+Vad säger IMY om säkerhetsåtgärder?
+```
+
+### Expected Result
+
+CyberLex Sweden should show user-friendly source context labels.
+
+The source context should avoid developer-style labels such as raw filenames, raw relevance scores, internal ranking names, or helper-routing notes as the main visible text.
+
+### Pass Condition
+
+The source context should be understandable for a normal user while still preserving transparency about source area, section, and supporting text.
+
+---
+
+## Test Case 79: No Technical Diagnostics by Default
+
+### Action
+
+Open CyberLex Sweden with the technical diagnostics checkbox turned off.
+
+### Expected Result
+
+CyberLex Sweden should hide technical or developer-oriented diagnostic details by default.
+
+Technical details may be shown only if the user enables the diagnostics option.
+
+### Pass Condition
+
+Normal users should not see raw technical ranking details, repeated match lists, or internal debug output by default.
+
+---
+
+## Test Case 80: README and Behavior Documentation Links
+
+### Action
+
+Open the README file and check the documentation section.
+
+### Expected Result
+
+The README should link to the current documentation files:
+
+```text
+docs/privacy_and_data_handling.md
+docs/ui_behavior.md
+docs/source_context_behavior.md
+docs/testing_and_demo.md
+docs/demo_checklist.md
+docs/test_cases.md
+docs/test_run_checklist.md
+docs/source_audit_report.md
+```
+
+### Pass Condition
+
+The README links are readable and point to files that exist in the repository.
+
+---
+
+## Test Case 81: App Still Compiles After Documentation Updates
+
+### Command
+
+```powershell
+python -m py_compile app/main.py
+```
+
+### Expected Result
+
+The command should finish without syntax errors.
+
+### Pass Condition
+
+No Python syntax error is shown.
+
+---
+
+## Test Case 82: Clean Git State After Documentation Update
+
+### Command
+
+```powershell
+git status
+```
+
+### Expected Result
+
+After committing and pushing documentation updates, Git should show:
+
+```text
+nothing to commit, working tree clean
+```
+
+### Pass Condition
+
+The working tree is clean and the local branch is synchronized with GitHub.
+
+---
+
+## Test Case 83: Streamlit Cache Clear Before Regression Testing
+
+### Command
+
+```powershell
+streamlit cache clear
+```
+
+### Expected Result
+
+Streamlit clears cached app data so old source chunks or old UI behavior do not appear during testing.
+
+### Pass Condition
+
+The command completes and the next local test run uses current project files.
+
+---
+
+## Test Case 84: Local App Startup After Documentation Update
+
+### Command
+
+```powershell
+python -m streamlit run app/main.py
+```
+
+### Expected Result
+
+CyberLex Sweden should start locally without errors.
+
+### Pass Condition
+
+The app opens in the browser and the interface loads normally.
+
+---
+
+
 ## Test Summary
 
 The current prototype successfully demonstrates:
@@ -2806,5 +3526,24 @@ The current prototype successfully demonstrates:
 - Generated source audit report
 - Metadata helper script
 - Weekly GitHub Actions source audit workflow
+- GDPR/IMY security-measure answer separation
+- MFA-specific GDPR security answer
+- Encryption-specific GDPR security answer
+- Swedish personal data protection guidance
+- NIS2 sector-scope answer separation
+- NIS2 municipality/public administration scope handling
+- NIS2 small-company size assessment handling
+- NIS2 registration question handling
+- Suspicious link handling separated by email, SMS, and website context
+- Confirmed hacking statement handling without vague hypothetical wording
+- Ransomware or encrypted-files handling
+- Data leak and customer-data exposure handling
+- User-friendly source context labels
+- Technical diagnostics hidden by default
+- README documentation links for behavior and testing documentation
+- Local syntax check after documentation updates
+- Clean Git state check after documentation updates
+- Streamlit cache clearing before regression testing
+- Local app startup after documentation updates
 
 The test results show that CyberLex Sweden can answer supported questions from trusted local knowledge files, display transparent source information, provide styled answer sections, test experimental retrieval behavior, audit local source files, and refuse unsupported questions outside the project scope.
