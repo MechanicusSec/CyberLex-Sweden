@@ -7194,9 +7194,17 @@ st.markdown(
     }
 
     .topic-area-heading {
-        font-size: 1.35rem;
+        font-size: 1.25rem;
         font-weight: 700;
         margin-bottom: 0.5rem;
+    }
+
+    .ask-heading {
+        font-size: 1.55rem;
+        font-weight: 700;
+        line-height: 1.2;
+        margin-top: 1.25rem;
+        margin-bottom: 0.65rem;
     }
 
     .footer-note {
@@ -7215,6 +7223,99 @@ st.markdown(
 
     .footer-note a:hover {
         text-decoration: underline;
+    }
+
+    /* Cleaner first impression for portfolio/demo use. */
+    .block-container {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+        max-width: 980px;
+    }
+
+    [data-testid="stSidebar"] {
+        background: linear-gradient(180deg, rgba(15, 23, 42, 0.05), rgba(15, 23, 42, 0.12));
+    }
+
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
+        gap: 0.65rem;
+    }
+
+    /* Hide Streamlit's demo/deploy toolbar for a cleaner user-facing prototype. */
+    #MainMenu,
+    [data-testid="stToolbar"],
+    [data-testid="stDecoration"] {
+        visibility: hidden;
+        height: 0;
+    }
+
+    .main-header.compact-hero {
+        padding: 1.85rem 2rem;
+        margin-top: 0;
+        margin-bottom: 1rem;
+        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+    }
+
+    .main-header.compact-hero h1 {
+        font-size: 2.30rem;
+        letter-spacing: -0.035em;
+        line-height: 1.08;
+    }
+
+    .main-header.compact-hero p {
+        max-width: 760px;
+        margin-bottom: 0.85rem;
+    }
+
+    .hero-description {
+        max-width: 820px;
+    }
+
+    .sidebar-status-card {
+        padding: 0.85rem 0.9rem;
+        border-radius: 12px;
+        border: 1px solid rgba(148, 163, 184, 0.28);
+        background: rgba(15, 23, 42, 0.08);
+        margin-top: 0.4rem;
+        margin-bottom: 0.55rem;
+    }
+
+    .sidebar-status-title {
+        font-size: 1rem;
+        font-weight: 750;
+        margin-bottom: 0.5rem;
+    }
+
+    .sidebar-status-line {
+        font-size: 0.88rem;
+        margin-bottom: 0.25rem;
+        color: inherit;
+    }
+
+    .sidebar-info-card {
+        padding: 0.85rem 0.9rem;
+        border-radius: 12px;
+        border: 1px solid rgba(59, 130, 246, 0.28);
+        background: rgba(59, 130, 246, 0.12);
+        margin-top: 0.55rem;
+        margin-bottom: 0.55rem;
+        font-size: 0.9rem;
+        line-height: 1.45;
+    }
+
+    .disclaimer-strip {
+        margin-top: 0.85rem;
+        margin-bottom: 0.85rem;
+        padding: 0.75rem 0.9rem;
+        border-radius: 12px;
+        border: 1px solid rgba(245, 158, 11, 0.35);
+        background: rgba(245, 158, 11, 0.12);
+        color: inherit;
+        font-size: 0.92rem;
+        line-height: 1.45;
+    }
+
+    .stTextInput input {
+        border-radius: 10px;
     }
 
 </style>
@@ -7430,23 +7531,40 @@ else:
     documents_caption = "These are the local Markdown source files CyberLex uses when answering."
     sidebar_caption = "CyberLex Sweden is an educational prototype and does not provide legal advice."
 
-st.sidebar.header(status_header)
-st.sidebar.write(f"📄 {loaded_documents_label}: {len(documents)}")
-st.sidebar.write(f"🧩 {searchable_chunks_label}: {len(chunks)}")
-
 if interface_language == "Svenska":
-    st.sidebar.write("🛠️ Prototypversion: `0.5`")
-    st.sidebar.write("🏷️ Byggtyp: Lokal utbildningsprototyp")
+    prototype_version_label = "Prototypversion"
+    build_type_label = "Byggtyp"
+    build_type_value = "Lokal utbildningsprototyp"
 else:
-    st.sidebar.write("🛠️ Prototype version: `0.5`")
-    st.sidebar.write("🏷️ Build type: Local educational prototype")
+    prototype_version_label = "Prototype version"
+    build_type_label = "Build type"
+    build_type_value = "Local educational prototype"
 
-st.sidebar.info(f"**{test_version_header}**\n\n{test_version_text}")
+st.sidebar.markdown(
+    f'''
+    <div class="sidebar-status-card">
+        <div class="sidebar-status-title">{status_header}</div>
+        <div class="sidebar-status-line">📄 {loaded_documents_label}: <strong>{len(documents)}</strong></div>
+        <div class="sidebar-status-line">🧩 {searchable_chunks_label}: <strong>{len(chunks)}</strong></div>
+        <div class="sidebar-status-line">🛠️ {prototype_version_label}: <strong>0.5</strong></div>
+        <div class="sidebar-status-line">🏷️ {build_type_label}: <strong>{build_type_value}</strong></div>
+    </div>
+    ''',
+    unsafe_allow_html=True,
+)
 
+st.sidebar.markdown(
+    f'''
+    <div class="sidebar-info-card">
+        <strong>{test_version_header}</strong><br><br>{test_version_text}
+    </div>
+    ''',
+    unsafe_allow_html=True,
+)
 with st.sidebar.expander(suggested_test_flow_header, expanded=False):
     st.markdown(suggested_test_flow_text)
 
-st.header(ask_heading)
+st.markdown(f'<div class="ask-heading">{ask_heading}</div>', unsafe_allow_html=True)
 
 if "selected_example_question" not in st.session_state:
     st.session_state.selected_example_question = ""
@@ -7559,7 +7677,10 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.warning(warning_text)
+st.markdown(
+    f'<div class="disclaimer-strip">{warning_text}</div>',
+    unsafe_allow_html=True,
+)
 
 st.divider()
 
