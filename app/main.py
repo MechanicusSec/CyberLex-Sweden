@@ -294,6 +294,9 @@ def localize_section_name(section_name, language="English"):
         "swedish public administration, municipalities and regions": "Offentlig förvaltning, kommuner och regioner",
         "essential and important entities": "Väsentliga och viktiga verksamhetsutövare",
         "swedish essential and important entities": "Väsentliga och viktiga verksamhetsutövare",
+        "annex 1 and annex 2": "Bilaga 1 och bilaga 2",
+        "swedish annex 1 and annex 2": "Bilaga 1 och bilaga 2",
+        "bilaga 1 och bilaga 2": "Bilaga 1 och bilaga 2",
         "registration": "Anmälan och registrering",
         "swedish registration": "Anmälan och registrering",
         "cyberlex answer guidance": "Svarsstöd",
@@ -333,6 +336,9 @@ def localize_section_name(section_name, language="English"):
         "swedish public administration, municipalities and regions": "Public administration, municipalities and regions",
         "essential and important entities": "Essential and important entities",
         "swedish essential and important entities": "Essential and important entities",
+        "annex 1 and annex 2": "Annex 1 and Annex 2",
+        "swedish annex 1 and annex 2": "Annex 1 and Annex 2",
+        "bilaga 1 och bilaga 2": "Annex 1 and Annex 2",
         "registration": "Registration",
         "swedish registration": "Registration",
         "practical explanation": "Practical explanation",
@@ -1255,6 +1261,36 @@ def expand_question_terms(question):
             "breach",
             "security measures",
         ],
+        "bilaga 1": [
+            "annex 1",
+            "annex 2",
+            "sector lists",
+            "covered sectors",
+            "essential entities",
+            "important entities",
+        ],
+        "bilaga 2": [
+            "annex 1",
+            "annex 2",
+            "sector lists",
+            "covered sectors",
+            "essential entities",
+            "important entities",
+        ],
+        "annex 1": [
+            "annex 2",
+            "sector lists",
+            "covered sectors",
+            "essential entities",
+            "important entities",
+        ],
+        "annex 2": [
+            "annex 1",
+            "sector lists",
+            "covered sectors",
+            "essential entities",
+            "important entities",
+        ],
         "nis2": [
             "cybersecurity",
             "incident reporting",
@@ -1714,6 +1750,14 @@ def is_nis2_sector_scope_question(question):
         "väsentliga verksamhetsutövare",
         "viktiga verksamhetsutövare",
         "väsentlig verksamhetsutövare",
+        "skillnaden mellan väsentliga och viktiga",
+        "vad är skillnaden mellan väsentliga och viktiga",
+        "bilaga 1",
+        "bilaga 2",
+        "bilaga 1 och bilaga 2",
+        "vad är bilaga 1",
+        "vad är bilaga 2",
+        "vad är bilaga 1 och bilaga 2",
         "viktig verksamhetsutövare",
         "does nis2 apply to us",
         "are we covered by nis2",
@@ -1729,6 +1773,14 @@ def is_nis2_sector_scope_question(question):
         "essential entities",
         "important entities",
         "essential or important entities",
+        "difference between essential and important",
+        "what is the difference between essential and important",
+        "annex 1",
+        "annex 2",
+        "annex 1 and annex 2",
+        "what are annex 1 and annex 2",
+        "what is annex 1",
+        "what is annex 2",
     ]
 
     if contains_any(q, direct_phrases):
@@ -1746,7 +1798,7 @@ def is_nis2_sector_scope_question(question):
         "covered", "apply", "applies", "sector", "sectors", "municipality",
         "municipalities", "region", "regions", "register", "registration",
         "essential", "important", "entity", "entities", "small companies",
-        "micro companies", "size", "scope",
+        "micro companies", "size", "scope", "annex", "annexes", "bilaga", "bilagor",
     ]
 
     return contains_any(q, nis2_terms) and contains_any(q, scope_terms)
@@ -2589,6 +2641,9 @@ def get_nis2_scope_context_profile(question):
     if contains_any(q, ["små företag", "mikro", "small companies", "small company", "micro companies", "micro company"]):
         return "small_company"
 
+    if contains_any(q, ["bilaga 1", "bilaga 2", "bilagor", "annex 1", "annex 2", "annexes", "annex"]):
+        return "annexes"
+
     if contains_any(q, ["väsentlig", "väsentliga", "viktig", "viktiga", "essential", "important", "entities", "entity", "verksamhetsutövare"]):
         return "essential_important"
 
@@ -2636,6 +2691,16 @@ def get_nis2_scope_allowed_sections(question):
         "essential_important": [
             "essential and important entities",
             "swedish essential and important entities",
+            "annex 1 and annex 2",
+            "swedish annex 1 and annex 2",
+            "bilaga 1 och bilaga 2",
+        ],
+        "annexes": [
+            "annex 1 and annex 2",
+            "swedish annex 1 and annex 2",
+            "bilaga 1 och bilaga 2",
+            "covered sectors",
+            "swedish covered sectors",
         ],
         "scope_general": [
             "practical explanation",
@@ -2667,7 +2732,7 @@ def get_nis2_scope_max_context_cards(question):
     # Specific NIS2 questions usually need only one source card. Broad scope
     # questions can show two because the answer depends on several facts.
     profile = get_nis2_scope_context_profile(question)
-    if profile in {"sectors", "municipality", "registration", "essential_important"}:
+    if profile in {"sectors", "municipality", "registration", "essential_important", "annexes"}:
         return 1
     return 2
 
@@ -2718,6 +2783,16 @@ def get_nis2_scope_source_context_priority(result, question, language="English")
         "essential_important": {
             "essential and important entities": 900,
             "swedish essential and important entities": 900,
+            "annex 1 and annex 2": 650,
+            "swedish annex 1 and annex 2": 650,
+            "bilaga 1 och bilaga 2": 650,
+        },
+        "annexes": {
+            "annex 1 and annex 2": 950,
+            "swedish annex 1 and annex 2": 950,
+            "bilaga 1 och bilaga 2": 950,
+            "covered sectors": 600,
+            "swedish covered sectors": 600,
         },
         "scope_general": {
             "practical explanation": 850,
@@ -2772,6 +2847,8 @@ def get_source_context_section_priority(question, section_name, language="Englis
             priority += 110
         if "essential and important" in section:
             priority += 100
+        if "annex 1" in section or "annex 2" in section or "bilaga 1" in section or "bilaga 2" in section:
+            priority += 130
         if "practical explanation" in section or "cyberlex answer guidance" in section:
             priority += 90
         if "gdpr" in section or "personal data breach" in section:
@@ -6666,7 +6743,27 @@ def generate_simple_answer(question, best_match, language="English", include_tec
 
     if is_nis2_sector_scope_question(question):
         if use_swedish:
-            if "sektor" in question_lower or "sektorer" in question_lower:
+            if "bilaga" in question_lower or "annex" in question_lower:
+                answer = (
+                    "Bilaga 1 och bilaga 2 är sektorslistor i NIS2-direktivet som används vid bedömningen av om en verksamhet kan omfattas. "
+                    "Bilaga 1 gäller sektorer med hög kritikalitet, till exempel energi, transporter, bankverksamhet, hälso- och sjukvård, dricksvatten, avloppsvatten, digital infrastruktur, offentlig förvaltning och rymden. "
+                    "Bilaga 2 gäller andra kritiska sektorer, till exempel post- och budtjänster, avfallshantering, kemikalier, livsmedel, tillverkning, digitala leverantörer och forskning. "
+                    "Att en verksamhet finns nära en sektor räcker inte alltid. Organisationen behöver kontrollera om den konkreta verksamhetstypen motsvarar det som omfattas och dokumentera sin bedömning."
+                )
+            elif (
+                "väsentlig" in question_lower
+                or "väsentliga" in question_lower
+                or "viktig" in question_lower
+                or "viktiga" in question_lower
+                or "verksamhetsutövare" in question_lower
+                or "skillnaden" in question_lower
+            ):
+                answer = (
+                    "Verksamheter som omfattas av NIS2 delas in i väsentliga eller viktiga verksamhetsutövare. Kraven är i stora drag liknande, men tillsyn och sanktionsavgifter kan skilja sig åt. "
+                    "Indelningen kan bero på sektor, om verksamheten finns i bilaga 1 eller bilaga 2 till NIS2-direktivet, och organisationens storlek. "
+                    "CyberLex bör därför inte göra en slutlig klassificering utan tillräckliga fakta. Organisationen bör bedöma sektor, verksamhetstyp, storlek och jurisdiktion och dokumentera varför den bedömer sig vara väsentlig, viktig eller inte omfattad."
+                )
+            elif "sektor" in question_lower or "sektorer" in question_lower:
                 answer = (
                     "Cybersäkerhetslagen omfattar verksamhet inom 18 sektorer, bland annat energi, transporter, bank, finansmarknadsinfrastruktur, hälso- och sjukvård, dricksvatten, avloppsvatten, digital infrastruktur, IKT-tjänstehantering mellan företag, offentlig förvaltning, rymd, post- och budtjänster, avfallshantering, kemikalier, livsmedel, tillverkning, digitala leverantörer och forskning. "
                     "Det betyder inte att varje organisation nära en sektor automatiskt omfattas. Bedömningen behöver göras utifrån den konkreta verksamhetstypen, organisationens storlek och svensk jurisdiktion. Organisationen bör dokumentera varför den bedömer att den omfattas eller inte omfattas."
@@ -6693,7 +6790,26 @@ def generate_simple_answer(question, best_match, language="English", include_tec
                     "Bedöm också om organisationen är medelstor eller större, eller om den kan omfattas av undantag. Dokumentera bedömningen och varför organisationen anses omfattas eller inte omfattas."
                 )
         else:
-            if "sector" in question_lower or "sectors" in question_lower:
+            if "annex" in question_lower or "bilaga" in question_lower:
+                answer = (
+                    "Annex 1 and Annex 2 are the sector lists in the NIS2 Directive used when assessing whether an activity may be covered. "
+                    "Annex 1 covers sectors of high criticality, such as energy, transport, banking, healthcare, drinking water, wastewater, digital infrastructure, public administration, and space. "
+                    "Annex 2 covers other critical sectors, such as postal and courier services, waste management, chemicals, food, manufacturing, digital providers, and research. "
+                    "Being close to a sector is not always enough. The organization still needs to check whether its specific activity type matches the covered entity types and document the assessment."
+                )
+            elif (
+                "essential" in question_lower
+                or "important" in question_lower
+                or "entities" in question_lower
+                or "entity" in question_lower
+                or "difference" in question_lower
+            ):
+                answer = (
+                    "Organizations covered by NIS2 are categorized as essential or important entities. The practical requirements are broadly similar, but supervision and sanctions can differ. "
+                    "The distinction can depend on the sector, whether the activity is listed in Annex 1 or Annex 2 of the NIS2 Directive, and the size of the organization. "
+                    "CyberLex should therefore not make a final classification without enough facts. The organization should assess sector, activity type, size, and jurisdiction, and document why it considers itself essential, important, or not covered."
+                )
+            elif "sector" in question_lower or "sectors" in question_lower:
                 answer = (
                     "The Swedish Cybersecurity Act covers activities in 18 sectors, including energy, transport, banking, financial market infrastructure, healthcare, drinking water, wastewater, digital infrastructure, ICT service management between businesses, public administration, space, postal and courier services, waste management, chemicals, food, manufacturing, digital providers, and research. "
                     "Being near a sector is not enough by itself. The organization must assess its exact activity type, size, and jurisdiction, and document why it believes it is or is not covered."

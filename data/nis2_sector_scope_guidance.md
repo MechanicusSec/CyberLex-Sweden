@@ -69,6 +69,16 @@ The sectors are:
 
 Each sector can contain more specific types of entities or activities. The fact that an organization works near a sector does not automatically mean it is covered. The organization must check whether its specific activity matches the covered entity types.
 
+## Annex 1 and Annex 2
+
+Annex 1 and Annex 2 are the sector lists in the NIS2 Directive.
+
+Annex 1 covers sectors of high criticality. These include energy, transport, banking, financial market infrastructure, healthcare, drinking water, wastewater, digital infrastructure, ICT service management between businesses, public administration and space.
+
+Annex 2 covers other critical sectors. These include postal and courier services, waste management, manufacture, production and distribution of chemicals, production, processing and distribution of food, manufacturing, digital providers and research.
+
+The annexes help determine whether an activity belongs to a covered sector or type of entity. They should be used together with size, jurisdiction and national Swedish implementation rules.
+
 ## Swedish covered sectors
 
 Cybersäkerhetslagen omfattar verksamhet inom 18 sektorer.
@@ -95,6 +105,16 @@ Sektorerna är:
 18. Forskning
 
 Varje sektor kan innehålla mer specifika typer av verksamhetsutövare. Att en organisation arbetar nära en sektor betyder därför inte automatiskt att den omfattas. Organisationen behöver kontrollera om den specifika verksamheten motsvarar de verksamhetstyper som omfattas.
+
+## Bilaga 1 och bilaga 2
+
+Bilaga 1 och bilaga 2 är sektorslistor i NIS2-direktivet.
+
+Bilaga 1 gäller sektorer med hög kritikalitet. Det omfattar bland annat energi, transporter, bankverksamhet, finansmarknadsinfrastruktur, hälso- och sjukvård, dricksvatten, avloppsvatten, digital infrastruktur, förvaltning av IKT-tjänster mellan företag, offentlig förvaltning och rymden.
+
+Bilaga 2 gäller andra kritiska sektorer. Det omfattar bland annat post- och budtjänster, avfallshantering, tillverkning, produktion och distribution av kemikalier, produktion, bearbetning och distribution av livsmedel, tillverkning, digitala leverantörer och forskning.
+
+Bilagorna hjälper organisationen att bedöma om verksamheten hör till en sektor eller verksamhetstyp som kan omfattas. Bedömningen behöver även göras tillsammans med storlek, jurisdiktion och svenska regler i cybersäkerhetslagen.
 
 ## Size assessment
 
@@ -138,7 +158,7 @@ Organizations covered by NIS2 are categorized as essential or important entities
 
 The practical requirements are broadly similar, but supervision and sanctions can differ.
 
-The distinction can depend on the sector, whether the activity is listed in Annex 1 or Annex 2, and the size of the organization.
+The distinction can depend on the sector, whether the activity is listed in Annex 1 or Annex 2 of the NIS2 Directive, and the size of the organization. Annex 1 and Annex 2 are sector lists that help identify whether an activity belongs to a covered type of entity.
 
 CyberLex Sweden should avoid making a final classification for a specific organization unless the facts are clear. It should instead explain the assessment steps and tell the user to document the reasoning.
 
@@ -148,7 +168,7 @@ Verksamheter som omfattas av NIS2 delas in i väsentliga eller viktiga verksamhe
 
 Kraven är i stora drag liknande, men tillsyn och sanktionsavgifter kan skilja sig åt.
 
-Indelningen kan bero på sektor, om verksamheten finns i bilaga 1 eller bilaga 2, och organisationens storlek.
+Indelningen kan bero på sektor, om verksamheten finns i bilaga 1 eller bilaga 2 till NIS2-direktivet, och organisationens storlek. Bilaga 1 och bilaga 2 är sektorslistor som hjälper till att avgöra om verksamheten motsvarar en verksamhetstyp som kan omfattas.
 
 CyberLex Sweden bör inte slutligt klassificera en specifik organisation om fakta är oklara. Appen bör i stället förklara bedömningsstegen och säga att organisationen bör dokumentera sin bedömning.
 
@@ -177,7 +197,7 @@ A practical NIS2 scope assessment should ask:
 1. What legal entity is being assessed?
 2. What activities does the organization perform?
 3. Do any activities fall within one of the 18 sectors?
-4. Does the activity match a covered type of entity in the relevant annexes?
+4. Does the activity match a covered type of entity in Annex 1 or Annex 2 of the NIS2 Directive?
 5. Is the organization medium-sized or large?
 6. Is there an exception that means the organization is covered regardless of size?
 7. Does the organization operate in Sweden or fall under Swedish jurisdiction?
@@ -196,7 +216,7 @@ En praktisk NIS2-bedömning bör fråga:
 1. Vilken juridisk person bedöms?
 2. Vilken verksamhet bedriver organisationen?
 3. Finns någon verksamhet inom någon av de 18 sektorerna?
-4. Motsvarar verksamheten en verksamhetstyp som omfattas enligt relevanta bilagor?
+4. Motsvarar verksamheten en verksamhetstyp som finns i bilaga 1 eller bilaga 2 till NIS2-direktivet?
 5. Är organisationen medelstor eller stor?
 6. Finns ett undantag som gör att organisationen omfattas oavsett storlek?
 7. Är organisationen etablerad i Sverige eller omfattas den av svensk jurisdiktion?
@@ -233,6 +253,7 @@ CyberLex bör uppmana till dokumentation av omfattningsbedömningen.
 - Are municipalities covered by the Swedish Cybersecurity Act?
 - Are small companies covered by NIS2?
 - Do we need to register under the Swedish Cybersecurity Act?
+- What are Annex 1 and Annex 2 in NIS2?
 - What is the difference between essential and important entities?
 - How should we assess whether we are covered by NIS2?
 
@@ -243,6 +264,7 @@ CyberLex bör uppmana till dokumentation av omfattningsbedömningen.
 - Omfattas kommuner av cybersäkerhetslagen?
 - Omfattas små företag av NIS2?
 - Behöver vi anmäla oss enligt cybersäkerhetslagen?
+- Vad är bilaga 1 och bilaga 2 i NIS2?
 - Vad är skillnaden mellan väsentliga och viktiga verksamhetsutövare?
 - Hur bedömer vi om vi omfattas av NIS2?
 
@@ -257,4 +279,4 @@ CyberLex bör uppmana till dokumentation av omfattningsbedömningen.
 
 Source date: Last checked: 2026-06-08
 
-Version notes: Initial CyberLex Sweden educational summary based on current MCF guidance on cybersäkerhetslagen, NIS2 scope, covered sectors, size assessment, jurisdiction, registration, and essential or important entities.
+Version notes: Updated CyberLex Sweden educational summary based on current MCF guidance on cybersäkerhetslagen, NIS2 scope, covered sectors, size assessment, jurisdiction, registration, and essential or important entities. Added clearer explanations of Annex 1 and Annex 2 so users understand that they are NIS2 sector lists used during scope assessment.
