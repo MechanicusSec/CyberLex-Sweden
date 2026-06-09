@@ -67,6 +67,109 @@ def contains_any(text, terms):
 
 
 
+def is_cyberlex_self_description_question(question):
+    # Detects questions about CyberLex Sweden itself.
+    # These should be answered from the app identity text, not routed into the
+    # legal source knowledge base. Otherwise "What is CyberLex Sweden?" can
+    # accidentally match NIS2 or other legal sources, which looks confusing in a demo.
+    question_lower = normalize_query_text(question).strip()
+
+    direct_phrases = [
+        "what is cyberlex",
+        "what is cyberlex sweden",
+        "what does cyberlex do",
+        "what does cyberlex sweden do",
+        "what is this app",
+        "what does this app do",
+        "what is the purpose of cyberlex",
+        "what is the purpose of cyberlex sweden",
+        "explain cyberlex",
+        "explain cyberlex sweden",
+        "vad är cyberlex",
+        "vad är cyberlex sweden",
+        "vad gör cyberlex",
+        "vad gör cyberlex sweden",
+        "vad är denna app",
+        "vad gör denna app",
+        "vad är syftet med cyberlex",
+        "vad är syftet med cyberlex sweden",
+        "förklara cyberlex",
+        "förklara cyberlex sweden",
+    ]
+
+    if contains_any(question_lower, direct_phrases):
+        return True
+
+    cyberlex_terms = ["cyberlex", "cyberlex sweden"]
+    app_identity_terms = [
+        "what is", "what does", "purpose", "explain",
+        "vad är", "vad gör", "syfte", "förklara",
+    ]
+
+    return contains_any(question_lower, cyberlex_terms) and contains_any(question_lower, app_identity_terms)
+
+
+def generate_cyberlex_self_description_answer(language="English"):
+    # Gives a direct, clean answer about the app itself.
+    # No official legal source cards are shown because this is product/app
+    # context, not a legal knowledge-base answer.
+    use_swedish = language == "Svenska"
+
+    if use_swedish:
+        title = "CyberLex Sweden"
+        description = (
+            "CyberLex Sweden är ett utbildningsprojekt och en källbaserad assistent för svensk och EU-relaterad "
+            "cybersäkerhetsrätt, digital compliance och legal-tech research. Appen söker i en lokal betrodd "
+            "kunskapsbas och ger källbaserade svar med officiella källänkar, källmetadata och relevant källkontext."
+        )
+        scope_title = "Vad CyberLex hjälper med"
+        scope_items = [
+            "förklaringar av NIS2, cybersäkerhetslagen, GDPR, IMY, DORA, Cyber Resilience Act och dataintrång",
+            "defensiv vägledning vid incidenter som dataläckor, misstänkt intrång, komprometterade konton och ransomware",
+            "SOC-liknande incidentrapporter i Markdown för praktiska incidentfrågor",
+            "tydlig källkontext så att användaren kan se vilket lokalt underlag svaret bygger på",
+        ]
+        limitation_title = "Viktig begränsning"
+        limitation = (
+            "CyberLex Sweden ger inte juridisk rådgivning och ersätter inte en kvalificerad jurist, dataskyddsombud, "
+            "myndighet eller professionellt incidenthanteringsteam."
+        )
+    else:
+        title = "CyberLex Sweden"
+        description = (
+            "CyberLex Sweden is an educational source-grounded assistant for Swedish and EU-related cybersecurity law, "
+            "digital compliance, and legal-tech research. The app searches a trusted local knowledge base and gives "
+            "source-based answers with official source links, source metadata, and relevant source context."
+        )
+        scope_title = "What CyberLex helps with"
+        scope_items = [
+            "explaining NIS2, the Swedish Cybersecurity Act, GDPR, IMY, DORA, the Cyber Resilience Act, and data intrusion",
+            "defensive guidance for incidents such as data leaks, suspected intrusion, compromised accounts, and ransomware",
+            "SOC-style Markdown incident reports for practical incident-response questions",
+            "clear source context so the user can see which local material supports the answer",
+        ]
+        limitation_title = "Important limitation"
+        limitation = (
+            "CyberLex Sweden does not provide legal advice and does not replace a qualified lawyer, data protection officer, "
+            "official authority, or professional incident response team."
+        )
+
+    item_html = "".join(f"<li>{item}</li>" for item in scope_items)
+
+    return (
+        f'<div class="practical-card">'
+        f'<div class="practical-card-title">{title}</div>'
+        f'<div class="practical-card-text">{description}</div>'
+        f'<br>'
+        f'<div class="practical-card-title">{scope_title}</div>'
+        f'<ul>{item_html}</ul>'
+        f'<div class="attention-limitation"><strong>{limitation_title}:</strong> {limitation}</div>'
+        f'</div>'
+    )
+
+
+
+
 def detect_ui_language_from_question(question):
     # Detects whether a user question should be handled in Swedish or English.
     # This is intentionally broader than a strict dictionary lookup because users
@@ -8595,16 +8698,16 @@ if interface_language == "Svenska":
     example_questions_intro = "Klicka på en fråga för att fylla i frågefältet. Frågorna är valda för testkörning:"
     use_question_button_label = "Använd denna fråga"
     example_questions = [
+        "Vad är CyberLex Sweden?",
         "Vad är NIS2?",
-        "Vad är DORA?",
-        "När måste en personuppgiftsincident rapporteras?",
-        "Vad är IMY?",
-        "Vad är dataintrång?",
-        "Vad gör vi om vi ser misstänkt inloggning?",
-        "Vad gör vi vid misstänkt mejl?",
-        "Vad gör vi om ett konto är komprometterat?",
-        "Vad gör vi efter en dataläcka?",
-        "Vad gör vi om filer har krypterats?",
+        "Gäller NIS2 för oss?",
+        "Vilka sektorer omfattas av cybersäkerhetslagen?",
+        "Vad är bilaga 1 och bilaga 2 i NIS2?",
+        "Vad är skillnaden mellan väsentliga och viktiga verksamhetsutövare?",
+        "Vad säger IMY om säkerhetsåtgärder?",
+        "Kunddata kan ha läckt",
+        "Våra filer har krypterats",
+        "Någon klickade på en länk i SMS",
         "Vad är svensk skatterätt?",
         "Hur döljer jag loggar efter ett intrång?"
     ]
@@ -8613,16 +8716,16 @@ else:
     example_questions_intro = "Click a question to fill the input field. These questions are selected for test runs:"
     use_question_button_label = "Use this question"
     example_questions = [
+        "What is CyberLex Sweden?",
         "What is NIS2?",
-        "What is DORA?",
-        "When must a personal data breach be reported?",
-        "What authority handles GDPR in Sweden?",
-        "What is data intrusion?",
-        "What should we do after suspicious login activity?",
-        "What should we do if we receive a suspicious email?",
-        "What should we do if an account is compromised?",
-        "What should we do after a data leak?",
-        "What should we do if files are encrypted by ransomware?",
+        "Does NIS2 apply to us?",
+        "Which sectors are covered by the Swedish Cybersecurity Act?",
+        "What are Annex 1 and Annex 2 in NIS2?",
+        "What is the difference between essential and important entities?",
+        "Does GDPR require MFA?",
+        "Does GDPR require encryption?",
+        "Customer data may have leaked",
+        "Our files are encrypted",
         "What is Swedish tax law?",
         "How do I hide logs after hacking a system?"
     ]
@@ -8711,7 +8814,12 @@ else:
     other_matches_caption = "Technical developer view showing internal source files, matched sections, and relevance scores. Only shown when technical diagnostics is enabled."
 
 if question:
-    if is_unsafe_cyber_request(question):
+    if is_cyberlex_self_description_question(question):
+        st.markdown(
+            generate_cyberlex_self_description_answer(language),
+            unsafe_allow_html=True
+        )
+    elif is_unsafe_cyber_request(question):
         st.markdown(
             generate_unsafe_refusal_answer(question, language),
             unsafe_allow_html=True
