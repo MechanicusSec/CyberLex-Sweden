@@ -901,6 +901,29 @@ def is_ransomware_response_question(question):
     )
 
 
+def is_encrypted_files_possible_ransomware_question(question):
+    # Detects wording where the user says files are encrypted without explicitly
+    # saying ransomware. Encryption can be normal, so the answer should frame
+    # this as suspicious only when encryption is unexpected or linked to malware.
+    question_lower = normalize_query_text(question)
+    return contains_any(
+        question_lower,
+        [
+            "files encrypted",
+            "files are encrypted",
+            "our files are encrypted",
+            "our files have been encrypted",
+            "files have been encrypted",
+            "encrypted files",
+            "filer har krypterats",
+            "filerna har krypterats",
+            "våra filer har krypterats",
+            "krypterade filer",
+            "krypterats",
+        ],
+    )
+
+
 def is_ransomware_or_malware_question(question):
     # Compatibility helper used by source-context prioritization.
     return is_ransomware_response_question(question)
@@ -3319,6 +3342,7 @@ def split_source_excerpt_for_display(excerpt, language="English", max_visible_li
             "was_shortened": False,
             "shortened_note": "",
             "details_label": "",
+            "details_less_label": "",
         }
 
     lines = excerpt_text.splitlines()
@@ -3336,6 +3360,7 @@ def split_source_excerpt_for_display(excerpt, language="English", max_visible_li
             "was_shortened": False,
             "shortened_note": "",
             "details_label": "",
+            "details_less_label": "",
         }
 
     visible_lines = lines[:max_visible_lines]
@@ -3352,6 +3377,11 @@ def split_source_excerpt_for_display(excerpt, language="English", max_visible_li
         if use_swedish
         else "Show more source text"
     )
+    details_less_label = (
+        "Visa mindre källtext"
+        if use_swedish
+        else "Show less source text"
+    )
 
     return {
         "short_excerpt": short_excerpt,
@@ -3359,6 +3389,7 @@ def split_source_excerpt_for_display(excerpt, language="English", max_visible_li
         "was_shortened": True,
         "shortened_note": shortened_note,
         "details_label": details_label,
+        "details_less_label": details_less_label,
     }
 
 def get_friendly_source_area_name(filename, language="English"):
@@ -3662,7 +3693,10 @@ def build_source_context(search_results, language="English", max_results=3, ques
                 f'<div class="context-excerpt">{short_excerpt}</div>'
                 f'<div class="context-shortened-note">{excerpt_display["shortened_note"]}</div>'
                 f'<details class="context-more-details">'
-                f'<summary>{excerpt_display["details_label"]}</summary>'
+                f'<summary>'
+                f'<span class="details-more-label">{excerpt_display["details_label"]}</span>'
+                f'<span class="details-less-label">{excerpt_display["details_less_label"]}</span>'
+                f'</summary>'
                 f'<div class="context-excerpt context-full-excerpt">{full_excerpt}</div>'
                 f'</details>'
             )
@@ -5639,11 +5673,19 @@ def generate_incident_response_answer(question, language="English"):
                 "Dokumentera åtgärder, tidslinje, bevis och beslut.",
             ]
         elif is_ransomware_response_question(question):
-            title = "Rekommenderade första steg vid ransomware eller skadlig kod"
-            intro = (
-                "Vid ransomware eller skadlig kod är målet att begränsa spridning, bevara bevis, "
-                "förstå omfattningen och återställa kontrollerat. Rensa inte blint innan bevis och tidslinje säkrats."
-            )
+            if is_encrypted_files_possible_ransomware_question(question):
+                title = "Rekommenderade första steg om filer oväntat har krypterats"
+                intro = (
+                    "Krypterade filer är inte alltid ett problem, eftersom normal kryptering kan vara en legitim säkerhetsåtgärd. "
+                    "Men om filer plötsligt har krypterats, blivit otillgängliga, fått nya filändelser eller om det finns tecken på skadlig kod, "
+                    "bör händelsen behandlas som möjlig ransomware tills teknisk kontroll visar något annat."
+                )
+            else:
+                title = "Rekommenderade första steg vid ransomware eller skadlig kod"
+                intro = (
+                    "Vid ransomware eller skadlig kod är målet att begränsa spridning, bevara bevis, "
+                    "förstå omfattningen och återställa kontrollerat. Rensa inte blint innan bevis och tidslinje säkrats."
+                )
             steps = [
                 "Isolera drabbade klienter eller servrar från nätverket om det kan göras säkert.",
                 "Bevara ransom note, säkerhetslarm, loggar, filändelser, tidsstämplar och exempel på krypterade filer.",
@@ -5799,11 +5841,19 @@ def generate_incident_response_answer(question, language="English"):
                 "Document actions, timeline, evidence, and decisions.",
             ]
         elif is_ransomware_response_question(question):
-            title = "Recommended first steps for ransomware or malware"
-            intro = (
-                "For ransomware or malware, the first goals are to limit spread, preserve evidence, "
-                "understand scope, and recover in a controlled way. Do not blindly clean systems before evidence and timeline are preserved."
-            )
+            if is_encrypted_files_possible_ransomware_question(question):
+                title = "Recommended first steps if files were unexpectedly encrypted"
+                intro = (
+                    "Encrypted files are not automatically a security incident, because normal encryption can be legitimate protection. "
+                    "But if files were suddenly encrypted, became inaccessible, changed extensions, or there are signs of malware, "
+                    "treat it as possible ransomware until technical review proves otherwise."
+                )
+            else:
+                title = "Recommended first steps for ransomware or malware"
+                intro = (
+                    "For ransomware or malware, the first goals are to limit spread, preserve evidence, "
+                    "understand scope, and recover in a controlled way. Do not blindly clean systems before evidence and timeline are preserved."
+                )
             steps = [
                 "Isolate affected clients or servers from the network if it can be done safely.",
                 "Preserve the ransom note, security alerts, logs, file extensions, timestamps, and samples of encrypted files.",
@@ -7336,6 +7386,18 @@ st.markdown(
         cursor: pointer;
         font-weight: 600;
         margin-bottom: 0.45rem;
+    }
+
+    .context-more-details summary .details-less-label {
+        display: none;
+    }
+
+    .context-more-details[open] summary .details-more-label {
+        display: none;
+    }
+
+    .context-more-details[open] summary .details-less-label {
+        display: inline;
     }
 
     .context-full-excerpt {
