@@ -3303,6 +3303,64 @@ def clean_source_excerpt_relaxed(content, language="English", max_chars=1400):
     return excerpt
 
 
+
+def split_source_excerpt_for_display(excerpt, language="English", max_visible_lines=8):
+    # Splits a source-context excerpt into a short visible preview and a longer
+    # optional detail view. Normal users get readable source support first;
+    # testers and curious users can expand the full cleaned excerpt when needed.
+    # Civilization advances one collapsible box at a time.
+    use_swedish = language == "Svenska"
+    excerpt_text = str(excerpt or "").strip()
+
+    if not excerpt_text:
+        return {
+            "short_excerpt": "",
+            "full_excerpt": "",
+            "was_shortened": False,
+            "shortened_note": "",
+            "details_label": "",
+        }
+
+    lines = excerpt_text.splitlines()
+
+    # Keep meaningful blank lines, but remove extra empty lines at the edges.
+    while lines and not lines[0].strip():
+        lines.pop(0)
+    while lines and not lines[-1].strip():
+        lines.pop()
+
+    if len(lines) <= max_visible_lines:
+        return {
+            "short_excerpt": excerpt_text,
+            "full_excerpt": excerpt_text,
+            "was_shortened": False,
+            "shortened_note": "",
+            "details_label": "",
+        }
+
+    visible_lines = lines[:max_visible_lines]
+    short_excerpt = "\n".join(visible_lines).strip()
+
+    shortened_note = (
+        "Utdraget har kortats för läsbarhet."
+        if use_swedish
+        else "Excerpt shortened for readability."
+    )
+
+    details_label = (
+        "Visa mer källtext"
+        if use_swedish
+        else "Show more source text"
+    )
+
+    return {
+        "short_excerpt": short_excerpt,
+        "full_excerpt": excerpt_text,
+        "was_shortened": True,
+        "shortened_note": shortened_note,
+        "details_label": details_label,
+    }
+
 def get_friendly_source_area_name(filename, language="English"):
     # Converts internal Markdown file names into user-friendly source area names.
     # Normal users should not need to understand local .md file names.
@@ -3578,18 +3636,38 @@ def build_source_context(search_results, language="English", max_results=3, ques
             result.get("content", ""),
             section_name=result.get("section", ""),
             language=language,
-            max_chars=1400
+            max_chars=2800
         )
 
         if not str(excerpt or "").strip():
             excerpt = clean_source_excerpt_relaxed(
                 result.get("content", ""),
                 language=language,
-                max_chars=1400
+                max_chars=2800
             )
 
         if not str(excerpt or "").strip():
             continue
+
+        excerpt_display = split_source_excerpt_for_display(
+            excerpt,
+            language=language,
+            max_visible_lines=8
+        )
+        short_excerpt = excerpt_display["short_excerpt"]
+        full_excerpt = excerpt_display["full_excerpt"]
+
+        if excerpt_display["was_shortened"]:
+            excerpt_html = (
+                f'<div class="context-excerpt">{short_excerpt}</div>'
+                f'<div class="context-shortened-note">{excerpt_display["shortened_note"]}</div>'
+                f'<details class="context-more-details">'
+                f'<summary>{excerpt_display["details_label"]}</summary>'
+                f'<div class="context-excerpt context-full-excerpt">{full_excerpt}</div>'
+                f'</details>'
+            )
+        else:
+            excerpt_html = f'<div class="context-excerpt">{short_excerpt}</div>'
 
         friendly_source_area = get_friendly_source_area_name(result.get("filename", ""), language)
         friendly_source_type = get_friendly_source_type(result.get("filename", ""), language)
@@ -3604,7 +3682,7 @@ def build_source_context(search_results, language="English", max_results=3, ques
             f'<div class="context-row"><strong>{source_type_label}:</strong> '
             f'<span>{friendly_source_type}</span></div>'
             f'<div class="context-excerpt-label">{excerpt_label}:</div>'
-            f'<div class="context-excerpt">{excerpt}</div>'
+            f'{excerpt_html}'
             f'</div>'
         )
 
@@ -7239,6 +7317,31 @@ st.markdown(
         color: #d1d5db;
         line-height: 1.45;
         white-space: pre-line;
+    }
+
+    .context-shortened-note {
+        color: #9ca3af;
+        font-size: 0.9rem;
+        font-style: italic;
+        margin-top: 0.55rem;
+        margin-bottom: 0.35rem;
+    }
+
+    .context-more-details {
+        margin-top: 0.35rem;
+    }
+
+    .context-more-details summary {
+        color: #93c5fd;
+        cursor: pointer;
+        font-weight: 600;
+        margin-bottom: 0.45rem;
+    }
+
+    .context-full-excerpt {
+        margin-top: 0.5rem;
+        padding-top: 0.65rem;
+        border-top: 1px solid #334155;
     }
 
     .match-card {
