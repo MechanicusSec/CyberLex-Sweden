@@ -10,7 +10,7 @@ This audit does not browse the web and does not confirm whether the law is curre
 
 ## Audit Summary
 
-- Generated at: `2026-06-08 11:49:34`
+- Generated at: `2026-06-10 10:07:09`
 - Total source files checked: `13`
 - Files marked OK: `12`
 - Files needing review: `1`
@@ -176,7 +176,7 @@ No issues found.
 - Official source links found: `8`
 - Source date: `Source date: Last checked: 2026-06-08`
 - Source freshness: `Recently checked`
-- Version notes: `Version notes: Initial CyberLex Sweden educational summary based on current MCF guidance on cybersäkerhetslagen, NIS2 scope, covered sectors, size assessment, jurisdiction, registration, and essential or important entities.`
+- Version notes: `Version notes: Updated CyberLex Sweden educational summary based on current MCF guidance on cybersäkerhetslagen, NIS2 scope, covered sectors, size assessment, jurisdiction, registration, and essential or important entities. Added clearer explanations of Annex 1 and Annex 2 so users understand that they are NIS2 sector lists used during scope assessment.`
 
 No issues found.
 

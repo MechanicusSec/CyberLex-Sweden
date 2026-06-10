@@ -2,105 +2,205 @@
 
 ## Purpose
 
-This document tracks updates to the CyberLex Sweden knowledge base, source structure, source maintenance tools, source retrieval logic, source-related documentation, and final project hardening work.
+This document tracks important updates to the CyberLex Sweden knowledge base, source structure, source audit workflow, retrieval behavior, source-related documentation, and final project hardening work.
 
 The goal is to make source changes transparent and easier to review.
 
-Each entry should describe:
+CyberLex Sweden is an educational prototype. This source history does not prove that the law is currently up to date. It records changes made to the local project files.
 
-- date of update
-- source file or project file changed
-- topic
-- reason for the update
-- official sources used when relevant
-- version notes
+---
 
-This document is part of the CyberLex Sweden source governance process. It helps explain how the local knowledge base and source-grounded prototype developed over time and why specific changes were made.
+## What This File Tracks
 
-CyberLex Sweden is an educational prototype. This update history does not prove that the law is currently up to date. It records changes made to the local project files.
+This file tracks major changes to:
+
+* local knowledge base files in `data/`
+* source metadata and official source links
+* source audit tooling
+* source-related documentation
+* retrieval and source-routing behavior
+* incident-response source support
+* final source and documentation cleanup
+
+This file does not replace:
+
+| Document                          | Purpose                                                                            |
+| --------------------------------- | ---------------------------------------------------------------------------------- |
+| `docs/source_list.md`             | Lists current source files and trusted source areas.                               |
+| `docs/source_policy.md`           | Defines source rules, audit limits, refusal behavior, and source-grounding policy. |
+| `docs/source_audit_report.md`     | Shows the generated result from the latest local source audit.                     |
+| `docs/source_context_behavior.md` | Explains how source context should appear in the app.                              |
+| `docs/test_cases.md`              | Defines manual regression tests.                                                   |
+
+---
+
+## Current Source Status
+
+The current source audit checks 13 local source files.
+
+Current audit result:
+
+```text id="x6xh91"
+Files marked OK: 12
+Files needing review: 1
+```
+
+The file currently needing review is:
+
+```text id="9976pl"
+data/gdpr_imy_edpb_security_guidance.md
+```
+
+Reason:
+
+```text id="t14joj"
+Missing official source section, official source links, source metadata section, source date, and version notes.
+```
+
+This file should be fixed or removed before final hand-in if it is not used.
+
+---
+
+## Current Knowledge Base Files
+
+The current local knowledge base files are:
+
+```text id="27t4o4"
+data/cyber_incident_response_playbook.md
+data/cybercrime_dataintrang.md
+data/eu_attacks_against_information_systems.md
+data/eu_cyber_resilience_act.md
+data/eu_dora_digital_operational_resilience.md
+data/gdpr_core_principles.md
+data/gdpr_imy_edpb_security_guidance.md
+data/gdpr_personal_data_breach.md
+data/imy_gdpr_security_measures.md
+data/imy_gdpr_supervision.md
+data/nis2_cybersecurity_law.md
+data/nis2_incident_reporting.md
+data/nis2_sector_scope_guidance.md
+```
+
+---
+
+## Current Source Maintenance Files
+
+Current source maintenance and documentation files include:
+
+```text id="o355wz"
+docs/source_list.md
+docs/source_policy.md
+docs/source_history.md
+docs/source_audit_report.md
+docs/source_context_behavior.md
+docs/test_cases.md
+docs/technical_design.md
+docs/vector_search_plan.md
+scripts/source_audit.py
+scripts/add_missing_metadata.py
+.github/workflows/source-audit.yml
+```
+
+---
+
+## Current Retrieval Files
+
+Current retrieval-related project files include:
+
+```text id="fffohi"
+app/main.py
+app/vector_search.py
+```
+
+`app/main.py` contains the main Streamlit application and the experimental retrieval sidebar.
+
+`app/vector_search.py` contains the experimental rule-based retrieval module used for testing source ranking before real vector search is added.
+
+Despite the name, `app/vector_search.py` does not currently use real embeddings or a vector database.
 
 ---
 
 ## Update Log
 
-| Date | Source file or project file | Topic | Change | Version notes |
-|---|---|---|---|---|
-| 2026-05-30 | `data/gdpr_personal_data_breach.md` | GDPR personal data breach reporting | Added educational summary, IMY authority information, reporting information, official source links, source date, and disclaimer | Initial educational summary added |
-| 2026-05-30 | `data/nis2_cybersecurity_law.md` | NIS2 and Swedish Cybersecurity Act | Added educational summary, MSB authority information, cybersecurity responsibilities, incident reporting overview, official source links, source date, and disclaimer | Initial educational summary added |
-| 2026-05-30 | `data/cybercrime_dataintrang.md` | Swedish cybercrime law and dataintrång | Added educational summary, legal reference, practical explanation, penetration testing connection, official source links, source date, and disclaimer | Initial educational summary added |
-| 2026-05-30 | `data/gdpr_core_principles.md` | GDPR core principles | Added GDPR principles source for questions about data protection principles | Initial educational summary added |
-| 2026-05-30 | `data/eu_attacks_against_information_systems.md` | EU attacks against information systems | Added EU cybercrime source connected to illegal access, system interference, and data interference | Initial educational summary added |
-| 2026-05-30 | `data/eu_cyber_resilience_act.md` | EU Cyber Resilience Act | Added EU product cybersecurity source for products with digital elements | Initial educational summary added |
-| 2026-05-31 | `data/imy_gdpr_supervision.md` | IMY and GDPR supervision in Sweden | Added separate IMY source for Swedish GDPR supervision and personal data protection authority questions | Initial educational summary added |
-| 2026-05-31 | `data/nis2_incident_reporting.md` | NIS2 incident reporting in Sweden | Added dedicated source for cybersecurity incident reporting under the Swedish Cybersecurity Act and overlap with GDPR | Initial educational summary added |
-| 2026-05-31 | `data/eu_dora_digital_operational_resilience.md` | EU DORA and digital operational resilience | Added DORA source for financial-sector cybersecurity, ICT risk management, incident reporting, and third-party ICT risk | Initial educational summary added |
-| 2026-06-01 | All files in `data/` | Official source link formatting | Converted official source links from raw URL format to labeled Markdown link format | Official source link display improved |
-| 2026-06-01 | `docs/source_list.md` | Source documentation | Updated the source list to include current knowledge base files and source link formatting notes | Source documentation updated |
-| 2026-06-01 | `docs/source_policy.md` | Source rules | Added or updated rules for trusted source handling, official links, metadata, and limitations | Source governance improved |
-| 2026-06-01 | `docs/test_cases.md` | Testing documentation | Updated test cases for source matching, official links, metadata display, source confidence, and out-of-scope refusal | Test coverage improved |
-| 2026-06-01 | `docs/technical_design.md` | Technical documentation | Updated technical design to describe source routing, chunk search, citation display, metadata display, and answer structure | Technical documentation improved |
-| 2026-06-03 | `scripts/source_audit.py` | Source audit script | Added a local source audit script that checks source files for official source sections, official links, source metadata, source date, and version notes | Source maintenance tooling added |
-| 2026-06-03 | `docs/source_audit_report.md` | Source audit report | Added generated source audit report showing the status of all local source files | Source audit reporting added |
-| 2026-06-03 | `scripts/add_missing_metadata.py` | Metadata helper script | Added helper script for adding missing source metadata sections to local Markdown source files | Metadata maintenance improved |
-| 2026-06-03 | All files in `data/` | Source metadata | Added or standardized `## Source metadata` sections across knowledge base files | Metadata structure standardized |
-| 2026-06-03 | `data/gdpr_personal_data_breach.md` | GDPR breach source cleanup | Removed duplicate source sections, standardized official links, and updated source metadata | Source reviewed and cleaned |
-| 2026-06-03 | `data/imy_gdpr_supervision.md` | IMY supervision source cleanup | Removed duplicate source sections, standardized official links, and updated source metadata | Source reviewed and cleaned |
-| 2026-06-03 | `.github/workflows/source-audit.yml` | Weekly source audit workflow | Added GitHub Actions workflow to run the source audit automatically and update the audit report | Weekly source audit automation added |
-| 2026-06-03 | `docs/source_audit_report.md` | Source audit status | Confirmed that all 9 local source files are marked OK by the audit script | Source audit passed |
-| 2026-06-03 | `docs/vector_search_plan.md` | Future vector search plan | Added planning document for future vector search, embeddings, and RAG development | Future AI retrieval planning added |
-| 2026-06-03 | `app/vector_search.py` | Experimental AI search module | Added experimental search module for testing retrieval separately from the main answer system | Experimental retrieval module added |
-| 2026-06-03 | `app/main.py` | Experimental AI search sidebar | Added sidebar panel for testing experimental source retrieval without replacing the main CyberLex answer system | Experimental search visible in app |
-| 2026-06-03 | `app/vector_search.py` | Experimental ranking logic | Improved experimental ranking by boosting useful sections and penalizing weak support sections such as official source, metadata, disclaimer, and useful questions | Retrieval ranking improved |
-| 2026-06-03 | `app/vector_search.py` | DORA retrieval | Improved DORA ranking so `What is DORA?` prefers `eu_dora_digital_operational_resilience.md` and the `Key idea` section | DORA retrieval improved |
-| 2026-06-03 | `app/vector_search.py` | Unauthorized access retrieval | Improved unauthorized access ranking so English questions about illegal access prefer `cybercrime_dataintrang.md` | Cybercrime retrieval improved |
-| 2026-06-03 | `data/nis2_incident_reporting.md` | Incident assessment checklist | Added a dedicated incident assessment checklist section for ransomware, malware, cyber incidents, and suspected reportable incidents | Practical incident source improved |
-| 2026-06-03 | `app/vector_search.py` | Ransomware retrieval | Improved ransomware ranking so `What should a company do after a ransomware attack?` prefers `nis2_incident_reporting.md` and `Incident assessment checklist` | Ransomware retrieval improved |
-| 2026-06-03 | `data/nis2_incident_reporting.md` | Swedish NIS2 incident reporting support | Added Swedish summary for ransomware, malware, cyber incidents, NIS2, the Swedish Cybersecurity Act, MSB, GDPR overlap, and incident documentation | Swedish NIS2 incident support added |
-| 2026-06-03 | `data/gdpr_personal_data_breach.md` | Swedish GDPR breach support | Added Swedish summary and data breach assessment checklist for personuppgiftsincidenter, IMY, GDPR, 72-timmarsregeln, affected individuals, and breach documentation | Swedish GDPR breach support added |
-| 2026-06-03 | `app/vector_search.py` | Swedish GDPR breach retrieval | Added Swedish GDPR breach terms, boosted GDPR breach source sections, and reduced incorrect NIS2 ranking for Swedish personuppgiftsincident questions | Swedish GDPR retrieval improved |
-| 2026-06-03 | `app/vector_search.py` | Experimental search code fix | Fixed indentation and function structure in the experimental search module after retrieval logic updates | Experimental search syntax fixed |
-| 2026-06-03 | `docs/technical_design.md` | Technical documentation | Updated technical design to document experimental AI search, source audit system, metadata helper script, weekly GitHub Actions audit, source quality labels, source freshness labels, and incident assessment checklist | Technical design updated |
-| 2026-06-03 | `docs/test_cases.md` | Test documentation | Updated test cases to include experimental AI search tests, source audit tests, GitHub Actions audit test, and updated expected sections for ransomware/cyber incident questions | Test cases updated |
-| 2026-06-10 | `app/main.py` | Final app hardening | Improved CyberLex self-description routing, NIS2 annex/entity handling, Swedish source-section localization, progressive source-context display, and practical incident-response routing | Demo-readiness and field-testing improvements added |
-| 2026-06-10 | `app/main.py` | SOC-style report export | Added SOC-style Markdown incident report export for practical incident-response questions | Incident documentation support improved |
-| 2026-06-10 | `docs/test_cases.md` | Regression testing | Updated test cases for self-description routing, NIS2 scope, NIS2 annex questions, GDPR/IMY security questions, incident-response questions, SOC report export, and unsafe refusal behavior | Battle-readiness test coverage improved |
-| 2026-06-10 | `README.md` | Project documentation | Updated README with current prototype status, suggested test questions, known limitations, and clearer future improvements | Final documentation polish added |
-| 2026-06-10 | `docs/demo_script.md` | Demo documentation | Added a demo script for presenting CyberLex Sweden, showing supported questions, SOC report export, safety boundaries, limitations, and future improvements | Presentation support added |
+| Date       | File or area                                     | Topic                         | Change                                                                                                                                           | Result                                                                    |
+| ---------- | ------------------------------------------------ | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------- |
+| 2026-05-30 | `data/gdpr_personal_data_breach.md`              | GDPR breach                   | Added educational source summary, IMY reporting context, official links, source date, and disclaimer.                                            | Initial GDPR breach support added.                                        |
+| 2026-05-30 | `data/nis2_cybersecurity_law.md`                 | NIS2                          | Added educational source summary, MSB authority context, cybersecurity responsibilities, official links, source date, and disclaimer.            | Initial NIS2 support added.                                               |
+| 2026-05-30 | `data/cybercrime_dataintrang.md`                 | Dataintrång                   | Added Swedish cybercrime and unauthorized access source summary.                                                                                 | Initial cybercrime support added.                                         |
+| 2026-05-30 | `data/gdpr_core_principles.md`                   | GDPR principles               | Added source file for GDPR principles.                                                                                                           | GDPR principle questions supported.                                       |
+| 2026-05-30 | `data/eu_attacks_against_information_systems.md` | EU cybercrime                 | Added source for Directive 2013/40/EU and attacks against information systems.                                                                   | EU cybercrime support added.                                              |
+| 2026-05-30 | `data/eu_cyber_resilience_act.md`                | CRA                           | Added source for product cybersecurity and the Cyber Resilience Act.                                                                             | CRA support added.                                                        |
+| 2026-05-31 | `data/imy_gdpr_supervision.md`                   | IMY                           | Added separate source for Swedish GDPR supervision and IMY authority questions.                                                                  | IMY questions route more clearly.                                         |
+| 2026-05-31 | `data/nis2_incident_reporting.md`                | Incident reporting            | Added dedicated source for NIS2 incident reporting and overlap with GDPR.                                                                        | Incident-reporting questions improved.                                    |
+| 2026-05-31 | `data/eu_dora_digital_operational_resilience.md` | DORA                          | Added source for DORA, ICT risk, incident reporting, and third-party ICT risk.                                                                   | DORA support added.                                                       |
+| 2026-06-01 | All files in `data/`                             | Official links                | Converted raw official URLs to readable Markdown links.                                                                                          | Official source display improved.                                         |
+| 2026-06-01 | `docs/source_list.md`                            | Source documentation          | Updated source list with current knowledge base files and link formatting notes.                                                                 | Source documentation improved.                                            |
+| 2026-06-01 | `docs/source_policy.md`                          | Source rules                  | Updated rules for trusted source handling, official links, metadata, and limitations.                                                            | Source governance improved.                                               |
+| 2026-06-01 | `docs/test_cases.md`                             | Testing                       | Updated tests for source matching, official links, metadata, source confidence, and out-of-scope refusal.                                        | Source-related test coverage improved.                                    |
+| 2026-06-01 | `docs/technical_design.md`                       | Technical documentation       | Updated design notes for source routing, chunk search, citation display, metadata, and answer structure.                                         | Technical documentation aligned with app behavior.                        |
+| 2026-06-03 | `scripts/source_audit.py`                        | Source audit                  | Added script to check source files for official source sections, official links, metadata, source date, and version notes.                       | Repeatable source audit added.                                            |
+| 2026-06-03 | `docs/source_audit_report.md`                    | Source audit report           | Added generated source audit report.                                                                                                             | Local source status became visible.                                       |
+| 2026-06-03 | `scripts/add_missing_metadata.py`                | Metadata helper               | Added helper script for adding missing source metadata.                                                                                          | Metadata maintenance improved.                                            |
+| 2026-06-03 | All files in `data/`                             | Source metadata               | Added or standardized `## Source metadata` sections.                                                                                             | Source audit structure improved.                                          |
+| 2026-06-03 | `data/gdpr_personal_data_breach.md`              | GDPR cleanup                  | Removed duplicate source sections and standardized links and metadata.                                                                           | GDPR breach source passed audit.                                          |
+| 2026-06-03 | `data/imy_gdpr_supervision.md`                   | IMY cleanup                   | Removed duplicate source sections and standardized links and metadata.                                                                           | IMY supervision source passed audit.                                      |
+| 2026-06-03 | `.github/workflows/source-audit.yml`             | GitHub Actions                | Added weekly source audit workflow.                                                                                                              | Automated source-structure audit added.                                   |
+| 2026-06-03 | `docs/vector_search_plan.md`                     | Future retrieval              | Added future vector search planning document.                                                                                                    | Future semantic retrieval path documented.                                |
+| 2026-06-03 | `app/vector_search.py`                           | Experimental retrieval        | Added experimental retrieval module separate from the main answer system.                                                                        | Retrieval testing became safer.                                           |
+| 2026-06-03 | `app/main.py`                                    | Experimental sidebar          | Added sidebar for experimental retrieval testing.                                                                                                | Source retrieval could be tested in the UI.                               |
+| 2026-06-03 | `app/vector_search.py`                           | Ranking logic                 | Improved ranking by boosting useful sections and penalizing weak support sections.                                                               | Better section-level retrieval.                                           |
+| 2026-06-03 | `app/vector_search.py`                           | DORA retrieval                | Improved DORA ranking for `What is DORA?`.                                                                                                       | DORA source appears more reliably.                                        |
+| 2026-06-03 | `app/vector_search.py`                           | Unauthorized access retrieval | Improved English unauthorized access routing to Swedish dataintrång material.                                                                    | Cybercrime retrieval improved.                                            |
+| 2026-06-03 | `data/nis2_incident_reporting.md`                | Incident checklist            | Added incident assessment checklist.                                                                                                             | Ransomware and incident questions improved.                               |
+| 2026-06-03 | `app/vector_search.py`                           | Ransomware retrieval          | Improved ransomware ranking toward NIS2 incident reporting and incident checklist.                                                               | Ransomware retrieval improved.                                            |
+| 2026-06-03 | `data/nis2_incident_reporting.md`                | Swedish incident support      | Added Swedish summary for ransomware, malware, cyber incidents, NIS2, GDPR overlap, and documentation.                                           | Swedish incident support improved.                                        |
+| 2026-06-03 | `data/gdpr_personal_data_breach.md`              | Swedish GDPR breach           | Added Swedish summary and data breach assessment checklist.                                                                                      | Swedish breach questions improved.                                        |
+| 2026-06-03 | `app/vector_search.py`                           | Swedish GDPR retrieval        | Improved routing for Swedish personuppgiftsincident questions.                                                                                   | Swedish GDPR breach retrieval improved.                                   |
+| 2026-06-03 | `app/vector_search.py`                           | Code fix                      | Fixed indentation and function structure after scoring updates.                                                                                  | Experimental search compiled successfully.                                |
+| 2026-06-03 | `docs/technical_design.md`                       | Technical docs                | Documented experimental search, source audit, metadata helper, GitHub audit, source labels, and incident checklist.                              | Technical design updated.                                                 |
+| 2026-06-03 | `docs/test_cases.md`                             | Tests                         | Added tests for experimental search, audit, GitHub Actions, ransomware, cyber incidents, and Swedish GDPR retrieval.                             | Test coverage improved.                                                   |
+| 2026-06-03 | `data/nis2_cybersecurity_law.md`                 | Swedish NIS2                  | Expanded Swedish support for NIS2, cybersäkerhetslagen, risk management, covered organizations, and management responsibility.                   | Broad Swedish NIS2 questions improved.                                    |
+| 2026-06-03 | `app/vector_search.py`                           | Swedish NIS2 retrieval        | Improved routing for Swedish NIS2 and Swedish Cybersecurity Act questions.                                                                       | NIS2 law and incident reporting became easier to separate.                |
+| 2026-06-03 | `data/eu_dora_digital_operational_resilience.md` | Swedish DORA                  | Expanded DORA source with Swedish summaries, ICT risk, third-party risk, testing, and relationship notes.                                        | Swedish DORA questions improved.                                          |
+| 2026-06-03 | `data/eu_cyber_resilience_act.md`                | Swedish CRA                   | Expanded CRA source with Swedish summaries, product cybersecurity, vulnerability handling, and security updates.                                 | Swedish CRA questions improved.                                           |
+| 2026-06-03 | `app/vector_search.py`                           | CRA retrieval                 | Improved routing for Swedish digital-product cybersecurity and CRA questions.                                                                    | CRA retrieval became more accurate.                                       |
+| 2026-06-03 | `data/eu_attacks_against_information_systems.md` | EU attacks                    | Expanded EU attacks source with Swedish summary, DDoS, botnets, illegal access, interference, and misuse of tools.                               | EU cybercrime support improved.                                           |
+| 2026-06-03 | `app/vector_search.py`                           | EU attacks retrieval          | Improved routing for Swedish EU cybercrime questions.                                                                                            | EU attacks source became easier to retrieve.                              |
+| 2026-06-08 | `data/imy_gdpr_security_measures.md`             | GDPR security                 | Added IMY-focused GDPR security-measure source.                                                                                                  | MFA, encryption, and technical/organizational measure questions improved. |
+| 2026-06-08 | `data/nis2_sector_scope_guidance.md`             | NIS2 scope                    | Added NIS2 sector-scope guidance for applicability, sectors, Annex 1 and Annex 2, entity types, registration, jurisdiction, and size assessment. | NIS2 applicability questions improved.                                    |
+| 2026-06-08 | `docs/source_audit_report.md`                    | Audit status                  | Generated source audit report for 13 files.                                                                                                      | Audit showed 12 OK and 1 needing review.                                  |
+| 2026-06-10 | `app/main.py`                                    | Final hardening               | Improved self-description routing, NIS2 annex/entity handling, Swedish section localization, source context display, and incident routing.       | Demo readiness improved.                                                  |
+| 2026-06-10 | `app/main.py`                                    | SOC report export             | Added SOC-style Markdown incident report export.                                                                                                 | Incident documentation support improved.                                  |
+| 2026-06-10 | `docs/test_cases.md`                             | Regression testing            | Updated tests for self-description, NIS2 scope, NIS2 annexes, GDPR/IMY security, incident response, SOC export, and refusal behavior.            | Final regression test coverage improved.                                  |
+| 2026-06-10 | `README.md`                                      | Project documentation         | Updated README with current status, suggested test questions, known limitations, and future improvements.                                        | README aligned with current app.                                          |
+| 2026-06-10 | `docs/demo_script.md`                            | Demo documentation            | Added or improved demo script for presentation flow, SOC export, safety boundaries, limitations, and future improvements.                        | Presentation support improved.                                            |
+| 2026-06-10 | `docs/source_context_behavior.md`                | Source context                | Updated expected behavior for source context, incident filtering, Swedish labels, and fallback avoidance.                                        | Source-context behavior documented.                                       |
+| 2026-06-10 | `docs/source_list.md`                            | Source documentation          | Updated source list to reflect 13 checked files, 12 OK, and 1 needing review.                                                                    | Source list aligned with audit.                                           |
+| 2026-06-10 | `docs/source_policy.md`                          | Source policy                 | Updated source policy to reflect 13 checked files, current audit status, source history filename, and defensive cyber guidance rules.            | Source policy aligned with current state.                                 |
 
 ---
 
-## Detailed Update Notes
+## Detailed Notes
 
-## 2026-05-30 - Initial source base
+## 2026-05-30 - Initial Source Base
 
 Initial educational source summaries were added for the first CyberLex Sweden knowledge base files.
 
-The goal was to create a trusted local Markdown knowledge base that could support simple source-grounded answers about selected Swedish and EU cybersecurity law topics.
-
 Initial topics included:
 
-- GDPR personal data breach reporting
-- NIS2 and Swedish cybersecurity law
-- Swedish cybercrime law and dataintrång
-- GDPR core principles
-- EU attacks against information systems
-- EU Cyber Resilience Act
-
-Affected files:
-
-- `data/gdpr_personal_data_breach.md`
-- `data/nis2_cybersecurity_law.md`
-- `data/cybercrime_dataintrang.md`
-- `data/gdpr_core_principles.md`
-- `data/eu_attacks_against_information_systems.md`
-- `data/eu_cyber_resilience_act.md`
+* GDPR personal data breach reporting
+* NIS2 and Swedish cybersecurity law
+* Swedish cybercrime law and dataintrång
+* GDPR core principles
+* EU attacks against information systems
+* EU Cyber Resilience Act
 
 Purpose:
 
-- Build the first local source base.
-- Give the app trusted source material to search.
-- Support citation details and official source links.
-- Keep answers limited to cybersecurity law, cybercrime, GDPR, NIS2, and related EU cybersecurity topics.
+* build the first local source base
+* give the app trusted source material to search
+* support citation details and official source links
+* keep answers limited to cybersecurity law, cybercrime, GDPR, NIS2, and related EU cybersecurity topics
 
 Result:
 
@@ -108,108 +208,87 @@ CyberLex Sweden could answer basic questions using local Markdown files instead 
 
 ---
 
-## 2026-05-31 - Additional authority and incident reporting sources
+## 2026-05-31 - Additional Authority and Incident Sources
 
-Additional source files were added to improve coverage for Swedish GDPR supervision, NIS2 incident reporting, and DORA.
+Additional source files were added to improve coverage.
 
 Added files:
 
-- `data/imy_gdpr_supervision.md`
-- `data/nis2_incident_reporting.md`
-- `data/eu_dora_digital_operational_resilience.md`
+* `data/imy_gdpr_supervision.md`
+* `data/nis2_incident_reporting.md`
+* `data/eu_dora_digital_operational_resilience.md`
 
 Purpose:
 
-- Separate IMY supervision questions from GDPR breach reporting questions.
-- Add a dedicated source for NIS2 incident reporting and Swedish cybersecurity incident reporting.
-- Add DORA coverage for financial-sector ICT risk and digital operational resilience.
-- Improve source routing for different legal frameworks.
+* separate IMY supervision questions from GDPR breach reporting questions
+* add a dedicated source for NIS2 incident reporting
+* add DORA coverage for financial-sector ICT risk and digital operational resilience
+* improve source routing between different legal frameworks
 
 Result:
 
-CyberLex Sweden became better at routing questions to the correct source file instead of relying only on general keyword overlap.
+CyberLex Sweden became better at routing questions to the correct source file.
 
 ---
 
-## 2026-06-01 - Official source link formatting update
+## 2026-06-01 - Official Source Link Formatting
 
-The official source sections in the knowledge base were updated to use labeled Markdown links instead of raw URLs.
+Official source sections were updated to use labeled Markdown links instead of raw URLs.
 
-Changed format from:
+Old format:
 
-```text
+```text id="m5aa61"
 Source name
 https://source-url
 ```
 
-to:
+New format:
 
-```markdown
+```markdown id="orivw9"
 [Source name](https://source-url)
 ```
 
 Purpose:
 
-- Improve readability of official source links in the CyberLex interface.
-- Preserve all existing useful sources.
-- Make source citations easier to understand for users.
-- Prepare the project for future AI/RAG-based answer generation.
-- Make source display more consistent in Streamlit.
-
-Affected source files included:
-
-- `data/gdpr_core_principles.md`
-- `data/imy_gdpr_supervision.md`
-- `data/gdpr_personal_data_breach.md`
-- `data/nis2_cybersecurity_law.md`
-- `data/nis2_incident_reporting.md`
-- `data/cybercrime_dataintrang.md`
-- `data/eu_attacks_against_information_systems.md`
-- `data/eu_cyber_resilience_act.md`
-- `data/eu_dora_digital_operational_resilience.md`
+* improve readability
+* improve Streamlit display
+* make source citations easier to understand
+* prepare source files for future AI/RAG use
 
 Result:
 
-Official source links display as readable clickable labels inside the Streamlit app.
+Official source links display as readable clickable labels.
 
 ---
 
-## 2026-06-03 - Source audit system added
+## 2026-06-03 - Source Audit System
 
 A local source audit script was added:
 
-```text
+```text id="1rrbvv"
 scripts/source_audit.py
 ```
 
-The script checks all Markdown files in:
+The script checks Markdown files in:
 
-```text
+```text id="nzzwzk"
 data/
 ```
 
-The script checks for:
+It checks for:
 
-- official source section
-- official source links
-- source metadata section
-- source date
-- source freshness
-- version notes
+* official source section
+* official source links
+* source metadata section
+* source date
+* source freshness
+* version notes
 
-The script generates:
+It generates:
 
-```text
+```text id="l3mkt5"
 docs/source_audit_report.md
 ```
-
-Purpose:
-
-- Make source maintenance more visible.
-- Check whether local source files follow the expected structure.
-- Detect missing official links or metadata.
-- Create a repeatable source review process.
-- Provide evidence that the knowledge base is maintained.
 
 Important limitation:
 
@@ -223,29 +302,26 @@ CyberLex Sweden gained a repeatable local source audit process.
 
 ---
 
-| 2026-06-03 | `data/imy_gdpr_supervision.md` | Swedish IMY supervision support | Added Swedish summary for IMY, GDPR supervision, dataskydd, personuppgiftsskydd, tillsyn, klagomål, and cybersecurity incidents involving personal data | Swedish IMY support added |
-| 2026-06-03 | `app/vector_search.py` | Swedish IMY retrieval | Improved retrieval so Swedish questions such as `Vad är IMY?` prefer `imy_gdpr_supervision.md` instead of GDPR breach material | Swedish IMY retrieval improved |
-
-## 2026-06-03 - Metadata helper script added
+## 2026-06-03 - Metadata Helper Script
 
 A metadata helper script was added:
 
-```text
+```text id="ti5j79"
 scripts/add_missing_metadata.py
 ```
 
 Purpose:
 
-- Add missing `## Source metadata` sections to local Markdown source files.
-- Standardize source date and version notes format.
-- Help bring older source files into the same structure as newer files.
+* add missing `## Source metadata` sections to local Markdown source files
+* standardize source date and version notes format
+* help older source files follow the same structure as newer files
 
 Standard metadata format:
 
-```markdown
+```markdown id="k3t4yy"
 ## Source metadata
 
-Source date: Last checked: 2026-06-03
+Source date: Last checked: YYYY-MM-DD
 
 Version notes: Source reviewed for CyberLex Sweden educational prototype.
 ```
@@ -256,190 +332,35 @@ The knowledge base source files became easier to audit and maintain.
 
 ---
 
-## 2026-06-03 - Source metadata standardized
+## 2026-06-03 - Experimental Retrieval Module
 
-The source files in `data/` were updated to include or standardize source metadata.
+An experimental retrieval module was added:
 
-Affected files included all current source files:
-
-- `data/cybercrime_dataintrang.md`
-- `data/eu_attacks_against_information_systems.md`
-- `data/eu_cyber_resilience_act.md`
-- `data/eu_dora_digital_operational_resilience.md`
-- `data/gdpr_core_principles.md`
-- `data/gdpr_personal_data_breach.md`
-- `data/imy_gdpr_supervision.md`
-- `data/nis2_cybersecurity_law.md`
-- `data/nis2_incident_reporting.md`
-
-Purpose:
-
-- Support source freshness labels in the app.
-- Support source audit reporting.
-- Make every local source file show a stored review date.
-- Make every local source file include version notes.
-
-Result:
-
-The audit report was able to mark all 9 local source files as OK after missing metadata and duplicate source issues were corrected.
-
----
-
-## 2026-06-03 - GDPR and IMY source cleanup
-
-Two source files had duplicate source sections and inconsistent source structure:
-
-- `data/gdpr_personal_data_breach.md`
-- `data/imy_gdpr_supervision.md`
-
-They were cleaned and standardized.
-
-Changes included:
-
-- removing duplicate official source sections
-- keeping useful official source links
-- standardizing source metadata
-- updating version notes
-- keeping disclaimers
-- making the files pass the source audit
-
-Purpose:
-
-- Remove duplicated source structure.
-- Improve source audit results.
-- Make citation display more reliable.
-- Prevent official links from being missed by the audit script.
-
-Result:
-
-Both source files passed the source audit.
-
----
-
-## 2026-06-03 - Weekly GitHub Actions source audit added
-
-A GitHub Actions workflow was added:
-
-```text
-.github/workflows/source-audit.yml
-```
-
-The workflow can run manually from the GitHub Actions tab and is scheduled to run weekly.
-
-The workflow:
-
-1. checks out the repository
-2. sets up Python
-3. runs `python scripts/source_audit.py`
-4. updates `docs/source_audit_report.md`
-5. commits the updated report if changes are found
-
-Purpose:
-
-- Automate the local source audit.
-- Keep the audit report updated.
-- Show that the project has a maintenance process.
-- Make source review easier over time.
-
-Important limitation:
-
-The workflow does not verify live legal updates online.
-
-It only checks the local source file structure.
-
-Result:
-
-The GitHub Actions workflow successfully ran and produced a successful workflow result.
-
----
-
-## 2026-06-03 - Source audit report passed
-
-The generated audit report showed:
-
-```text
-Files marked OK: 9
-Files needing review: 0
-```
-
-The report file is:
-
-```text
-docs/source_audit_report.md
-```
-
-Purpose:
-
-- Confirm that all local knowledge base files had the required source structure.
-- Confirm that all source files had official links and metadata.
-- Provide a reviewable maintenance report.
-
-Result:
-
-All 9 knowledge base files were marked OK.
-
----
-
-## 2026-06-03 - Vector search plan added
-
-A planning document was added:
-
-```text
-docs/vector_search_plan.md
-```
-
-Purpose:
-
-- Describe the planned future vector search upgrade.
-- Explain why vector search is useful.
-- Explain the difference between keyword search and meaning-based search.
-- Prepare the project for embeddings and RAG later.
-
-The plan explains that future versions may use:
-
-- sentence-transformers
-- embeddings
-- ChromaDB
-- FAISS
-- RAG-based answer generation
-
-Result:
-
-CyberLex Sweden now has a documented path toward future AI-assisted retrieval.
-
----
-
-## 2026-06-03 - Experimental AI search module added
-
-An experimental search module was added:
-
-```text
+```text id="gndqxk"
 app/vector_search.py
 ```
 
 Purpose:
 
-- Test improved retrieval separately from the main app.
-- Build a safe foundation for future vector search.
-- Avoid breaking the main CyberLex answer system while testing ranking changes.
-- Compare experimental retrieval behavior with the existing main source search.
+* test improved retrieval separately from the main app
+* build a safe foundation for future vector search
+* avoid breaking the main CyberLex answer system while testing ranking changes
+* compare experimental retrieval behavior with the existing main source search
 
 Current behavior:
 
-- loads Markdown files from `data/`
-- splits them into chunks
-- cleans text
-- scores chunks
-- boosts useful sections
-- penalizes weak sections
-- applies topic-specific ranking rules
-- returns ranked source matches
+* loads Markdown files from `data/`
+* splits them into chunks
+* cleans text
+* scores chunks
+* boosts useful sections
+* penalizes weak sections
+* applies topic-specific ranking rules
+* returns ranked source matches
 
 Important limitation:
 
-Despite the file name, the current module does not yet use true vector embeddings or a vector database.
-
-It is an experimental retrieval module that prepares the project for future vector search.
+Despite the file name, the current module does not use true vector embeddings or a vector database.
 
 Result:
 
@@ -447,612 +368,104 @@ CyberLex Sweden gained a separate experimental retrieval system.
 
 ---
 
-## 2026-06-03 - Experimental AI search sidebar added
+## 2026-06-03 - Retrieval Improvements
 
-The main Streamlit app was updated to show an experimental AI search panel in the sidebar.
+The experimental retrieval logic was improved.
 
-Affected file:
+Improved areas included:
 
-```text
-app/main.py
+* DORA retrieval
+* unauthorized access retrieval
+* ransomware retrieval
+* Swedish GDPR personal data breach retrieval
+* Swedish IMY retrieval
+* Swedish NIS2 retrieval
+* Swedish CRA retrieval
+* Swedish EU attacks retrieval
+
+Purpose:
+
+* make experimental search prefer real explanatory sections
+* avoid ranking metadata or official-source sections too high
+* distinguish similar frameworks such as NIS2, GDPR, DORA, CRA, and cybercrime
+* improve Swedish retrieval support
+
+Result:
+
+The experimental search became more useful and predictable.
+
+---
+
+## 2026-06-08 - Additional Source Expansion
+
+Two important source files were added or improved:
+
+```text id="8ngzr8"
+data/imy_gdpr_security_measures.md
+data/nis2_sector_scope_guidance.md
 ```
 
 Purpose:
 
-- Let the user test experimental retrieval directly in the app.
-- Show source file, source section, and score for experimental matches.
-- Compare retrieval quality before changing the main answer system.
-- Keep the main CyberLex answer system stable while testing improvements.
+* improve GDPR/IMY questions about security measures, MFA, encryption, access control, and risk-based controls
+* improve NIS2 questions about applicability, sectors, Annex 1 and Annex 2, registration, jurisdiction, and entity classification
 
 Result:
 
-The sidebar can now test questions such as:
+CyberLex Sweden gained stronger support for common final-demo questions:
 
-```text
-What is DORA?
-```
-
-```text
-Is unauthorized access illegal in Sweden?
-```
-
-```text
-What should a company do after a ransomware attack?
+```text id="a2cobb"
+Vad säger IMY om säkerhetsåtgärder?
+Does GDPR require MFA?
+Gäller NIS2 för oss?
+Vad är bilaga 1 och bilaga 2 i NIS2?
 ```
 
 ---
 
-## 2026-06-03 - Experimental ranking improved
-
-The ranking logic in `app/vector_search.py` was improved.
-
-Changes included:
-
-- boosting useful content sections
-- penalizing weak support sections
-- adding topic-specific boosts
-- reducing false matches to weak sections
-- improving DORA retrieval
-- improving unauthorized access retrieval
-- improving ransomware retrieval
-
-Useful sections boosted include:
-
-- incident assessment checklist
-- data breach assessment checklist
-- Swedish summary
-- key idea
-- important points
-- main authority
-- reporting to IMY
-- affected individuals
-- incident reporting
-- cybersecurity connection
-- practical explanation
-- relationship with GDPR breach reporting
-- third-party ICT risk
-- legal reference
-
-Weak sections penalized include:
-
-- useful questions
-- official source
-- source metadata
-- source date
-- version notes
-- disclaimer
-- topic
-- introduction
-
-Purpose:
-
-- Make experimental search prefer real explanatory sections.
-- Stop example-question sections or source-link sections from ranking too high.
-- Improve section-level retrieval quality.
-
-Result:
-
-The experimental search became more useful and more predictable.
-
----
-
-## 2026-06-03 - DORA retrieval improved
-
-Experimental search for:
-
-```text
-What is DORA?
-```
-
-was improved.
-
-Expected top result:
-
-```text
-eu_dora_digital_operational_resilience.md
-Section: Key idea
-```
-
-Purpose:
-
-- Make DORA questions match the DORA source file.
-- Prefer explanatory DORA sections over weak support sections such as official source or useful questions.
-
-Result:
-
-DORA questions now correctly return the DORA source and the `Key idea` section near the top.
-
----
-
-## 2026-06-03 - Unauthorized access retrieval improved
-
-Experimental search for:
-
-```text
-Is unauthorized access illegal in Sweden?
-```
-
-was improved.
-
-Expected top result:
-
-```text
-cybercrime_dataintrang.md
-Section: Key idea
-```
-
-Purpose:
-
-- Make English unauthorized access questions match Swedish cybercrime material.
-- Connect the English phrase “unauthorized access” with the Swedish concept `dataintrång`.
-
-Result:
-
-Unauthorized access questions now correctly retrieve the cybercrime dataintrång source.
-
----
-
-## 2026-06-03 - NIS2 incident assessment checklist added
-
-The source file:
-
-```text
-data/nis2_incident_reporting.md
-```
-
-was updated with a new section:
-
-```text
-Incident assessment checklist
-```
-
-Purpose:
-
-- Improve answers for practical incident-response questions.
-- Give CyberLex a stronger source chunk for ransomware, malware, cyber incident, and suspected reporting questions.
-- Help the app answer what an organization should check after an incident.
-
-The checklist covers:
-
-- when the incident was discovered
-- which systems, services, accounts, or networks were affected
-- whether essential or important services were disrupted
-- whether personal data may have been affected
-- whether NIS2 or Swedish Cybersecurity Act reporting may be relevant
-- whether GDPR personal data breach notification to IMY may also be relevant
-- what containment and recovery actions were taken
-- what logs, evidence, decisions, and timelines were preserved
-- whether internal incident response procedures were followed
-
-Result:
-
-The source file became more useful for practical ransomware and cyber incident questions.
-
----
-
-## 2026-06-03 - Swedish NIS2 incident reporting summary added
-
-The source file:
-
-```text
-data/nis2_incident_reporting.md
-```
-
-was updated with a Swedish summary section.
-
-Purpose:
-
-- Improve support for Swedish questions about ransomware, malware, cyber incidents, NIS2, the Swedish Cybersecurity Act, MSB, GDPR overlap, and incident reporting.
-- Help Swedish search terms match the correct local source file.
-- Support bilingual CyberLex Sweden testing.
-- Make the source more useful for Swedish users.
-
-The Swedish summary covers:
-
-- ransomwareattacker
-- skadlig kod
-- cybersäkerhetsincidenter
-- incidentrapportering
-- NIS2
-- cybersäkerhetslagen
-- GDPR-overlap
-- personuppgiftsincidenter
-- IMY
-- MSB
-- loggar, bevis, beslut och tidslinjer
-
-Result:
-
-Swedish ransomware and cyber incident questions now match the NIS2 incident reporting source more reliably.
-
----
-
-## 2026-06-03 - Ransomware retrieval improved
-
-Experimental search for:
-
-```text
-What should a company do after a ransomware attack?
-```
-
-was improved.
-
-Expected top result:
-
-```text
-nis2_incident_reporting.md
-Section: Incident assessment checklist
-```
-
-Purpose:
-
-- Stop general ransomware questions from incorrectly ranking DORA first.
-- Route ransomware questions toward NIS2 incident reporting and the new checklist section.
-- Keep GDPR breach material relevant as supporting context when personal data may be affected.
-
-Result:
-
-The experimental search now correctly ranks the NIS2 incident assessment checklist as the top result for ransomware questions.
-
----
-
-## 2026-06-03 - Swedish GDPR personal data breach summary added
-
-The source file:
-
-```text
-data/gdpr_personal_data_breach.md
-```
-
-was updated with a Swedish summary and a data breach assessment checklist.
-
-Purpose:
-
-- Improve support for Swedish questions about personuppgiftsincidenter, IMY, GDPR, 72-timmarsregeln, dataläckor, affected individuals, and data breach assessment.
-- Help Swedish questions match the GDPR personal data breach source instead of the broader NIS2 incident source.
-- Support bilingual CyberLex Sweden testing.
-- Give CyberLex stronger source chunks for practical GDPR breach questions.
-
-The Swedish summary covers:
-
-- what a personuppgiftsincident is
-- when IMY may need to be notified
-- the 72-hour rule
-- risk to individuals' rights and freedoms
-- affected individuals
-- documentation of decisions, logs, evidence, and timeline
-- the difference between all incidents and reportable incidents
-
-Result:
-
-Swedish personal data breach questions now have better source support inside the GDPR breach file.
-
----
-
-## 2026-06-03 - Swedish GDPR breach retrieval improved
-
-The experimental search module was updated:
-
-```text
-app/vector_search.py
-```
-
-Changes included:
-
-- added Swedish GDPR breach terms to experimental retrieval
-- boosted `gdpr_personal_data_breach.md` for Swedish personuppgiftsincident questions
-- boosted `Data breach assessment checklist`
-- boosted `Swedish summary`
-- boosted `Reporting to IMY`
-- reduced incorrect NIS2 ranking for Swedish GDPR breach questions
-- fixed indentation and function structure in the experimental search code
-
-Purpose:
-
-- Make Swedish questions such as `Vad ska ett företag göra efter en personuppgiftsincident?` match the GDPR breach source.
-- Prevent broad incident wording from incorrectly ranking NIS2 above GDPR breach material.
-- Improve bilingual retrieval quality.
-
-Expected top results now include:
-
-```text
-gdpr_personal_data_breach.md
-Section: Swedish summary
-```
-
-or:
-
-```text
-gdpr_personal_data_breach.md
-Section: Data breach assessment checklist
-```
-
-Result:
-
-The experimental search now correctly retrieves the GDPR personal data breach source for Swedish personuppgiftsincident questions.
-
----
-
-## 2026-06-03 - Experimental search code structure fixed
-
-The experimental search module was corrected after adding the Swedish GDPR retrieval logic.
-
-Affected file:
-
-```text
-app/vector_search.py
-```
-
-Issue:
-
-The GDPR scoring block and `return score` line had indentation problems after editing.
-
-Purpose:
-
-- Restore valid Python syntax.
-- Keep all scoring logic inside the `score_chunk()` function.
-- Make the experimental search module compile correctly.
-- Preserve the improved Swedish GDPR retrieval logic.
-
-Verification command:
-
-```powershell
-python -m py_compile app/vector_search.py
-```
-
-Result:
-
-The experimental search module compiled successfully after the structure was corrected.
-
----
-
-## 2026-06-03 - Technical documentation updated
-
-The technical design document was updated:
-
-```text
-docs/technical_design.md
-```
-
-The update documented:
-
-- experimental AI search module
-- experimental AI search sidebar
-- experimental ranking logic
-- incident assessment checklist source design
-- source audit system
-- metadata helper script
-- weekly GitHub Actions audit
-- source quality labels
-- source freshness labels
-- current technical status
-
-Purpose:
-
-- Keep technical documentation aligned with the actual project.
-- Explain current system design clearly.
-- Separate current rule-based prototype features from planned future vector search and RAG.
-
-Result:
-
-The technical design now reflects the current CyberLex Sweden prototype.
-
----
-
-## 2026-06-03 - Test cases updated
-
-The test cases document was updated:
-
-```text
-docs/test_cases.md
-```
-
-The update added or improved test coverage for:
-
-- experimental AI search sidebar
-- DORA experimental retrieval
-- unauthorized access experimental retrieval
-- ransomware experimental retrieval
-- cyber incident experimental retrieval
-- data breach experimental retrieval
-- local source audit script
-- source audit report
-- metadata helper script
-- GitHub Actions weekly source audit
-- source audit limitation wording
-- updated ransomware expected section
-- updated cyber incident expected section
-- Swedish GDPR breach retrieval behavior
-
-Purpose:
-
-- Keep tests aligned with the current prototype.
-- Document the expected behavior of the experimental retrieval system.
-- Show that source audit and GitHub Actions workflow are part of the tested project.
-
-Result:
-
-The test cases now cover the current source-grounded app, experimental AI search, source maintenance workflow, and improved Swedish retrieval behavior.
-
----
-
-### 2026-06-03 - Swedish NIS2 cybersecurity law support
-
-Updated:
-
-- `data/nis2_cybersecurity_law.md`
-
-Change:
-
-- Added stronger Swedish support for NIS2 and the Swedish Cybersecurity Act.
-- Added Swedish explanation for `cybersäkerhetslagen`.
-- Expanded coverage for cybersecurity risk management, covered organizations, management responsibility, supply chain security, continuity, and resilience.
-- Added clearer relationship notes for NIS2, GDPR, and DORA.
-
-Reason:
-
-- CyberLex Sweden should answer broad Swedish NIS2 questions using the general NIS2 cybersecurity law source instead of the incident reporting source.
-
-Result:
-
-- Questions such as `Vad är NIS2?`, `Vad är cybersäkerhetslagen?`, and `Vad betyder riskhantering enligt NIS2?` now route correctly to `nis2_cybersecurity_law.md`.
-
----
-
-### 2026-06-03 - Swedish NIS2 retrieval improvement
-
-Updated:
-
-- `app/vector_search.py`
-
-Change:
-
-- Improved experimental retrieval for Swedish NIS2 questions.
-- Added stronger routing for broad NIS2 and Swedish Cybersecurity Act questions.
-- Boosted `nis2_cybersecurity_law.md` for general NIS2 questions.
-- Preserved ransomware and cyber incident routing to `nis2_incident_reporting.md`.
-
-Reason:
-
-- Broad NIS2 law questions and incident reporting questions need separate source handling.
-
-Result:
-
-- General NIS2 questions now prefer `nis2_cybersecurity_law.md`.
-- Ransomware questions still correctly return `nis2_incident_reporting.md` and the `Incident assessment checklist`.
-
-### 2026-06-03 - Swedish DORA source support
-
-Updated:
-
-- `data/eu_dora_digital_operational_resilience.md`
-
-Change:
-
-- Expanded the DORA source with stronger Swedish and English explanations.
-- Added a Swedish summary for DORA and digital operational resilience.
-- Added sections for ICT risk management, ICT incident reporting, third-party ICT risk, resilience testing, and relationship with NIS2 and GDPR.
-- Added a DORA assessment checklist for educational incident and compliance analysis.
-- Added Swedish useful questions for DORA-related retrieval.
-
-Reason:
-
-- CyberLex Sweden should be able to answer Swedish and English questions about DORA, digital operational resilience, ICT risk, ICT third-party risk, and financial-sector cyber incidents.
-
-Result:
-
-- Swedish DORA questions such as `Vad är DORA?`, `Vad betyder digital operativ motståndskraft?`, and `Vad betyder tredjepartsrisk enligt DORA?` now correctly return `eu_dora_digital_operational_resilience.md`.
-
-### 2026-06-03 - Swedish Cyber Resilience Act source support
-
-Updated:
-
-- `data/eu_cyber_resilience_act.md`
-- `app/vector_search.py`
-
-Change:
-
-- Expanded the Cyber Resilience Act source with stronger Swedish and English explanations.
-- Added a Swedish summary for CRA and products with digital elements.
-- Added sections for cybersecurity by design, vulnerability handling, security updates, product security, and relationship with NIS2, GDPR, and DORA.
-- Added a CRA assessment checklist for educational analysis.
-- Improved experimental retrieval so Swedish questions about digital products, product cybersecurity, security updates, and CRA route to `eu_cyber_resilience_act.md`.
-- Fixed CRA retrieval logic in `app/vector_search.py` after variable-name errors in the experimental search function.
-
-Reason:
-
-- CyberLex Sweden should distinguish between broad organizational cybersecurity duties under NIS2 and product cybersecurity requirements under the Cyber Resilience Act.
-- Swedish questions such as `Vad betyder cybersäkerhetskrav för digitala produkter?` should not route to the NIS2 source.
-
-Result:
-
-- `Vad är Cyber Resilience Act?` returns `eu_cyber_resilience_act.md`.
-- `Vad betyder cybersäkerhetskrav för digitala produkter?` returns `eu_cyber_resilience_act.md`.
-- `Vad säger CRA om säkerhetsuppdateringar?` returns `eu_cyber_resilience_act.md`.
-
-### 2026-06-03 - Swedish EU attacks against information systems support
-
-Updated:
-
-- `data/eu_attacks_against_information_systems.md`
-- `app/vector_search.py`
-
-Change:
-
-- Expanded the EU attacks against information systems source with stronger Swedish and English explanations.
-- Added clearer coverage for Directive 2013/40/EU.
-- Added sections for illegal access, illegal system interference, illegal data interference, misuse of tools, botnets, DDoS, and relationship with Swedish dataintrång.
-- Added a Swedish summary and Swedish useful questions.
-- Added a cybercrime assessment checklist for educational analysis.
-- Added official EUR-Lex source links and source metadata.
-- Improved experimental retrieval so Swedish EU cybercrime questions route to `eu_attacks_against_information_systems.md`.
-
-Reason:
-
-- CyberLex Sweden should distinguish between EU cybercrime framework questions and direct Swedish criminal-law questions.
-- Questions mentioning EU rules, attacks against information systems, DDoS, botnets, illegal access under EU rules, or Directive 2013/40/EU should prefer the EU attacks source.
-- Direct Swedish dataintrång questions should still prefer `cybercrime_dataintrang.md`.
-
-Result:
-
-- `Vad säger EU om attacker mot informationssystem?` returns `eu_attacks_against_information_systems.md`.
-- `Vad är olaglig åtkomst enligt EU-regler?` returns `eu_attacks_against_information_systems.md`.
-- `Vad säger EU om DDoS-attacker?` returns `eu_attacks_against_information_systems.md`.
-
-## 2026-06-10 - Final demo hardening and documentation polish
+## 2026-06-10 - Final Demo Hardening
 
 CyberLex Sweden was updated and reviewed for final project readiness.
 
-Affected files included:
+Affected areas included:
 
-- `app/main.py`
-- `README.md`
-- `docs/test_cases.md`
-- `docs/source_context_behavior.md`
-- `docs/demo_script.md`
-- `docs/source_history.md`
+* `app/main.py`
+* `README.md`
+* `docs/test_cases.md`
+* `docs/source_context_behavior.md`
+* `docs/demo_script.md`
+* source documentation
 
-Main app improvements:
+Main improvements:
 
-- added or improved direct CyberLex self-description routing
-- improved NIS2 sector-scope, annex, and entity-type handling
-- improved Swedish source-section localization
-- improved source-context readability with shorter default excerpts and expandable source text
-- improved practical incident-response routing for data leaks, encrypted files, suspicious links, suspicious logins, compromised accounts, ransomware, and malware
-- added SOC-style Markdown incident report export for practical incident questions
-- improved unsafe cyber misuse refusal behavior for questions about hiding logs, deleting traces, and similar misuse
-
-Documentation improvements:
-
-- updated the README with current prototype status, suggested test questions, known limitations, and future improvements
-- added a practical demo script for presenting the project
-- prepared battle-readiness test questions for colleague testing
-- updated test cases and source-context behavior documentation to match current app behavior
+* improved direct CyberLex self-description routing
+* improved NIS2 sector-scope, annex, and entity-type handling
+* improved Swedish source-section localization
+* improved source-context readability
+* improved incident-response routing
+* added SOC-style Markdown incident report export
+* improved unsafe cyber misuse refusal behavior
+* updated test cases and demo documentation
 
 Purpose:
 
-- make the project easier to test before final presentation
-- show the current prototype status clearly
-- document what the app can and cannot do
-- reduce demo risk by focusing on stable, low-risk improvements
-- avoid major architecture refactoring before the final project demonstration
+* make the project easier to test before final presentation
+* reduce demo risk
+* document current app behavior clearly
+* avoid major architecture refactoring before the final project demonstration
 
 Result:
 
-CyberLex Sweden reached a stable demo-ready state as a local educational prototype with bilingual support, source-grounded answers, expandable source context, defensive incident-response guidance, SOC-style Markdown report export, and clear safety limitations.
-
-Important limitation:
-
-The final hardening work improved local app behavior and documentation, but it does not mean that the legal content has been verified as currently up to date. Official sources and qualified professionals should still be checked for real legal, compliance, regulatory, or incident-response decisions.
+CyberLex Sweden reached a stable demo-ready state as a local educational prototype.
 
 ---
 
 ## Source Review Rules
 
-When a knowledge base source is added or updated, the following should be checked:
+When a knowledge base source is added or updated, check:
 
 1. The source file has a clear topic.
-2. The source file uses trusted legal or authority-based sources.
+2. The source file uses trusted legal, authority, or defensive cybersecurity sources.
 3. The source file includes official source links.
 4. The source file includes a source date.
 5. The source file includes version notes.
@@ -1060,143 +473,33 @@ When a knowledge base source is added or updated, the following should be checke
 7. The source file is added to `docs/source_list.md`.
 8. The source file is covered by at least one test case in `docs/test_cases.md`.
 9. The source file passes `scripts/source_audit.py`.
-10. The source file is mentioned in this source update history when the change is significant.
-11. New Swedish source sections should be tested with Swedish questions in the experimental AI search sidebar.
-12. Retrieval changes should be tested with `python -m py_compile` before commit.
+10. Significant source changes are mentioned in this source history.
+11. New Swedish source sections are tested with Swedish questions.
+12. Retrieval changes are checked with `python -m py_compile` before commit.
 
 ---
 
-## Current Knowledge Base Files
-
-The current trusted knowledge base files are:
-
-```text
-data/cybercrime_dataintrang.md
-data/eu_attacks_against_information_systems.md
-data/eu_cyber_resilience_act.md
-data/eu_dora_digital_operational_resilience.md
-data/gdpr_core_principles.md
-data/gdpr_personal_data_breach.md
-data/imy_gdpr_supervision.md
-data/nis2_cybersecurity_law.md
-data/nis2_incident_reporting.md
-```
-
----
-
-## Current Source Maintenance Files
-
-The current source maintenance and documentation files include:
-
-```text
-docs/source_list.md
-docs/source_policy.md
-docs/source_history.md
-docs/source_audit_report.md
-docs/test_cases.md
-docs/technical_design.md
-docs/vector_search_plan.md
-scripts/source_audit.py
-scripts/add_missing_metadata.py
-.github/workflows/source-audit.yml
-```
-
----
-
-## Current Retrieval Files
-
-The current retrieval-related project files include:
-
-```text
-app/main.py
-app/vector_search.py
-```
-
-`app/main.py` contains the main Streamlit application and the experimental search sidebar.
-
-`app/vector_search.py` contains the experimental retrieval module used for testing source ranking before real vector search is added.
-
----
-
-## Current Source Status
+## Current Source Audit Goal
 
 The current source audit goal is:
 
-```text
-Files marked OK: 9
+```text id="wlwbw9"
+Files marked OK: 13
 Files needing review: 0
 ```
 
-This means every local source file should have:
+The current actual audit result is:
 
-- official source links
-- source metadata
-- source date
-- version notes
-- consistent source structure
-
-This does not mean that the legal content has been verified online during the audit.
-
-It only means that the local source files pass the structural source audit.
-
----
-
-## Current Retrieval Status
-
-The current experimental retrieval goals include:
-
-```text
-What is DORA?
+```text id="94jcna"
+Files marked OK: 12
+Files needing review: 1
 ```
 
-Expected top source:
+The next source-maintenance task is to fix or remove:
 
-```text
-eu_dora_digital_operational_resilience.md
-Section: Key idea
+```text id="cg9l4z"
+data/gdpr_imy_edpb_security_guidance.md
 ```
-
-```text
-What should a company do after a ransomware attack?
-```
-
-Expected top source:
-
-```text
-nis2_incident_reporting.md
-Section: Incident assessment checklist
-```
-
-```text
-Vad ska ett företag göra efter en ransomwareattack?
-```
-
-Expected top source:
-
-```text
-nis2_incident_reporting.md
-Section: Incident assessment checklist
-```
-
-```text
-Vad ska ett företag göra efter en personuppgiftsincident?
-```
-
-Expected top source:
-
-```text
-gdpr_personal_data_breach.md
-Section: Swedish summary
-```
-
-or:
-
-```text
-gdpr_personal_data_breach.md
-Section: Data breach assessment checklist
-```
-
-These retrieval results are part of the experimental AI search sidebar and do not yet replace the main CyberLex answer system.
 
 ---
 
@@ -1204,22 +507,27 @@ These retrieval results are part of the experimental AI search sidebar and do no
 
 Future source work should focus on:
 
-- improving Swedish source summaries
-- adding more Swedish legal sources
-- adding more EU cybersecurity law sources
-- strengthening GDPR, NIS2, DORA, CRA, and cybercrime coverage
-- improving bilingual Swedish and English source coverage
-- reviewing source dates regularly
-- expanding test cases when new sources are added
-- improving source update notes when legal summaries change
-- eventually adding a workflow for checking whether official source pages have changed
+* fixing or removing source files marked `Needs review`
+* improving Swedish source summaries
+* adding more Swedish legal sources
+* adding more EU cybersecurity law sources
+* strengthening GDPR, NIS2, DORA, CRA, and incident-response coverage
+* adding more source-specific test cases
+* improving source review routines
+* adding automated link checks
+* adding source retirement rules
+* preparing source-to-chunk metadata for future vector search and RAG
 
 ---
 
-## Important Limitation
+## Final Note
 
-This update history tracks local project changes.
+CyberLex Sweden is source-grounded by design.
 
-It does not confirm that any law, regulation, authority page, or official guidance is currently up to date.
+The source history shows how the local knowledge base and retrieval behavior changed over time, but it does not prove that the legal content is currently up to date.
 
-For real legal or compliance decisions, the official source should always be checked directly.
+The source audit checks local structure and metadata.
+
+For real legal, compliance, regulatory, or incident-response decisions, official sources and qualified professionals should still be consulted.
+
+Because reality insists on being difficult, this distinction matters.
