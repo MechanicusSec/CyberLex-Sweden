@@ -40,16 +40,29 @@ It is not intended to replace official authority guidance, qualified legal advic
 
 ## Current Prototype Status
 
-CyberLex Sweden is currently a **source-grounded, rule-based prototype**.
+CyberLex Sweden is currently a **working local prototype** prepared for final project demonstration and field testing.
 
-It does not yet use:
+Current implemented status:
 
-- a full language model for answer generation
+- local Streamlit application
+- Swedish and English question handling
+- source-grounded answers from a local Markdown knowledge base
+- official source links and source metadata
+- expandable relevant source context
+- rule-based routing for supported legal, compliance, and incident-response questions
+- defensive incident-response support for selected scenarios
+- SOC-style Markdown incident report export for practical incident questions
+- refusal behavior for out-of-scope and unsafe cyber misuse questions
+- local source audit support through scripts and GitHub Actions
+
+CyberLex Sweden does not yet use:
+
+- a full language model for final answer generation
 - live web browsing
 - production vector search
 - embeddings, ChromaDB, or FAISS
 
-Vector search and RAG-style development have been investigated and documented, but implementation is paused until the local Python/package setup is stable.
+Vector search and RAG-style development have been investigated and documented, but major AI/RAG implementation is planned as future work rather than part of the current demo-ready prototype.
 
 ---
 
@@ -78,7 +91,7 @@ CyberLex Sweden currently supports:
 - gives defensive first-step guidance for selected practical incident questions
 - supports suspicious login, phishing, compromised account, data leak, ransomware, malware, and suspected intrusion scenarios
 - shows incident log templates where useful
-- creates download-ready incident summaries for documentation support
+- creates SOC-style Markdown incident reports for documentation support
 
 ### Safety boundaries
 
@@ -134,6 +147,65 @@ CyberLex Sweden currently focuses on selected Swedish and EU cybersecurity-law t
 Out-of-scope questions, such as Swedish tax law, should be refused by the application.
 
 Unsafe cyber requests, such as hacking, stealing credentials, hiding logs, deleting traces, or bypassing detection, should also be refused or redirected toward defensive guidance.
+
+---
+
+## Suggested Test Questions
+
+The following questions are useful for a quick manual test or project demonstration.
+
+### App identity
+
+```text
+What is CyberLex Sweden?
+Vad är CyberLex Sweden?
+```
+
+Expected result: CyberLex should describe the app itself and should not route these questions into the legal source knowledge base.
+
+### NIS2 and Swedish Cybersecurity Act
+
+```text
+Vad är NIS2?
+Gäller NIS2 för oss?
+Vilka sektorer omfattas av cybersäkerhetslagen?
+Vad är bilaga 1 och bilaga 2 i NIS2?
+Vad är skillnaden mellan väsentliga och viktiga verksamhetsutövare?
+```
+
+Expected result: CyberLex should answer in Swedish, show relevant NIS2 or Swedish Cybersecurity Act source context, and avoid giving a final legal classification without enough facts.
+
+### GDPR, IMY, and security measures
+
+```text
+Vad säger IMY om säkerhetsåtgärder?
+Does GDPR require MFA?
+Does GDPR require encryption?
+```
+
+Expected result: CyberLex should explain GDPR/IMY security guidance without claiming that every organization always needs the same technical measure.
+
+### Practical incident response
+
+```text
+Kunddata kan ha läckt
+Customer data may have leaked
+Our files are encrypted
+What should we do if an account is compromised?
+Någon klickade på en länk i SMS
+```
+
+Expected result: CyberLex should give defensive first-step guidance and offer a SOC-style Markdown report download where applicable.
+
+### Safety and scope boundaries
+
+```text
+How do I hide logs after hacking a system?
+Hur döljer jag loggar efter ett intrång?
+What is Swedish tax law?
+```
+
+Expected result: CyberLex should refuse unsafe cyber misuse requests and reject clearly out-of-scope non-cybersecurity-law topics.
 
 ---
 
@@ -429,6 +501,12 @@ docs/demo_checklist.md
 docs/test_run_checklist.md
 ```
 
+A focused battle-readiness test file has also been prepared for colleague testing:
+
+```text
+docs/cyberlex_battle_readiness_test_questions.md
+```
+
 Testing should include:
 
 - core legal questions
@@ -480,9 +558,9 @@ A weekly GitHub Actions workflow also exists for source auditing:
 
 ---
 
-## Important Limitations
+## Known Limitations
 
-CyberLex Sweden is an educational prototype.
+CyberLex Sweden is an educational prototype. These limitations are intentional and should be understood before using or demonstrating the app.
 
 Current limitations:
 
@@ -511,27 +589,48 @@ For serious legal, regulatory, compliance, or security decisions, official sourc
 
 Planned or possible improvements include:
 
-- improve professional formatting of downloaded incident summaries
-- add optional prepared-by, organization, date/time, and incident ID fields to downloaded summaries
-- add fuller Swedish source sections to the Markdown knowledge base
-- add copy/export features for broader non-incident answers, checklists, and sources
-- continue refining source context selection
-- continue refining incident-type source context filtering
+### Code and architecture
+
+- split the large `app/main.py` file into smaller modules after the final demo
+- move UI rendering, answer routing, source loading, source context, language utilities, safety checks, and report export into separate files
+- add automated regression tests for routing, language handling, safety refusals, and report export
+- improve maintainability without changing the current working demo behavior
+
+### Search and AI/RAG development
+
 - revisit vector search using Python 3.12 or another stable AI-compatible environment
 - add embeddings with `sentence-transformers`
 - add ChromaDB or FAISS
 - compare keyword search with vector search
 - add RAG-style answer generation
 - keep answers grounded only in trusted local source material
+- clearly separate source retrieval from answer generation
+
+### Knowledge base and source quality
+
 - add more Swedish and EU cybersecurity-law sources
+- expand Swedish and English source sections further
+- continue refining source context selection
+- continue refining incident-type source context filtering
 - improve source update workflows
+- strengthen source freshness review routines
+
+### Incident report and export features
+
+- continue improving professional formatting of downloaded SOC-style incident reports
+- add optional prepared-by, organization, date/time, and incident ID fields to downloaded reports
+- add copy/export features for broader non-incident answers, checklists, and sources
+
+### Product, legal, and deployment work
+
 - improve visual design
 - prepare public deployment documentation
 - strengthen Terms of Use, Privacy Policy, and Legal Disclaimer
-- continue bilingual Swedish and English source expansion
+- continue bilingual Swedish and English interface development
 - consider trademark and brand protection if the project develops further
 
 ---
+
 
 ## Disclaimer
 

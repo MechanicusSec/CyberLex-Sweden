@@ -1,8 +1,8 @@
-# CyberLex Sweden Source Update History
+# CyberLex Sweden Source History
 
 ## Purpose
 
-This document tracks updates to the CyberLex Sweden knowledge base, source structure, source maintenance tools, source retrieval logic, and source-related documentation.
+This document tracks updates to the CyberLex Sweden knowledge base, source structure, source maintenance tools, source retrieval logic, source-related documentation, and final project hardening work.
 
 The goal is to make source changes transparent and easier to review.
 
@@ -15,7 +15,7 @@ Each entry should describe:
 - official sources used when relevant
 - version notes
 
-This document is part of the CyberLex Sweden source governance process. It helps explain how the local knowledge base developed over time and why specific changes were made.
+This document is part of the CyberLex Sweden source governance process. It helps explain how the local knowledge base and source-grounded prototype developed over time and why specific changes were made.
 
 CyberLex Sweden is an educational prototype. This update history does not prove that the law is currently up to date. It records changes made to the local project files.
 
@@ -61,6 +61,11 @@ CyberLex Sweden is an educational prototype. This update history does not prove 
 | 2026-06-03 | `app/vector_search.py` | Experimental search code fix | Fixed indentation and function structure in the experimental search module after retrieval logic updates | Experimental search syntax fixed |
 | 2026-06-03 | `docs/technical_design.md` | Technical documentation | Updated technical design to document experimental AI search, source audit system, metadata helper script, weekly GitHub Actions audit, source quality labels, source freshness labels, and incident assessment checklist | Technical design updated |
 | 2026-06-03 | `docs/test_cases.md` | Test documentation | Updated test cases to include experimental AI search tests, source audit tests, GitHub Actions audit test, and updated expected sections for ransomware/cyber incident questions | Test cases updated |
+| 2026-06-10 | `app/main.py` | Final app hardening | Improved CyberLex self-description routing, NIS2 annex/entity handling, Swedish source-section localization, progressive source-context display, and practical incident-response routing | Demo-readiness and field-testing improvements added |
+| 2026-06-10 | `app/main.py` | SOC-style report export | Added SOC-style Markdown incident report export for practical incident-response questions | Incident documentation support improved |
+| 2026-06-10 | `docs/test_cases.md` | Regression testing | Updated test cases for self-description routing, NIS2 scope, NIS2 annex questions, GDPR/IMY security questions, incident-response questions, SOC report export, and unsafe refusal behavior | Battle-readiness test coverage improved |
+| 2026-06-10 | `README.md` | Project documentation | Updated README with current prototype status, suggested test questions, known limitations, and clearer future improvements | Final documentation polish added |
+| 2026-06-10 | `docs/demo_script.md` | Demo documentation | Added a demo script for presenting CyberLex Sweden, showing supported questions, SOC report export, safety boundaries, limitations, and future improvements | Presentation support added |
 
 ---
 
@@ -994,6 +999,54 @@ Result:
 - `Vad är olaglig åtkomst enligt EU-regler?` returns `eu_attacks_against_information_systems.md`.
 - `Vad säger EU om DDoS-attacker?` returns `eu_attacks_against_information_systems.md`.
 
+## 2026-06-10 - Final demo hardening and documentation polish
+
+CyberLex Sweden was updated and reviewed for final project readiness.
+
+Affected files included:
+
+- `app/main.py`
+- `README.md`
+- `docs/test_cases.md`
+- `docs/source_context_behavior.md`
+- `docs/demo_script.md`
+- `docs/source_history.md`
+
+Main app improvements:
+
+- added or improved direct CyberLex self-description routing
+- improved NIS2 sector-scope, annex, and entity-type handling
+- improved Swedish source-section localization
+- improved source-context readability with shorter default excerpts and expandable source text
+- improved practical incident-response routing for data leaks, encrypted files, suspicious links, suspicious logins, compromised accounts, ransomware, and malware
+- added SOC-style Markdown incident report export for practical incident questions
+- improved unsafe cyber misuse refusal behavior for questions about hiding logs, deleting traces, and similar misuse
+
+Documentation improvements:
+
+- updated the README with current prototype status, suggested test questions, known limitations, and future improvements
+- added a practical demo script for presenting the project
+- prepared battle-readiness test questions for colleague testing
+- updated test cases and source-context behavior documentation to match current app behavior
+
+Purpose:
+
+- make the project easier to test before final presentation
+- show the current prototype status clearly
+- document what the app can and cannot do
+- reduce demo risk by focusing on stable, low-risk improvements
+- avoid major architecture refactoring before the final project demonstration
+
+Result:
+
+CyberLex Sweden reached a stable demo-ready state as a local educational prototype with bilingual support, source-grounded answers, expandable source context, defensive incident-response guidance, SOC-style Markdown report export, and clear safety limitations.
+
+Important limitation:
+
+The final hardening work improved local app behavior and documentation, but it does not mean that the legal content has been verified as currently up to date. Official sources and qualified professionals should still be checked for real legal, compliance, regulatory, or incident-response decisions.
+
+---
+
 ## Source Review Rules
 
 When a knowledge base source is added or updated, the following should be checked:
@@ -1038,7 +1091,7 @@ The current source maintenance and documentation files include:
 ```text
 docs/source_list.md
 docs/source_policy.md
-docs/source_update_history.md
+docs/source_history.md
 docs/source_audit_report.md
 docs/test_cases.md
 docs/technical_design.md
