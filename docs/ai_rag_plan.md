@@ -2,331 +2,237 @@
 
 ## Purpose
 
-CyberLex Sweden is currently a source-based educational prototype that searches local Markdown knowledge files and generates rule-based answers.
+This document explains how CyberLex Sweden could later use AI and Retrieval-Augmented Generation, also called RAG.
 
-A future version could use AI to produce more natural, complete, and flexible answers. However, because the project deals with cybersecurity law, GDPR, NIS2, incident reporting, DORA, cybercrime, Cyber Resilience Act, and digital compliance, the AI must remain source-grounded.
+CyberLex Sweden is currently a local source-grounded educational prototype. It searches trusted Markdown source files and generates rule-based answers.
+
+A future AI version could make answers more natural, flexible, and easier to read. However, because CyberLex Sweden deals with cybersecurity law, GDPR, NIS2, DORA, cybercrime, incident reporting, the Cyber Resilience Act, and digital compliance, AI answers must remain source-grounded.
 
 CyberLex Sweden should not provide legal advice and should not answer legal or compliance questions without trusted source material.
 
-This document explains the planned path from the current rule-based prototype toward future vector search and Retrieval-Augmented Generation, also called RAG.
-
 ---
 
-## Current system
+## Current System
 
 The current CyberLex Sweden prototype uses:
 
-- local Markdown files in `data/`
-- keyword-based search
-- source routing
-- chunk ranking
-- topic keyword expansion
-- rule-based answer generation
-- official source links
-- source metadata
-- source quality labels
-- source freshness labels
-- source match confidence explanations
-- detected topic labels
-- practical explanation cards
-- topic-based assessment checklists
-- relevant source context
-- out-of-scope refusal
-- an experimental AI search sidebar
+* local Markdown files in `data/`
+* keyword-based search
+* source routing
+* chunk ranking
+* topic keyword expansion
+* rule-based answer generation
+* official source links
+* source metadata
+* source quality labels
+* source freshness labels
+* source confidence explanations
+* detected topic labels
+* practical explanation cards
+* topic-based assessment checklists
+* relevant source context
+* out-of-scope refusal
+* unsafe cyber refusal
+* an experimental retrieval sidebar
 
-This makes the current system simple, transparent, and suitable for an educational prototype.
+This makes the current system transparent, testable, and suitable for an educational prototype.
 
 The current app does not use:
 
-- a full language model
-- true semantic vector search
-- ChromaDB
-- FAISS
-- RAG answer generation
-- live web browsing for legal answers
+* a full language model
+* true semantic vector search
+* ChromaDB
+* FAISS
+* RAG answer generation
+* live web browsing for legal answers
 
 ---
 
-## Current source-grounded design
+## Current Source-Grounded Design
 
-CyberLex Sweden answers are currently based on selected local source files.
+CyberLex Sweden answers are based on selected local source files.
 
-Current source files include:
+The local knowledge base is stored in:
 
 ```text
-data/cybercrime_dataintrang.md
-data/eu_attacks_against_information_systems.md
-data/eu_cyber_resilience_act.md
-data/eu_dora_digital_operational_resilience.md
-data/gdpr_core_principles.md
-data/gdpr_personal_data_breach.md
-data/imy_gdpr_supervision.md
-data/nis2_cybersecurity_law.md
-data/nis2_incident_reporting.md
+data/
 ```
 
-The prototype uses these files as a controlled educational knowledge base.
+The exact current source list should be checked in:
+
+```text
+docs/source_list.md
+```
 
 Each source file should include:
 
-- topic
-- main authority or legal source
-- key idea
-- important points
-- official source links
-- source metadata
-- disclaimer
+* topic
+* main authority or legal source
+* key idea
+* important points
+* official source links
+* source metadata
+* source date
+* version notes
+* disclaimer
 
-The source audit target is:
+The current source audit checks local file structure and metadata.
+
+It does not browse the web and does not confirm live legal currency.
+
+---
+
+## Why AI Must Be Source-Grounded
+
+CyberLex Sweden works with legal, compliance, and cybersecurity topics.
+
+A normal language model may produce fluent answers that sound correct but are not supported by the project sources.
+
+That is dangerous for this type of project because users may treat confident wording as legal or compliance truth.
+
+Future AI answers must therefore follow one rule:
 
 ```text
-Files marked OK: 9
-Files needing review: 0
+No trusted source, no answer.
 ```
 
----
+The AI should not answer legal or compliance questions from general memory.
 
-## Experimental AI search sidebar
-
-CyberLex Sweden includes an experimental AI search sidebar.
-
-Despite the name, this feature is not real AI search yet.
-
-It is currently a rule-based retrieval test area using:
-
-- Markdown source chunks
-- keyword scoring
-- section boosts
-- weak-section penalties
-- topic-specific routing rules
-- source-specific boosts and penalties
-
-The purpose is to test retrieval behavior before adding real vector search.
-
-The experimental retrieval module is:
-
-```text
-app/vector_search.py
-```
-
-The module has been improved so Swedish questions route to more accurate source files.
-
-Examples:
-
-| Swedish question | Expected source |
-|---|---|
-| `Vad är NIS2?` | `nis2_cybersecurity_law.md` |
-| `Vad ska ett företag göra efter en ransomwareattack?` | `nis2_incident_reporting.md` |
-| `Vad ska ett företag göra efter en personuppgiftsincident?` | `gdpr_personal_data_breach.md` |
-| `Vad är IMY?` | `imy_gdpr_supervision.md` |
-| `Vilka är GDPR-principerna?` | `gdpr_core_principles.md` |
-| `Vad är dataintrång?` | `cybercrime_dataintrang.md` |
-| `Vad är DORA?` | `eu_dora_digital_operational_resilience.md` |
-| `Vad betyder cybersäkerhetskrav för digitala produkter?` | `eu_cyber_resilience_act.md` |
-| `Vad säger EU om attacker mot informationssystem?` | `eu_attacks_against_information_systems.md` |
+It should only answer from retrieved CyberLex source chunks.
 
 ---
 
-## Current vector search status
+## Future AI Goal
 
-Real vector search is planned but not currently active.
+A future AI version should help CyberLex Sweden:
 
-A first attempt was started by adding vector-search dependencies and creating a draft vector index builder. That attempt was paused.
+* understand more varied user wording
+* summarize source material in clearer language
+* combine multiple relevant source sections
+* explain Swedish and EU cybersecurity-law concepts more naturally
+* produce better bilingual answers
+* support practical incident-response explanations
+* preserve source traceability
+* refuse unsupported questions
+* refuse unsafe cyber misuse requests
 
-Reason:
-
-- the local environment used Python 3.14
-- some AI package dependencies were not yet smooth with that Python version
-- `tokenizers` attempted to build from source
-- the build required compiler tools such as Microsoft C++ build tools
-- this was too much risk for the current project phase
-
-Decision:
-
-Vector search will be resumed later with Python 3.12 or Python 3.11.
-
-This keeps the current working prototype stable.
-
-Tiny mercy from the machine spirit, for once.
+The AI should improve readability, not weaken trust.
 
 ---
 
-## Future AI goal
+## Recommended Architecture: RAG
 
-The future goal is to make CyberLex Sweden answer more naturally while still using trusted sources.
+The recommended future architecture is Retrieval-Augmented Generation, or RAG.
 
-A future AI version should be able to:
-
-- read the user question
-- check whether the question is in scope
-- search the CyberLex knowledge base
-- retrieve relevant source sections
-- summarize legal and compliance information in plain language
-- combine information from multiple trusted source sections
-- include citation details
-- show official source links
-- show source date and version notes
-- show an important limitation
-- refuse to answer if no trusted source is found
-- clearly state that the answer is not legal advice
-
-The AI should not answer legal or compliance questions from general memory alone.
-
----
-
-## Recommended architecture: RAG
-
-The recommended future architecture is Retrieval-Augmented Generation, also called RAG.
-
-RAG means that the system retrieves relevant trusted source material before generating an answer.
+RAG means the system retrieves trusted source material before generating an answer.
 
 The future flow should be:
 
 1. The user asks a question.
 2. CyberLex checks whether the question is within scope.
-3. CyberLex searches trusted source documents.
+3. CyberLex searches trusted local source documents.
 4. CyberLex retrieves the most relevant source sections.
-5. An AI model receives the user question and retrieved source text.
-6. The AI writes an answer based only on those sources.
-7. CyberLex displays the answer, citations, official links, source metadata, and disclaimer.
-
-The AI should not answer from general memory alone.
+5. The AI model receives the user question and retrieved source excerpts.
+6. The AI writes an answer using only those excerpts.
+7. CyberLex displays the answer, source details, official links, source metadata, and limitation notice.
+8. If the retrieved sources are not strong enough, CyberLex refuses.
 
 ---
 
-## Future answer flow
+## Future RAG Flow
 
 ```text
 User question
 ↓
-Scope check
+Scope and safety check
 ↓
 Source retrieval
 ↓
-Best matching chunks selected
+Best matching source chunks selected
 ↓
 AI receives question + trusted source excerpts
 ↓
 AI generates source-grounded answer
 ↓
-CyberLex displays answer, citations, official links, source metadata, and disclaimer
+CyberLex displays answer, citations, official links, metadata, and disclaimer
+↓
+CyberLex refuses if sources are insufficient
 ```
 
 ---
 
-## Planned vector search phase
+## What RAG Should Improve
 
-Before using an AI model for answers, CyberLex should first add real semantic retrieval.
+RAG could improve:
 
-Planned steps:
+* natural language answer quality
+* explanations of difficult legal terms
+* bilingual Swedish and English answers
+* multi-source synthesis
+* practical summaries
+* incident-response report wording
+* user-friendly explanations of source material
 
-1. Install Python 3.12 or Python 3.11.
-2. Recreate the virtual environment with the stable Python version.
-3. Add controlled AI package dependencies.
-4. Use `sentence-transformers` to create embeddings.
-5. Split Markdown source files into chunks.
-6. Store chunk text, source file, section title, and metadata.
-7. Save embeddings locally.
-8. Create a vector search test script.
-9. Compare vector search results with current rule-based retrieval.
-10. Keep the current search working until vector search is reliable.
+RAG should not be used to:
 
-Possible package choices:
+* invent legal obligations
+* replace official sources
+* replace legal advice
+* answer outside the CyberLex scope
+* answer without citations
+* provide harmful cyber instructions
+* hide uncertainty
+* pretend local sources are live-updated
+
+---
+
+## Required Retrieval Step Before RAG
+
+Before AI-generated answers are added, CyberLex Sweden should first improve retrieval.
+
+The recommended order is:
+
+1. Keep the current rule-based retrieval working.
+2. Add real vector search as a separate test mode.
+3. Compare vector search against existing manual test cases.
+4. Add minimum confidence or similarity thresholds.
+5. Confirm that source metadata stays attached to every retrieved chunk.
+6. Only then test AI-generated answers in a separate experimental mode.
+
+The detailed vector search implementation plan is stored in:
 
 ```text
-sentence-transformers
-numpy
-scikit-learn
-ChromaDB
-FAISS
+docs/vector_search_plan.md
 ```
-
-The first version can use `sentence-transformers`, `numpy`, and cosine similarity before adding ChromaDB or FAISS.
 
 ---
 
-## Vector index design
-
-A future vector index should store both embeddings and metadata.
-
-Each chunk should keep:
-
-- source file name
-- section title
-- source text
-- official source links if available
-- source date
-- version notes
-- source quality type
-- source freshness label
-
-Example metadata:
-
-```json
-{
-  "filename": "nis2_incident_reporting.md",
-  "section": "Incident assessment checklist",
-  "source_date": "Last checked: 2026-06-03",
-  "version_notes": "Source reviewed for CyberLex Sweden educational prototype."
-}
-```
-
-This is important because future AI answers must still show which source sections were used.
-
----
-
-## Retrieval comparison plan
-
-Vector search should not immediately replace the current system.
-
-The first version should compare:
-
-- current rule-based retrieval
-- experimental keyword retrieval
-- vector retrieval
-
-Example comparison questions:
-
-```text
-Vad är NIS2?
-Vad ska ett företag göra efter en ransomwareattack?
-Vad ska ett företag göra efter en personuppgiftsincident?
-Vad är IMY?
-Vad är DORA?
-Vad betyder cybersäkerhetskrav för digitala produkter?
-Vad säger EU om attacker mot informationssystem?
-```
-
-The vector search should only be connected to the main app after it performs at least as well as the current rule-based routing for supported topics.
-
----
-
-## Future RAG prompt rules
+## Future RAG Prompt Rules
 
 A future RAG prompt should include strict rules.
 
-The AI should be told:
+The AI should be instructed to:
 
-- Answer only from the provided source excerpts.
-- Do not use outside knowledge for legal claims.
-- Do not invent obligations, deadlines, authorities, or legal consequences.
-- If the sources are insufficient, say that no trusted source is available.
-- Keep the answer educational.
-- Do not provide legal advice.
-- Do not provide instructions for cybercrime or unauthorized activity.
-- Mention relevant uncertainty.
-- Preserve citation details.
-- Encourage checking official sources for serious decisions.
+* answer only from the provided source excerpts
+* not use outside knowledge for legal claims
+* not invent obligations, deadlines, authorities, or legal consequences
+* say when the sources are insufficient
+* keep the answer educational
+* state that the answer is not legal advice
+* preserve uncertainty where needed
+* cite the source chunks used
+* refuse cybercrime, evasion, credential theft, exploitation, or unauthorized access instructions
+* redirect unsafe cyber requests toward lawful defensive handling
 
 ---
 
-## Safe answer pattern
+## Safe Answer Pattern
 
 A future AI-generated answer should follow this structure:
 
 1. Short answer
 2. Plain-language explanation
-3. Relevant source context
+3. Relevant source basis
 4. Citation details
 5. Official source links
 6. Source metadata
@@ -338,75 +244,129 @@ This keeps the answer useful while preserving transparency.
 
 ---
 
-## Refusal behavior
+## Source Citation Requirements
 
-If no trusted source is found, CyberLex should refuse.
+A future RAG answer should always preserve source traceability.
 
-Example:
+For each answer, CyberLex should be able to show:
+
+* matched source file
+* matched section
+* retrieved source excerpt
+* official source links
+* source date
+* version notes
+* source quality label
+* source freshness label
+
+This is important because the user should be able to inspect where the answer came from.
+
+Legal and compliance answers should not feel like magic. Magic is just undocumented engineering with a superiority complex.
+
+---
+
+## Refusal Behavior
+
+CyberLex should refuse when no trusted source supports the answer.
+
+Example refusal pattern:
 
 ```text
-No trusted source was found for this question. CyberLex Sweden only covers selected Swedish and EU cybersecurity law, cybercrime, GDPR, NIS2, incident reporting, DORA, Cyber Resilience Act, EU attacks against information systems, data protection, and related digital compliance topics.
+No trusted source was found for this question. CyberLex Sweden only covers selected Swedish and EU cybersecurity law, cybercrime, GDPR, NIS2, incident reporting, DORA, the Cyber Resilience Act, EU attacks against information systems, data protection, and related digital compliance topics.
 ```
 
 The system should refuse:
 
-- unrelated legal areas
-- medical advice
-- investment advice
-- political trivia
-- cybercrime instructions
-- unauthorized exploitation guidance
-- credential theft
-- evasion or hiding activity
-- unsupported legal claims
+* unrelated legal areas
+* medical advice
+* investment advice
+* political trivia
+* general homework questions outside scope
+* cybercrime instructions
+* unauthorized exploitation guidance
+* credential theft
+* log hiding
+* detection bypassing
+* unsupported legal claims
 
 The system may explain cybercrime concepts in an educational and lawful context.
 
 ---
 
-## Legal and safety risks
+## Unsafe Cyber Requests
+
+Future AI mode must preserve the current safety boundary.
+
+CyberLex should refuse requests involving:
+
+* stealing credentials
+* breaking into accounts
+* exploiting systems
+* hiding traces
+* deleting logs
+* bypassing detection
+* persistence after unauthorized access
+* malware deployment
+* evasion or cover-up behavior
+
+CyberLex may redirect toward:
+
+* evidence preservation
+* incident documentation
+* responsible reporting
+* system recovery
+* defensive investigation
+* lawful security education
+
+---
+
+## Legal and Safety Risks
 
 Future AI or RAG features introduce risks.
 
-Main risks:
-
-| Risk | Explanation | Mitigation |
-|---|---|---|
-| Hallucinated legal claims | AI may invent legal obligations | Use retrieved sources only |
-| Outdated source material | Local files may become stale | Use source dates and source audit |
-| Wrong source retrieval | Similar topics may match incorrectly | Compare retrieval modes and add thresholds |
-| Overconfidence | Users may treat answers as legal advice | Keep disclaimers and limitation cards |
-| Cyber misuse | Users may ask for harmful technical instructions | Refuse harmful requests |
-| Privacy issues | Public deployment may process real questions | Add privacy policy and avoid unnecessary storage |
+| Risk                      | Explanation                                      | Mitigation                                            |
+| ------------------------- | ------------------------------------------------ | ----------------------------------------------------- |
+| Hallucinated legal claims | AI may invent obligations or deadlines           | Answer only from retrieved sources                    |
+| Outdated source material  | Local files may become stale                     | Use source dates, source history, and review routines |
+| Wrong source retrieval    | Similar topics may match incorrectly             | Compare retrieval modes and use thresholds            |
+| Overconfidence            | Users may treat answers as legal advice          | Keep limitation notices visible                       |
+| Cyber misuse              | Users may ask for harmful technical instructions | Refuse unsafe requests                                |
+| Privacy issues            | Public deployment may process real questions     | Add privacy policy and avoid unnecessary storage      |
+| Weak citations            | AI may summarize without traceability            | Require source file, section, and metadata display    |
 
 ---
 
-## Minimum requirements before RAG
+## Minimum Requirements Before RAG
 
 Before connecting a language model, CyberLex Sweden should have:
 
-- stable source files
-- clear source policy
-- source audit report
-- tested retrieval quality
-- reliable vector search or hybrid retrieval
-- refusal behavior
-- citation display
-- visible legal disclaimer
-- manual test cases
-- updated README and technical design
-- privacy and Terms of Use drafts
+* stable source files
+* clear source policy
+* current source list
+* source audit report
+* tested retrieval quality
+* reliable vector search or hybrid retrieval
+* refusal behavior
+* citation display
+* visible legal disclaimer
+* manual test cases
+* updated README
+* updated technical design
+* privacy and Terms of Use drafts
+* safe handling for unsafe cyber requests
 
-Most of these are already present in the current prototype, but vector search and RAG are not ready yet.
+Most of these are already present in the current prototype.
+
+The missing major step is reliable semantic retrieval.
 
 ---
 
-## Recommended implementation order
+## Recommended Implementation Order
 
 The future implementation order should be:
 
-1. Install Python 3.12 or 3.11.
-2. Rebuild `.venv`.
+1. Install Python 3.12 or Python 3.11.
+2. Rebuild the virtual environment.
 3. Install pinned AI dependencies.
 4. Build a vector index from `data/`.
 5. Create a command-line vector search test script.
@@ -417,17 +377,41 @@ The future implementation order should be:
 10. Add AI-generated answers only in a separate experimental mode.
 11. Keep the current rule-based answer system as a fallback.
 12. Update test cases and documentation.
-13. Only later consider production deployment.
+13. Only later consider public deployment.
 
 ---
 
-## Current decision
+## Current Decision
 
-For the current project phase, CyberLex Sweden should keep the stable rule-based prototype.
+For the current final project phase, CyberLex Sweden should keep the stable rule-based prototype.
 
-The vector search and RAG implementation should be postponed until the Python environment is prepared with Python 3.12 or Python 3.11.
+Vector search and RAG should be postponed until after final hand-in.
 
-This avoids breaking the working prototype close to final delivery.
+Reason:
+
+* the current prototype works
+* the project is close to final delivery
+* real AI dependencies may introduce setup problems
+* source-grounded behavior must not be broken
+* testing and demo stability are more important right now
+
+Future AI work should resume only after the environment is prepared with Python 3.12 or Python 3.11.
+
+---
+
+## Relationship to Other Planning Documents
+
+This document focuses on future AI and RAG behavior.
+
+Related documents:
+
+| Document                     | Purpose                                                      |
+| ---------------------------- | ------------------------------------------------------------ |
+| `docs/project_plan.md`       | Describes the school project journey and what was completed. |
+| `docs/product_roadmap.md`    | Describes the broader future product direction.              |
+| `docs/vector_search_plan.md` | Describes the technical plan for semantic/vector search.     |
+| `docs/technical_design.md`   | Describes how the current system is structured.              |
+| `docs/source_policy.md`      | Describes source rules and limitations.                      |
 
 ---
 
@@ -437,17 +421,17 @@ CyberLex Sweden is ready for future AI and RAG development, but the current vers
 
 The current system already demonstrates:
 
-- local trusted source files
-- source routing
-- rule-based retrieval
-- Swedish and English interface support
-- citation details
-- source metadata
-- official source links
-- source audit
-- source update history
-- experimental retrieval testing
+* trusted local source files
+* source routing
+* rule-based retrieval
+* Swedish and English interface support
+* citation details
+* source metadata
+* official source links
+* source audit
+* manual testing
+* unsafe-request refusal
 
 The next major AI step is real vector search.
 
-After that, CyberLex can move toward RAG-style answer generation, but only if answers remain source-grounded, cautious, and transparent.
+After that, CyberLex can move toward RAG-style answer generation, but only if answers remain source-grounded, cautious, transparent, and limited to trusted source material.
