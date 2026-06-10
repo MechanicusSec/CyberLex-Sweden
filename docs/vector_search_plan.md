@@ -6,28 +6,30 @@ This document explains the planned vector search upgrade for CyberLex Sweden.
 
 CyberLex Sweden currently uses local Markdown files, source routing, keyword scoring, topic expansion, rule-based answers, and transparent source display.
 
-The next AI improvement is to add real vector search so the app can match questions by meaning, not only by exact keywords.
+The next retrieval improvement is real vector search. Vector search would help the app match questions by meaning, not only by exact keywords.
 
-The goal is not to replace source grounding. The goal is to improve retrieval while keeping CyberLex Sweden transparent, cautious, and limited to trusted local source material.
+The goal is not to replace source grounding.
+
+The goal is to improve retrieval while keeping CyberLex Sweden transparent, cautious, and limited to trusted local source material.
 
 ---
 
-## Current search method
+## Current Search Method
 
 CyberLex Sweden currently uses rule-based local search.
 
 The current search system:
 
-- loads Markdown files from the `data/` folder
-- splits the files into source chunks
-- cleans the user question into searchable words
-- expands important terms with related cybersecurity and legal words
-- scores source chunks based on word overlap and section relevance
-- routes clear questions to the most relevant source file
-- applies topic-specific score boosts and penalties
-- returns the best source match and supporting source context
+* loads Markdown files from the `data/` folder
+* splits files into source chunks
+* cleans the user question into searchable words
+* expands important terms with related cybersecurity and legal terms
+* scores source chunks based on word overlap and section relevance
+* routes clear questions to the most relevant source file
+* applies topic-specific score boosts and penalties
+* returns the best source match and supporting source context
 
-This works well for clear questions, but it still depends heavily on keywords, manually tuned scoring rules, and known question patterns.
+This works well for clear supported questions, but it still depends on keywords, manually tuned scoring rules, and known question patterns.
 
 The current experimental retrieval module is:
 
@@ -35,47 +37,57 @@ The current experimental retrieval module is:
 app/vector_search.py
 ```
 
-Despite the file name, it is not true vector search yet. It does not currently use embeddings, ChromaDB, FAISS, or semantic similarity.
+Despite the file name, this is not true vector search yet.
+
+It does not currently use:
+
+* embeddings
+* ChromaDB
+* FAISS
+* semantic similarity
 
 It is better described as an experimental rule-based retrieval engine.
 
----
-
-## Current retrieval strengths
-
-The current rule-based retrieval has been improved significantly.
-
-It can now correctly route many Swedish and English questions to the right local source file.
-
-Current Swedish examples:
-
-| Topic | Example question | Expected source |
-|---|---|---|
-| NIS2 law | `Vad är NIS2?` | `nis2_cybersecurity_law.md` |
-| Swedish Cybersecurity Act | `Vad är cybersäkerhetslagen?` | `nis2_cybersecurity_law.md` |
-| NIS2 risk management | `Vad betyder riskhantering enligt NIS2?` | `nis2_cybersecurity_law.md` |
-| Ransomware incident | `Vad ska ett företag göra efter en ransomwareattack?` | `nis2_incident_reporting.md` |
-| GDPR breach | `Vad ska ett företag göra efter en personuppgiftsincident?` | `gdpr_personal_data_breach.md` |
-| IMY | `Vad är IMY?` | `imy_gdpr_supervision.md` |
-| GDPR principles | `Vilka är GDPR-principerna?` | `gdpr_core_principles.md` |
-| Dataintrång | `Vad är dataintrång?` | `cybercrime_dataintrang.md` |
-| DORA | `Vad är DORA?` | `eu_dora_digital_operational_resilience.md` |
-| Cyber Resilience Act | `Vad betyder cybersäkerhetskrav för digitala produkter?` | `eu_cyber_resilience_act.md` |
-| EU attacks | `Vad säger EU om attacker mot informationssystem?` | `eu_attacks_against_information_systems.md` |
-| EU illegal access | `Vad är olaglig åtkomst enligt EU-regler?` | `eu_attacks_against_information_systems.md` |
-| EU DDoS rules | `Vad säger EU om DDoS-attacker?` | `eu_attacks_against_information_systems.md` |
-
-This is good enough for the current prototype stage.
-
-However, this accuracy depends on many hand-written rules. A future system should rely less on manual keyword patches and more on semantic retrieval.
+The name is slightly misleading, which is what happens when optimism writes filenames before reality files a complaint.
 
 ---
 
-## Why vector search is useful
+## Current Retrieval Strengths
 
-Vector search helps CyberLex Sweden compare meaning instead of only words.
+The current rule-based retrieval has improved enough for the current prototype stage.
 
-For example, these questions may mean similar things even though they use different wording:
+It can route many Swedish and English questions to the right local source file.
+
+Current supported examples include:
+
+| Topic                | Example question                                                  | Expected source                                                |
+| -------------------- | ----------------------------------------------------------------- | -------------------------------------------------------------- |
+| NIS2 law             | `Vad är NIS2?`                                                    | `nis2_cybersecurity_law.md`                                    |
+| NIS2 scope           | `Gäller NIS2 för oss?`                                            | `nis2_sector_scope_guidance.md`                                |
+| NIS2 annexes         | `Vad är bilaga 1 och bilaga 2 i NIS2?`                            | `nis2_sector_scope_guidance.md`                                |
+| GDPR breach          | `When must a personal data breach be reported?`                   | `gdpr_personal_data_breach.md`                                 |
+| GDPR/IMY security    | `Does GDPR require MFA?`                                          | GDPR/IMY security guidance                                     |
+| IMY                  | `Vad är IMY?`                                                     | `imy_gdpr_supervision.md`                                      |
+| Dataintrång          | `Vad är dataintrång?`                                             | `cybercrime_dataintrang.md`                                    |
+| DORA                 | `What is DORA?`                                                   | `eu_dora_digital_operational_resilience.md`                    |
+| Cyber Resilience Act | `What is the Cyber Resilience Act?`                               | `eu_cyber_resilience_act.md`                                   |
+| EU attacks           | `What does EU law say about attacks against information systems?` | `eu_attacks_against_information_systems.md`                    |
+| Suspicious email     | `What should we do if we receive a suspicious email?`             | `cyber_incident_response_playbook.md`                          |
+| Suspicious login     | `Vad gör vi om vi ser misstänkt inloggning?`                      | `cyber_incident_response_playbook.md`                          |
+| Encrypted files      | `Our files are encrypted`                                         | `cyber_incident_response_playbook.md`                          |
+| Data leak            | `Customer data may have leaked`                                   | `cyber_incident_response_playbook.md` and GDPR breach material |
+
+This is good enough for the final project prototype.
+
+Future vector search should improve retrieval without breaking the current stable behavior.
+
+---
+
+## Why Vector Search Is Useful
+
+Vector search helps compare meaning instead of only matching words.
+
+For example, these questions may mean similar things even though the wording differs:
 
 ```text
 What should a company do after a ransomware attack?
@@ -91,57 +103,66 @@ Vad ska ett företag kontrollera efter att skadlig kod låst viktiga system?
 
 A keyword system may fail if the exact words do not appear in the source file.
 
-A vector search system can represent both the question and source chunks as embeddings. Embeddings are numeric representations of meaning. Similar meanings should end up close to each other in vector space.
+A vector search system can represent both the question and source chunks as embeddings.
 
-In practical terms, vector search should help CyberLex find the correct source section even when the user writes the question in a different way.
+Embeddings are numeric representations of meaning.
+
+Source chunks with similar meaning to the question should appear higher in the search results.
+
+In practical terms, vector search should help CyberLex Sweden find the correct source section even when the user writes the question differently.
 
 ---
 
-## What embeddings are
+## What Embeddings Are
 
 Embeddings are lists of numbers that represent the meaning of text.
 
-A sentence-transformer model can convert a question or source chunk into a vector.
+A sentence-transformer model can convert text into an embedding vector.
 
 Example:
 
 ```text
-Question → embedding vector
+User question → embedding vector
 Source chunk → embedding vector
 ```
 
-Then the system compares the question vector with the source chunk vectors.
+The system compares the question vector with source chunk vectors.
 
 Chunks with similar meaning should receive higher similarity scores.
 
-This allows CyberLex Sweden to search by semantic meaning instead of exact word matching.
+This allows CyberLex Sweden to search by semantic meaning instead of exact word overlap.
 
 That is the theory. In practice, computers still enjoy disappointing us, so vector search must be tested carefully.
 
 ---
 
-## Planned vector search architecture
+## Planned Vector Search Architecture
 
-The planned vector search architecture should use the same local Markdown knowledge base.
+The planned vector search system should use the same local Markdown knowledge base.
 
 The proposed flow:
 
 1. Load Markdown files from `data/`.
 2. Split each file into source chunks by heading.
-3. Store metadata for each chunk:
-   - source filename
-   - section heading
-   - chunk text
-   - official source links
-   - source date
-   - version notes
+3. Store metadata for each chunk.
 4. Generate embeddings for each chunk.
 5. Store embeddings in a local vector index.
 6. Convert the user question into an embedding.
 7. Search for the most similar source chunks.
-8. Return ranked results with citations and metadata.
+8. Return ranked results with source metadata.
 9. Compare vector results with the current rule-based search results.
 10. Use source-grounded results only.
+
+Each chunk should keep:
+
+* source filename
+* section heading
+* chunk text
+* official source links where available
+* source date
+* version notes
+* source quality label
+* source freshness label
 
 The first version should be separate from the main answer system.
 
@@ -149,37 +170,92 @@ It should be used for testing before it affects normal CyberLex answers.
 
 ---
 
-## Recommended implementation phases
+## Recommended Implementation Phases
 
-### Phase 1: Keep current rule-based retrieval stable
+## Phase 1: Keep Current Retrieval Stable
 
-Status: Completed for the current prototype phase.
+### Status
 
-The current retrieval system should remain available as a baseline.
+Completed for the current prototype phase.
 
-It already supports source routing for:
+The current rule-based search should remain available as a baseline.
 
-- NIS2
-- GDPR breach
-- IMY
-- GDPR principles
-- dataintrång
-- DORA
-- Cyber Resilience Act
-- EU attacks against information systems
-- ransomware and cyber incidents
-
-This system should not be deleted when vector search is added.
+It should not be deleted when vector search is added.
 
 It should be used for comparison.
 
+### Reason
+
+The current system works for the final project demo.
+
+Vector search should be introduced carefully after hand-in, not in a frantic ritual ten minutes before the examiner appears.
+
 ---
 
-### Phase 2: Add vector search dependencies
+## Phase 2: Prepare a Stable Python Environment
 
-Add dependencies carefully.
+### Status
 
-Possible packages:
+Future work.
+
+Real vector search should be added using a stable Python version.
+
+Recommended versions:
+
+```text
+Python 3.12
+Python 3.11
+```
+
+Reason:
+
+The earlier vector-search attempt was paused because the local environment used Python 3.14, which caused dependency compatibility problems with AI packages.
+
+Future setup should avoid that.
+
+### Suggested Commands
+
+Check Python version:
+
+```powershell
+python --version
+```
+
+This command shows which Python version is currently used.
+
+Create a new virtual environment with a stable Python version:
+
+```powershell
+py -3.12 -m venv .venv
+```
+
+This command creates a new virtual environment using Python 3.12.
+
+Activate the virtual environment:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+This command activates the local Python environment for the project.
+
+Upgrade pip:
+
+```powershell
+python -m pip install --upgrade pip
+```
+
+This command updates Python's package installer.
+
+---
+
+## Phase 3: Add Vector Search Dependencies
+
+### Status
+
+Future work.
+
+Possible package options:
 
 ```text
 sentence-transformers
@@ -201,15 +277,29 @@ sentence-transformers + ChromaDB
 
 Reason:
 
-- ChromaDB is easier to inspect and use locally.
-- It can store documents, metadata, and embeddings.
-- It is beginner-friendly for a local prototype.
+* ChromaDB is easier to inspect locally.
+* It can store documents, metadata, and embeddings.
+* It is beginner-friendly for a local prototype.
 
 FAISS can be considered later if the project needs a lighter or faster similarity index.
 
+### Example Install Command
+
+```powershell
+python -m pip install sentence-transformers chromadb
+```
+
+This command installs the embedding library and ChromaDB vector database.
+
+Do not add this immediately before final hand-in unless there is enough time to test and recover from dependency problems.
+
 ---
 
-### Phase 3: Create a separate vector index script
+## Phase 4: Create a Separate Vector Index Script
+
+### Status
+
+Future work.
 
 Create a new script:
 
@@ -219,32 +309,31 @@ scripts/build_vector_index.py
 
 Purpose:
 
-- load Markdown files from `data/`
-- split them into chunks
-- generate embeddings
-- save them in a local vector database or index
+* load Markdown files from `data/`
+* split them into chunks
+* generate embeddings
+* save them in a local vector database or index
+* print how many chunks were indexed
 
 This script should not run every time the Streamlit app starts.
 
-It should be run manually when the source files change.
+It should be run manually when source files change.
 
-Example command:
+### Example Command
 
 ```powershell
 python scripts/build_vector_index.py
 ```
 
-What the command should do:
-
-- read all trusted Markdown files
-- create source chunks
-- generate embeddings
-- store the index locally
-- print how many chunks were indexed
+This command should build or rebuild the local vector index from the trusted Markdown source files.
 
 ---
 
-### Phase 4: Create a separate vector search module
+## Phase 5: Create a Separate Semantic Search Module
+
+### Status
+
+Future work.
 
 Create a new module:
 
@@ -254,10 +343,10 @@ app/semantic_search.py
 
 Purpose:
 
-- load the saved vector index
-- embed the user question
-- retrieve similar chunks
-- return ranked results with metadata
+* load the saved vector index
+* embed the user question
+* retrieve similar chunks
+* return ranked results with metadata
 
 This should be separate from:
 
@@ -267,15 +356,17 @@ app/vector_search.py
 
 Reason:
 
-- `app/vector_search.py` currently contains the rule-based experimental search.
-- `app/semantic_search.py` should contain the new embedding-based search.
-- Keeping them separate makes testing safer.
-
-The current file name `vector_search.py` is a bit misleading, because it does not yet use vectors. That is tragic, but fixable.
+* `app/vector_search.py` currently contains rule-based experimental retrieval.
+* `app/semantic_search.py` should contain new embedding-based search.
+* Keeping them separate makes testing safer.
 
 ---
 
-### Phase 5: Add retrieval comparison mode
+## Phase 6: Add Retrieval Comparison Mode
+
+### Status
+
+Future work.
 
 The Streamlit sidebar should eventually include a comparison mode.
 
@@ -297,33 +388,25 @@ Vector result:
 
 This helps compare whether vector search improves retrieval.
 
-The comparison should be tested using the existing manual test cases in:
+The comparison should be tested using:
 
 ```text
 docs/test_cases.md
 ```
 
-Important test topics:
-
-- Swedish NIS2 questions
-- Swedish ransomware questions
-- Swedish GDPR breach questions
-- Swedish IMY questions
-- Swedish GDPR principle questions
-- Swedish dataintrång questions
-- Swedish DORA questions
-- Swedish CRA questions
-- Swedish EU attacks questions
+Do not connect vector search to the main CyberLex answer system until it performs at least as well as the current search for supported questions.
 
 ---
 
-### Phase 6: Add minimum similarity thresholds
+## Phase 7: Add Similarity Thresholds
+
+### Status
+
+Future work.
 
 Vector search should not always return an answer.
 
 If the best similarity score is too low, CyberLex Sweden should refuse to answer or say that no trusted source was found.
-
-This is important because vector search can return something that is vaguely similar but legally wrong.
 
 Possible rule:
 
@@ -333,38 +416,52 @@ If best vector similarity is below threshold, do not generate an answer.
 
 The exact threshold should be tested.
 
-The threshold may need to be different depending on the embedding model and vector database.
+The threshold may need to change depending on the embedding model and vector database.
+
+### Why This Matters
+
+Vector search can return something that is vaguely similar but legally wrong.
+
+That is worse than a refusal because it looks helpful while quietly betraying the user. A very AI-flavored kind of treason.
 
 ---
 
-### Phase 7: Keep source grounding mandatory
+## Phase 8: Preserve Source Grounding
+
+### Status
+
+Mandatory requirement.
 
 Vector search must not remove the source-grounding rules.
 
-Every answer must still show:
+Every answer should still show:
 
-- matched source file
-- matched section
-- official source links
-- source metadata
-- source freshness
-- source quality label
-- source confidence or similarity explanation
-- important legal limitation
+* matched source file
+* matched section
+* official source links
+* source metadata
+* source freshness label
+* source quality label
+* source confidence or similarity explanation
+* important legal limitation
 
-CyberLex Sweden should never answer legal or compliance questions from general model memory.
+CyberLex Sweden should never answer legal or compliance questions from general AI memory.
 
 The source material must remain visible.
 
 ---
 
-### Phase 8: Later RAG answer generation
+## Phase 9: Later RAG Answer Generation
+
+### Status
+
+Future work after vector search.
 
 Only after vector retrieval is tested should CyberLex Sweden add RAG-style answer generation.
 
 RAG means Retrieval-Augmented Generation.
 
-The idea:
+The future RAG flow:
 
 1. Retrieve trusted source chunks.
 2. Give those chunks to a language model as context.
@@ -372,30 +469,27 @@ The idea:
 4. Show citations and limitations.
 5. Refuse unsupported questions.
 
-The language model should not be allowed to invent legal claims.
+The language model should not invent legal claims.
 
-A future RAG answer should follow this pattern:
+The detailed AI/RAG plan is stored in:
 
-1. Short answer
-2. Practical explanation
-3. Matched source citation
-4. Important limitation
-5. Official source links
-6. Optional checklist
+```text
+docs/ai_rag_plan.md
+```
 
 ---
 
-## ChromaDB option
+## ChromaDB Option
 
 ChromaDB is a local vector database.
 
 It can store:
 
-- document chunks
-- embeddings
-- metadata
-- source filenames
-- section names
+* document chunks
+* embeddings
+* metadata
+* source filenames
+* section names
 
 Possible local folder:
 
@@ -403,7 +497,7 @@ Possible local folder:
 .vector_store/chroma/
 ```
 
-This folder should probably not be committed to GitHub if it becomes large or machine-specific.
+This folder should normally not be committed to GitHub if it becomes large or machine-specific.
 
 The `.gitignore` file may need to include:
 
@@ -415,15 +509,15 @@ ChromaDB is a good first choice for CyberLex Sweden because it is easier to insp
 
 ---
 
-## FAISS option
+## FAISS Option
 
 FAISS is a vector similarity search library.
 
 It can be fast and lightweight.
 
-However, FAISS usually requires a little more manual metadata handling.
+However, FAISS usually requires more manual metadata handling.
 
-If FAISS is used, CyberLex Sweden would need to store metadata separately, such as in:
+If FAISS is used, CyberLex Sweden would need to store metadata separately, for example:
 
 ```text
 .vector_store/metadata.json
@@ -432,11 +526,11 @@ If FAISS is used, CyberLex Sweden would need to store metadata separately, such 
 
 FAISS may be useful later if the project needs simpler local files or faster search.
 
-For the first prototype, ChromaDB is probably easier.
+For the first vector prototype, ChromaDB is probably easier.
 
 ---
 
-## Recommended embedding model
+## Recommended Embedding Model
 
 A practical first embedding model could be:
 
@@ -446,10 +540,10 @@ sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
 
 Reason:
 
-- supports multiple languages
-- useful for Swedish and English questions
-- relatively lightweight
-- works locally
+* supports multiple languages
+* useful for Swedish and English questions
+* relatively lightweight
+* works locally
 
 Another possible model:
 
@@ -459,26 +553,32 @@ intfloat/multilingual-e5-small
 
 Reason:
 
-- multilingual
-- strong retrieval performance for many tasks
-- still manageable for a local prototype
+* multilingual
+* strong retrieval performance for many tasks
+* still manageable for a local prototype
 
-The model should be tested with Swedish and English CyberLex questions.
+The selected model should be tested with Swedish and English CyberLex questions.
 
-The selected model should be documented in this file and in the technical design document if used.
+If a model is selected, it should be documented in:
+
+```text
+docs/technical_design.md
+```
 
 ---
 
-## Test questions for vector search
+## Test Questions for Vector Search
 
-Vector search should be tested against the existing known-good retrieval questions.
+Vector search should be tested against existing known-good retrieval questions.
 
-### Swedish test questions
+### Swedish Test Questions
 
 ```text
 Vad är NIS2?
 Vad är cybersäkerhetslagen?
-Vad betyder riskhantering enligt NIS2?
+Gäller NIS2 för oss?
+Vad är bilaga 1 och bilaga 2 i NIS2?
+Vad säger IMY om säkerhetsåtgärder?
 Vad ska ett företag göra efter en ransomwareattack?
 Vad ska ett företag göra efter en personuppgiftsincident?
 Vad är IMY?
@@ -497,11 +597,14 @@ Vad är olaglig åtkomst enligt EU-regler?
 Vad säger EU om DDoS-attacker?
 ```
 
-### English test questions
+### English Test Questions
 
 ```text
 What is NIS2?
+Does NIS2 apply to us?
+What are Annex 1 and Annex 2 in NIS2?
 What is the Swedish Cybersecurity Act?
+Does GDPR require MFA?
 What should a company do after a ransomware attack?
 When must a personal data breach be reported?
 What is IMY?
@@ -516,35 +619,49 @@ What is illegal access under EU cybercrime rules?
 What does EU law say about DDoS attacks?
 ```
 
+### Incident-Response Test Questions
+
+```text
+What should we do if we receive a suspicious email?
+Någon klickade på en länk i SMS
+Vad gör vi om vi ser misstänkt inloggning?
+What should we do if an account is compromised?
+Customer data may have leaked
+Kunddata kan ha läckt
+Our files are encrypted
+Våra filer har krypterats
+```
+
 ---
 
-## Evaluation criteria
+## Evaluation Criteria
 
 Vector search should be judged by whether it improves retrieval without weakening safety.
 
 Good vector search should:
 
-- return the correct source file
-- return a useful section, not only an official source or metadata section
-- work in both Swedish and English
-- avoid confusing NIS2, DORA, GDPR, CRA, and cybercrime topics
-- refuse or warn when the match is weak
-- preserve citations and source metadata
-- not answer from unsupported material
+* return the correct source file
+* return a useful section, not only metadata or official-source sections
+* work in both Swedish and English
+* avoid confusing NIS2, DORA, GDPR, CRA, and cybercrime topics
+* identify practical incident-response source sections
+* refuse or warn when the match is weak
+* preserve citations and source metadata
+* avoid answering from unsupported material
 
 Bad vector search would:
 
-- return vague but wrong source chunks
-- confuse similar legal frameworks
-- hide source traceability
-- answer outside the trusted knowledge base
-- make the app look more intelligent while becoming less reliable
+* return vague but wrong source chunks
+* confuse similar legal frameworks
+* hide source traceability
+* answer outside the trusted knowledge base
+* make the app look more intelligent while becoming less reliable
 
 That last one is the classic AI trap: more confidence, less truth. Very fashionable, very cursed.
 
 ---
 
-## Safety requirements
+## Safety Requirements
 
 CyberLex Sweden deals with legal and cybersecurity topics.
 
@@ -552,23 +669,23 @@ The vector search upgrade must preserve safety rules.
 
 Requirements:
 
-- refuse out-of-scope questions
-- refuse harmful cybercrime instructions
-- keep legal disclaimer visible
-- show official sources
-- show source metadata
-- show source freshness
-- keep answers educational
-- avoid claiming legal certainty
-- avoid giving exploit instructions
-- avoid replacing legal advice
-- avoid answering without trusted source support
+* refuse out-of-scope questions
+* refuse harmful cybercrime instructions
+* keep legal disclaimer visible
+* show official sources
+* show source metadata
+* show source freshness
+* keep answers educational
+* avoid claiming legal certainty
+* avoid giving exploit instructions
+* avoid replacing legal advice
+* avoid answering without trusted source support
 
 Vector search should improve retrieval, not expand the system beyond its intended scope.
 
 ---
 
-## Files likely to be added
+## Files Likely to Be Added
 
 Potential new files:
 
@@ -599,22 +716,70 @@ The generated vector store should normally not be committed to GitHub unless the
 
 ---
 
-## Suggested first implementation step
+## Suggested First Implementation Step
 
 The first implementation step should be small and reversible.
 
 Recommended first step:
 
-1. Add `sentence-transformers` and `chromadb` to `requirements.txt`.
-2. Create `scripts/build_vector_index.py`.
-3. Build a local ChromaDB index from the Markdown chunks.
-4. Create `app/semantic_search.py`.
-5. Test semantic search from the terminal.
-6. Only after terminal testing works, add a Streamlit sidebar comparison.
+1. Install Python 3.12 or Python 3.11.
+2. Create a clean virtual environment.
+3. Add `sentence-transformers` and `chromadb`.
+4. Create `scripts/build_vector_index.py`.
+5. Build a local ChromaDB index from Markdown chunks.
+6. Create `app/semantic_search.py`.
+7. Test semantic search from the terminal.
+8. Only after terminal testing works, add a Streamlit sidebar comparison.
 
 Do not connect vector search to the main answer system immediately.
 
 The main answer system should remain stable until semantic retrieval has been tested.
+
+---
+
+## Suggested Git Ignore Update
+
+If vector search creates local index files, update `.gitignore` with:
+
+```text
+.vector_store/
+```
+
+This prevents large or machine-specific generated files from being committed by accident.
+
+If the project later needs a small committed demo index, that should be a deliberate decision and documented clearly.
+
+---
+
+## Relationship to Other Planning Documents
+
+This document focuses on the technical vector search upgrade.
+
+Related documents:
+
+| Document                   | Purpose                                                  |
+| -------------------------- | -------------------------------------------------------- |
+| `docs/project_plan.md`     | Describes the school project journey and completed work. |
+| `docs/product_roadmap.md`  | Describes broader future product direction.              |
+| `docs/ai_rag_plan.md`      | Describes future AI/RAG behavior and safety rules.       |
+| `docs/technical_design.md` | Describes the current technical system.                  |
+| `docs/test_cases.md`       | Provides retrieval and behavior tests.                   |
+
+---
+
+## Current Decision
+
+For the current final project phase, vector search should remain postponed.
+
+Reason:
+
+* the current rule-based prototype is stable
+* final delivery is close
+* vector dependencies may create setup problems
+* current retrieval is good enough for supported demo routes
+* breaking the working app before hand-in would be a spectacularly human mistake
+
+Vector search should be resumed later with a stable Python version and tested as a separate mode before it affects normal answers.
 
 ---
 
@@ -624,10 +789,12 @@ CyberLex Sweden currently has a strong rule-based retrieval prototype with impro
 
 The next major technical upgrade is real vector search.
 
-Vector search should help the app retrieve source sections by meaning, but it must remain source-grounded, transparent, and cautious.
+Vector search should help the app retrieve source sections by meaning, but it must remain source-grounded, transparent, cautious, and limited to trusted local source material.
 
-The recommended approach is to add vector search as a separate test mode first, compare it against the current rule-based retrieval, and only later connect it to the main answer system.
+The recommended approach is to add vector search as a separate test mode first, compare it against current retrieval, and only later connect it to the main answer system.
 
-Better retrieval first. RAG later.
+Better retrieval first.
+
+RAG later.
 
 Better sources always.

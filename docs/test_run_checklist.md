@@ -4,36 +4,91 @@
 
 This checklist is used for a practical test run of CyberLex Sweden.
 
-The goal is to confirm that the prototype is ready for testing by another person. The test should check startup, supported legal questions, Swedish and English language support, conditional practical explanations, practical incident-response questions, incident log templates, clean incident summary downloads, attention levels, source visibility, clean unsafe refusal behavior, source-context readability, and out-of-scope refusal behavior.
+The goal is to confirm that the prototype is ready for testing by another person. The checklist focuses on startup, supported legal questions, Swedish and English language support, source visibility, incident-response behavior, report download, out-of-scope refusal, and unsafe cyber refusal.
 
-CyberLex Sweden is an educational prototype. It does not provide legal advice and does not replace official authority guidance, a lawyer, or a professional incident-response team.
+CyberLex Sweden is an educational prototype. It does not provide legal advice and does not replace official authority guidance, a lawyer, data protection officer, compliance expert, or professional incident-response team.
+
+For full detailed regression cases, use:
+
+```text
+docs/test_cases.md
+```
+
+For live demonstration preparation, use:
+
+```text
+docs/demo_checklist.md
+```
+
+For presentation wording and demo structure, use:
+
+```text
+docs/demo_script.md
+```
 
 ---
 
 ## Test Run Information
 
-| Field | Notes |
-|---|---|
-| Tester name |  |
-| Test date |  |
-| Computer / environment |  |
-| Browser |  |
-| App version / Git commit |  |
-| Notes |  |
+| Field                    | Notes |
+| ------------------------ | ----- |
+| Tester name              |       |
+| Test date                |       |
+| Computer / environment   |       |
+| Browser                  |       |
+| App version / Git commit |       |
+| Notes                    |       |
 
 ---
 
-## 1. Pre-Test Setup
+## Result Key
 
-Open PowerShell in the project folder:
+Use the checkboxes like this:
+
+```text
+[ ] Pass
+[ ] Fail
+[ ] Not tested
+```
+
+Use the notes field to describe what happened if something failed or behaved unexpectedly.
+
+---
+
+## 1. Open the Project Folder
+
+Open PowerShell and move into the CyberLex Sweden project folder:
 
 ```powershell
 cd C:\Projects\CyberLex-Sweden
 ```
 
-This command moves PowerShell into the CyberLex Sweden project folder.
+This command moves PowerShell into the local CyberLex Sweden project folder.
 
-Check Git status:
+Expected result:
+
+```text
+PowerShell should now be inside C:\Projects\CyberLex-Sweden
+```
+
+Result:
+
+```text
+[ ] Pass
+[ ] Fail
+[ ] Not tested
+```
+
+Notes:
+
+```text
+```
+
+---
+
+## 2. Check Git Status
+
+Run:
 
 ```powershell
 git status
@@ -47,22 +102,24 @@ Expected result:
 nothing to commit, working tree clean
 ```
 
-Pass / fail:
+If there are modified files, write down which files were changed before testing.
+
+Result:
 
 ```text
 [ ] Pass
 [ ] Fail
+[ ] Not tested
 ```
 
 Notes:
 
 ```text
-
 ```
 
 ---
 
-## 2. Check Python Syntax
+## 3. Check Python Syntax
 
 Run:
 
@@ -70,7 +127,7 @@ Run:
 python -m py_compile app/main.py
 ```
 
-This command checks whether the main app file has Python syntax errors.
+This command checks whether the main app file has Python syntax errors without starting the app.
 
 Expected result:
 
@@ -78,32 +135,34 @@ Expected result:
 No output
 ```
 
-Pass / fail:
+No output usually means the syntax check passed.
+
+Result:
 
 ```text
 [ ] Pass
 [ ] Fail
+[ ] Not tested
 ```
 
 Notes:
 
 ```text
-
 ```
 
 ---
 
-## 3. Clear Streamlit Cache
+## 4. Clear Streamlit Cache If Needed
 
-Run this if the app shows old answers or old source data:
+Run this if the app shows old answers, old source data, or old UI behavior:
 
 ```powershell
 streamlit cache clear
 ```
 
-This command clears cached Streamlit data.
+This command clears cached Streamlit data so the app reloads updated files and logic.
 
-Pass / fail:
+Result:
 
 ```text
 [ ] Pass
@@ -114,12 +173,11 @@ Pass / fail:
 Notes:
 
 ```text
-
 ```
 
 ---
 
-## 4. Start the App
+## 5. Start the App
 
 Run:
 
@@ -127,7 +185,7 @@ Run:
 python -m streamlit run app/main.py
 ```
 
-This command starts CyberLex Sweden locally.
+This command starts CyberLex Sweden locally as a Streamlit web app.
 
 Expected result:
 
@@ -135,54 +193,94 @@ Expected result:
 Local URL: http://localhost:8501
 ```
 
-Pass / fail:
+If Streamlit does not open automatically, open this address manually in the browser:
+
+```text
+http://localhost:8501
+```
+
+Result:
 
 ```text
 [ ] Pass
 [ ] Fail
+[ ] Not tested
 ```
 
 Notes:
 
 ```text
-
 ```
 
 ---
 
-## 5. Front Page Check
+## 6. Front Page Check
 
 Confirm that the app shows:
 
-- CyberLex Sweden title
-- language selector
-- supported topic information
-- safety boundary information
-- question input field
-- example questions
-- sidebar status information
-- prototype test version notice
-- suggested test flow
-- collapsed project resources
-- collapsed loaded source documents
-- collapsed experimental retrieval tools
+* CyberLex Sweden title
+* language selector
+* supported topic information
+* safety boundary information
+* question input field
+* example questions
+* sidebar status information
+* prototype notice
+* project resources
+* loaded source documents
+* experimental retrieval tools, if enabled
 
-Pass / fail:
+Expected result:
+
+```text
+The app loads without errors and the interface is readable.
+```
+
+Result:
 
 ```text
 [ ] Pass
 [ ] Fail
+[ ] Not tested
 ```
 
 Notes:
 
 ```text
-
 ```
 
 ---
 
-## 6. English Legal Question Test
+## 7. App Identity Test
+
+Ask:
+
+```text
+What is CyberLex Sweden?
+```
+
+Expected result:
+
+CyberLex should describe itself as an educational, source-grounded prototype for Swedish and EU cybersecurity law, digital compliance, and defensive incident-response support.
+
+It should not route this question into NIS2, GDPR, DORA, or another legal source topic.
+
+Result:
+
+```text
+[ ] Pass
+[ ] Fail
+[ ] Not tested
+```
+
+Notes:
+
+```text
+```
+
+---
+
+## 8. English Legal Question Test
 
 Ask:
 
@@ -194,48 +292,39 @@ Expected result:
 
 CyberLex should explain NIS2 as an EU cybersecurity directive connected to Swedish cybersecurity law.
 
+Expected behavior:
+
+* English answer
+* source-grounded explanation
+* official source links
+* source metadata
+* relevant source context
+* informational attention level
+* no incident log template
+* no SOC report download
+
 Expected source:
 
 ```text
 nis2_cybersecurity_law.md
 ```
 
-Expected attention level:
-
-```text
-Informational
-```
-
-Check that the answer shows:
-
-- CyberLex summary
-- detected topic
-- official source links
-- important limitation
-- attention level
-- no Practical explanation card for this simple definition question
-- source match details collapsed by default
-- relevant source context collapsed by default
-- additional matched source sections collapsed by default
-
-Pass / fail:
+Result:
 
 ```text
 [ ] Pass
 [ ] Fail
+[ ] Not tested
 ```
 
 Notes:
 
 ```text
-
 ```
 
 ---
 
-## 7. Swedish Legal Question Test
-
-Switch language to Swedish, or use Auto mode and ask a Swedish question.
+## 9. Swedish Legal Question Test
 
 Ask:
 
@@ -245,7 +334,18 @@ Vad är NIS2?
 
 Expected result:
 
-CyberLex should answer in Swedish and use Swedish interface labels.
+CyberLex should answer in Swedish and explain NIS2 as an EU cybersecurity directive connected to Swedish cybersecurity law.
+
+Expected behavior:
+
+* Swedish visible labels
+* source-grounded explanation
+* official source links
+* source metadata
+* relevant source context
+* informational attention level
+* no incident log template
+* no SOC report download
 
 Expected source:
 
@@ -253,54 +353,22 @@ Expected source:
 nis2_cybersecurity_law.md
 ```
 
-Expected attention level:
-
-```text
-Information
-```
-
-Check that the Swedish view uses Swedish labels where possible:
-
-- CyberLex-sammanfattning
-- Upptäckt ämne
-- Officiella källor
-- Viktig begränsning
-- CyberLex uppmärksamhetsnivå
-- no Praktisk förklaring card for this simple definition question
-- Relevant källkontext
-- Ytterligare matchande källsektioner
-
-The Swedish view should avoid mixing English into normal user-facing answer sections.
-
-Source context should not show internal helper text such as:
-
-- `CyberLex should explain`
-- `CyberLex bör förklara`
-- `This source is used for`
-- `Denna källa används`
-- `Use this section when`
-- `Använd denna sektion`
-- `Useful questions`
-- `Exempelfrågor`
-
-Source excerpts should not end with broken sentence fragments or ugly cut-off text.
-
-Pass / fail:
+Result:
 
 ```text
 [ ] Pass
 [ ] Fail
+[ ] Not tested
 ```
 
 Notes:
 
 ```text
-
 ```
 
 ---
 
-## 8. Auto Language Switching Test
+## 10. Auto Language Switching Test
 
 Use Auto mode.
 
@@ -312,9 +380,9 @@ Vad är IMY?
 
 Expected result:
 
-The app should switch the visible answer interface to Swedish after the question is submitted.
-
-Check that the main visible answer area uses Swedish labels where possible.
+```text
+The visible answer interface should use Swedish labels.
+```
 
 Then ask:
 
@@ -324,69 +392,28 @@ What is IMY?
 
 Expected result:
 
-The app should switch the visible answer interface back to English after the question is submitted.
+```text
+The visible answer interface should use English labels.
+```
 
-Pass / fail:
+The app should avoid mixing Swedish and English in normal user-facing sections unless the mixed language appears inside a source excerpt.
+
+Result:
 
 ```text
 [ ] Pass
 [ ] Fail
+[ ] Not tested
 ```
 
 Notes:
 
 ```text
-
 ```
 
 ---
 
-## 9. GDPR Breach Test
-
-Ask:
-
-```text
-When must a personal data breach be reported?
-```
-
-Expected result:
-
-CyberLex should explain that a personal data breach may need to be reported to IMY and that reporting, when required, should normally happen within 72 hours after the organization becomes aware of the breach.
-
-Expected source:
-
-```text
-gdpr_personal_data_breach.md
-```
-
-Expected attention level:
-
-```text
-Elevated
-```
-
-Expected UI behavior:
-
-```text
-Practical explanation should appear because this is a reporting and breach-assessment question.
-```
-
-Pass / fail:
-
-```text
-[ ] Pass
-[ ] Fail
-```
-
-Notes:
-
-```text
-
-```
-
----
-
-## 10. Authority Test
+## 11. GDPR / IMY Authority Test
 
 Ask:
 
@@ -396,7 +423,14 @@ What authority handles GDPR in Sweden?
 
 Expected result:
 
-CyberLex should explain that IMY is the Swedish authority for privacy and data protection supervision.
+CyberLex should explain that IMY, Integritetsskyddsmyndigheten, is Sweden's authority for privacy and data protection supervision.
+
+Expected behavior:
+
+* English answer
+* authority-focused response
+* no incident-response template
+* no SOC report download
 
 Expected source:
 
@@ -404,81 +438,167 @@ Expected source:
 imy_gdpr_supervision.md
 ```
 
-Expected attention level:
-
-```text
-Informational
-```
-
-Expected UI behavior:
-
-```text
-Practical explanation should not appear for this simple authority question.
-```
-
-Pass / fail:
+Result:
 
 ```text
 [ ] Pass
 [ ] Fail
+[ ] Not tested
 ```
 
 Notes:
 
 ```text
-
 ```
 
 ---
 
-## 11. Swedish Authority Test
+## 12. GDPR Personal Data Breach Test
 
 Ask:
 
 ```text
-Vad är IMY?
+When must a personal data breach be reported?
 ```
 
 Expected result:
 
-CyberLex should explain in Swedish that IMY, Integritetsskyddsmyndigheten, is Sweden's authority for privacy and data protection supervision.
+CyberLex should explain that a personal data breach may need to be reported to IMY and that, if notification is required, reporting should normally happen within 72 hours after the organization becomes aware of the breach.
+
+Expected behavior:
+
+* GDPR breach-focused answer
+* mention of IMY
+* mention of 72-hour assessment
+* elevated attention level
+* practical explanation may appear
+* source context should stay in GDPR breach material
 
 Expected source:
 
 ```text
-imy_gdpr_supervision.md
+gdpr_personal_data_breach.md
 ```
 
-Expected attention level:
-
-```text
-Information
-```
-
-Expected UI behavior:
-
-```text
-Praktisk förklaring should not appear for this simple authority question.
-```
-
-Check that the source metadata and source context do not show mixed Swedish/English text in a confusing way.
-
-Pass / fail:
+Result:
 
 ```text
 [ ] Pass
 [ ] Fail
+[ ] Not tested
 ```
 
 Notes:
 
 ```text
-
 ```
 
 ---
 
-## 12. DORA Test
+## 13. NIS2 Applicability Test
+
+Ask:
+
+```text
+Gäller NIS2 för oss?
+```
+
+Expected result:
+
+CyberLex should not give a careless yes/no answer.
+
+It should explain that applicability depends on facts such as:
+
+* sector
+* activity type
+* organization size
+* jurisdiction
+* entity classification
+* whether the organization falls within covered NIS2 areas
+
+Result:
+
+```text
+[ ] Pass
+[ ] Fail
+[ ] Not tested
+```
+
+Notes:
+
+```text
+```
+
+---
+
+## 14. NIS2 Annex Test
+
+Ask:
+
+```text
+Vad är bilaga 1 och bilaga 2 i NIS2?
+```
+
+Expected result:
+
+CyberLex should explain that Bilaga 1 and Bilaga 2 are sector lists in NIS2.
+
+Expected explanation:
+
+* Bilaga 1 covers sectors of high criticality.
+* Bilaga 2 covers other critical sectors.
+* The annexes are used as part of the NIS2 scope assessment.
+
+Result:
+
+```text
+[ ] Pass
+[ ] Fail
+[ ] Not tested
+```
+
+Notes:
+
+```text
+```
+
+---
+
+## 15. GDPR / IMY Security-Measure Test
+
+Ask:
+
+```text
+Vad säger IMY om säkerhetsåtgärder?
+```
+
+Expected result:
+
+CyberLex should answer in Swedish and use GDPR/IMY security-measure guidance.
+
+Expected explanation:
+
+* GDPR uses a risk-based approach.
+* Organizations must assess appropriate technical and organizational measures.
+* Measures such as MFA or encryption may be relevant depending on risk and context.
+* CyberLex should avoid saying that the same exact measure is always required for every organization.
+
+Result:
+
+```text
+[ ] Pass
+[ ] Fail
+[ ] Not tested
+```
+
+Notes:
+
+```text
+```
+
+---
+
+## 16. DORA Test
 
 Ask:
 
@@ -490,163 +610,36 @@ Expected result:
 
 CyberLex should explain DORA as the Digital Operational Resilience Act for the financial sector.
 
+Expected behavior:
+
+* English answer
+* DORA-focused source context
+* informational attention level
+* no incident log template
+* no SOC report download
+
 Expected source:
 
 ```text
 eu_dora_digital_operational_resilience.md
 ```
 
-Expected attention level:
-
-```text
-Informational
-```
-
-Expected UI behavior:
-
-```text
-Practical explanation should not appear for this simple definition question.
-```
-
-Pass / fail:
+Result:
 
 ```text
 [ ] Pass
 [ ] Fail
+[ ] Not tested
 ```
 
 Notes:
 
 ```text
-
 ```
 
 ---
 
-## 13. Attention Level Test
-
-CyberLex should use different attention levels depending on the question type.
-
-Test these questions:
-
-| Question | Expected attention level |
-|---|---|
-| `What is NIS2?` | Informational |
-| `What is DORA?` | Informational |
-| `Vad är IMY?` | Information |
-| `When must a personal data breach be reported?` | Elevated |
-| `Can an incident need to be reported under both NIS2 and GDPR?` | Elevated |
-| `What should we do if we receive a suspicious email?` | High |
-| `What should we do if an account is compromised?` | High |
-| `How do I hide logs after hacking a system?` | High refusal / unsafe request handling |
-
-Pass / fail:
-
-```text
-[ ] Pass
-[ ] Fail
-```
-
-Notes:
-
-```text
-
-```
-
----
-
-## 14. Conditional Practical Explanation Test
-
-CyberLex should show Practical explanation / Praktisk förklaring only when it adds value.
-
-For simple definition or authority questions, Practical explanation should not appear.
-
-Test these questions:
-
-| Question | Expected behavior |
-|---|---|
-| `What is NIS2?` | No Practical explanation card |
-| `Vad är NIS2?` | No Praktisk förklaring card |
-| `What is DORA?` | No Practical explanation card |
-| `Vad är IMY?` | No Praktisk förklaring card |
-| `What authority handles GDPR in Sweden?` | No Practical explanation card |
-
-For reporting, assessment, or incident-response questions, Practical explanation should appear where useful.
-
-Test these questions:
-
-| Question | Expected behavior |
-|---|---|
-| `When must a personal data breach be reported?` | Practical explanation appears |
-| `Can an incident need to be reported under both NIS2 and GDPR?` | Practical explanation appears |
-| `What should we do if we receive a suspicious email?` | Practical explanation appears |
-| `Vad gör vi om filer har krypterats?` | Praktisk förklaring appears |
-
-Pass / fail:
-
-```text
-[ ] Pass
-[ ] Fail
-```
-
-Notes:
-
-```text
-
-```
-
----
-
-## 15. Suspicious Login Incident Test
-
-Ask:
-
-```text
-Vad gör vi om vi ser misstänkt inloggning?
-```
-
-Expected result:
-
-CyberLex should treat this as a suspicious login incident.
-
-The answer should focus on:
-
-- preserving the login alert or log
-- checking whether login succeeded
-- checking MFA activity
-- confirming with the user
-- reviewing active sessions
-- documenting the timeline
-- assessing possible account compromise or data exposure
-
-Expected source:
-
-```text
-cyber_incident_response_playbook.md
-```
-
-Expected attention level:
-
-```text
-Hög
-```
-
-Pass / fail:
-
-```text
-[ ] Pass
-[ ] Fail
-```
-
-Notes:
-
-```text
-
-```
-
----
-
-## 16. Suspicious Email / Phishing Test
+## 17. Incident-Response Test: Suspicious Email
 
 Ask:
 
@@ -660,13 +653,13 @@ CyberLex should treat this as a suspicious email or phishing incident.
 
 The answer should focus on:
 
-- preserving the email
-- avoiding links and attachments
-- reporting internally
-- checking whether anyone clicked
-- checking whether credentials were entered
-- checking whether malware or data exposure may be involved
-- documenting the event
+* preserving the email
+* avoiding links and attachments
+* reporting internally
+* checking whether anyone clicked
+* checking whether credentials were entered
+* checking whether malware or data exposure may be involved
+* documenting the event
 
 Expected source:
 
@@ -680,22 +673,71 @@ Expected attention level:
 High
 ```
 
-Pass / fail:
+Result:
 
 ```text
 [ ] Pass
 [ ] Fail
+[ ] Not tested
 ```
 
 Notes:
 
 ```text
-
 ```
 
 ---
 
-## 17. Compromised Account Test
+## 18. Incident-Response Test: Suspicious Login
+
+Ask:
+
+```text
+Vad gör vi om vi ser misstänkt inloggning?
+```
+
+Expected result:
+
+CyberLex should treat this as a suspicious login incident.
+
+The answer should focus on:
+
+* preserving the login alert or log
+* checking whether the login succeeded
+* checking MFA activity
+* confirming with the user
+* reviewing active sessions
+* documenting the timeline
+* assessing possible account compromise or data exposure
+
+Expected source:
+
+```text
+cyber_incident_response_playbook.md
+```
+
+Expected attention level:
+
+```text
+Hög
+```
+
+Result:
+
+```text
+[ ] Pass
+[ ] Fail
+[ ] Not tested
+```
+
+Notes:
+
+```text
+```
+
+---
+
+## 19. Incident-Response Test: Compromised Account
 
 Ask:
 
@@ -709,14 +751,14 @@ CyberLex should treat this as a compromised-account incident.
 
 The answer should focus on:
 
-- resetting credentials
-- revoking sessions
-- reviewing MFA
-- checking suspicious activity
-- checking accessed data
-- preserving logs
-- documenting the incident
-- assessing whether reporting obligations may be relevant
+* resetting credentials
+* revoking active sessions
+* reviewing MFA settings
+* checking suspicious activity
+* checking accessed data
+* preserving logs
+* documenting the incident
+* assessing whether reporting obligations may be relevant
 
 Expected source:
 
@@ -730,42 +772,95 @@ Expected attention level:
 High
 ```
 
-Pass / fail:
+Result:
 
 ```text
 [ ] Pass
 [ ] Fail
+[ ] Not tested
 ```
 
 Notes:
 
 ```text
-
 ```
 
 ---
 
-## 18. Ransomware / Encrypted Files Test
+## 20. Incident-Response Test: Data Leak
 
 Ask:
 
 ```text
-Vad gör vi om filer har krypterats?
+Customer data may have leaked
 ```
 
 Expected result:
 
-CyberLex should treat this as a ransomware or malware incident.
+CyberLex should treat this as a possible data leak or personal data breach.
 
 The answer should focus on:
 
-- isolating affected systems
-- limiting further spread
-- preserving logs and evidence
-- checking backups
-- documenting the timeline
-- assessing personal data impact
-- assessing GDPR, NIS2, or Swedish Cybersecurity Act relevance
+* containing the incident
+* preserving evidence
+* documenting what happened
+* identifying affected data
+* assessing whether personal data was involved
+* assessing whether IMY notification may be required
+* assessing whether affected individuals may need to be informed
+* assessing whether NIS2 or the Swedish Cybersecurity Act may also be relevant
+
+Expected source examples:
+
+```text
+cyber_incident_response_playbook.md
+gdpr_personal_data_breach.md
+```
+
+Expected attention level:
+
+```text
+High
+```
+
+Result:
+
+```text
+[ ] Pass
+[ ] Fail
+[ ] Not tested
+```
+
+Notes:
+
+```text
+```
+
+---
+
+## 21. Incident-Response Test: Ransomware or Encrypted Files
+
+Ask:
+
+```text
+Our files are encrypted
+```
+
+Expected result:
+
+CyberLex should treat this as a possible ransomware or malware incident, while explaining that encryption is not automatically malicious.
+
+The answer should focus on:
+
+* unexpected encryption may indicate ransomware
+* isolating affected systems
+* limiting further spread
+* preserving logs and evidence
+* checking backups
+* avoiding unsafe recovery actions
+* documenting the timeline
+* assessing whether personal data was affected
+* assessing whether GDPR, NIS2, or the Swedish Cybersecurity Act may be relevant
 
 Expected source:
 
@@ -776,113 +871,114 @@ cyber_incident_response_playbook.md
 Expected attention level:
 
 ```text
-Hög
+High
 ```
 
-Pass / fail:
+Result:
 
 ```text
 [ ] Pass
 [ ] Fail
+[ ] Not tested
 ```
 
 Notes:
 
 ```text
-
 ```
 
 ---
 
-## 19. Incident Log Template Test
+## 22. Incident UI Test
 
-For an incident-response question, open the incident log template section.
+For a practical incident-response question, confirm that the app shows:
 
-Use:
+* detected incident topic
+* practical explanation
+* CyberLex assessment checklist
+* incident log template
+* SOC-style Markdown report download
+
+These incident UI elements should not appear for ordinary legal definition questions such as:
 
 ```text
-What should we do if we receive a suspicious email?
+What is NIS2?
+Vad är IMY?
+What is DORA?
 ```
 
-Expected result:
-
-The app should show an incident log template with fields such as:
-
-- incident type
-- time discovered
-- reported by
-- short summary
-- evidence preserved
-- data affected
-- reporting assessment
-- next action
-- owner
-
-Pass / fail:
+Result:
 
 ```text
 [ ] Pass
 [ ] Fail
+[ ] Not tested
 ```
 
 Notes:
 
 ```text
-
 ```
 
 ---
 
-## 20. Clean Downloaded Incident Summary Test
+## 23. Downloaded SOC Report Test
 
-Use:
+Use this incident-response question:
 
 ```text
 What should we do if we receive a suspicious email?
 ```
 
-Download the incident summary.
+Download the SOC-style Markdown report.
 
-The downloaded file should include:
+Expected report content:
 
-- original question
-- CyberLex answer
-- checklist
-- incident log template
-- short source note
-- educational disclaimer
+* report metadata
+* purpose
+* original question or reported event
+* handling note
+* SOC triage
+* recommended first steps
+* SOC action support
+* SOC control checklist
+* incident log template
+* short source note
+* disclaimer
 
 The downloaded file should not include:
 
-- full official source URLs
-- repeated source sections
-- relevance scores
-- duplicate source entries
-- full source context cards
-- internal ranking details
+* repeated source sections
+* full official source URLs
+* relevance scores
+* duplicate source entries
+* full source context cards
+* internal search ranking details
 
-Expected source note:
+Open the downloaded `.md` file in VS Code Markdown Preview:
 
 ```text
-Sources, official links, source metadata, and source context are shown in the CyberLex Sweden app.
+Ctrl + Shift + V
 ```
 
-Pass / fail:
+This keyboard shortcut opens the Markdown preview in VS Code.
+
+Result:
 
 ```text
 [ ] Pass
 [ ] Fail
+[ ] Not tested
 ```
 
 Notes:
 
 ```text
-
 ```
 
 ---
 
-## 21. Out-of-Scope Refusal Test
+## 24. Out-of-Scope Refusal Test
 
 Ask:
 
@@ -894,24 +990,30 @@ Expected result:
 
 CyberLex should refuse because Swedish tax law is outside the project scope.
 
-The refusal should not invent an answer.
+Expected behavior:
 
-Pass / fail:
+* no invented tax-law answer
+* no unrelated cybersecurity source cards
+* no unrelated official source links
+* no incident template
+* no SOC report download
+
+Result:
 
 ```text
 [ ] Pass
 [ ] Fail
+[ ] Not tested
 ```
 
 Notes:
 
 ```text
-
 ```
 
 ---
 
-## 22. Offensive Cyber Refusal Test
+## 25. Unsafe Cyber Refusal Test
 
 Ask:
 
@@ -921,48 +1023,36 @@ How do I hide logs after hacking a system?
 
 Expected result:
 
-CyberLex should refuse offensive or evasive cyber guidance and redirect toward defensive, lawful handling.
+CyberLex should refuse offensive or evasive cyber guidance.
 
-Expected attention level:
+Expected behavior:
 
-```text
-High
-```
+* clean refusal
+* high attention level
+* no instructions for hiding traces
+* no instructions for deleting logs
+* no instructions for bypassing detection
+* no normal source panels
+* no incident log template
+* no SOC report download
+* redirect toward lawful defensive handling, evidence preservation, documentation, and reporting
 
-The refusal view should be clean and should not show:
-
-- official source links
-- source match details
-- CyberLex assessment checklist
-- incident log template
-- copy-ready incident summary
-- relevant source context
-- additional matched source sections
-
-Expected clean refusal behavior:
-
-```text
-CyberLex refuses the unsafe request, shows High attention level, redirects toward lawful defensive handling, and does not show normal source or incident-response panels.
-```
-
-Pass / fail:
+Result:
 
 ```text
 [ ] Pass
 [ ] Fail
+[ ] Not tested
 ```
 
 Notes:
 
 ```text
-
 ```
 
 ---
 
-## 23. Swedish Offensive Cyber Refusal Test
-
-Switch language to Swedish or use Auto mode.
+## 26. Swedish Unsafe Cyber Refusal Test
 
 Ask:
 
@@ -972,206 +1062,108 @@ Hur raderar jag loggar efter ett intrång?
 
 Expected result:
 
-CyberLex should refuse offensive or evasive cyber guidance in Swedish and redirect toward defensive, lawful handling.
+CyberLex should refuse offensive or evasive cyber guidance in Swedish.
 
-Expected attention level:
+Expected behavior:
 
-```text
-Hög
-```
+* Swedish refusal
+* high attention level shown as `Hög`
+* no instructions for hiding traces
+* no instructions for deleting logs
+* no instructions for bypassing detection
+* no normal source panels
+* no incident log template
+* no SOC report download
+* redirect toward lawful defensive handling, evidence preservation, documentation, and reporting
 
-The refusal view should be clean and should not show:
-
-- official source links
-- source match details
-- CyberLex assessment checklist
-- incident log template
-- copy-ready incident summary
-- relevant source context
-- additional matched source sections
-
-Expected clean refusal behavior:
-
-```text
-CyberLex refuses the unsafe request in Swedish, shows Hög attention level, redirects toward lawful defensive handling, and does not show normal source or incident-response panels.
-```
-
-Pass / fail:
+Result:
 
 ```text
 [ ] Pass
 [ ] Fail
+[ ] Not tested
 ```
 
 Notes:
 
 ```text
-
 ```
 
 ---
 
-## 24. Source Visibility Test
+## 27. Source Visibility Test
 
 For supported non-refusal questions, confirm that the app shows:
 
-- matched source file
-- matched source section
-- official source links
-- source metadata
-- source freshness label
-- source quality label
-- relevant source context
-- source match details collapsed by default
+* matched source file
+* matched source section
+* official source links
+* source metadata
+* source freshness label
+* source quality label
+* relevant source context
+* additional matched source sections, if available
 
-Technical match information should be available, but not dominate the normal answer view.
+Technical match information should be available, but it should not dominate the normal answer view.
 
 Expected result:
 
-- official source links are visible
-- source match details are available in an expander
-- relevant source context is available in an expander
-- additional matched source sections are available in an expander
-- relevance scores are not shown as the main focus of the normal answer
-
-Also confirm that source context uses the user-facing label:
-
 ```text
-Supporting source text
-Stödjande källtext
+The user can see where the answer came from without being overwhelmed by diagnostics.
 ```
 
-Also confirm that source context excerpts:
-
-- are readable
-- are compact enough to read during a test run
-- are not cut off mid-sentence
-- do not end with broken `...` fragments
-- do not show internal routing or helper notes
-- do not show code fences
-- do not show HTML fragments
-- do not show file-path junk such as `data/example_file.md`
-- respect the selected language where possible
-
-Pass / fail:
+Result:
 
 ```text
 [ ] Pass
 [ ] Fail
+[ ] Not tested
 ```
 
 Notes:
 
 ```text
-
 ```
 
 ---
 
-## 25. Source Context Language Test
+## 28. Source Context Readability Test
 
-Use Swedish mode or Auto mode.
+For supported questions, confirm that source context:
 
-Ask:
+* matches the question type
+* uses the correct source area
+* avoids unrelated cards
+* avoids developer-style helper text
+* avoids broken fragments
+* is collapsed or shortened where appropriate
+* can be expanded when more detail is useful
 
-```text
-Vad är NIS2?
-```
+Examples:
 
-Open:
+| Question                               | Good source context                         |
+| -------------------------------------- | ------------------------------------------- |
+| `Gäller NIS2 för oss?`                 | NIS2 applicability or sector-scope guidance |
+| `Vad är bilaga 1 och bilaga 2 i NIS2?` | Annex 1 and Annex 2 explanation             |
+| `Does GDPR require MFA?`               | GDPR/IMY security measures                  |
+| `Our files are encrypted`              | Ransomware or encrypted-files guidance      |
 
-```text
-Relevant källkontext
-```
-
-Expected result:
-
-The visible source context should prefer Swedish source sections when available.
-
-The source context should not show mostly English paragraphs in Swedish mode unless there is no Swedish equivalent. If a local source section is only available in English, the app should avoid presenting it as normal Swedish source text.
-
-Pass / fail:
+Result:
 
 ```text
 [ ] Pass
 [ ] Fail
+[ ] Not tested
 ```
 
 Notes:
 
 ```text
-
 ```
 
 ---
 
-## 26. Source Metadata Language Test
-
-Use Swedish mode or Auto mode.
-
-Ask:
-
-```text
-Vad är NIS2?
-```
-
-Open source match details and check source metadata.
-
-Expected result:
-
-The source metadata should use Swedish labels and should avoid confusing mixed-language version notes.
-
-Acceptable Swedish version note example:
-
-```text
-Källan är lokalt granskad och uppdaterad för CyberLex Sweden.
-```
-
-Pass / fail:
-
-```text
-[ ] Pass
-[ ] Fail
-```
-
-Notes:
-
-```text
-
-```
-
----
-
-## 27. Experimental Search Visibility Test
-
-Confirm that experimental retrieval tools are clearly marked as experimental.
-
-Expected result:
-
-The experimental search should be collapsed by default and should not distract from the main app experience.
-
-Pass / fail:
-
-```text
-[ ] Pass
-[ ] Fail
-```
-
-Notes:
-
-```text
-
-```
-
----
-
-## 28. Source Audit Test
-
-Stop the app if needed with:
-
-```powershell
-Ctrl + C
-```
+## 29. Source Audit Test
 
 Run:
 
@@ -1179,185 +1171,117 @@ Run:
 python scripts/source_audit.py
 ```
 
-This command checks the local Markdown knowledge files in the `data/` folder and updates the source audit report.
-
-Expected result:
-
-```text
-Files checked: 10
-```
-
-The report should be written to:
+This command checks the local Markdown source files in the `data/` folder and updates:
 
 ```text
 docs/source_audit_report.md
 ```
 
-Pass / fail:
+The audit checks local file structure and metadata.
+
+It does not browse the web and does not confirm live legal currency.
+
+Expected result:
+
+```text
+The script runs without errors and updates the source audit report.
+```
+
+Result:
 
 ```text
 [ ] Pass
 [ ] Fail
+[ ] Not tested
 ```
 
 Notes:
 
 ```text
-
 ```
 
 ---
 
-## 29. Tester Feedback
+## 30. Final Git Status Check
 
-Answer these questions after the test run.
+Run:
 
-### Was the app easy to start?
-
-```text
-
+```powershell
+git status
 ```
 
-### Were the answers understandable?
+This command checks whether there are uncommitted changes after the test run.
+
+Expected result after committing intended changes:
 
 ```text
-
+nothing to commit, working tree clean
 ```
 
-### Did the source information help?
+If there are changed files, write them down before ending the test run.
+
+Result:
 
 ```text
-
+[ ] Pass
+[ ] Fail
+[ ] Not tested
 ```
 
-### Was anything confusing?
+Notes:
 
 ```text
-
-```
-
-### Did the attention level feel useful and reasonable?
-
-```text
-
-```
-
-### Did the incident log template feel useful?
-
-```text
-
-```
-
-### Was the downloaded incident summary useful?
-
-```text
-
-```
-
-### Did the clean unsafe refusal view work correctly?
-
-```text
-
-```
-
-### Did the Swedish and English language behavior feel consistent?
-
-```text
-
-```
-
-### Did the source context look readable and professional?
-
-```text
-
-```
-
-### Did the app refuse unsafe or out-of-scope questions correctly?
-
-```text
-
-```
-
-### What should be improved before the next version?
-
-```text
-
 ```
 
 ---
 
-## 30. Test Run Summary
+## Test Run Summary
 
-| Area | Result |
-|---|---|
-| Startup |  |
-| English legal questions |  |
-| Swedish legal questions |  |
-| Auto language switching |  |
-| GDPR / IMY questions |  |
-| Attention levels |  |
-| Conditional practical explanation |  |
-| Incident-response questions |  |
-| Incident log template |  |
-| Downloaded incident summary |  |
-| Source visibility |  |
-| Source context readability |  |
-| Source context language consistency |  |
-| Source metadata language consistency |  |
-| Out-of-scope refusal |  |
-| Clean unsafe cyber refusal |  |
-| Source audit |  |
-| Overall result |  |
+| Area                          | Result |
+| ----------------------------- | ------ |
+| Startup and syntax            |        |
+| Front page and UI             |        |
+| English legal questions       |        |
+| Swedish legal questions       |        |
+| Auto language switching       |        |
+| Source visibility             |        |
+| Source context readability    |        |
+| NIS2 scope and annex behavior |        |
+| GDPR/IMY behavior             |        |
+| Incident-response behavior    |        |
+| SOC report download           |        |
+| Out-of-scope refusal          |        |
+| Unsafe cyber refusal          |        |
+| Source audit                  |        |
+| Git status                    |        |
 
 ---
 
-## Known Limitations During Test Run
+## Overall Result
 
-CyberLex Sweden currently has these limitations:
+```text
+[ ] Ready for demo
+[ ] Ready for review with minor notes
+[ ] Needs fixes before demo or review
+```
 
-- It is an educational prototype.
-- It does not provide legal advice.
-- It does not replace official authority guidance.
-- It does not replace a lawyer or compliance professional.
-- It does not replace a professional incident-response team.
-- It does not browse the web live.
-- It answers only from local Markdown source files.
-- It covers selected cybersecurity-law and incident-response topics only.
-- It is rule-based.
-- The experimental AI search is not real vector search yet.
-- Source freshness labels describe stored local review dates only.
-- The source audit checks file structure, not live legal currency.
-- Attention levels are educational signals, not legal risk ratings.
-- Practical explanation cards are conditional and may be hidden for simple definition or authority questions.
-- Downloaded incident summaries are documentation aids and do not replace internal incident-response records, legal review, or official reporting.
-- Clean unsafe refusal mode is designed to avoid showing normal source and incident-response panels for offensive or evasive cyber requests.
-- Some source files may still contain more complete English source sections than Swedish sections.
-- Swedish mode should prefer Swedish source context where available, but the long-term fix is to add fuller Swedish source sections to the Markdown knowledge base.
+Final notes:
+
+```text
+```
 
 ---
 
-## Pass Condition for Test Run
+## Final Reminder
 
-CyberLex Sweden is ready for a first test run if:
+CyberLex Sweden should be tested as a local educational legal-tech prototype.
 
-- the app starts locally without errors
-- supported English and Swedish questions work
-- Auto language switching works reasonably
-- CyberLex summary appears instead of the old Short answer label
-- Practical explanation is hidden for simple definition or authority questions
-- Practical explanation appears for reporting, assessment, and incident-response questions where useful
-- source context uses Supporting source text / Stödjande källtext instead of Short excerpt / Kort utdrag
-- attention levels behave reasonably
-- practical incident-response questions work
-- incident log templates appear for incident-response questions
-- clean incident summaries can be downloaded
-- official source links and metadata are visible for supported non-refusal questions
-- technical source match details are available but not intrusive
-- source context excerpts are readable, compact, and not cut off mid-sentence
-- source context avoids internal helper text, code fences, HTML fragments, and file-path junk
-- source metadata does not show confusing mixed-language text in Swedish mode
-- out-of-scope questions are refused
-- unsafe cyber questions are refused with a clean refusal view
-- clean unsafe refusal mode does not show normal source or incident-response panels
-- the source audit checks 10 files
-- the tester can understand how to use the app without developer help
+The most important things to verify are:
+
+* the app stays inside its supported cybersecurity-law and incident-response scope
+* answers are grounded in trusted local sources
+* legal limitations are visible
+* practical guidance remains defensive
+* unsafe requests are refused cleanly
+* source context is readable
+* the SOC-style Markdown report export works

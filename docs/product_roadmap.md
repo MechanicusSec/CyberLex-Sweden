@@ -2,436 +2,447 @@
 
 ## Purpose
 
-This roadmap explains how CyberLex Sweden can develop from a school prototype into a more realistic legal-tech and cybersecurity compliance assistant.
+This roadmap explains how CyberLex Sweden could develop from a local school prototype into a more realistic legal-tech and cybersecurity compliance assistant.
 
-CyberLex Sweden is currently an educational prototype. The roadmap is not a promise that every feature will be built, but it describes a realistic development path.
+The roadmap is not a promise that every feature will be built. It describes a realistic future development path.
 
-The goal is to make the project more structured, more trustworthy, easier to expand, and easier to explain.
+CyberLex Sweden is currently an educational prototype. It does not provide legal advice and should not replace official authority guidance, a lawyer, data protection officer, compliance expert, or professional incident-response team.
 
 ---
 
-## Current Status
+## Current Prototype Status
 
 CyberLex Sweden currently works as a local Streamlit application.
 
 The current prototype includes:
 
-- Local Markdown knowledge base in `data/`
-- Source-based search and chunk ranking
-- Source routing for clear topic questions
-- Improved Swedish retrieval for supported topics
-- Experimental retrieval module in `app/vector_search.py`
-- Styled important limitation card
-- Styled relevant source context cards
-- Official source links with readable Markdown labels
-- Source date and version notes
-- Source metadata display
-- Source quality labels
-- Source freshness labels
-- Source match confidence note
-- Bilingual interface support for English and Swedish
-- Styled other matching source section cards
-- Auto language detection for user questions
-- Styled assessment checklist card
-- Rule-based short answers
-- CyberLex attention level with styled status card
-- Practical explanation section
-- Topic-based assessment checklist
-- Collapsible source context
-- Styled official source links card
-- Other matching source sections list
-- Clickable example questions using Streamlit session state
-- Sidebar prototype version label
-- Sidebar future AI mode note
-- Styled practical explanation card
-- Styled source metadata card
-- Legal limitation notice
-- Refusal behavior for out-of-scope questions
-- Source audit script in `scripts/source_audit.py`
-- Metadata helper script in `scripts/add_missing_metadata.py`
-- Weekly GitHub Actions source audit workflow
-- Manual test cases in `docs/test_cases.md`
-- Technical design documentation in `docs/technical_design.md`
-- Source update history in `docs/source_update_history.md`
+* local Markdown knowledge base in `data/`
+* source-based search and chunk ranking
+* rule-based source routing
+* source-grounded answer generation
+* official source links
+* source metadata
+* source quality labels
+* source freshness labels
+* source confidence notes
+* bilingual interface support for English and Swedish
+* Auto language detection
+* practical explanation cards
+* CyberLex attention levels
+* assessment checklist support
+* relevant source context
+* expandable source excerpts
+* other matching source sections
+* clickable example questions
+* experimental retrieval sidebar
+* defensive incident-response guidance
+* SOC-style Markdown incident report export
+* out-of-scope refusal behavior
+* unsafe cyber refusal behavior
+* local source audit script
+* source audit report
+* GitHub Actions source audit workflow
+* manual test cases
+* demo documentation
+* technical design documentation
+* legal/privacy/disclaimer drafts
 
-The current system does not yet use true vector search, semantic embeddings, ChromaDB, FAISS, a full language model, public deployment, or a production database.
+The current system does not yet use:
 
-These features make the current version a transparent, source-grounded educational prototype.
+* true vector search
+* semantic embeddings
+* ChromaDB
+* FAISS
+* full language-model answer generation
+* RAG answer generation
+* production database
+* public deployment
 
----
-
-## Completed Milestone: Prototype Version 0.5
-
-Prototype version **0.5** focused on improving the user experience, answer structure, and readability of CyberLex Sweden.
-
-This version upgraded the app from a basic source-answer layout into a more structured interface with separate styled cards.
-
-Completed improvements:
-
-- Styled citation details card
-- Styled official source links card
-- Styled source metadata card
-- Styled important limitation warning card
-- Styled CyberLex attention level card
-- Styled practical explanation card
-- Styled assessment checklist card
-- Styled relevant source context cards
-- Styled other matching source section cards
-- Improved readability of source-grounded answers
-- Clearer separation between answer, source, limitation, and practical guidance sections
-- Improved bilingual interface support
-- Better presentation of source context and official references
-
-This version keeps the app as a local, rule-based prototype. A full AI/RAG mode is still planned for a later version.
+The current version should be understood as a transparent, source-grounded educational prototype.
 
 ---
 
-## Completed Milestone: Source and Retrieval Improvement Phase
+## Product Direction
+
+CyberLex Sweden could develop in several possible directions:
+
+* student portfolio project
+* cybersecurity-law learning tool
+* Swedish cyber law research assistant
+* internal company knowledge assistant
+* compliance support prototype
+* bilingual Swedish/English legal-tech assistant
+* future startup concept
+
+The strongest direction is a focused source-grounded assistant for Swedish and EU cybersecurity law.
+
+The product should stay narrow enough to remain trustworthy.
+
+---
+
+## Core Product Principles
+
+Future development should follow these principles:
+
+1. **Source grounding first**
+
+   CyberLex should answer from trusted source material, not from general AI memory.
+
+2. **Clear scope**
+
+   CyberLex should stay focused on selected cybersecurity-law, data protection, digital compliance, cybercrime, and defensive incident-response topics.
+
+3. **Visible limitations**
+
+   CyberLex should always make clear that it is educational and not legal advice.
+
+4. **Bilingual support**
+
+   Swedish and English should both be treated as main languages.
+
+5. **Safety boundaries**
+
+   CyberLex should refuse unsafe cyber misuse requests.
+
+6. **Source maintenance**
+
+   Legal and cybersecurity sources must be reviewed and updated over time.
+
+7. **Privacy awareness**
+
+   A public version must handle user questions carefully and avoid unnecessary data storage.
+
+---
+
+## Completed Milestone: Local Source-Grounded Prototype
 
 ### Status
 
-Completed on 2026-06-03.
+Completed for the current school project phase.
 
-### Goal
+### Completed Features
 
-Improve the trusted local source files and strengthen experimental retrieval so Swedish and English questions route to more accurate knowledge files.
+* Streamlit web interface
+* local Markdown knowledge base
+* source loading
+* chunk-based source search
+* rule-based source routing
+* source-grounded answers
+* official source links
+* source metadata
+* source quality labels
+* source freshness labels
+* important limitation notices
+* English and Swedish interface support
+* Auto language detection
+* example question buttons
+* source context display
+* practical explanation support
+* assessment checklist support
+* incident-response support
+* SOC Markdown report export
+* out-of-scope refusal
+* unsafe cyber refusal
+* source audit script
+* source audit report
+* documentation and test cases
 
-### Completed Source Improvements
+### Why This Matters
 
-The following local source files were improved, cleaned, expanded, or tested:
+This milestone proves that the project can answer selected questions from controlled local source material and show the user where the answer came from.
 
-```text
-data/cybercrime_dataintrang.md
-data/eu_attacks_against_information_systems.md
-data/eu_cyber_resilience_act.md
-data/eu_dora_digital_operational_resilience.md
-data/gdpr_core_principles.md
-data/gdpr_personal_data_breach.md
-data/imy_gdpr_supervision.md
-data/nis2_cybersecurity_law.md
-data/nis2_incident_reporting.md
-```
+---
 
-Completed improvements included:
+## Completed Milestone: Source and Retrieval Improvement
 
-- Swedish summaries added or improved
-- Swedish useful questions added
-- Stronger practical explanations added
-- Stronger assessment checklists added
-- Official source links cleaned or added
-- Source metadata standardized
-- Duplicate metadata sections removed where needed
-- DORA support expanded
-- Cyber Resilience Act support expanded
-- EU attacks against information systems support expanded
-- GDPR personal data breach support improved
-- GDPR core principles support improved
-- IMY authority support improved
-- NIS2 cybersecurity law support improved
-- NIS2 incident reporting support improved
-- Swedish dataintrång support improved
+### Status
 
-### Completed Retrieval Improvements
+Completed for the current prototype phase.
 
-The experimental retrieval module in:
+### Completed Source Areas
 
-```text
-app/vector_search.py
-```
+CyberLex Sweden currently supports selected material related to:
 
-was improved so Swedish questions route more accurately.
+* GDPR core principles
+* GDPR personal data breach notification
+* IMY and Swedish GDPR supervision
+* GDPR/IMY security measures
+* NIS2 and Swedish cybersecurity law
+* NIS2 incident reporting
+* NIS2 sector scope and applicability
+* Swedish cybercrime and dataintrång
+* DORA and digital operational resilience
+* Cyber Resilience Act and product cybersecurity
+* EU attacks against information systems
+* defensive cyber incident response
 
-Current expected routing examples:
+### Completed Improvements
 
-| Topic | Example question | Expected source |
-|---|---|---|
-| NIS2 law | `Vad är NIS2?` | `nis2_cybersecurity_law.md` |
-| Swedish Cybersecurity Act | `Vad är cybersäkerhetslagen?` | `nis2_cybersecurity_law.md` |
-| NIS2 risk management | `Vad betyder riskhantering enligt NIS2?` | `nis2_cybersecurity_law.md` |
-| Ransomware incident | `Vad ska ett företag göra efter en ransomwareattack?` | `nis2_incident_reporting.md` |
-| GDPR breach | `Vad ska ett företag göra efter en personuppgiftsincident?` | `gdpr_personal_data_breach.md` |
-| IMY | `Vad är IMY?` | `imy_gdpr_supervision.md` |
-| GDPR principles | `Vilka är GDPR-principerna?` | `gdpr_core_principles.md` |
-| Dataintrång | `Vad är dataintrång?` | `cybercrime_dataintrang.md` |
-| DORA | `Vad är DORA?` | `eu_dora_digital_operational_resilience.md` |
-| Cyber Resilience Act | `Vad betyder cybersäkerhetskrav för digitala produkter?` | `eu_cyber_resilience_act.md` |
-| EU attacks against information systems | `Vad säger EU om attacker mot informationssystem?` | `eu_attacks_against_information_systems.md` |
-| EU illegal access | `Vad är olaglig åtkomst enligt EU-regler?` | `eu_attacks_against_information_systems.md` |
-| EU DDoS rules | `Vad säger EU om DDoS-attacker?` | `eu_attacks_against_information_systems.md` |
+* source files cleaned and structured
+* official source links improved
+* source metadata standardized
+* Swedish summaries added or improved
+* source routing improved
+* source context made more readable
+* incident-response routing improved
+* unsafe refusal behavior improved
+* source audit workflow added
 
-### Why This Phase Matters
+### Why This Matters
 
-This phase improved the quality of the project before adding real AI features.
+Better retrieval and better source structure make future AI features safer and more useful.
 
-The design principle is:
+The design principle remains:
 
 ```text
 Better sources first. Better AI second.
 ```
 
-A future AI or RAG system will only be useful if the sources are structured, testable, and reliable.
-
 ---
 
-## Phase 1: Prototype Foundation
+## Completed Milestone: Demo and Testing Readiness
 
 ### Status
 
-Completed.
+Completed for final project preparation.
 
-### Goal
+### Completed Documentation
 
-Build a working local prototype that proves the core idea.
+* `docs/testing_and_demo.md`
+* `docs/demo_script.md`
+* `docs/demo_checklist.md`
+* `docs/test_run_checklist.md`
+* `docs/test_cases.md`
 
-### Completed Features
+### Completed Testing Areas
 
-- Streamlit web interface
-- Local Markdown knowledge base
-- Source-based search
-- Chunk-based search
-- Styled citation details card
-- Source routing
-- Styled assessment checklist card
-- Simple answer generation
-- Styled other matching source section cards
-- Official source links
-- Source metadata
-- Citation details
-- Practical explanations
-- Styled relevant source context cards
-- Assessment checklists
-- Styled attention level card
-- Clickable example questions
-- Styled important limitation card
-- Future AI mode sidebar note
-- Prototype version label
-- Source update history
-- Manual test cases
-- Final report draft
-- Source policy
-- Legal disclaimer draft
-- Terms of Use draft
-- Privacy Policy draft
-- Source match confidence note
-- Source audit system
-- GitHub Actions audit workflow
+* app startup
+* English questions
+* Swedish questions
+* Auto language switching
+* source routing
+* official source links
+* source metadata
+* source context readability
+* GDPR/IMY questions
+* NIS2 questions
+* DORA questions
+* CRA questions
+* cybercrime questions
+* incident-response questions
+* SOC Markdown report download
+* out-of-scope refusal
+* unsafe cyber refusal
 
-### Purpose
+### Why This Matters
 
-This phase proves that CyberLex Sweden can answer selected cybersecurity-law questions using trusted local source material.
+The project can now be demonstrated and reviewed without relying only on the developer's memory, which is good because memory is just biological cache and humans keep proving why that is a terrible storage system.
 
 ---
 
-## Phase 2: Source Expansion and Source Quality
+## Phase 1: Source Expansion
 
 ### Status
 
-Core source improvement phase completed. Future expansion remains open.
+Future improvement.
 
 ### Goal
 
-Keep expanding the trusted knowledge base with more Swedish and EU cybersecurity law sources while maintaining source quality.
+Expand the trusted knowledge base while keeping source quality high.
 
-### Completed Source Areas
+### Possible Future Source Areas
 
-CyberLex Sweden currently includes local source support for:
+* more IMY guidance
+* more GDPR security guidance
+* more NIS2 sector-specific material
+* Swedish Cybersecurity Act updates
+* DORA technical standards and guidance
+* EU Cybersecurity Act
+* ENISA certification material
+* Protective Security Act, `säkerhetsskyddslagen`
+* electronic communications security rules
+* AI Act cybersecurity and compliance connections
+* EDPB security and data protection guidance
+* cybersecurity procurement guidance
+* supplier and third-party security guidance
+* Swedish public-sector cybersecurity guidance
 
-- GDPR core principles
-- GDPR personal data breach notification
-- IMY GDPR supervision
-- NIS2 and Swedish cybersecurity law
-- NIS2 incident reporting
-- Swedish cybercrime and dataintrång
-- DORA and digital operational resilience
-- Cyber Resilience Act and product cybersecurity
-- EU attacks against information systems
+### Requirements for New Source Files
 
-### Planned Future Source Areas
+Each new source file should include:
 
-Possible future source areas include:
-
-- Additional GDPR guidance
-- More IMY guidance
-- NIS2 sector-specific information
-- Swedish Cybersecurity Act updates when official Swedish implementation details change
-- DORA technical standards and guidance
-- EU Cybersecurity Act and ENISA certification
-- Protective Security Act, `säkerhetsskyddslagen`
-- Electronic communications security rules
-- AI Act cybersecurity and compliance connections
-- EDPB guidance on security and data protection
-- Cybersecurity procurement and supplier security guidance
-- Swedish public-sector cybersecurity guidance
-
-### Requirements for New Sources
-
-Each new knowledge file should include:
-
-- topic
-- main authority or legal source
-- key idea
-- important points
-- cybersecurity connection
-- useful questions
-- Swedish summary if relevant
-- Swedish useful questions if relevant
-- official source links
-- source metadata
-- source date
-- version notes
-- disclaimer
+* topic
+* main authority or legal source
+* key idea
+* important points
+* cybersecurity connection
+* useful questions
+* Swedish summary where useful
+* Swedish useful questions where useful
+* official source links
+* source metadata
+* source date
+* version notes
+* disclaimer
 
 ### Success Criteria
 
-This phase is successful when CyberLex Sweden can answer more questions while still showing citation details and refusing unsupported topics.
+This phase is successful when CyberLex can answer more supported questions without weakening source transparency or refusal behavior.
 
 ---
 
-## Phase 3: Better Source Management
+## Phase 2: Better Source Management
 
 ### Status
 
 Partly completed.
 
-### Completed Improvements
+### Completed Work
 
-- Source metadata standardization
-- Source audit script
-- Source audit report
-- Metadata helper script
-- Source update history document
-- Weekly GitHub Actions source audit workflow
-- Official source link cleanup
-- Source review dates stored in Markdown files
-
-### Goal
-
-Make source handling more reliable and easier to maintain.
+* source metadata
+* source dates
+* version notes
+* source quality labels
+* source freshness labels
+* source audit script
+* source audit report
+* source policy
+* source history
+* GitHub Actions source audit workflow
 
 ### Planned Improvements
 
-- Add a source update checklist
-- Add source categories
-- Add source status values, such as active, needs review, outdated
-- Add source version history per source file
-- Add source owner or reviewer field
-- Add link-checking process
-- Add a clear method for retiring outdated sources
-- Add a manual legal-currentness review process
-- Add periodic review tasks for high-priority legal sources
+* source update checklist
+* source categories
+* source status values such as active, needs review, outdated
+* source owner or reviewer field
+* periodic review schedule
+* link-checking process
+* method for retiring outdated sources
+* manual legal-currentness review process
+* clearer high-priority source review routine
 
 ### Why This Matters
 
 Legal and cybersecurity information changes over time.
 
-A real system must show when sources were checked and whether they are still reliable.
+The current source audit checks local file structure and metadata. It does not confirm live legal currency.
 
-The current source audit checks structure, not live legal currency.
-
-Without source management, the system may eventually give outdated answers.
+A more serious product would need stronger source review and update routines.
 
 ---
 
-## Phase 4: Real Vector Search
+## Phase 3: Real Vector Search
 
 ### Status
 
-Next major technical phase.
+Future technical phase.
 
 ### Goal
 
-Improve retrieval quality beyond simple keyword matching and rule-based topic boosts.
+Improve retrieval quality beyond keyword matching and hand-written routing rules.
 
 ### Planned Improvements
 
-- Add `sentence-transformers`
-- Generate embeddings for source chunks
-- Store chunk embeddings locally
-- Add vector search with ChromaDB or FAISS
-- Keep source metadata connected to each chunk
-- Compare vector search results with current keyword and routing logic
-- Add retrieval mode comparison:
-  - current main search
-  - experimental keyword/rule-based search
-  - vector search
-- Add minimum confidence thresholds
-- Improve refusal behavior for weak matches
-- Preserve mandatory source grounding
+* use a stable Python version such as Python 3.12 or Python 3.11
+* add `sentence-transformers`
+* generate embeddings for source chunks
+* store chunk embeddings locally
+* test ChromaDB or FAISS
+* keep metadata attached to every chunk
+* compare vector search results with current rule-based retrieval
+* add a retrieval comparison mode
+* add minimum confidence or similarity thresholds
+* preserve source-grounded refusal behavior
 
-### ChromaDB Option
+### Related Document
 
-ChromaDB could be used as a local vector database.
+The detailed implementation plan is stored in:
 
-It would store document chunks and embeddings, making it possible to search by semantic similarity.
-
-This may be easier to inspect and maintain during development.
-
-### FAISS Option
-
-FAISS could be used as a lightweight local vector search engine.
-
-It may be useful if the project needs fast similarity search without a larger database system.
+```text
+docs/vector_search_plan.md
+```
 
 ### Success Criteria
 
-This phase is successful when CyberLex Sweden can find the correct source section even when the user does not use the exact same words as the source file.
-
-The system should still display:
-
-- matched source file
-- matched section
-- relevance or similarity score
-- official source links
-- source metadata
-- source confidence explanation
-- limitation notice
+This phase is successful when CyberLex can find the correct source section even when the user does not use the exact same words as the source file.
 
 ---
 
-## Phase 5: Language Model Integration and RAG
+## Phase 4: RAG and AI-Generated Answers
 
 ### Status
 
-Future phase.
+Future technical phase.
 
 ### Goal
 
-Connect a language model to generate better natural language answers.
+Use AI to generate more natural answers while remaining grounded in trusted CyberLex source material.
 
 ### Important Rule
 
-The language model should not answer freely from memory.
+A future AI model should not answer legal or compliance questions from general memory.
 
-It should only answer using retrieved source chunks from the trusted CyberLex knowledge base.
+It should only answer using retrieved CyberLex source chunks.
 
 ### Planned Improvements
 
-- Use retrieved source chunks as context
-- Generate clearer answers from source material
-- Include citation details in every answer
-- Refuse unsupported questions
-- Add prompt rules for legal safety
-- Prevent unsupported legal claims
-- Avoid cybercrime instructions
-- Keep disclaimers visible
-- Keep source links visible
-- Add multi-source answer synthesis
-- Add answer traceability to specific source chunks
+* retrieve source chunks before answer generation
+* pass source chunks into a language model
+* generate clearer plain-language answers
+* include citations and source metadata
+* refuse unsupported questions
+* prevent unsupported legal claims
+* avoid unsafe cyber instructions
+* keep disclaimers visible
+* add multi-source synthesis
+* add answer traceability to source chunks
 
-### Safe Answer Pattern
+### Related Document
 
-A future language model answer should follow this pattern:
+The detailed AI/RAG plan is stored in:
 
-1. Short answer
-2. Explanation
-3. Source citation
-4. Source context
-5. Important limitation
-6. Recommendation to check official sources for serious decisions
+```text
+docs/ai_rag_plan.md
+```
 
 ### Success Criteria
 
-This phase is successful when answers become easier to read while still remaining source-grounded, cautious, and transparent.
+This phase is successful when answers become easier to read while still remaining cautious, source-grounded, and transparent.
+
+---
+
+## Phase 5: Code Structure and Maintainability
+
+### Status
+
+Future improvement.
+
+### Goal
+
+Make the codebase easier to maintain after the final project hand-in.
+
+### Planned Refactor
+
+The current `app/main.py` could later be split into smaller modules:
+
+```text
+app/ui.py
+app/answer_engine.py
+app/source_loader.py
+app/source_context.py
+app/incident_reports.py
+app/language_utils.py
+app/safety.py
+```
+
+### Why This Matters
+
+The current app works, but the main file has become large.
+
+Splitting the code later would make it easier to test, debug, and expand.
+
+This should not be done right before hand-in unless there is enough time and low risk.
 
 ---
 
@@ -441,59 +452,36 @@ This phase is successful when answers become easier to read while still remainin
 
 Partly completed.
 
-### Goal
+### Completed Improvements
 
-Make CyberLex Sweden look more professional and easier to use.
-
-### Completed UX Improvements
-
-- Main page header
-- Supported topic badges
-- Styled source metadata card
-- Sidebar project resources
-- Prototype version label
-- Future AI mode sidebar note
-- Styled important limitation card
-- Styled other matching source section cards
-- Styled citation details card
-- Styled assessment checklist card
-- Styled relevant source context cards
-- Styled official source links card
-- Clickable example questions
-- Styled practical explanation card
-- Collapsible assessment checklist
-- Collapsible source context
-- Styled CyberLex attention level card
-- Bilingual interface controls
-- Experimental search sidebar
+* cleaner main page
+* supported topic information
+* styled source metadata card
+* styled limitation notice
+* styled citation details
+* styled official links
+* styled source context
+* styled attention levels
+* collapsible source sections
+* clickable example questions
+* bilingual interface controls
+* cleaner incident-response layout
+* SOC Markdown report download
 
 ### Planned Improvements
 
-- Better source cards
-- Better citation cards
-- Improved mobile layout
-- More polished cybersecurity/legal-tech visual identity
-- Better screenshot-ready interface for final presentation
-- Better empty-state messages
-- Better onboarding text
-- Clearer explanation of prototype limitations
-- Improved sidebar organization
-
-### Possible UI Sections
-
-- Ask CyberLex
-- Supported topics
-- Citation details
-- Source context
-- Assessment checklist
-- Knowledge base status
-- Legal disclaimer
-- Source audit status
-- Retrieval mode status
+* more polished visual identity
+* better mobile layout
+* better empty-state messages
+* clearer onboarding text
+* improved sidebar organization
+* improved screenshot-ready design
+* clearer explanation of prototype limitations
+* better user-friendly names for source panels
 
 ### Success Criteria
 
-This phase is successful when a user can understand what the app does without needing personal guidance from the developer.
+This phase is successful when a new user can understand what CyberLex does without needing the developer to explain every panel.
 
 ---
 
@@ -507,32 +495,32 @@ Future phase.
 
 Prepare CyberLex Sweden for possible public deployment.
 
-### Required Work Before Deployment
+### Required Work Before Public Deployment
 
-- Review Terms of Use
-- Review Privacy Policy
-- Review Legal Disclaimer
-- Decide whether user questions are stored
-- Decide whether analytics are used
-- Decide whether external AI APIs are used
-- Add secure configuration handling
-- Avoid exposing secrets or API keys
-- Add deployment documentation
-- Add basic logging policy
-- Add security review checklist
-- Add abuse-prevention rules
-- Add rate limiting if public
-- Add clear contact/support information if public
+* review Terms of Use
+* review Privacy Policy
+* review Legal Disclaimer
+* decide whether user questions are stored
+* decide whether analytics are used
+* decide whether external AI APIs are used
+* add secure configuration handling
+* avoid exposing secrets or API keys
+* add deployment documentation
+* add logging policy
+* add security review checklist
+* add abuse-prevention rules
+* add rate limiting if public
+* add contact/support information if public
 
 ### Possible Deployment Options
 
-- Streamlit Community Cloud
-- Render
-- Railway
-- Azure App Service
-- AWS
-- Hetzner
-- Docker-based deployment
+* Streamlit Community Cloud
+* Render
+* Railway
+* Azure App Service
+* AWS
+* Hetzner
+* Docker-based deployment
 
 ### Important Note
 
@@ -558,16 +546,15 @@ Prepare CyberLex Sweden for possible long-term development as a brand or product
 
 ### Possible Actions
 
-- Keep copyright notices
-- Avoid adding an open-source license unless intentionally chosen
-- Create stronger Terms of Use
-- Create stronger Privacy Policy
-- Create stronger disclaimer
-- Consider registering the CyberLex Sweden name as a trademark
-- Consider logo and brand protection
-- Check for name conflicts before trademark registration
-- Review whether public use requires legal review from a qualified lawyer
-- Review whether the project should include stronger non-advice wording
+* keep copyright notices
+* avoid adding an open-source license unless intentionally chosen
+* strengthen Terms of Use
+* strengthen Privacy Policy
+* strengthen Legal Disclaimer
+* check for name conflicts
+* consider registering the CyberLex Sweden name as a trademark
+* consider logo and brand protection
+* review whether public use requires legal review from a qualified lawyer
 
 ### Trademark Note
 
@@ -581,7 +568,7 @@ This phase is successful when the project has a clear identity, ownership notice
 
 ---
 
-## Phase 9: Real Product Direction
+## Phase 9: Product Direction Decision
 
 ### Status
 
@@ -591,170 +578,99 @@ Future decision phase.
 
 Decide whether CyberLex Sweden should remain a portfolio project or become a real product concept.
 
-### Possible Product Directions
-
-- Bilingual Swedish and English cybersecurity law assistant
-- Student portfolio project
-- Cybersecurity law learning tool
-- Compliance assistant prototype
-- Internal company knowledge assistant
-- Swedish cyber law research assistant
-- Legal-tech startup concept
-
 ### Questions to Answer
 
-- Who is the target user?
-- What problem does CyberLex solve better than existing sources?
-- How should CyberLex Sweden support both Swedish and English as main languages?
-- Should it answer only from official sources?
-- Should it store user questions?
-- Should it use a cloud language model?
-- How should source updates be reviewed?
-- What legal review is required before public use?
-- Should CyberLex remain a local/offline assistant or become a hosted product?
-- Which sectors should be prioritized first?
+* Who is the target user?
+* What problem does CyberLex solve better than existing sources?
+* Should CyberLex answer only from official sources?
+* Should CyberLex store user questions?
+* Should CyberLex use a cloud language model?
+* How should source updates be reviewed?
+* What legal review is required before public use?
+* Should CyberLex remain local/offline or become hosted?
+* Which sectors should be prioritized first?
+* How should Swedish and English support be maintained?
 
 ### Success Criteria
 
-This phase is successful when the project has a clear direction and realistic next steps.
+This phase is successful when the project has a clear long-term direction.
 
 ---
 
-## Language Support Plan
+## Language Support Roadmap
 
-### Goal
-
-CyberLex Sweden should support both English and Swedish as main languages.
-
-English is useful for project documentation, technical development, GitHub presentation, and international cybersecurity terminology.
-
-Swedish is important because many legal sources, authority pages, laws, and real users in Sweden use Swedish.
-
-### Current Language Support
+### Current Support
 
 CyberLex Sweden currently supports:
 
-- English interface mode
-- Swedish interface mode
-- Auto language mode
-- English user questions
-- Swedish user questions
-- English answer headings
-- Swedish answer headings
-- Swedish and English example questions
-- Swedish source summaries in key knowledge files
-- Swedish retrieval routing for supported topics
-- Swedish useful questions in many source files
+* English interface mode
+* Swedish interface mode
+* Auto language mode
+* English user questions
+* Swedish user questions
+* English answer headings
+* Swedish answer headings
+* Swedish and English example questions
+* Swedish source summaries in key knowledge files
+* Swedish useful questions in many source files
+* Swedish routing for supported topics
 
-### Planned Language Support
+### Planned Improvements
 
-CyberLex Sweden should eventually support:
+* better Swedish answer wording
+* better English explanations of Swedish legal terms
+* more bilingual source summaries
+* more Swedish legal terminology support
+* more consistent bilingual source metadata
+* better handling of mixed Swedish and English questions
 
-- Better Swedish answer generation
-- Better English explanations of Swedish legal terms
-- Source citations in the original source language
-- More bilingual source summaries
-- More Swedish legal terminology support
-- More consistent bilingual source metadata
-- Better handling of mixed Swedish and English questions
+### Success Criteria
 
-### Example Questions
-
-English examples:
-
-```text
-What is IMY?
-What is NIS2 incident reporting?
-What is DORA?
-When must a personal data breach be reported?
-Can an incident need to be reported under both NIS2 and GDPR?
-What is the Cyber Resilience Act?
-What does EU law say about attacks against information systems?
-```
-
-Swedish examples:
-
-```text
-Vad är IMY?
-Vad är NIS2?
-Vad är DORA?
-När måste en personuppgiftsincident rapporteras?
-Kan en incident behöva rapporteras enligt både NIS2 och GDPR?
-Vad betyder cybersäkerhetskrav för digitala produkter?
-Vad säger EU om attacker mot informationssystem?
-```
+Swedish and English should both feel like first-class language modes, not one real mode and one cursed translation layer.
 
 ---
 
 ## Risk Overview
 
-| Risk | Explanation | Mitigation |
-|---|---|---|
-| Outdated legal sources | Laws and guidance can change | Add source review dates, source history, and manual review routines |
-| Unsupported answers | The system may answer without enough evidence | Use scope checks, source routing, and refusal behavior |
-| Wrong source match | Similar legal topics may confuse search | Use source routing, retrieval tests, and later vector search |
-| Overreliance by users | Users may treat answers as legal advice | Keep disclaimers and Terms of Use clear |
-| Privacy issues | Public deployment may process user input | Add Privacy Policy and avoid storing sensitive data |
-| Cyber misuse | Users may ask harmful cybercrime questions | Refuse harmful or out-of-scope questions |
-| Brand copying | Others may copy the name or concept | Keep copyright notice and consider trademark later |
-| False legal currency | Users may assume sources are live-updated | Explain that audit checks local structure, not live legal changes |
-| AI hallucination risk | Future AI mode may generate unsupported statements | Require source-grounded RAG and refusal rules |
+| Risk                   | Explanation                                   | Mitigation                                                          |
+| ---------------------- | --------------------------------------------- | ------------------------------------------------------------------- |
+| Outdated legal sources | Laws and guidance can change                  | Use source review dates, source history, and manual review routines |
+| Unsupported answers    | The system may answer without enough evidence | Use scope checks, source routing, and refusal behavior              |
+| Wrong source match     | Similar legal topics may confuse retrieval    | Use routing, tests, and later vector search                         |
+| Overreliance by users  | Users may treat answers as legal advice       | Keep disclaimers and Terms of Use clear                             |
+| Privacy issues         | Public deployment may process user input      | Add privacy policy and avoid unnecessary storage                    |
+| Cyber misuse           | Users may ask harmful cybercrime questions    | Refuse harmful or out-of-scope requests                             |
+| False legal currency   | Users may assume sources are live-updated     | Explain that source audit does not verify live legal changes        |
+| AI hallucination risk  | Future AI may generate unsupported statements | Require source-grounded RAG and refusal rules                       |
+| Code complexity        | `app/main.py` may become hard to maintain     | Refactor into modules after hand-in                                 |
 
 ---
 
 ## Near-Term Roadmap
 
-The next practical steps are:
+Before final hand-in, the near-term roadmap is:
 
-1. Review and commit updated roadmap documentation.
-2. Update any remaining documentation that still describes DORA, CRA, or EU attacks as future work only.
-3. Prepare a real vector search implementation plan.
-4. Decide whether to use ChromaDB or FAISS for the first vector search prototype.
-5. Add `sentence-transformers` as the likely embedding library.
-6. Create a small embedding index for the existing Markdown chunks.
-7. Add a retrieval mode comparison view:
-   - current main search
-   - experimental rule-based search
-   - vector search
-8. Test vector search against the Swedish retrieval test cases.
-9. Keep the current rule-based system as a fallback while vector search is tested.
-10. Only connect a language model after retrieval quality is reliable.
-11. Continue improving Terms of Use, Privacy Policy, and Legal Disclaimer before any public deployment.
+1. Finish documentation cleanup.
+2. Review source documentation.
+3. Run source audit.
+4. Run final manual smoke tests.
+5. Confirm the demo flow works.
+6. Confirm SOC Markdown report export works.
+7. Check out-of-scope refusal.
+8. Check unsafe cyber refusal.
+9. Review README and final presentation material.
+10. Commit and push the final clean version.
 
----
+After hand-in, the roadmap is:
 
-## Future AI Improvements
-
-Future AI-related improvements may include:
-
-- Vector search using ChromaDB or FAISS
-- Local embeddings using `sentence-transformers`
-- Retrieval-Augmented Generation, also called RAG
-- AI-generated answers based only on trusted retrieved source sections
-- Better multi-source answer synthesis
-- Stronger citation handling
-- Refusal when source material is insufficient
-- Clear separation between legal information and practical guidance
-- Retrieval comparison between keyword search and vector search
-- Source-grounded answer evaluation tests
-
-The future AI version should remain source-grounded and should not answer legal or compliance questions from general model memory alone.
-
----
-
-## Possible Deployment Improvements
-
-Possible deployment improvements include:
-
-- Public deployment through Streamlit Community Cloud, Render, Azure, or AWS
-- Environment-based configuration
-- Better project branding
-- Improved UI layout for mobile screens
-- Public-facing README updates
-- Clear user-facing legal disclaimer
-- Privacy-conscious logging policy
-- Basic monitoring and error handling
-- Security review before public use
+1. Refactor `app/main.py` into smaller modules.
+2. Prepare Python 3.12 or 3.11 environment.
+3. Add real vector search as a separate test mode.
+4. Compare vector search against existing test cases.
+5. Improve source update routines.
+6. Expand Swedish and EU source coverage.
+7. Consider RAG only after retrieval is reliable.
+8. Review legal/privacy/disclaimer documents before any public deployment.
 
 ---
 
@@ -764,16 +680,16 @@ CyberLex Sweden could become a source-grounded assistant for Swedish and EU cybe
 
 A mature version should:
 
-- rely on official sources
-- show citations clearly
-- explain legal concepts in plain language
-- refuse unsupported questions
-- keep source history
-- protect user privacy
-- avoid harmful cybersecurity guidance
-- support future expansion into more compliance areas
-- support both Swedish and English as first-class languages
-- maintain a strict difference between educational information and legal advice
+* rely on official and reviewed sources
+* show citations clearly
+* explain legal concepts in plain language
+* refuse unsupported questions
+* keep source history
+* protect user privacy
+* avoid harmful cybersecurity guidance
+* support both Swedish and English as first-class languages
+* maintain a strict difference between educational information and legal advice
+* support future expansion into related compliance areas
 
 ---
 
@@ -781,10 +697,8 @@ A mature version should:
 
 CyberLex Sweden has moved beyond a basic prototype.
 
-The project now has a working application, trusted knowledge files, citation details, metadata, source policy, test cases, legal disclaimer drafts, clickable examples, structured answer sections, styled attention levels, experimental retrieval, source audit automation, and a development roadmap.
-
-The main source and Swedish retrieval improvement phase has been completed for the current nine source files.
+The project now has a working local application, trusted knowledge files, source-grounded answers, source metadata, official source links, bilingual interface support, incident-response guidance, SOC Markdown report export, test cases, source audit support, and a realistic development roadmap.
 
 The next major technical step is real vector search.
 
-The project should continue improving source quality, documentation, safety, privacy, and user experience before becoming public or adding full AI-generated answers.
+The long-term product direction should remain cautious: better sources first, better retrieval second, AI-generated answers only when source grounding is reliable.
