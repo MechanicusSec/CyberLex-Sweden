@@ -1,8 +1,12 @@
 # Privacy and Data Handling
 
-CyberLex Sweden is a local educational prototype. This document explains how the current prototype handles user questions, local source files, incident summaries, and sensitive information.
+## Purpose
 
-CyberLex Sweden does **not** provide legal advice and should not be used as the sole basis for legal, compliance, regulatory, or security decisions.
+This document explains how the current CyberLex Sweden prototype handles user questions, local source files, generated incident summaries, and sensitive information.
+
+CyberLex Sweden is a local educational prototype.
+
+It does not provide legal advice and should not be used as the sole basis for legal, compliance, regulatory, or security decisions.
 
 ---
 
@@ -12,12 +16,13 @@ CyberLex Sweden currently runs locally as a Streamlit application.
 
 In the current prototype:
 
-- user questions are processed during the local Streamlit session
-- answers are generated from local Markdown source files in the data/ folder
-- no production database storage is implemented
-- no user-account system is implemented
-- no intentional analytics or telemetry is implemented by the app
-- no live web browsing is used when answering questions
+* user questions are processed during the local Streamlit session
+* answers are generated from local Markdown source files in the `data/` folder
+* no production database storage is implemented
+* no user-account system is implemented
+* no intentional analytics or telemetry is implemented by the app
+* no live web browsing is used when answering questions
+* no external AI API is required for the current rule-based prototype
 
 The app is designed for local testing, learning, demonstration, and portfolio use.
 
@@ -27,45 +32,76 @@ The app is designed for local testing, learning, demonstration, and portfolio us
 
 User questions are used to:
 
-- detect the question language
-- detect the question topic
-- search the local knowledge base
-- select relevant source sections
-- generate a source-grounded summary
-- decide whether practical guidance, incident templates, or refusal handling should appear
+* detect the question language
+* detect the question topic
+* search the local knowledge base
+* select relevant source sections
+* generate a source-grounded answer
+* decide whether practical guidance, incident templates, report download, or refusal handling should appear
 
-The prototype does not intentionally save user questions to a database.
+The current prototype does not intentionally save user questions to a production database.
 
-However, users should remember that local development environments can still produce runtime output, terminal logs, browser cache, or Streamlit session data. This depends on how the app is run locally.
+However, local development environments can still create temporary or indirect traces, such as:
+
+* terminal output
+* browser cache
+* Streamlit session data
+* local logs
+* downloaded files
+* screenshots
+* Git history if test data is committed by mistake
+* operating system or backup/sync traces
+
+This depends on how the app is run locally.
 
 ---
 
 ## Local Knowledge Base
 
-CyberLex Sweden answers from local Markdown files stored in the data/ folder.
+CyberLex Sweden answers from local Markdown files stored in:
 
-These files are written as educational summaries of selected legal, regulatory, authority, and incident-response topics.
+```text
+data/
+```
 
-The app does not verify live legal updates automatically when answering. Source freshness labels describe local review dates only.
+These files are educational summaries of selected legal, regulatory, authority, and defensive incident-response topics.
+
+The app does not verify live legal updates automatically when answering.
+
+Source freshness labels describe local review dates only.
+
+A source freshness label does not mean that CyberLex has checked the internet or confirmed that the law is currently up to date.
 
 ---
 
 ## Incident Summaries
 
-For selected practical incident-response questions, CyberLex Sweden can generate a downloadable incident summary.
+For selected practical incident-response questions, CyberLex Sweden can generate a downloadable SOC-style Markdown incident summary.
 
-The generated incident summary is intended as a documentation aid for learning and testing. It may include:
+The generated summary may include:
 
-- the original question
-- recommended first steps
-- an incident checklist
-- an incident log template
-- a source note
-- an educational disclaimer
+* report metadata
+* the original user question or reported event
+* recommended first steps
+* SOC triage support
+* an incident checklist
+* an incident log template
+* a short source note
+* an educational disclaimer
 
-The app does not intentionally store downloaded summaries after generating them. The downloaded file is created for the user.
+The current prototype does not intentionally store downloaded summaries after generating them.
 
-Users should not treat the generated summary as an official incident record, legal assessment, regulatory report, or replacement for internal incident-response procedures.
+The downloaded file is created for the user and is handled by the user's browser and local machine.
+
+Users should not treat generated summaries as:
+
+* official incident records
+* legal assessments
+* regulatory reports
+* forensic reports
+* breach notifications
+* replacements for internal incident-response procedures
+* replacements for professional incident-response support
 
 ---
 
@@ -73,22 +109,25 @@ Users should not treat the generated summary as an official incident record, leg
 
 Users should avoid entering real sensitive information into the prototype.
 
-Do **not** enter real:
+Do not enter real:
 
-- personal data
-- credentials
-- passwords
-- access tokens
-- private keys
-- customer data
-- employee data
-- confidential incident details
-- security logs containing sensitive information
-- protected business information
-- live exploit details
-- information that could identify real victims, systems, or attackers
+* personal data
+* credentials
+* passwords
+* access tokens
+* private keys
+* customer data
+* employee data
+* confidential incident details
+* sensitive security logs
+* protected business information
+* live exploit details
+* information identifying real victims
+* information identifying real systems
+* information identifying real attackers
+* information covered by confidentiality or security obligations
 
-Use fictional or anonymized examples during testing.
+Use fictional, anonymized, or heavily generalized examples during testing.
 
 ---
 
@@ -96,19 +135,22 @@ Use fictional or anonymized examples during testing.
 
 CyberLex Sweden discusses GDPR and personal data breach topics, but it is not itself a production GDPR compliance system.
 
-The prototype does not currently include:
+The current prototype does not include:
 
-- a data processing register
-- role-based access control
-- user authentication
-- production logging controls
-- retention rules
-- deletion workflows
-- data subject request workflows
-- processor/subprocessor management
-- production security review
+* a data processing register
+* role-based access control
+* user authentication
+* production logging controls
+* retention rules
+* deletion workflows
+* data subject request workflows
+* processor or subprocessor management
+* production security review
+* formal DPIA support
+* official breach-notification submission
+* access logs designed for regulated production use
 
-Those would be needed before using a similar system with real users or real personal data.
+Those would need to be considered before using a similar system with real users or real personal data.
 
 ---
 
@@ -118,16 +160,39 @@ Because CyberLex Sweden is currently run locally, data handling depends partly o
 
 Users should consider:
 
-- terminal output
-- local browser cache
-- Streamlit session behavior
-- downloaded files saved by the browser
-- Git history if test data is accidentally committed
-- screenshots used in documentation
-- local operating system logs
-- backup or sync tools such as OneDrive
+* terminal output
+* local browser cache
+* Streamlit session behavior
+* downloaded files saved by the browser
+* screenshots used in documentation
+* Git history
+* local operating system logs
+* backup or sync tools such as OneDrive
+* files accidentally added to GitHub
 
 Do not commit real sensitive incident examples to GitHub.
+
+Do not include real sensitive data in screenshots, reports, demos, or test cases.
+
+---
+
+## GitHub and Repository Considerations
+
+If the CyberLex Sweden repository is public or shared, users should avoid committing:
+
+* real personal data
+* real incident data
+* credentials
+* tokens
+* private keys
+* logs from real environments
+* real customer information
+* real employee information
+* confidential security details
+
+The project should use fictional or anonymized examples only.
+
+Generated local files should be reviewed before committing.
 
 ---
 
@@ -135,23 +200,39 @@ Do not commit real sensitive incident examples to GitHub.
 
 The current privacy position is:
 
-- CyberLex Sweden is a local educational prototype.
-- It should be tested with fictional or anonymized examples only.
-- It does not intentionally store user questions or incident summaries in a production database.
-- It does not intentionally use analytics or telemetry.
-- It should not be used with real sensitive incident data.
+* CyberLex Sweden is a local educational prototype.
+* It should be tested with fictional or anonymized examples only.
+* It does not intentionally store user questions in a production database.
+* It does not intentionally store generated incident summaries after download.
+* It does not intentionally use analytics or telemetry.
+* It does not use live web browsing for answers.
+* It should not be used with real sensitive incident data.
 
 ---
 
-## Future Improvements
+## Future Privacy Improvements
 
 Possible future privacy improvements include:
 
-- clearer in-app privacy notice
-- optional local-only mode explanation in the interface
-- explicit test-data warning near the question input
-- configurable logging behavior
-- export/delete controls for generated summaries
-- public deployment privacy review
-- stronger Terms of Use and Privacy Policy
-- security review before any production or public use
+* clearer in-app privacy notice
+* visible local-only mode explanation
+* explicit test-data warning near the question input
+* configurable logging behavior
+* export and delete controls for generated summaries
+* retention rules if storage is added
+* authentication and authorization if user accounts are added
+* public deployment privacy review
+* stronger Terms of Use and Privacy Policy
+* security review before production or public use
+* review of any external AI API or hosting provider before use
+* clear statement about whether user questions are stored
+
+---
+
+## Final Note
+
+CyberLex Sweden should be treated as a local educational prototype.
+
+Users should not enter real sensitive information.
+
+For real legal, compliance, privacy, or cybersecurity matters, users should rely on official sources, internal procedures, and qualified professionals.
