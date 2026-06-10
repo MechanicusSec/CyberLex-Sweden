@@ -10,10 +10,10 @@ This audit does not browse the web and does not confirm whether the law is curre
 
 ## Audit Summary
 
-- Generated at: `2026-06-10 10:07:09`
+- Generated at: `2026-06-10 15:16:00`
 - Total source files checked: `13`
-- Files marked OK: `12`
-- Files needing review: `1`
+- Files marked OK: `13`
+- Files needing review: `0`
 
 ---
 
@@ -93,20 +93,13 @@ No issues found.
 
 ### gdpr_imy_edpb_security_guidance.md
 
-- Status: `Needs review`
-- Official source links found: `0`
-- Source date: `Not found`
-- Source freshness: `No review date stored`
-- Version notes: `Not found`
+- Status: `OK`
+- Official source links found: `8`
+- Source date: `Source date: Last checked: 2026-06-08`
+- Source freshness: `Recently checked`
+- Version notes: `Version notes: Initial CyberLex Sweden educational summary based on IMY personal data breach guidance and EDPB guidance on breach notification examples and data protection by design/default.`
 
-#### Issues
-
-- Missing Official source section
-- No official source links found
-- Missing Source metadata section
-- Missing source date
-- Missing version notes
-- Freshness status: No review date stored
+No issues found.
 
 ---
 
