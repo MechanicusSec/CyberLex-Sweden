@@ -1,4 +1,5 @@
 from pathlib import Path
+from case_search import search_related_cases
 import re
 import streamlit as st
 from vector_search import build_chunk_index, search_chunks as experimental_search_chunks
@@ -6844,6 +6845,119 @@ def generate_enhanced_basic_summary(question, language="English"):
     return ""
 
 
+
+def generate_case_aware_summary(question, language="English"):
+    # Builds a more specific main answer for questions that are clearly connected
+    # to the local case library. This keeps CyberLex from answering every
+    # case-related question with a generic GDPR breach paragraph. Humanity asked
+    # for context, so the machine will grudgingly provide it.
+    question_lower = normalize_query_text(question).strip()
+    use_swedish = language == "Svenska"
+
+    meta_terms = [
+        "meta pixel", "meta-pixel", "meta", "pixel", "facebook pixel",
+        "tracking pixel", "tracking", "analytics", "third-party script",
+        "third party script", "website tracking", "marketing pixel",
+    ]
+    web_form_terms = [
+        "web form", "webform", "form", "website form", "online form",
+        "complaint form", "contact form", "formulär", "webbformulär",
+        "kontaktformulär", "klagomålsformulär",
+    ]
+    weak_security_terms = [
+        "weak security", "poor security", "security deficiencies", "security flaws",
+        "security measures cost", "weak security measures", "insufficient security",
+        "access control", "exposed online", "unauthorized access risk",
+        "svaga säkerhetsåtgärder", "bristande säkerhet", "säkerhetsbrister",
+        "otillräckliga säkerhetsåtgärder", "åtkomstkontroll",
+    ]
+    cost_terms = [
+        "cost", "fine", "fines", "administrative fine", "sanction", "sanctions",
+        "sek", "kosta", "kostar", "böter", "sanktionsavgift", "sanktionsavgifter",
+    ]
+    sensitive_terms = [
+        "sensitive", "sensitive personal data", "health", "pharmacy",
+        "känsliga", "känsliga personuppgifter", "hälsa", "apotek",
+    ]
+
+    has_meta = contains_any(question_lower, meta_terms)
+    has_web_form = contains_any(question_lower, web_form_terms)
+    has_weak_security = contains_any(question_lower, weak_security_terms)
+    has_cost = contains_any(question_lower, cost_terms)
+    has_sensitive = contains_any(question_lower, sensitive_terms)
+    has_breach_or_leak = contains_any(
+        question_lower,
+        [
+            "breach", "data breach", "personal data breach", "data leak", "leak",
+            "incident", "personuppgiftsincident", "dataläcka", "läcka", "gdpr-läcka",
+        ],
+    )
+
+    if has_meta:
+        if use_swedish:
+            return (
+                "Ja. Meta Pixel och liknande spårningsteknik kan skapa GDPR-risk om verktyget gör att personuppgifter skickas till Meta eller andra tredje parter utan tillräcklig kontroll, transparens, rättslig grund eller säkerhetsbedömning. "
+                "Risken blir högre om uppgifterna rör kunder, konton, köp, hälsa eller andra känsliga sammanhang. Organisationen bör därför kartlägga exakt vilka uppgifter som samlas in, vem som tar emot dem, om användare har informerats, om samtycke eller annan rättslig grund finns, och om privacy by design har följts. "
+                "De relaterade fallen nedan visar hur svenska myndighetsbeslut har bedömt liknande problem med Meta Pixel och överföring av personuppgifter."
+            )
+        return (
+            "Yes. Meta Pixel and similar tracking technology can create GDPR risk if it causes personal data to be sent to Meta or other third parties without sufficient control, transparency, legal basis, or security assessment. "
+            "The risk becomes higher if the data relates to customers, accounts, purchases, health, or other sensitive contexts. An organization should map exactly what data the pixel collects, who receives it, whether users were informed, whether consent or another legal basis exists, and whether privacy by design was applied. "
+            "The related cases below show how Swedish authority decisions have assessed similar Meta Pixel and personal-data transfer issues."
+        )
+
+    if has_web_form:
+        if use_swedish:
+            return (
+                "Ja. Ett webbformulär kan orsaka en personuppgiftsincident om formuläret samlar in personuppgifter och uppgifterna av misstag exponeras, skickas till analysverktyg, lämnas till ett personuppgiftsbiträde på fel sätt, lagras osäkert eller blir tillgängliga för obehöriga. "
+                "Risken blir högre om formuläret innehåller klagomål, identitetsuppgifter, hälsouppgifter, diskrimineringsuppgifter eller annan känslig information. Organisationen bör kontrollera formulärets dataflöden, loggning, åtkomstkontroller, analysverktyg, personuppgiftsbiträden och om uppgifterna kan ha lämnats ut felaktigt. "
+                "Det relaterade DO-fallet nedan är ett tydligt exempel på hur ett webbformulär och en bristande säkerhetsåtgärd kan leda till GDPR-konsekvenser."
+            )
+        return (
+            "Yes. A web form can cause a personal data breach if it collects personal data and that data is accidentally exposed, sent to analytics tools, disclosed incorrectly to a processor, stored insecurely, or made accessible to unauthorized persons. "
+            "The risk becomes higher if the form contains complaints, identity details, health data, discrimination-related information, or other sensitive information. An organization should check the form's data flows, logging, access controls, analytics tools, processors, and whether any information may have been disclosed incorrectly. "
+            "The related Equality Ombudsman case below is a clear example of how a web form and a failed security measure can lead to GDPR consequences."
+        )
+
+    if has_weak_security:
+        if use_swedish:
+            return (
+                "Bristande säkerhetsåtgärder kan skapa GDPR-risk eftersom organisationer måste skydda personuppgifter med lämpliga tekniska och organisatoriska åtgärder. "
+                "Exempel kan vara svag åtkomstkontroll, otillräcklig autentisering, bristande loggning, osäkra system, felkonfigurationer eller uppgifter som blir åtkomliga via internet. "
+                "Konsekvenserna kan bli intern utredning, teknisk åtgärd, dokumentation, anmälan till IMY, information till berörda personer, kostnader för incidenthantering och i vissa fall sanktionsavgifter. De relaterade fallen nedan visar verkliga exempel på hur sådana risker har bedömts."
+            )
+        return (
+            "Weak security measures can create GDPR risk because organizations must protect personal data with appropriate technical and organisational measures. "
+            "Examples can include poor access control, weak authentication, insufficient logging, insecure systems, misconfiguration, or information being accessible via the internet. "
+            "Consequences can include internal investigation, technical remediation, documentation, notification to IMY, communication to affected individuals, incident-response costs, and in some cases administrative fines. The related cases below show real examples of how these risks have been assessed."
+        )
+
+    if has_cost and (has_breach_or_leak or "gdpr" in question_lower or "imy" in question_lower):
+        if use_swedish:
+            return (
+                "Kostnaden för en GDPR-relaterad incident kan variera mycket. Den kan omfatta teknisk incidenthantering, forensisk analys, juridisk bedömning, dokumentation, information till berörda personer, driftstopp, förbättrade säkerhetsåtgärder, ryktepåverkan och eventuell sanktionsavgift. "
+                "CyberLex bör inte förutsäga böter, eftersom belopp beror på de faktiska omständigheterna, typen av personuppgifter, antal berörda personer, risknivå, säkerhetsåtgärder, oaktsamhet eller avsikt, åtgärder efter incidenten och samarbete med myndigheten. "
+                "De relaterade fallen nedan visar historiska exempel på beslut och belopp, inte en prognos för nya ärenden."
+            )
+        return (
+            "The cost of a GDPR-related incident can vary widely. It can include technical incident response, forensic analysis, legal assessment, documentation, communication to affected individuals, downtime, security improvements, reputational impact, and a possible administrative fine. "
+            "CyberLex should not predict fines because amounts depend on the specific facts, the type of personal data, number of affected people, level of risk, security measures, negligence or intent, mitigation, and cooperation with the authority. "
+            "The related cases below show historical examples of decisions and amounts, not a prediction for new incidents."
+        )
+
+    if has_sensitive and ("gdpr" in question_lower or has_breach_or_leak):
+        if use_swedish:
+            return (
+                "Känsliga personuppgifter innebär normalt högre GDPR-risk. Om sådana uppgifter exponeras, överförs till en tredje part eller behandlas utan tillräcklig kontroll kan organisationen behöva göra en noggrann riskbedömning, dokumentera händelsen, överväga anmälan till IMY och i vissa fall informera berörda personer. "
+                "Särskilt viktigt är att kontrollera rättslig grund, säkerhetsåtgärder, åtkomst, leverantörer och om privacy by design har följts. Relaterade fall nedan visar exempel där känsliga sammanhang påverkade bedömningen."
+            )
+        return (
+            "Sensitive personal data normally creates higher GDPR risk. If such data is exposed, transferred to a third party, or processed without sufficient control, the organization may need to perform a careful risk assessment, document the event, consider notification to IMY, and in some cases inform affected individuals. "
+            "Key checks include legal basis, security measures, access, suppliers, and whether privacy by design was applied. The related cases below show examples where sensitive contexts affected the assessment."
+        )
+
+    return ""
+
 def generate_simple_answer(question, best_match, language="English", include_technical_details=False):
     # Generates a simple source-based answer from the best matching chunk.
     question_lower = normalize_query_text(question)
@@ -6856,9 +6970,9 @@ def generate_simple_answer(question, best_match, language="English", include_tec
     ):
         return generate_incident_response_answer(question, language)
 
-    enhanced_basic_answer = ""
+    enhanced_basic_answer = generate_case_aware_summary(question, language)
 
-    if is_nis2_sector_scope_question(question):
+    if not enhanced_basic_answer and is_nis2_sector_scope_question(question):
         if use_swedish:
             if "bilaga" in question_lower or "annex" in question_lower:
                 answer = (
@@ -6958,7 +7072,7 @@ def generate_simple_answer(question, best_match, language="English", include_tec
 
         return answer
 
-    if is_gdpr_security_guidance_question(question):
+    if not enhanced_basic_answer and is_gdpr_security_guidance_question(question):
         is_mfa_question = has_mfa_term(question_lower)
         is_encryption_question = (
             "kryptering" in question_lower
@@ -7082,7 +7196,7 @@ def generate_simple_answer(question, best_match, language="English", include_tec
                     "The organization should then decide whether IMY must be notified within 72 hours, whether affected individuals must be informed if the risk is high, which protective measures reduce harm, and how the decision should be documented."
                 )
         enhanced_basic_answer = answer
-    else:
+    if not enhanced_basic_answer:
         enhanced_basic_answer = generate_enhanced_basic_summary(question, language)
 
     if enhanced_basic_answer:
@@ -8554,6 +8668,71 @@ badge_html = "".join(
     [f'<span class="topic-badge">{topic}</span>' for topic in topic_badges]
 )
 
+def display_related_cases(question, language="English"):
+    # Displays related authority decisions and case examples from the local
+    # CyberLex case library. These are educational examples, not legal advice
+    # and not fine predictions.
+    related_cases = search_related_cases(question, limit=3)
+
+    if not related_cases:
+        return
+
+    use_swedish = language == "Svenska"
+
+    if use_swedish:
+        heading = "Relaterade fall och myndighetsbeslut"
+        intro_text = (
+            "CyberLex hittade relaterade myndighetsbeslut som kan visa hur liknande "
+            "GDPR- eller cybersäkerhetsfrågor har bedömts i praktiken. Dessa används "
+            "som utbildande exempel, inte som juridisk rådgivning."
+        )
+        summary_label = "Sammanfattning"
+        fine_label = "Kostnad eller sanktionsavgift"
+        source_label = "Officiell källa"
+        disclaimer = (
+            "CyberLex förutspår inte böter eller rättsliga resultat. "
+            "Beloppen i fallen är historiska exempel och beror på de specifika omständigheterna."
+        )
+    else:
+        heading = "Related cases and authority decisions"
+        intro_text = (
+            "CyberLex found related authority decisions that may help explain how similar "
+            "GDPR or cybersecurity issues have been assessed in practice. These are used "
+            "as educational examples, not legal advice."
+        )
+        summary_label = "Summary"
+        fine_label = "Cost or administrative fine"
+        source_label = "Official source"
+        disclaimer = (
+            "CyberLex does not predict fines or legal outcomes. "
+            "The amounts shown in these cases are historical examples and depend on the specific circumstances."
+        )
+
+    st.subheader(heading)
+    st.info(intro_text)
+
+    for case in related_cases:
+        case_title = case.get("title", "Untitled case")
+
+        with st.expander(case_title):
+            summary = str(case.get("summary", "")).strip()
+            fine_or_cost = str(case.get("fine_or_cost", "")).strip()
+            official_source = str(case.get("official_source", "")).strip()
+
+            if summary:
+                st.markdown(f"**{summary_label}:**")
+                st.markdown(summary)
+
+            if fine_or_cost:
+                st.markdown(f"**{fine_label}:**")
+                st.markdown(fine_or_cost)
+
+            if official_source:
+                st.markdown(f"**{source_label}:**")
+                st.markdown(official_source)
+
+    st.caption(disclaimer)
+
 def detect_question_language(question):
     # Detects whether the answer should be Swedish or English.
     # Uses the same scoring logic as the preview detector so the page and answer stay aligned.
@@ -8924,6 +9103,9 @@ if question:
                             source_context_html,
                             unsafe_allow_html=True
                         )
+
+
+                display_related_cases(question, language)
 
                 if show_technical_diagnostics:
                     with st.expander(other_matches_header, expanded=False):
