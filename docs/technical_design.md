@@ -22,6 +22,9 @@ Instead, it uses:
 * transparent source display
 * defensive incident-response logic
 * SOC-style Markdown report export
+* case-library support for real authority decisions and historical examples
+* a Case Intelligence page for browsing GDPR and cybersecurity-related cases
+* bilingual case display for Swedish and English summaries, outcomes, topics, and source links
 * an experimental retrieval panel
 
 CyberLex Sweden is designed as an educational legal-tech and cybersecurity-law prototype.
@@ -51,7 +54,10 @@ The application is built with:
 * topic-based assessment checklists
 * SOC-style Markdown report generation
 * experimental retrieval search
+* case library loading and case relevance search
+* bilingual case-intelligence display
 * source audit scripts
+* case audit scripts
 * GitHub Actions source audit automation
 
 The main application file is:
@@ -66,10 +72,22 @@ The experimental retrieval module is:
 app/vector_search.py
 ```
 
+The case search module is:
+
+```text
+app/case_search.py
+```
+
 The local knowledge base is stored in:
 
 ```text
 data/
+```
+
+The educational case library is stored in:
+
+```text
+cases/
 ```
 
 The project documentation is stored in:
@@ -84,13 +102,19 @@ Maintenance scripts are stored in:
 scripts/
 ```
 
+Case-library documentation and audit output are stored in:
+
+```text
+docs/case_library/
+```
+
 The GitHub Actions workflow is stored in:
 
 ```text
 .github/workflows/source-audit.yml
 ```
 
-This structure separates the main app, trusted source files, documentation, maintenance scripts, and automation workflows.
+This structure separates the main app, trusted source files, case files, documentation, maintenance scripts, and automation workflows.
 
 This makes the project easier to understand, test, maintain, and expand.
 
@@ -119,6 +143,10 @@ It handles:
 * generating source audit reports
 * displaying results through Streamlit
 * running experimental retrieval tests
+* loading educational case files
+* scoring related cases
+* rendering bilingual case-library content
+* filtering official case source links by selected language
 
 Python is also used for the maintenance scripts in the `scripts/` folder.
 
@@ -149,6 +177,10 @@ It displays:
 * relevant source context
 * other matching source sections
 * experimental retrieval results
+* Case Intelligence page
+* searchable case cards
+* related authority decisions below answers
+* bilingual case summaries, outcomes, topics, and source links
 
 Streamlit is also used for interactive features such as:
 
@@ -204,6 +236,227 @@ The knowledge base is intentionally local.
 CyberLex Sweden does not browse the web live when answering questions.
 
 This makes the prototype easier to control and explain, but it also means the source material must be reviewed and updated manually.
+
+---
+
+## Case Library
+
+CyberLex Sweden includes a separate educational case library stored in:
+
+```text
+cases/
+```
+
+The case library is separate from the trusted legal and cybersecurity knowledge base in `data/`.
+
+The separation is intentional:
+
+```text
+data/
+= legal, regulatory, authority, and cybersecurity source knowledge
+
+cases/
+= historical authority decisions, real-world examples, outcomes, fines, and references
+```
+
+CyberLex Sweden should not treat historical cases as fine predictions or legal outcome predictions.
+
+Case files are used as educational examples to show how similar GDPR, cybersecurity, tracking-technology, personal-data-breach, and security-measure issues have been assessed in practice.
+
+The current case library contains:
+
+```text
+cases/imy_apoteket_apohem_meta_pixel.md
+cases/imy_avanza_bank_meta_pixel.md
+cases/imy_equality_ombudsman_web_form.md
+cases/imy_kry_meta_pixel.md
+cases/imy_sportadmin_security_breach.md
+cases/imy_trygg_hansa_security_deficiencies.md
+cases/imy_wrong_email_customer_data.md
+```
+
+The case template is:
+
+```text
+cases/CASE_TEMPLATE.md
+```
+
+The case index is:
+
+```text
+cases/CASE_INDEX.md
+```
+
+Each case file should contain structured sections such as:
+
+* case type
+* jurisdiction
+* year
+* authority or court
+* topic
+* short summary
+* Swedish short summary
+* what happened
+* Swedish what happened
+* legal issue
+* Swedish legal issue
+* decision or outcome
+* Swedish decision or outcome
+* fine or cost
+* Swedish fine or cost
+* why it matters for CyberLex
+* Swedish why it matters for CyberLex
+* similar CyberLex questions
+* related CyberLex topics
+* Swedish related CyberLex topics
+* official source
+* Swedish official source, where available or needed
+* case metadata
+* disclaimer
+
+The bilingual case sections allow the Case Intelligence page to display Swedish case content when the user selects Swedish, English content when the user selects English, and broader source visibility when the user uses automatic language mode.
+
+---
+
+## Case Search and Related Cases
+
+The case search module is:
+
+```text
+app/case_search.py
+```
+
+This module loads Markdown files from the `cases/` folder and scores how relevant each case is to the user question.
+
+It supports:
+
+* case file loading
+* section extraction
+* keyword expansion
+* case-profile matching
+* phrase-based scoring
+* deterministic priority rules
+* top-case ranking
+
+The deterministic priority layer helps obvious questions return the most relevant case first.
+
+Examples:
+
+```text
+Can hashed data sent through Meta Pixel be a GDPR issue?
+→ IMY Kry Meta Pixel should rank first
+```
+
+```text
+Can sending customer data to the wrong email be a personal data breach?
+→ Wrong Email Customer Data Case should rank first
+```
+
+```text
+What happens if data is published on the Darknet?
+→ Sportadmin Security Breach should rank first
+```
+
+```text
+What can weak security measures cost?
+→ Trygg-Hansa Security Deficiencies and Sportadmin should rank highly
+```
+
+Related cases can appear below normal CyberLex answers in a section such as:
+
+```text
+Related cases and authority decisions
+```
+
+This section is intended to support the answer with real historical examples.
+
+It is not a prediction engine.
+
+---
+
+## Case Intelligence Page
+
+CyberLex Sweden includes a Case Intelligence page inside the Streamlit application.
+
+The current implementation is in:
+
+```text
+app/main.py
+```
+
+The sidebar navigation includes:
+
+```text
+Ask CyberLex
+Case Intelligence
+```
+
+The Case Intelligence page lets the user browse the case library without asking a normal question.
+
+It displays:
+
+* a case-library introduction
+* case search/filter input
+* total case count
+* shown case count
+* limitation warning about historical outcomes
+* foldable case cards
+* summaries
+* administrative fines or outcomes
+* related topic badges
+* official source links
+
+The Case Intelligence page uses bilingual display logic.
+
+When the selected language is English, it prefers English case sections.
+
+When the selected language is Swedish, it prefers Swedish case sections.
+
+When source-language mode is automatic, official source links can show both Swedish and English sources.
+
+If a selected language has no matching source link, CyberLex falls back to available official sources so that users do not lose source transparency.
+
+---
+
+## Case Audit System
+
+CyberLex Sweden includes a case audit script:
+
+```text
+scripts/case_audit.py
+```
+
+The script checks Markdown files in:
+
+```text
+cases/
+```
+
+It ignores:
+
+```text
+cases/CASE_TEMPLATE.md
+cases/CASE_INDEX.md
+```
+
+The case audit checks whether each case file includes required sections, official source links, case source dates, and version notes.
+
+The generated report is stored in:
+
+```text
+docs/case_library/case_audit_report.md
+```
+
+The expected current audit scope is:
+
+```text
+Case files checked: 7
+```
+
+The case audit does not verify live legal accuracy online.
+
+It checks whether the local case-library files follow the required CyberLex case structure.
+
 
 ---
 
@@ -296,6 +549,7 @@ Examples:
 * Dataintrång or Swedish unauthorized access questions route to `cybercrime_dataintrang.md`
 * EU attacks against information systems questions route to `eu_attacks_against_information_systems.md`
 * practical incident-response questions route to `cyber_incident_response_playbook.md` where relevant
+* case-library-style questions about Meta Pixel, weak security, wrong email disclosure, Darknet publication, web forms, and fines route toward better supporting source files
 
 Source routing improves accuracy by preventing similar words from matching the wrong source file.
 
@@ -855,8 +1109,17 @@ The app can display:
 * Swedish source-confidence labels
 * English freshness labels
 * Swedish freshness labels
+* English case summaries
+* Swedish case summaries
+* English case outcomes
+* Swedish case outcomes
+* English case topic badges
+* Swedish case topic badges
+* language-aware official source links for cases
 
 The knowledge base includes Swedish summaries and Swedish useful-question sections across several supported source files.
+
+The case library now also supports Swedish case sections. The Case Intelligence page can display Swedish summaries, Swedish fine/outcome text, Swedish topic badges, and language-aware official source links.
 
 Swedish answer wording and source coverage can still be improved further, but the project has a stronger bilingual foundation than the earlier prototype.
 
@@ -882,6 +1145,9 @@ Current technical limitations include:
 * source freshness labels describe stored local review dates only, not live legal currency
 * detected topic labels describe question interpretation only, not legal classification
 * the experimental search panel is for testing and does not replace the main answer system yet
+* case examples are historical and must not be presented as fine predictions
+* some official case sources may exist only in English or only in Swedish
+* case source-language filtering depends on available links and local case-file structure
 
 ---
 
@@ -897,6 +1163,10 @@ Future technical improvements may include:
 * stronger citation formatting
 * source update reminders
 * live source review workflow
+* more Swedish official case links where available
+* more authority and court decisions for the case library
+* stronger case metadata and filtering
+* separate Streamlit page files for Case Intelligence when the app grows
 * optional retrieval mode comparison
 * public deployment
 * improved visual design
@@ -936,11 +1206,18 @@ CyberLex Sweden currently has:
 * bilingual interface support
 * experimental retrieval sidebar
 * experimental retrieval module in `app/vector_search.py`
+* case search module in `app/case_search.py`
+* Case Intelligence page
+* educational case library in `cases/`
+* 7 checked case files
+* bilingual case summaries, outcomes, topics, and source links
+* related cases and authority decisions under relevant answers
 * source audit script in `scripts/source_audit.py`
+* case audit script in `scripts/case_audit.py`
 * metadata helper script in `scripts/add_missing_metadata.py`
 * GitHub Actions source audit workflow
 * improved Swedish routing for NIS2, GDPR, IMY, dataintrång, DORA, CRA, and EU attacks against information systems
 
-The source-improvement phase is largely complete for the current prototype scope.
+The source-improvement and case-intelligence phase is largely complete for the current prototype scope.
 
-The next major technical step is true vector search, then later a RAG-based answer mode that remains mandatory-source-grounded.
+The next major technical step is documentation cleanup, broader test coverage for case behavior, true vector search, and later a RAG-based answer mode that remains mandatory-source-grounded.

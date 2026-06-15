@@ -2,19 +2,40 @@
 
 ## Purpose
 
-This document explains how CyberLex Sweden will use real authority decisions, court cases, and case-like enforcement examples as educational reference material.
+This document explains how CyberLex Sweden uses real authority decisions, court cases, and case-like enforcement examples as educational reference material.
 
 The goal is to make CyberLex Sweden more useful for both school project work and possible future real-world development.
 
-The case library should help users understand how cybersecurity, GDPR, data breaches, information leaks, unauthorized access, and digital compliance issues have been handled in real decisions.
+The case library helps users understand how cybersecurity, GDPR, data breaches, information leaks, unauthorized access, tracking technology, weak security measures, and digital compliance issues have been handled in real decisions.
 
-CyberLex Sweden remains an educational prototype. It does not provide legal advice.
+CyberLex Sweden remains an educational prototype. It does not provide legal advice and does not predict legal outcomes.
+
+---
+
+## Current Status
+
+The first working version of the case library has been implemented.
+
+CyberLex Sweden currently includes:
+
+* Markdown case files stored in `cases/`
+* a case search module in `app/case_search.py`
+* a Case Intelligence / authority decisions page in the Streamlit app
+* related-case display under relevant answers
+* case filtering in the user interface
+* bilingual case display support
+* language-aware official source display
+* a case audit script
+* a generated case audit report
+* educational limitation text warning that historical outcomes are not fine predictions
+
+The current case audit checks 7 case files.
 
 ---
 
 ## Why Add a Case Library?
 
-CyberLex Sweden currently explains selected legal and cybersecurity topics from local source files.
+CyberLex Sweden explains selected legal and cybersecurity topics from local source files.
 
 A case library adds another layer:
 
@@ -28,8 +49,9 @@ Cases can help show:
 * what authority or court reviewed the issue
 * what legal problem mattered
 * what security weakness was important
-* whether a fine or other consequence was issued
+* whether a fine, reprimand, or other outcome was issued
 * what CyberLex users can learn from the case
+* how similar legal or cybersecurity issues can be assessed differently depending on the facts
 
 This makes CyberLex more realistic and useful than only showing abstract legal summaries.
 
@@ -37,21 +59,25 @@ This makes CyberLex more realistic and useful than only showing abstract legal s
 
 ## Case Library Scope
 
-The first case library should focus on cases and authority decisions related to:
+The first case library focuses on cases and authority decisions related to:
 
 * GDPR personal data breaches
 * data leaks
 * information leaks
 * unlawful disclosure of personal data
 * insufficient security measures
-* unauthorized access
+* unauthorized access risk
 * hacking or intrusion
-* ransomware or malware incidents
+* cyber attacks
+* publication of leaked data
 * use of tracking tools such as Meta Pixel where personal data was transferred
+* web forms and analytics tools
+* accidental disclosure by email
 * administrative fines
+* reprimands
 * cybersecurity-related compliance failures
 
-The first version should prioritize Swedish and EU sources.
+The first version prioritizes Swedish and EU sources.
 
 ---
 
@@ -62,77 +88,89 @@ CyberLex Sweden should prioritize official or high-quality sources.
 Preferred sources:
 
 * IMY decisions and press releases
+* IMY supervision pages
 * EDPB summaries of national supervisory authority decisions
 * Swedish court decisions where available and relevant
 * EUR-Lex where EU legal context is needed
 * official authority reports
 * official cybersecurity authority guidance
+* official company statements only as supporting context, not as the main legal source
 
 Secondary sources may be used only for orientation, not as the main source, unless no official source is available.
 
 ---
 
-## First Case Candidates
+## Current Case Files
 
-Good first case candidates include:
+The current case library includes these case files:
 
-1. Avanza Bank and Meta Pixel
+```text
+cases/imy_apoteket_apohem_meta_pixel.md
+cases/imy_avanza_bank_meta_pixel.md
+cases/imy_equality_ombudsman_web_form.md
+cases/imy_kry_meta_pixel.md
+cases/imy_sportadmin_security_breach.md
+cases/imy_trygg_hansa_security_deficiencies.md
+cases/imy_wrong_email_customer_data.md
+```
 
-   Topic: transfer of customer data to Meta through Meta Pixel.
+These files currently cover:
 
-   Why useful: shows how tracking technology, financial data, GDPR security, and unlawful transfer can create serious compliance risk.
-
-2. Swedish insurance company security case
-
-   Topic: insufficient security measures and personal data exposure.
-
-   Why useful: connects directly to GDPR security measures, access control, and security weakness assessment.
-
-3. SL and WÅAB administrative fines
-
-   Topic: processing personal data related to employee sobriety tests.
-
-   Why useful: shows that even lower fines can matter and that GDPR applies to workplace processing and sensitive contexts.
-
-4. Apoteket and Apohem Meta Pixel fines
-
-   Topic: transfer of sensitive personal data to Meta through website tracking.
-
-   Why useful: strong example of data leakage through tracking technology in a sensitive sector.
-
-5. Equality Ombudsman web form case
-
-   Topic: insufficient security measures in a web form.
-
-   Why useful: simple case example for security measures, web forms, and personal data exposure.
+* Apoteket and Apohem Meta Pixel
+* Avanza Bank and Meta Pixel
+* Equality Ombudsman web form security case
+* Kry Meta Pixel
+* Sportadmin security breach
+* Trygg-Hansa security deficiencies
+* Wrong email customer data case
 
 ---
 
 ## Case File Location
 
-Case files should be stored in:
+Case files are stored in:
 
 ```text
 cases/
 ```
 
-Example filenames:
+Supporting case-library documentation is stored in:
 
 ```text
-cases/imy_avanza_bank_meta_pixel.md
-cases/imy_insurance_company_security_measures.md
-cases/imy_sl_waab_employee_sobriety_tests.md
-cases/imy_apoteket_apohem_meta_pixel.md
-cases/imy_equality_ombudsman_web_form.md
+docs/case_library/
 ```
 
-Each file should use a consistent structure so the app can later search, display, and compare cases.
+The generated case audit report is stored in:
+
+```text
+docs/case_library/case_audit_report.md
+```
+
+The case audit script is:
+
+```text
+scripts/case_audit.py
+```
+
+The case search module is:
+
+```text
+app/case_search.py
+```
+
+The main Streamlit case display is handled in:
+
+```text
+app/main.py
+```
 
 ---
 
 ## Case File Template
 
-Each case file should use this structure:
+Each case file should use a consistent structure so the app can search, display, and compare cases.
+
+Recommended structure:
 
 ```markdown
 # Case title
@@ -159,31 +197,55 @@ Short topic labels.
 
 ## Short summary
 
-A short educational summary of the case.
+A short English educational summary of the case.
+
+## Swedish short summary
+
+A short Swedish educational summary of the case.
 
 ## What happened
 
-What happened in plain language.
+What happened in plain English.
+
+## Swedish what happened
+
+What happened in plain Swedish.
 
 ## Legal issue
 
 What legal or compliance issue was reviewed.
 
+## Swedish legal issue
+
+The same legal or compliance issue explained in Swedish.
+
 ## Decision or outcome
 
 What the authority or court decided.
+
+## Swedish decision or outcome
+
+The decision or outcome explained in Swedish.
 
 ## Fine or cost
 
 Fine amount, cost, or outcome if officially available.
 
-If no fine amount is available, write:
+CyberLex should not present this amount as a prediction for other cases.
 
-No official fine amount included in this source summary.
+## Swedish fine or cost
+
+Fine amount, cost, or outcome explained in Swedish.
+
+CyberLex ska inte presentera detta belopp som en förutsägelse för andra fall.
 
 ## Why it matters for CyberLex
 
 Explain what CyberLex users can learn from this case.
+
+## Swedish why it matters for CyberLex
+
+Explain the educational value in Swedish.
 
 ## Similar CyberLex questions
 
@@ -197,13 +259,26 @@ Explain what CyberLex users can learn from this case.
 - Personal data breach
 - Security measures
 - Incident response
-- NIS2
-- DORA
-- Dataintrång
+
+## Swedish related CyberLex topics
+
+- GDPR
+- IMY
+- Personuppgiftsincident
+- Säkerhetsåtgärder
+- Incidenthantering
 
 ## Official source
 
-- [Official source name](https://example.com)
+- [Official English or general source name](https://example.com)
+
+## Swedish official source
+
+- [Official Swedish source name](https://example.com)
+
+If no Swedish source exists, use a clear label such as:
+
+- [IMY - Officiell källa, engelsk IMY-sida](https://example.com)
 
 ## Case metadata
 
@@ -218,6 +293,67 @@ This is an educational case summary. It is not legal advice and does not replace
 
 ---
 
+## Bilingual Case Display
+
+CyberLex Sweden supports bilingual display for the Case Intelligence page.
+
+The app can show:
+
+* English case summaries in English mode
+* Swedish case summaries in Swedish mode
+* English fine or outcome sections in English mode
+* Swedish fine or outcome sections in Swedish mode
+* English related topic chips in English mode
+* Swedish related topic chips in Swedish mode
+* language-aware source links
+
+The app uses fallback behavior when a section is missing.
+
+For example:
+
+* if `## Swedish short summary` exists, Swedish mode uses it
+* if `## Swedish short summary` is missing, Swedish mode can fall back to `## Short summary`
+* if `## Swedish official source` exists, Swedish mode uses it
+* if no Swedish official source exists, the app can fall back to available official sources instead of hiding all source information
+
+This keeps the interface clean while still preserving source transparency.
+
+---
+
+## Official Source Language Rules
+
+Official source links should be handled carefully.
+
+Recommended behavior:
+
+```text
+English mode -> show English or general official sources
+Swedish mode -> show Swedish official sources when available
+Auto mode -> show both English and Swedish official sources where available
+```
+
+If only one official source language exists, CyberLex may still show that source instead of leaving the source section empty.
+
+This is especially important when an official authority only provides a source page in one language.
+
+Case files should use:
+
+```markdown
+## Official source
+```
+
+for English or general official sources.
+
+Case files should use:
+
+```markdown
+## Swedish official source
+```
+
+for Swedish official sources or Swedish-labeled official-source fallback entries.
+
+---
+
 ## Case Selection Rules
 
 A case should be added only if:
@@ -227,6 +363,7 @@ A case should be added only if:
 * the source can be cited clearly
 * the case can be summarized without guessing
 * the case teaches something useful about cybersecurity law, GDPR, data protection, incident response, or digital compliance
+* the case can be presented with a clear educational limitation
 
 A case should not be added if:
 
@@ -235,41 +372,111 @@ A case should not be added if:
 * the source is only a random news article
 * the topic is outside CyberLex Sweden's scope
 * the summary would require legal speculation
+* the case would make CyberLex appear to predict fines or legal outcomes
 
 ---
 
-## How Cases Should Be Used Later
+## Case Search and Related Cases
 
-In a future app version, CyberLex could show related cases after the main source-grounded answer.
-
-Example:
+The app uses the case search module:
 
 ```text
-Related cases:
-- Avanza Bank and Meta Pixel
-- Apoteket and Apohem Meta Pixel
+app/case_search.py
 ```
 
-The case display should include:
+The purpose of this module is to search the case library and find related authority decisions or enforcement examples.
+
+The app can use related cases in two ways:
+
+1. On the Case Intelligence page, where users can browse and filter all cases.
+2. Under normal CyberLex answers, where related cases can support the main source-grounded answer.
+
+Related cases should support the main answer, not replace legal sources.
+
+A good related-case display should include:
 
 * case title
-* authority or court
-* year
-* topic
 * short summary
 * fine or outcome
-* official source link
+* related CyberLex topics
+* official source links
 * educational limitation
 
-Cases should support the answer, not replace legal sources.
+The display should not suggest that a historic fine predicts a future fine.
+
+---
+
+## Case Intelligence Page
+
+The Case Intelligence page allows users to browse authority decisions and case examples used by CyberLex Sweden as educational references.
+
+The page should show:
+
+* number of cases in the library
+* number of visible cases after filtering
+* search/filter field
+* educational limitation warning
+* expandable case cards
+* summary
+* fine or outcome
+* related topics
+* official source links
+
+The page should support filtering by words such as:
+
+```text
+Meta Pixel
+säkerhet
+e-post
+dataläcka
+Darknet
+Sportadmin
+Avanza
+Apoteket
+Kry
+```
+
+The page should respect the selected language mode.
+
+---
+
+## Case Audit System
+
+CyberLex Sweden includes a case audit system.
+
+The script is:
+
+```text
+scripts/case_audit.py
+```
+
+The script checks Markdown files in:
+
+```text
+cases/
+```
+
+It checks whether each case file has the required structure.
+
+The generated report is:
+
+```text
+docs/case_library/case_audit_report.md
+```
+
+The case audit helps verify that case files include required headings and official-source information.
+
+The audit does not browse the web and does not verify live legal currency.
+
+It only checks local file structure and stored metadata.
 
 ---
 
 ## Risk and Cost Context
 
-The case library can support future risk and cost context.
+The case library can support risk and cost context.
 
-CyberLex may later explain possible cost areas such as:
+CyberLex may explain possible cost areas such as:
 
 * administrative fines
 * legal review
@@ -284,11 +491,13 @@ CyberLex may later explain possible cost areas such as:
 
 CyberLex should not predict exact fines.
 
-A safe wording is:
+Safe wording:
 
 ```text
-CyberLex does not predict fines. This is an educational risk context based on known factors and previous decisions.
+CyberLex does not predict fines. This is educational risk context based on known factors and previous decisions.
 ```
+
+Case amounts should be treated as historical examples from specific decisions, not as predictions.
 
 ---
 
@@ -299,6 +508,7 @@ A future risk model may consider:
 * number of affected people
 * type of personal data
 * sensitive data involved
+* children or protected identity information involved
 * duration of the issue
 * intentional or negligent behavior
 * security measures in place
@@ -308,6 +518,8 @@ A future risk model may consider:
 * cooperation with the authority
 * previous similar issues
 * sector and organizational context
+* whether the issue involved tracking technology or third-party tools
+* whether the issue involved web forms, email mistakes, or weak access control
 
 These factors should be explained as educational risk indicators, not as a legal fine calculator.
 
@@ -315,7 +527,7 @@ These factors should be explained as educational risk indicators, not as a legal
 
 ## Development Order
 
-Recommended order:
+Original recommended order:
 
 1. Create case library plan.
 2. Create case file template.
@@ -326,6 +538,27 @@ Recommended order:
 7. Add educational risk and cost context.
 8. Add test cases for case retrieval.
 9. Consider future RAG only after case retrieval works reliably.
+
+Current progress:
+
+* case library plan created
+* case files created
+* case audit support added
+* case search added
+* related-case display added
+* Case Intelligence page added
+* bilingual case display added
+* source-language display behavior improved
+* manual regression tests added
+* documentation updated
+
+Remaining possible next steps:
+
+* add more cases gradually
+* improve exact source-language coverage where Swedish and English authority pages both exist
+* refine case filtering and ranking
+* add more structured case metadata if needed
+* consider future RAG only after retrieval stays reliable
 
 ---
 
@@ -339,15 +572,20 @@ Recommended push points:
 * after case audit works
 * after related-case search works
 * after the app displays related cases cleanly
+* after bilingual case display and test documentation are stable
 
 Do not push every tiny edit.
+
+This protects the project while it is still being actively improved.
 
 ---
 
 ## Final Note
 
-The case library should make CyberLex Sweden more useful and realistic.
+The case library makes CyberLex Sweden more useful and realistic.
 
 It should also stay careful, source-grounded, and educational.
 
 Cases should help users understand real-world consequences, but CyberLex should not pretend to predict legal outcomes.
+
+The current case-library implementation is a strong local milestone, but future additions should still be added slowly and tested carefully.

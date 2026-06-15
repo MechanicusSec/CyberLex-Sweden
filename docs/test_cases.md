@@ -21,6 +21,10 @@ The goal is to verify that CyberLex Sweden can:
 * refuse out-of-scope questions
 * refuse unsafe offensive cyber requests
 * avoid unsupported answers when no trusted source exists
+* display the case library and Case Intelligence page
+* show related cases and authority decisions where relevant
+* show bilingual case summaries, outcomes, topics, and source links
+* support English, Swedish, and Auto behavior for case-library source links
 
 CyberLex Sweden is an educational prototype. It does not provide legal advice and does not replace official authority guidance, a lawyer, data protection officer, compliance expert, or professional incident-response team.
 
@@ -38,6 +42,8 @@ CyberLex Sweden uses separate testing and demo documents for different purposes:
 | `docs/test_run_checklist.md`  | Pass/fail form for practical test runs.       |
 | `docs/test_cases.md`          | Full manual regression test library.          |
 | `docs/source_audit_report.md` | Generated local source audit result.          |
+| `docs/case_library/case_library_plan.md` | Plan and structure for authority-decision case library. |
+| `docs/case_library/case_audit_report.md` | Generated local case-library audit result. |
 
 This file is the main regression test reference.
 
@@ -71,6 +77,14 @@ python scripts/source_audit.py
 
 This command checks the local Markdown source files and updates `docs/source_audit_report.md`.
 
+Case audit command:
+
+```powershell
+python scripts/case_audit.py
+```
+
+This command checks the local authority-decision case files in `cases/` and updates `docs/case_library/case_audit_report.md`.
+
 Syntax check command:
 
 ```powershell
@@ -89,8 +103,10 @@ A test case passes when CyberLex Sweden:
 * routes the question to the expected source area
 * gives a useful source-grounded answer
 * shows official source links where appropriate
+* shows language-appropriate case source links where possible
 * shows source metadata where appropriate
 * avoids unrelated source cards
+* avoids unrelated case cards
 * avoids developer-style helper text in normal user-facing sections
 * avoids unsafe cyber guidance
 * refuses unsupported or out-of-scope questions
@@ -1286,6 +1302,209 @@ The app switches answer language based on the submitted question.
 
 ---
 
+
+## Case Library and Case Intelligence Test Cases
+
+These tests verify the browseable case library, related-case matching, authority-decision summaries, and bilingual source-link behavior.
+
+---
+
+## Test Case 44: Case Intelligence Page Loads
+
+### Action
+
+Open the Case Intelligence / authority decisions page in the Streamlit app.
+
+### Expected Result
+
+CyberLex should display the case-library page with a short explanation, a case filter input, case count badges, and expandable authority-decision cards.
+
+### Expected Behavior
+
+* the page loads without errors
+* all available case files appear
+* the number of displayed cases matches the number of cases in the local case library
+* template or index files are not displayed as real cases
+* each case card shows a title, summary, fine or outcome, related topics, and official sources where available
+
+### Pass Condition
+
+The Case Intelligence page displays the local case library clearly and does not show broken or empty case cards.
+
+---
+
+## Test Case 45: Case Library Swedish Display
+
+### Action
+
+Set the interface language to Swedish and open the Case Intelligence page.
+
+### Expected Result
+
+Case cards should use Swedish labels and Swedish case sections where available.
+
+### Expected Behavior
+
+* headings such as `Sammanfattning`, `Sanktionsavgift eller utfall`, `Relaterade CyberLex-ämnen`, and `Officiella källor` appear in Swedish
+* case summaries are shown in Swedish where Swedish sections exist
+* fines and outcomes are shown in Swedish where Swedish sections exist
+* related topic chips are shown in Swedish where Swedish topic sections exist
+* if a Swedish section is missing, CyberLex should fall back gracefully instead of showing broken output
+
+### Pass Condition
+
+The Swedish Case Intelligence page is readable and does not mix English unnecessarily except where only an English official source exists.
+
+---
+
+## Test Case 46: Case Library English Display
+
+### Action
+
+Set the interface language to English and open the Case Intelligence page.
+
+### Expected Result
+
+Case cards should use English labels and English case sections.
+
+### Expected Behavior
+
+* headings such as `Summary`, `Administrative fine or outcome`, `Related CyberLex topics`, and `Official sources` appear in English
+* English case summaries are shown
+* English fine or outcome text is shown
+* English related topic chips are shown
+* Swedish-only wording should not dominate the English view unless no English equivalent exists
+
+### Pass Condition
+
+The English Case Intelligence page is readable and uses English display text consistently.
+
+---
+
+## Test Case 47: Case Source Links by Language Mode
+
+### Action
+
+Open the Case Intelligence page and compare source links in English, Swedish, and Auto language modes.
+
+### Expected Result
+
+CyberLex should handle case source links according to the selected language mode.
+
+### Expected Behavior
+
+* English mode should prefer English official source links
+* Swedish mode should prefer Swedish official source links
+* Auto mode should show all available official source links
+* if a case only has an official source in one language, CyberLex may show the available official source rather than hiding sources entirely
+* the app should not show `No information is stored in this section yet` when a valid official source exists in another language
+
+### Pass Condition
+
+Official source links are language-aware but still transparent when only one official source language is available.
+
+---
+
+## Test Case 48: Case Filter Search
+
+### Action
+
+Use the Case Intelligence filter input with terms such as:
+
+```text
+Meta Pixel
+säkerhet
+e-post
+dataläcka
+Darknet
+```
+
+### Expected Result
+
+CyberLex should filter the visible cases based on title, summary, outcome, topics, and source content.
+
+### Expected Behavior
+
+* `Meta Pixel` should show Meta Pixel-related cases
+* `säkerhet` should show security-measure cases where relevant
+* `e-post` should show the wrong-email customer-data case where relevant
+* `dataläcka` should show leak or breach-related cases where relevant
+* `Darknet` should show the Sportadmin case where relevant
+
+### Pass Condition
+
+The filter helps the user find relevant cases without breaking the page or hiding all cases incorrectly.
+
+---
+
+## Test Case 49: Related Cases Under Normal Answers
+
+### Question
+
+```text
+Can Meta Pixel create GDPR risk?
+```
+
+### Expected Result
+
+CyberLex should answer from the relevant knowledge base and show related cases or authority decisions where the case library contains relevant examples.
+
+### Expected Case Examples
+
+```text
+Apoteket and Apohem Meta Pixel
+Avanza Bank and Meta Pixel
+IMY Kry Meta Pixel
+```
+
+### Expected Behavior
+
+* related cases should appear as supporting educational examples
+* case amounts should be presented as historical examples only, not predictions
+* the answer should not imply that fines can be calculated directly from past cases
+* official source links should follow the selected language mode where possible
+
+### Pass Condition
+
+Related cases improve the answer without replacing the main source-grounded legal explanation.
+
+---
+
+## Test Case 50: Case Audit
+
+### Command
+
+```powershell
+python scripts/case_audit.py
+```
+
+### Expected Result
+
+The script should check local case files in the `cases/` folder and update:
+
+```text
+docs/case_library/case_audit_report.md
+```
+
+### Expected Behavior
+
+* the script runs without errors
+* the audit report is updated
+* all real case files are checked
+* missing required headings, official sources, metadata, or version notes are visible in the report
+* template and index files are not treated as real cases
+
+### Important Limitation
+
+The case audit checks local case-file structure and metadata.
+
+It does not browse the web and does not confirm that a decision, fine amount, or authority page is still legally current.
+
+### Pass Condition
+
+The case audit script runs successfully and produces a readable report for the case library.
+
+---
 ## Refusal and Safety Test Cases
 
 These tests verify that CyberLex Sweden stays within scope and refuses unsafe requests.
@@ -1575,6 +1794,8 @@ When must a personal data breach be reported?
 What is DORA?
 What is the Cyber Resilience Act?
 What is dataintrång?
+Can Meta Pixel create GDPR risk?
+What can weak security measures cost?
 Customer data may have leaked
 Our files are encrypted
 What should we do if an account is compromised?
@@ -1592,6 +1813,8 @@ Expected smoke-test result:
 * SOC Markdown report download appears only for practical incident questions
 * out-of-scope questions are refused
 * unsafe cyber requests are refused cleanly
+* Case Intelligence page loads and displays all case cards
+* case source links follow English, Swedish, and Auto behavior
 
 ---
 
@@ -1601,4 +1824,4 @@ These test cases are manual regression checks for an educational prototype.
 
 Passing these tests does not mean CyberLex Sweden is legally complete, production-ready, or guaranteed current.
 
-The purpose is to show that the prototype has a clear scope, trusted local sources, source-grounded answers, bilingual behavior, practical defensive support, and safety boundaries.
+The purpose is to show that the prototype has a clear scope, trusted local sources, source-grounded answers, bilingual behavior, practical defensive support, authority-decision case examples, language-aware source links, and safety boundaries.
