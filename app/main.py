@@ -1938,9 +1938,67 @@ def has_mfa_term(question):
         or "2fa" in words
     )
 
+
+def is_case_library_context_question(question):
+    # Detects questions that are mainly about case-library-style GDPR/cyber
+    # examples, fines, tracking tools, wrong disclosure, or public data leaks.
+    # These should not route to the generic incident-response playbook unless
+    # the user is asking "what do we do now?".
+    q = normalize_query_text(question).strip()
+
+    terms = [
+        "meta pixel", "meta-pixel", "facebook pixel", "tracking", "analytics",
+        "hashed data", "hashade", "hashade uppgifter", "kry", "apoteket",
+        "apohem", "avanza", "sportadmin", "trygg-hansa", "trygg hansa",
+        "wrong email", "wrong recipient", "wrong attachment", "sent customer data",
+        "email by mistake", "fel mejl", "fel e-post", "fel mottagare",
+        "fel bilaga", "skickat kunduppgifter fel", "web form", "webform",
+        "website form", "complaint form", "webbformulär", "formulär",
+        "darknet", "dark web", "darkweb", "published on the darknet",
+        "publicerad på darknet", "published data", "data published",
+        "data is published", "what happens if data is published",
+        "weak security", "security deficiencies", "security flaws",
+        "bristande säkerhet", "säkerhetsbrister", "article 32",
+        "what can weak security measures cost", "vad kan svaga säkerhetsåtgärder kosta",
+        "what can a gdpr breach cost", "vad kan en gdpr-läcka kosta",
+        "administrative fine", "sanktionsavgift", "gdpr fine", "fine",
+    ]
+
+    return contains_any(q, terms)
+
 def get_target_source_file(question):
     # Routes clear questions to a specific knowledge file.
     question_lower = normalize_query_text(question).strip()
+
+    # Case-library-style questions should use GDPR/data protection source context,
+    # while the actual real-world examples are shown in the related-cases section.
+    # This avoids weird combinations like a Meta Pixel question using the generic
+    # incident-response playbook as the main source card.
+    if is_case_library_context_question(question_lower):
+        if contains_any(
+            question_lower,
+            [
+                "wrong email", "wrong recipient", "wrong attachment",
+                "sent customer data", "email by mistake", "fel mejl",
+                "fel e-post", "fel mottagare", "fel bilaga",
+                "data is published", "published on the darknet", "darknet",
+                "dark web", "darkweb", "data breach", "personal data breach",
+                "dataläcka", "personuppgiftsincident",
+            ],
+        ):
+            return "gdpr_personal_data_breach.md"
+
+        if contains_any(
+            question_lower,
+            [
+                "weak security", "security deficiencies", "security flaws",
+                "bristande säkerhet", "säkerhetsbrister", "article 32",
+                "security measures", "säkerhetsåtgärder",
+            ],
+        ):
+            return "imy_gdpr_security_measures.md"
+
+        return "gdpr_imy_edpb_security_guidance.md"
 
     # NIS2 sector/scope/applicability questions should use the dedicated scope file
     # before generic NIS2 and before GDPR security routing.
@@ -6851,8 +6909,8 @@ def generate_enhanced_basic_summary(question, language="English"):
 def generate_case_aware_summary(question, language="English"):
     # Builds a more specific main answer for questions that are clearly connected
     # to the local case library. This keeps CyberLex from answering every
-    # case-related question with a generic GDPR breach paragraph. Humanity asked
-    # for context, so the machine will grudgingly provide it.
+    # case-related question with a generic GDPR breach paragraph. A tiny miracle,
+    # if one ignores the amount of string matching required to get there.
     question_lower = normalize_query_text(question).strip()
     use_swedish = language == "Svenska"
 
@@ -6861,10 +6919,29 @@ def generate_case_aware_summary(question, language="English"):
         "tracking pixel", "tracking", "analytics", "third-party script",
         "third party script", "website tracking", "marketing pixel",
     ]
+    hashed_kry_terms = [
+        "hashed", "hashade", "hashed data", "hashed contact", "hashade kontaktuppgifter",
+        "kry", "healthcare", "vård", "reprimand", "reprimand instead of fine",
+    ]
     web_form_terms = [
         "web form", "webform", "form", "website form", "online form",
         "complaint form", "contact form", "formulär", "webbformulär",
         "kontaktformulär", "klagomålsformulär",
+    ]
+    wrong_email_terms = [
+        "wrong email", "wrong recipient", "wrong attachment", "sent customer data",
+        "email by mistake", "customer data to the wrong", "fel mejl", "fel e-post",
+        "fel mottagare", "fel bilaga", "skickat kunduppgifter fel",
+        "kunduppgifter skickades fel",
+    ]
+    darknet_terms = [
+        "darknet", "dark web", "darkweb", "published on the darknet",
+        "data published", "data is published", "published data", "publicerad på darknet",
+        "publicerades på darknet", "uppgifter publiceras", "uppgifter publicerades",
+    ]
+    cyber_attack_case_terms = [
+        "cyber attack", "cyberattack", "it attack", "hacked", "hackad",
+        "sportadmin", "children", "young people", "barn", "unga",
     ]
     weak_security_terms = [
         "weak security", "poor security", "security deficiencies", "security flaws",
@@ -6883,7 +6960,11 @@ def generate_case_aware_summary(question, language="English"):
     ]
 
     has_meta = contains_any(question_lower, meta_terms)
+    has_hashed_kry = contains_any(question_lower, hashed_kry_terms)
     has_web_form = contains_any(question_lower, web_form_terms)
+    has_wrong_email = contains_any(question_lower, wrong_email_terms)
+    has_darknet = contains_any(question_lower, darknet_terms)
+    has_cyber_attack_case = contains_any(question_lower, cyber_attack_case_terms)
     has_weak_security = contains_any(question_lower, weak_security_terms)
     has_cost = contains_any(question_lower, cost_terms)
     has_sensitive = contains_any(question_lower, sensitive_terms)
@@ -6894,6 +6975,45 @@ def generate_case_aware_summary(question, language="English"):
             "incident", "personuppgiftsincident", "dataläcka", "läcka", "gdpr-läcka",
         ],
     )
+
+    if has_wrong_email:
+        if use_swedish:
+            return (
+                "Ja. Att skicka kunduppgifter till fel mottagare eller med fel bilaga kan vara en personuppgiftsincident enligt GDPR. "
+                "Organisationen bör snabbt bedöma vilka uppgifter som skickats, hur många personer som berörs, vem som mottagit uppgifterna, om mottagaren kan radera eller returnera materialet, och om incidenten innebär risk för de registrerades rättigheter och friheter. "
+                "Det relaterade Indecap-fallet visar att även ett misstag i e-posthantering kan leda till IMY-tillsyn och sanktionsavgift om säkerhetsrutinerna inte är tillräckliga."
+            )
+        return (
+            "Yes. Sending customer data to the wrong recipient or attaching the wrong file can be a personal data breach under GDPR. "
+            "The organization should quickly assess what data was sent, how many people are affected, who received the information, whether the recipient can delete or return it, and whether the incident creates risk to individuals' rights and freedoms. "
+            "The related Indecap wrong-email case shows that an ordinary email mistake can still lead to IMY supervision and an administrative fine if the security routines are not sufficient."
+        )
+
+    if has_darknet or has_cyber_attack_case:
+        if use_swedish:
+            return (
+                "Om personuppgifter publiceras på Darknet eller på annat sätt görs tillgängliga efter en cyberattack är det en allvarlig incident som bör hanteras både tekniskt och dataskyddsrättsligt. "
+                "Organisationen behöver bedöma vilken data som läckt, om uppgifterna rör barn, känsliga uppgifter eller skyddade identiteter, hur många som påverkas, vilka skyddsåtgärder som fanns, och om IMY eller andra myndigheter ska informeras. "
+                "Sportadmin-fallet nedan visar hur en stor cyberattack och publicering av personuppgifter på Darknet kan få betydande GDPR-konsekvenser."
+            )
+        return (
+            "If personal data is published on the Darknet or otherwise made available after a cyber attack, the incident should be handled as both a technical security incident and a data-protection issue. "
+            "The organization needs to assess what data was leaked, whether it concerns children, sensitive data, or protected identities, how many people are affected, what security measures were in place, and whether IMY or other authorities must be notified. "
+            "The related Sportadmin case shows how a large cyber attack and Darknet publication of personal data can lead to significant GDPR consequences."
+        )
+
+    if has_hashed_kry and has_meta:
+        if use_swedish:
+            return (
+                "Ja. Hashade uppgifter som skickas genom Meta Pixel kan fortfarande skapa GDPR-risk. Hashning gör inte automatiskt att uppgifterna slutar vara personuppgifter, särskilt om de kan kopplas till individer eller används för matchning mot en tredje part. "
+                "Organisationen bör kontrollera vilka uppgifter som överförs, om överföringen var avsedd, vilken rättslig grund som finns, hur verktyget är konfigurerat, och om tillräckliga tekniska och organisatoriska åtgärder finns. "
+                "Kry-fallet nedan är användbart eftersom IMY bedömde Meta Pixel och hashade kontaktuppgifter, men utfallet blev en reprimand i stället för sanktionsavgift."
+            )
+        return (
+            "Yes. Hashed data sent through Meta Pixel can still create GDPR risk. Hashing does not automatically mean the data is no longer personal data, especially if it can be linked to individuals or used for matching by a third party. "
+            "The organization should check what data is transferred, whether the transfer was intended, what legal basis applies, how the tool is configured, and whether appropriate technical and organisational measures are in place. "
+            "The Kry case below is useful because IMY assessed Meta Pixel and hashed contact information, but the outcome was a reprimand rather than an administrative fine."
+        )
 
     if has_meta:
         if use_swedish:
@@ -6959,6 +7079,7 @@ def generate_case_aware_summary(question, language="English"):
         )
 
     return ""
+
 
 def generate_simple_answer(question, best_match, language="English", include_technical_details=False):
     # Generates a simple source-based answer from the best matching chunk.
@@ -9187,86 +9308,87 @@ def get_short_fine_example_text(fine_text):
 
 
 def display_risk_cost_context(question, language="English"):
-    # Shows a short risk/cost explanation without repeating the related-case cards.
-    # Actual historical authority decisions and amounts belong in
-    # display_related_cases(). Otherwise CyberLex repeats itself like a meeting
-    # that should have been an email.
     if not should_show_risk_cost_context(question):
         return
 
+    related_cases = search_related_cases(question, limit=3)
     use_swedish = language == "Svenska"
 
     if use_swedish:
         heading = "Risk- och kostnadskontext"
         intro = (
             "CyberLex förutspår inte böter, skadestånd eller rättsliga resultat. "
-            "Denna sektion visar vilka typer av konsekvenser en liknande incident "
-            "kan skapa. Historiska fall och belopp visas separat under relaterade "
-            "fall och myndighetsbeslut."
+            "Detta är en utbildande riskbild baserad på vanliga kostnadskategorier "
+            "och historiska exempel från relaterade myndighetsbeslut."
         )
-        impact_title = "Möjliga konsekvensområden"
-        impact_items = [
-            ("Incidenthantering", "teknisk felsökning, isolering och återställning"),
-            ("Forensik", "logggranskning och analys av vad som hänt"),
-            ("Juridisk bedömning", "GDPR-, IMY- och dataskyddsbedömning"),
-            ("Dokumentation", "intern rapportering och beslutsunderlag"),
-            ("Anmälan", "möjlig anmälan till IMY eller annan myndighet"),
-            ("Information", "kontakt med berörda personer om risken är hög"),
-            ("Åtgärder", "säkerhetsförbättringar och processändringar"),
-            ("Verksamhet", "driftstopp, förtroendeskada och ryktesrisk"),
-            ("Sanktionsrisk", "möjlig sanktionsavgift beroende på omständigheterna"),
+        categories_title = "Möjliga kostnadskategorier"
+        categories = [
+            "teknisk incidenthantering och felsökning",
+            "forensisk analys och logggranskning",
+            "juridisk och dataskyddsrättslig bedömning",
+            "dokumentation, intern rapportering och beslutsunderlag",
+            "eventuell anmälan till IMY eller annan myndighet",
+            "information till berörda personer om risken är hög",
+            "säkerhetsförbättringar, processändringar och tekniska åtgärder",
+            "ryktesrisk, förtroendeskada och verksamhetspåverkan",
+            "möjlig sanktionsavgift beroende på omständigheterna",
         ]
-        note = (
-            "Belopp från verkliga ärenden visas inte här, utan i avsnittet "
-            "Relaterade fall och myndighetsbeslut nedan."
+        examples_title = "Historiska exempel från relaterade fall"
+        no_examples = "Inga relaterade fall med kostnadsexempel hittades."
+        disclaimer = (
+            "Beloppen i relaterade fall är historiska exempel. De ska inte användas "
+            "som prognos för nya incidenter."
         )
     else:
         heading = "Risk and cost context"
         intro = (
             "CyberLex does not predict fines, damages, or legal outcomes. "
-            "This section shows the types of consequences a similar incident may create. "
-            "Historical cases and amounts are shown separately under related cases and "
-            "authority decisions."
+            "This is an educational risk context based on common cost categories "
+            "and historical examples from related authority decisions."
         )
-        impact_title = "Possible impact areas"
-        impact_items = [
-            ("Incident response", "technical triage, containment, and recovery"),
-            ("Forensics", "log review and analysis of what happened"),
-            ("Legal review", "GDPR, IMY, and data-protection assessment"),
-            ("Documentation", "internal reporting and decision records"),
-            ("Authority reporting", "possible notification to IMY or another authority"),
-            ("Affected individuals", "communication if the risk is high"),
-            ("Remediation", "security improvements and process changes"),
-            ("Business impact", "downtime, trust damage, and reputational risk"),
-            ("Sanction risk", "possible administrative fine depending on the facts"),
+        categories_title = "Possible cost categories"
+        categories = [
+            "technical incident response and troubleshooting",
+            "forensic analysis and log review",
+            "legal and data protection assessment",
+            "documentation, internal reporting, and decision records",
+            "possible notification to IMY or another authority",
+            "communication to affected individuals if the risk is high",
+            "security improvements, process changes, and technical remediation",
+            "reputational impact, loss of trust, and business disruption",
+            "possible administrative fine depending on the facts",
         ]
-        note = (
-            "Real case amounts are not repeated here. They are shown below under "
-            "Related cases and authority decisions."
+        examples_title = "Historical examples from related cases"
+        no_examples = "No related cases with cost examples were found."
+        disclaimer = (
+            "Amounts from related cases are historical examples. They should not be used "
+            "as predictions for new incidents."
         )
 
     with st.expander(heading):
         st.info(intro)
 
-        st.markdown(f"**{impact_title}:**")
+        st.markdown(f"**{categories_title}:**")
+        for item in categories:
+            st.markdown(f"- {item}")
 
-        impact_html = '<div class="case-topic-badge-row">'
-        for title, description in impact_items:
-            impact_html += (
-                '<span class="case-topic-badge">'
-                f'{html.escape(title)}'
-                '</span>'
-            )
-        impact_html += "</div>"
+        st.markdown(f"**{examples_title}:**")
 
-        st.markdown(impact_html, unsafe_allow_html=True)
+        shown_examples = 0
 
-        for title, description in impact_items:
-            st.markdown(f"- **{title}:** {description}")
+        for case in related_cases:
+            fine_example = get_short_fine_example_text(case.get("fine_or_cost", ""))
 
-        st.caption(note)
+            if not fine_example:
+                continue
 
+            st.markdown(f"- **{case['title']}**: {fine_example}")
+            shown_examples += 1
 
+        if shown_examples == 0:
+            st.markdown(f"- {no_examples}")
+
+        st.caption(disclaimer)
 
 
 def display_related_cases(question, language="English"):
