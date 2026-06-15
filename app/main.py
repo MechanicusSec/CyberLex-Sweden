@@ -1,6 +1,7 @@
 from pathlib import Path
 from case_search import search_related_cases
 import re
+import html
 import streamlit as st
 from vector_search import build_chunk_index, search_chunks as experimental_search_chunks
 
@@ -11,6 +12,7 @@ st.set_page_config(
 )
 
 DATA_DIR = Path("data")
+CASES_DIR = Path("cases")
 
 
 @st.cache_data
@@ -8670,6 +8672,397 @@ badge_html = "".join(
 
 
 
+
+def extract_case_title(content, fallback):
+    # Extracts the visible title from a case Markdown file.
+    for line in str(content or "").splitlines():
+        stripped = line.strip()
+        if stripped.startswith("# "):
+            return stripped.replace("# ", "", 1).strip()
+
+    return str(fallback or "Untitled case").replace("_", " ").title()
+
+
+def load_case_library_entries():
+    # Loads case-library Markdown files for the browseable case section.
+    # Template and index files are excluded because they are not actual cases.
+    ignored_files = {"CASE_TEMPLATE.md", "CASE_INDEX.md"}
+    cases = []
+
+    if not CASES_DIR.exists():
+        return cases
+
+    for path in sorted(CASES_DIR.glob("*.md")):
+        if path.name in ignored_files:
+            continue
+
+        content = path.read_text(encoding="utf-8")
+
+        cases.append(
+            {
+                "title": extract_case_title(content, path.stem),
+                "summary": extract_section_text(content, "## Short summary"),
+                "fine_or_cost": extract_section_text(content, "## Fine or cost"),
+                "related_topics": extract_section_text(content, "## Related CyberLex topics"),
+                "official_source": extract_section_text(content, "## Official source"),
+            }
+        )
+
+    return cases
+
+
+def case_library_plain_html(text):
+    # Converts simple Markdown-ish case text into safe HTML for the sidebar cards.
+    # Yes, this exists because raw Markdown in Streamlit sidebars can look like it
+    # was formatted by a sleepy toaster.
+    cleaned = str(text or "").strip()
+
+    if not cleaned:
+        return ""
+
+    cleaned = re.sub(r"```[a-zA-Z0-9_-]*", "", cleaned)
+    cleaned = cleaned.replace("```", "")
+    cleaned = re.sub(r"`([^`]*)`", r"\1", cleaned)
+    cleaned = re.sub(r"\s+", " ", cleaned).strip()
+
+    return html.escape(cleaned)
+
+
+def case_library_links_html(markdown_text):
+    # Converts Markdown links and bullet links into sidebar-friendly HTML links.
+    text = str(markdown_text or "").strip()
+
+    if not text:
+        return ""
+
+    lines = []
+    link_pattern = re.compile(r"\[([^\]]+)\]\((https?://[^\)]+)\)")
+
+    for raw_line in text.splitlines():
+        line = raw_line.strip()
+
+        if not line:
+            continue
+
+        line = line.lstrip("-* ").strip()
+        match = link_pattern.search(line)
+
+        if match:
+            label = html.escape(match.group(1).strip())
+            url = html.escape(match.group(2).strip(), quote=True)
+            lines.append(
+                f'<li><a href="{url}" target="_blank" rel="noopener noreferrer">{label}</a></li>'
+            )
+            continue
+
+        if line.startswith("http://") or line.startswith("https://"):
+            safe_url = html.escape(line, quote=True)
+            lines.append(
+                f'<li><a href="{safe_url}" target="_blank" rel="noopener noreferrer">{safe_url}</a></li>'
+            )
+            continue
+
+        lines.append(f"<li>{html.escape(line)}</li>")
+
+    if not lines:
+        return ""
+
+    return "<ul>" + "".join(lines) + "</ul>"
+
+
+def case_library_topics_html(topics_text):
+    # Turns the topic list into compact SOC-style tags.
+    text = str(topics_text or "").strip()
+
+    if not text:
+        return ""
+
+    topics = []
+
+    for raw_line in text.splitlines():
+        line = raw_line.strip().lstrip("-* ").strip()
+        if line:
+            topics.append(line)
+
+    if not topics:
+        return ""
+
+    tags = "".join(
+        f'<span class="case-intel-tag">{html.escape(topic)}</span>'
+        for topic in topics
+    )
+
+    return f'<div class="case-intel-tags">{tags}</div>'
+
+
+def clean_case_markdown_for_display(text):
+    # Cleans case-library Markdown before displaying it in the main UI.
+    # It removes accidental code-fence artifacts while keeping normal Markdown
+    # such as bullets and links usable.
+    cleaned = str(text or "").strip()
+
+    if not cleaned:
+        return ""
+
+    cleaned = re.sub(r"```[a-zA-Z0-9_-]*", "", cleaned)
+    cleaned = cleaned.replace("```", "")
+    cleaned = re.sub(r"\btext\b", "", cleaned)
+    cleaned = re.sub(r'id="[^"]+"', "", cleaned)
+    cleaned = re.sub(r"\n{3,}", "\n\n", cleaned).strip()
+
+    return cleaned
+
+
+def case_topics_to_badges(topics_text):
+    # Turns Related CyberLex topics into compact blue-team style badges.
+    topics = []
+
+    for raw_line in str(topics_text or "").splitlines():
+        line = raw_line.strip().lstrip("-* ").strip()
+
+        if line:
+            topics.append(line)
+
+    if not topics:
+        return ""
+
+    badges = "".join(
+        f'<span class="case-topic-badge">{html.escape(topic)}</span>'
+        for topic in topics
+    )
+
+    return f'<div class="case-topic-badge-row">{badges}</div>'
+
+
+def display_case_intelligence_page(language="English"):
+    # Full Case Intelligence page inside main.py.
+    # We keep this in the same file for now so CyberLex does not instantly turn
+    # into eight files and a small municipal bureaucracy.
+    cases = load_case_library_entries()
+    use_swedish = language == "Svenska"
+
+    if use_swedish:
+        page_title = "Case Intelligence"
+        page_subtitle = "Cyberrelaterade sanktionsavgifter och myndighetsbeslut"
+        page_intro = (
+            "Här kan du bläddra bland myndighetsbeslut och fall som CyberLex använder "
+            "som utbildande referenser. Fallen används för att visa hur liknande "
+            "cyber-, GDPR- och dataskyddsfrågor har bedömts i praktiken."
+        )
+        search_label = "Filtrera fall"
+        search_placeholder = "Sök på t.ex. Meta Pixel, säkerhet, e-post, dataläcka..."
+        count_label = "fall i biblioteket"
+        shown_label = "visade fall"
+        summary_label = "Sammanfattning"
+        outcome_label = "Sanktionsavgift eller utfall"
+        topics_label = "Relaterade CyberLex-ämnen"
+        source_label = "Officiella källor"
+        no_result_text = "Inga fall matchade filtret."
+        empty_label = "Ingen information lagrad i denna sektion ännu."
+        disclaimer_title = "Viktig begränsning"
+        disclaimer_text = (
+            "Belopp och utfall är historiska exempel. CyberLex förutspår inte böter, "
+            "skadestånd eller rättsliga resultat för nya incidenter."
+        )
+    else:
+        page_title = "Case Intelligence"
+        page_subtitle = "Cyber-related fines and authority decisions"
+        page_intro = (
+            "Browse authority decisions and case examples used by CyberLex as educational "
+            "references. These cases help show how similar cyber, GDPR, and data-protection "
+            "issues have been assessed in practice."
+        )
+        search_label = "Filter cases"
+        search_placeholder = "Search for Meta Pixel, security, email, data leak..."
+        count_label = "cases in library"
+        shown_label = "shown cases"
+        summary_label = "Summary"
+        outcome_label = "Administrative fine or outcome"
+        topics_label = "Related CyberLex topics"
+        source_label = "Official sources"
+        no_result_text = "No cases matched the filter."
+        empty_label = "No information is stored in this section yet."
+        disclaimer_title = "Important limitation"
+        disclaimer_text = (
+            "Amounts and outcomes are historical examples. CyberLex does not predict fines, "
+            "damages, or legal outcomes for new incidents."
+        )
+
+    st.markdown(
+        """
+        <style>
+            .case-page-hero {
+                border: 1px solid rgba(96, 165, 250, 0.42);
+                border-left: 5px solid #60a5fa;
+                border-radius: 18px;
+                padding: 1.15rem 1.25rem;
+                background: linear-gradient(135deg, rgba(30, 64, 175, 0.26), rgba(15, 23, 42, 0.72));
+                margin: 0.35rem 0 1.2rem 0;
+                box-shadow: 0 10px 30px rgba(15, 23, 42, 0.18);
+            }
+
+            .case-page-kicker {
+                color: #93c5fd;
+                font-size: 0.78rem;
+                font-weight: 850;
+                text-transform: uppercase;
+                letter-spacing: 0.07em;
+                margin-bottom: 0.35rem;
+            }
+
+            .case-page-title {
+                color: #f8fafc;
+                font-size: 2.05rem;
+                font-weight: 850;
+                line-height: 1.15;
+                margin-bottom: 0.3rem;
+            }
+
+            .case-page-intro {
+                color: #d1d5db;
+                font-size: 0.98rem;
+                line-height: 1.6;
+                max-width: 900px;
+            }
+
+            .case-page-stat-row {
+                display: flex;
+                gap: 0.65rem;
+                flex-wrap: wrap;
+                margin: 0.7rem 0 1rem 0;
+            }
+
+            .case-page-stat {
+                display: inline-flex;
+                align-items: center;
+                border: 1px solid rgba(96, 165, 250, 0.32);
+                background: rgba(59, 130, 246, 0.14);
+                color: #dbeafe;
+                border-radius: 999px;
+                padding: 0.32rem 0.75rem;
+                font-size: 0.82rem;
+                font-weight: 750;
+            }
+
+            .case-topic-badge-row {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.35rem;
+                margin-top: 0.25rem;
+            }
+
+            .case-topic-badge {
+                border: 1px solid rgba(96, 165, 250, 0.28);
+                background: rgba(59, 130, 246, 0.13);
+                color: #dbeafe;
+                border-radius: 999px;
+                padding: 0.18rem 0.55rem;
+                font-size: 0.76rem;
+                font-weight: 700;
+            }
+
+            .case-page-warning {
+                border: 1px solid rgba(245, 158, 11, 0.32);
+                border-radius: 14px;
+                background: rgba(245, 158, 11, 0.11);
+                padding: 0.85rem 1rem;
+                margin: 1.1rem 0;
+                color: #f8fafc;
+                line-height: 1.5;
+            }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        f"""
+        <div class="case-page-hero">
+            <div class="case-page-kicker">🛡️ {page_title}</div>
+            <div class="case-page-title">{page_subtitle}</div>
+            <div class="case-page-intro">{page_intro}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    filter_text = st.text_input(
+        search_label,
+        placeholder=search_placeholder,
+        key="case_intelligence_filter",
+    ).strip()
+
+    normalized_filter = normalize_query_text(filter_text)
+
+    if normalized_filter:
+        filtered_cases = []
+
+        for case in cases:
+            haystack = normalize_query_text(
+                " ".join(
+                    [
+                        case.get("title", ""),
+                        case.get("summary", ""),
+                        case.get("fine_or_cost", ""),
+                        case.get("related_topics", ""),
+                        case.get("official_source", ""),
+                    ]
+                )
+            )
+
+            if normalized_filter in haystack:
+                filtered_cases.append(case)
+    else:
+        filtered_cases = cases
+
+    st.markdown(
+        f"""
+        <div class="case-page-stat-row">
+            <div class="case-page-stat">● {len(cases)} {count_label}</div>
+            <div class="case-page-stat">◆ {len(filtered_cases)} {shown_label}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        f"""
+        <div class="case-page-warning">
+            <strong>{disclaimer_title}:</strong> {disclaimer_text}
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    if not filtered_cases:
+        st.info(no_result_text)
+        return
+
+    for case in filtered_cases:
+        case_title = case.get("title", "Untitled case")
+        summary = clean_case_markdown_for_display(case.get("summary", ""))
+        fine_or_cost = clean_case_markdown_for_display(case.get("fine_or_cost", ""))
+        related_topics = str(case.get("related_topics", "")).strip()
+        official_source = clean_case_markdown_for_display(case.get("official_source", ""))
+
+        with st.expander(f"🧾 {case_title}", expanded=False):
+            st.markdown(f"**{summary_label}:**")
+            st.markdown(summary if summary else empty_label)
+
+            st.markdown(f"**{outcome_label}:**")
+            st.markdown(fine_or_cost if fine_or_cost else empty_label)
+
+            st.markdown(f"**{topics_label}:**")
+            topics_badges = case_topics_to_badges(related_topics)
+
+            if topics_badges:
+                st.markdown(topics_badges, unsafe_allow_html=True)
+            else:
+                st.markdown(empty_label)
+
+            st.markdown(f"**{source_label}:**")
+            st.markdown(official_source if official_source else empty_label)
+
 def should_show_risk_cost_context(question):
     # Decides whether CyberLex should show the educational risk/cost context card.
     # This is not a fine calculator. It only gives common cost categories and
@@ -8794,87 +9187,86 @@ def get_short_fine_example_text(fine_text):
 
 
 def display_risk_cost_context(question, language="English"):
+    # Shows a short risk/cost explanation without repeating the related-case cards.
+    # Actual historical authority decisions and amounts belong in
+    # display_related_cases(). Otherwise CyberLex repeats itself like a meeting
+    # that should have been an email.
     if not should_show_risk_cost_context(question):
         return
 
-    related_cases = search_related_cases(question, limit=3)
     use_swedish = language == "Svenska"
 
     if use_swedish:
         heading = "Risk- och kostnadskontext"
         intro = (
             "CyberLex förutspår inte böter, skadestånd eller rättsliga resultat. "
-            "Detta är en utbildande riskbild baserad på vanliga kostnadskategorier "
-            "och historiska exempel från relaterade myndighetsbeslut."
+            "Denna sektion visar vilka typer av konsekvenser en liknande incident "
+            "kan skapa. Historiska fall och belopp visas separat under relaterade "
+            "fall och myndighetsbeslut."
         )
-        categories_title = "Möjliga kostnadskategorier"
-        categories = [
-            "teknisk incidenthantering och felsökning",
-            "forensisk analys och logggranskning",
-            "juridisk och dataskyddsrättslig bedömning",
-            "dokumentation, intern rapportering och beslutsunderlag",
-            "eventuell anmälan till IMY eller annan myndighet",
-            "information till berörda personer om risken är hög",
-            "säkerhetsförbättringar, processändringar och tekniska åtgärder",
-            "ryktesrisk, förtroendeskada och verksamhetspåverkan",
-            "möjlig sanktionsavgift beroende på omständigheterna",
+        impact_title = "Möjliga konsekvensområden"
+        impact_items = [
+            ("Incidenthantering", "teknisk felsökning, isolering och återställning"),
+            ("Forensik", "logggranskning och analys av vad som hänt"),
+            ("Juridisk bedömning", "GDPR-, IMY- och dataskyddsbedömning"),
+            ("Dokumentation", "intern rapportering och beslutsunderlag"),
+            ("Anmälan", "möjlig anmälan till IMY eller annan myndighet"),
+            ("Information", "kontakt med berörda personer om risken är hög"),
+            ("Åtgärder", "säkerhetsförbättringar och processändringar"),
+            ("Verksamhet", "driftstopp, förtroendeskada och ryktesrisk"),
+            ("Sanktionsrisk", "möjlig sanktionsavgift beroende på omständigheterna"),
         ]
-        examples_title = "Historiska exempel från relaterade fall"
-        no_examples = "Inga relaterade fall med kostnadsexempel hittades."
-        disclaimer = (
-            "Beloppen i relaterade fall är historiska exempel. De ska inte användas "
-            "som prognos för nya incidenter."
+        note = (
+            "Belopp från verkliga ärenden visas inte här, utan i avsnittet "
+            "Relaterade fall och myndighetsbeslut nedan."
         )
     else:
         heading = "Risk and cost context"
         intro = (
             "CyberLex does not predict fines, damages, or legal outcomes. "
-            "This is an educational risk context based on common cost categories "
-            "and historical examples from related authority decisions."
+            "This section shows the types of consequences a similar incident may create. "
+            "Historical cases and amounts are shown separately under related cases and "
+            "authority decisions."
         )
-        categories_title = "Possible cost categories"
-        categories = [
-            "technical incident response and troubleshooting",
-            "forensic analysis and log review",
-            "legal and data protection assessment",
-            "documentation, internal reporting, and decision records",
-            "possible notification to IMY or another authority",
-            "communication to affected individuals if the risk is high",
-            "security improvements, process changes, and technical remediation",
-            "reputational impact, loss of trust, and business disruption",
-            "possible administrative fine depending on the facts",
+        impact_title = "Possible impact areas"
+        impact_items = [
+            ("Incident response", "technical triage, containment, and recovery"),
+            ("Forensics", "log review and analysis of what happened"),
+            ("Legal review", "GDPR, IMY, and data-protection assessment"),
+            ("Documentation", "internal reporting and decision records"),
+            ("Authority reporting", "possible notification to IMY or another authority"),
+            ("Affected individuals", "communication if the risk is high"),
+            ("Remediation", "security improvements and process changes"),
+            ("Business impact", "downtime, trust damage, and reputational risk"),
+            ("Sanction risk", "possible administrative fine depending on the facts"),
         ]
-        examples_title = "Historical examples from related cases"
-        no_examples = "No related cases with cost examples were found."
-        disclaimer = (
-            "Amounts from related cases are historical examples. They should not be used "
-            "as predictions for new incidents."
+        note = (
+            "Real case amounts are not repeated here. They are shown below under "
+            "Related cases and authority decisions."
         )
 
     with st.expander(heading):
         st.info(intro)
 
-        st.markdown(f"**{categories_title}:**")
-        for item in categories:
-            st.markdown(f"- {item}")
+        st.markdown(f"**{impact_title}:**")
 
-        st.markdown(f"**{examples_title}:**")
+        impact_html = '<div class="case-topic-badge-row">'
+        for title, description in impact_items:
+            impact_html += (
+                '<span class="case-topic-badge">'
+                f'{html.escape(title)}'
+                '</span>'
+            )
+        impact_html += "</div>"
 
-        shown_examples = 0
+        st.markdown(impact_html, unsafe_allow_html=True)
 
-        for case in related_cases:
-            fine_example = get_short_fine_example_text(case.get("fine_or_cost", ""))
+        for title, description in impact_items:
+            st.markdown(f"- **{title}:** {description}")
 
-            if not fine_example:
-                continue
+        st.caption(note)
 
-            st.markdown(f"- **{case['title']}**: {fine_example}")
-            shown_examples += 1
 
-        if shown_examples == 0:
-            st.markdown(f"- {no_examples}")
-
-        st.caption(disclaimer)
 
 
 def display_related_cases(question, language="English"):
@@ -9056,6 +9448,38 @@ st.sidebar.markdown(
 )
 with st.sidebar.expander(suggested_test_flow_header, expanded=False):
     st.markdown(suggested_test_flow_text)
+
+if interface_language == "Svenska":
+    navigation_header = "Navigering"
+    ask_page_label = "Fråga CyberLex"
+    case_page_label = "Case Intelligence"
+else:
+    navigation_header = "Navigation"
+    ask_page_label = "Ask CyberLex"
+    case_page_label = "Case Intelligence"
+
+st.sidebar.markdown("---")
+selected_page = st.sidebar.radio(
+    navigation_header,
+    [ask_page_label, case_page_label],
+    key="cyberlex_navigation",
+)
+
+if selected_page == case_page_label:
+    display_case_intelligence_page(interface_language)
+
+    case_footer_label = (
+        "© 2026 CyberLex Sweden · Policy · Om · Copyright"
+        if interface_language == "Svenska"
+        else "© 2026 CyberLex Sweden · Policy · About · Copyright"
+    )
+
+    st.markdown(
+        f'<div class="footer-note">{case_footer_label}</div>',
+        unsafe_allow_html=True,
+    )
+
+    st.stop()
 
 st.markdown(f'<div class="ask-heading">{ask_heading}</div>', unsafe_allow_html=True)
 
