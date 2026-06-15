@@ -28,6 +28,14 @@ IMY decided on a fine of SEK 37 million against Apoteket AB and SEK 8 million ag
 
 The case is useful for CyberLex Sweden because it shows that website tracking tools can create serious GDPR risk, especially when sensitive personal data is involved.
 
+## Swedish short summary
+
+IMY beslutade om administrativa sanktionsavgifter mot Apoteket AB och Apohem AB efter att bolagen använt Meta Pixel på sina webbplatser och överfört känsliga personuppgifter till Meta.
+
+IMY beslutade om en sanktionsavgift på 37 miljoner kronor mot Apoteket AB och 8 miljoner kronor mot Apohem AB.
+
+Fallet är användbart för CyberLex Sweden eftersom det visar att spårningsverktyg på webbplatser kan skapa allvarlig GDPR-risk, särskilt när känsliga personuppgifter är inblandade.
+
 ## What happened
 
 Apoteket and Apohem used Meta Pixel on their websites.
@@ -39,6 +47,18 @@ The cases were connected to the companies' website tracking and handling of cust
 After discovering the incorrect transfer of information to Meta, the companies developed internal routines to support more correct and secure processing of personal data.
 
 The incidents were reported to IMY in 2022.
+
+## Swedish what happened
+
+Apoteket och Apohem använde Meta Pixel på sina webbplatser.
+
+Enligt IMY överförde bolagen känsliga personuppgifter till Meta genom användningen av pixeln.
+
+Ärendena var kopplade till bolagens webbplatsspårning och hantering av kundrelaterade uppgifter.
+
+Efter att den felaktiga överföringen av information till Meta upptäcktes tog bolagen fram interna rutiner för att stödja en mer korrekt och säker behandling av personuppgifter.
+
+Incidenterna anmäldes till IMY under 2022.
 
 ## Legal issue
 
@@ -58,6 +78,24 @@ For CyberLex Sweden, this case is relevant to questions about:
 * administrative fines
 * data leakage without hacking
 
+## Swedish legal issue
+
+Den centrala rättsfrågan var om bolagen hade vidtagit lämpliga tekniska och organisatoriska åtgärder för att säkerställa en lämplig säkerhetsnivå för kundernas personuppgifter.
+
+Fallet kopplar till GDPR-säkerhet, känsliga personuppgifter, spårningsverktyg, tredjepartsöverföringar, webbanalys, dataskydd genom design och intern granskning innan externa skript används.
+
+För CyberLex Sweden är fallet relevant för frågor om:
+
+* säkerhetsåtgärder enligt GDPR
+* känsliga personuppgifter
+* webbplatsspårning
+* Meta Pixel
+* överföring av personuppgifter till tredje part
+* tekniska och organisatoriska åtgärder
+* dataskydd genom design
+* administrativa sanktionsavgifter
+* dataläckor utan hackning
+
 ## Decision or outcome
 
 IMY issued administrative fines against both companies.
@@ -68,18 +106,37 @@ Apohem AB received a fine of SEK 8 million.
 
 The case shows that GDPR risk can arise from website and marketing technology, not only from hacking, ransomware, or direct cyberattacks.
 
+## Swedish decision or outcome
+
+IMY beslutade om administrativa sanktionsavgifter mot båda bolagen.
+
+Apoteket AB fick en sanktionsavgift på 37 miljoner kronor.
+
+Apohem AB fick en sanktionsavgift på 8 miljoner kronor.
+
+Fallet visar att GDPR-risk kan uppstå genom webbplats- och marknadsföringsteknik, inte bara genom hackning, ransomware eller direkta cyberattacker.
+
 ## Fine or cost
 
 Official fines:
 
-```text id="nqo23m"
 Apoteket AB: SEK 37,000,000
 Apohem AB: SEK 8,000,000
-```
 
 CyberLex should not present these amounts as fine predictions for other cases.
 
 Fine amounts are case-specific and depend on the authority's assessment of the facts, type of data, number of affected people, conduct, mitigation, and other GDPR factors.
+
+## Swedish fine or cost
+
+Administrativa sanktionsavgifter:
+
+Apoteket AB: 37 000 000 kronor
+Apohem AB: 8 000 000 kronor
+
+CyberLex ska inte presentera dessa belopp som förutsägelser för andra fall.
+
+Sanktionsbelopp är beroende av omständigheterna i det enskilda fallet och påverkas av myndighetens bedömning av fakta, typ av uppgifter, antal berörda personer, bolagens agerande, åtgärder efter upptäckt och andra GDPR-faktorer.
 
 ## Why it matters for CyberLex
 
@@ -98,6 +155,24 @@ This helps CyberLex explain that data leaks can happen through:
 * website integrations
 * poor review of data flows
 * weak privacy by design
+
+## Swedish why it matters for CyberLex
+
+Fallet är viktigt för CyberLex Sweden eftersom det visar att tekniska val i webbutveckling kan få juridiska och ekonomiska konsekvenser.
+
+Fallet visar också att känsliga personuppgifter skapar högre GDPR-risk.
+
+Incidenten handlade inte främst om att en hackare tog sig in i ett system. Den handlade om att personuppgifter överfördes genom spårningsteknik på webbplatser.
+
+Detta hjälper CyberLex att förklara att dataläckor kan ske genom:
+
+* tredjepartsskript
+* spårningspixlar
+* annonseringsteknik
+* analysverktyg
+* webbplatsintegrationer
+* bristande granskning av dataflöden
+* svagt dataskydd genom design
 
 ## Similar CyberLex questions
 
@@ -126,6 +201,22 @@ This helps CyberLex explain that data leaks can happen through:
 * Data leak
 * Administrative fines
 * Incident response
+
+## Swedish related CyberLex topics
+
+* GDPR
+* IMY
+* Känsliga personuppgifter
+* Personuppgiftsincident
+* Säkerhetsåtgärder
+* Tekniska och organisatoriska åtgärder
+* Dataskydd genom design
+* Tredjepartsspårning
+* Webbplatsspårning
+* Meta Pixel
+* Dataläcka
+* Administrativa sanktionsavgifter
+* Incidenthantering
 
 ## Official source
 

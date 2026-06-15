@@ -8805,8 +8805,12 @@ def extract_case_title(content, fallback):
 
 
 def load_case_library_entries():
-    # Loads case-library Markdown files for the browseable case section.
+    # Loads case-library Markdown files for the browseable Case Intelligence page.
     # Template and index files are excluded because they are not actual cases.
+    #
+    # English sections are the default source of truth.
+    # Swedish sections are optional. If a Swedish section is missing, CyberLex
+    # falls back to the English version so older case files still work.
     ignored_files = {"CASE_TEMPLATE.md", "CASE_INDEX.md"}
     cases = []
 
@@ -8819,18 +8823,43 @@ def load_case_library_entries():
 
         content = path.read_text(encoding="utf-8")
 
+        english_summary = extract_section_text(content, "## Short summary")
+        swedish_summary = extract_section_text(content, "## Swedish short summary")
+
+        english_fine_or_cost = extract_section_text(content, "## Fine or cost")
+        swedish_fine_or_cost = extract_section_text(content, "## Swedish fine or cost")
+
+        english_related_topics = extract_section_text(content, "## Related CyberLex topics")
+        swedish_related_topics = extract_section_text(content, "## Swedish related CyberLex topics")
+
+        english_official_source = extract_section_text(content, "## Official source")
+        swedish_official_source = extract_section_text(content, "## Swedish official source")
+
+        english_what_happened = extract_section_text(content, "## What happened")
+        swedish_what_happened = extract_section_text(content, "## Swedish what happened")
+
+        english_decision = extract_section_text(content, "## Decision or outcome")
+        swedish_decision = extract_section_text(content, "## Swedish decision or outcome")
+
         cases.append(
             {
                 "title": extract_case_title(content, path.stem),
-                "summary": extract_section_text(content, "## Short summary"),
-                "fine_or_cost": extract_section_text(content, "## Fine or cost"),
-                "related_topics": extract_section_text(content, "## Related CyberLex topics"),
-                "official_source": extract_section_text(content, "## Official source"),
+                "summary": english_summary,
+                "summary_sv": swedish_summary or english_summary,
+                "fine_or_cost": english_fine_or_cost,
+                "fine_or_cost_sv": swedish_fine_or_cost or english_fine_or_cost,
+                "related_topics": english_related_topics,
+                "related_topics_sv": swedish_related_topics or english_related_topics,
+                "what_happened": english_what_happened,
+                "what_happened_sv": swedish_what_happened or english_what_happened,
+                "decision": english_decision,
+                "decision_sv": swedish_decision or english_decision,
+                "official_source": english_official_source,
+                "official_source_sv": swedish_official_source or english_official_source,
             }
         )
 
     return cases
-
 
 def case_library_plain_html(text):
     # Converts simple Markdown-ish case text into safe HTML for the sidebar cards.
@@ -8955,7 +8984,142 @@ def case_topics_to_badges(topics_text):
     return f'<div class="case-topic-badge-row">{badges}</div>'
 
 
-def display_case_intelligence_page(language="English"):
+
+
+def looks_like_swedish_source_line(line):
+    # Heuristic used when older case files have Swedish and English links mixed
+    # inside the same "## Official source" section.
+    # Prefer explicit "## Swedish official source" sections when available,
+    # but this keeps the current case files usable without another migration ritual.
+    text = str(line or "").lower()
+
+    swedish_markers = [
+        "imy.se/nyheter/",
+        "imy.se/tillsyner/",
+        "sanktionsavgift",
+        "sanktionsavgifter",
+        "tillsyn",
+        "gällande",
+        "överföring",
+        "personuppgifter",
+        "bristande",
+        "säkerhet",
+        "bolag som skickat",
+        "är det förbjudet",
+        "kunduppgifter",
+    ]
+
+    if any(marker in text for marker in swedish_markers):
+        return True
+
+    return any(letter in text for letter in "åäö")
+
+
+def looks_like_english_source_line(line):
+    # Heuristic used when older case files have Swedish and English links mixed
+    # inside the same "## Official source" section.
+    text = str(line or "").lower()
+
+    english_markers = [
+        "/en/",
+        "edpb.europa.eu",
+        "administrative fine",
+        "administrative fines",
+        "english translation",
+        "transferring customer data",
+        "transferring personal data",
+        "security deficiencies",
+        "has for an incident",
+        "against sportadmin",
+        "collected via a web form",
+    ]
+
+    return any(marker in text for marker in english_markers)
+
+
+def filter_official_source_links(markdown_text, target_language="Auto"):
+    # Filters Markdown source links for explicit English or Swedish language mode.
+    # Auto mode returns all links.
+    mode = str(target_language or "Auto")
+    text = str(markdown_text or "").strip()
+
+    if not text or mode == "Auto":
+        return text
+
+    kept_lines = []
+
+    for raw_line in text.splitlines():
+        line = raw_line.strip()
+
+        if not line:
+            continue
+
+        is_swedish = looks_like_swedish_source_line(line)
+        is_english = looks_like_english_source_line(line)
+
+        if mode == "Svenska":
+            if is_swedish or (not is_english and not is_swedish):
+                kept_lines.append(raw_line)
+        elif mode == "English":
+            if is_english or (not is_english and not is_swedish):
+                kept_lines.append(raw_line)
+
+    return "\n".join(kept_lines).strip()
+
+
+def select_case_official_source(case, source_language_mode="Auto"):
+    # Selects official case sources according to the language selector:
+    # - Auto: show all available official source links
+    # - English: prefer English links
+    # - Svenska: prefer Swedish links
+    #
+    # Important: some case files only have one official source language stored.
+    # If strict filtering finds nothing, CyberLex falls back to available official
+    # sources instead of showing an empty source section. Empty source sections are
+    # not transparency. They are just a tiny bureaucracy wearing a crash helmet.
+    mode = str(source_language_mode or "Auto")
+    english_source = str(case.get("official_source", "") or "").strip()
+    swedish_source_raw = str(case.get("official_source_sv", "") or "").strip()
+
+    # Treat official_source_sv as a real Swedish section only when it is different
+    # from the English source. Older cases may mirror English into _sv as fallback.
+    has_real_swedish_section = bool(swedish_source_raw and swedish_source_raw != english_source)
+
+    if mode == "Auto":
+        combined_parts = []
+        if english_source:
+            combined_parts.append(english_source)
+        if has_real_swedish_section:
+            combined_parts.append(swedish_source_raw)
+        return "\n".join(combined_parts).strip()
+
+    if mode == "Svenska":
+        # Prefer an explicit Swedish source section when the case file has one.
+        if has_real_swedish_section:
+            return swedish_source_raw
+
+        # Otherwise filter mixed links from the normal Official source section.
+        swedish_filtered = filter_official_source_links(english_source, "Svenska")
+        if swedish_filtered:
+            return swedish_filtered
+
+        # Last-resort fallback: show available sources rather than hiding all links.
+        # This happens when the case currently only stores English/EDPB sources.
+        return english_source
+
+    if mode == "English":
+        english_filtered = filter_official_source_links(english_source, "English")
+        if english_filtered:
+            return english_filtered
+
+        # If an English source section is missing but Swedish links exist, keep the
+        # source visible. The user can still verify the case instead of staring at
+        # an empty box like a punished servitor.
+        return english_source or swedish_source_raw
+
+    return english_source
+
+def display_case_intelligence_page(language="English", source_language_mode="Auto"):
     # Full Case Intelligence page inside main.py.
     # We keep this in the same file for now so CyberLex does not instantly turn
     # into eight files and a small municipal bureaucracy.
@@ -9124,9 +9288,17 @@ def display_case_intelligence_page(language="English"):
                     [
                         case.get("title", ""),
                         case.get("summary", ""),
+                        case.get("summary_sv", ""),
                         case.get("fine_or_cost", ""),
+                        case.get("fine_or_cost_sv", ""),
                         case.get("related_topics", ""),
+                        case.get("related_topics_sv", ""),
+                        case.get("what_happened", ""),
+                        case.get("what_happened_sv", ""),
+                        case.get("decision", ""),
+                        case.get("decision_sv", ""),
                         case.get("official_source", ""),
+                        case.get("official_source_sv", ""),
                     ]
                 )
             )
@@ -9161,10 +9333,19 @@ def display_case_intelligence_page(language="English"):
 
     for case in filtered_cases:
         case_title = case.get("title", "Untitled case")
-        summary = clean_case_markdown_for_display(case.get("summary", ""))
-        fine_or_cost = clean_case_markdown_for_display(case.get("fine_or_cost", ""))
-        related_topics = str(case.get("related_topics", "")).strip()
-        official_source = clean_case_markdown_for_display(case.get("official_source", ""))
+
+        if use_swedish:
+            summary = clean_case_markdown_for_display(case.get("summary_sv", ""))
+            fine_or_cost = clean_case_markdown_for_display(case.get("fine_or_cost_sv", ""))
+            related_topics = str(case.get("related_topics_sv", "")).strip()
+        else:
+            summary = clean_case_markdown_for_display(case.get("summary", ""))
+            fine_or_cost = clean_case_markdown_for_display(case.get("fine_or_cost", ""))
+            related_topics = str(case.get("related_topics", "")).strip()
+
+        official_source = clean_case_markdown_for_display(
+            select_case_official_source(case, source_language_mode)
+        )
 
         with st.expander(f"🧾 {case_title}", expanded=False):
             st.markdown(f"**{summary_label}:**")
@@ -9391,7 +9572,7 @@ def display_risk_cost_context(question, language="English"):
         st.caption(disclaimer)
 
 
-def display_related_cases(question, language="English"):
+def display_related_cases(question, language="English", source_language_mode="Auto"):
     # Displays related authority decisions and case examples from the local
     # CyberLex case library. These are educational examples, not legal advice
     # and not fine predictions.
@@ -9402,6 +9583,16 @@ def display_related_cases(question, language="English"):
 
     use_swedish = language == "Svenska"
 
+    # Load the richer Case Intelligence entries too.
+    # case_search.py returns the related case ranking, while main.py keeps the
+    # bilingual display sections for the Case Intelligence page.
+    case_library_entries = load_case_library_entries()
+    case_library_by_title = {
+        normalize_query_text(case.get("title", "")): case
+        for case in case_library_entries
+        if case.get("title")
+    }
+
     if use_swedish:
         heading = "Relaterade fall och myndighetsbeslut"
         intro_text = (
@@ -9411,7 +9602,7 @@ def display_related_cases(question, language="English"):
         )
         summary_label = "Sammanfattning"
         fine_label = "Kostnad eller sanktionsavgift"
-        source_label = "Officiell källa"
+        source_label = "Officiella källor"
         disclaimer = (
             "CyberLex förutspår inte böter eller rättsliga resultat. "
             "Beloppen i fallen är historiska exempel och beror på de specifika omständigheterna."
@@ -9425,7 +9616,7 @@ def display_related_cases(question, language="English"):
         )
         summary_label = "Summary"
         fine_label = "Cost or administrative fine"
-        source_label = "Official source"
+        source_label = "Official sources"
         disclaimer = (
             "CyberLex does not predict fines or legal outcomes. "
             "The amounts shown in these cases are historical examples and depend on the specific circumstances."
@@ -9434,13 +9625,19 @@ def display_related_cases(question, language="English"):
     st.subheader(heading)
     st.info(intro_text)
 
-    for case in related_cases:
-        case_title = case.get("title", "Untitled case")
+    for related_case in related_cases:
+        case_title = related_case.get("title", "Untitled case")
+        display_case = case_library_by_title.get(normalize_query_text(case_title), related_case)
 
         with st.expander(case_title):
-            summary = str(case.get("summary", "")).strip()
-            fine_or_cost = str(case.get("fine_or_cost", "")).strip()
-            official_source = str(case.get("official_source", "")).strip()
+            if use_swedish:
+                summary = str(display_case.get("summary_sv", display_case.get("summary", ""))).strip()
+                fine_or_cost = str(display_case.get("fine_or_cost_sv", display_case.get("fine_or_cost", ""))).strip()
+            else:
+                summary = str(display_case.get("summary", "")).strip()
+                fine_or_cost = str(display_case.get("fine_or_cost", "")).strip()
+
+            official_source = select_case_official_source(display_case, source_language_mode)
 
             if summary:
                 st.markdown(f"**{summary_label}:**")
@@ -9588,7 +9785,7 @@ selected_page = st.sidebar.radio(
 )
 
 if selected_page == case_page_label:
-    display_case_intelligence_page(interface_language)
+    display_case_intelligence_page(interface_language, language_mode)
 
     case_footer_label = (
         "© 2026 CyberLex Sweden · Policy · Om · Copyright"
@@ -9880,7 +10077,7 @@ if question:
 
 
                 display_risk_cost_context(question, language)
-                display_related_cases(question, language)
+                display_related_cases(question, language, language_mode)
 
                 if show_technical_diagnostics:
                     with st.expander(other_matches_header, expanded=False):

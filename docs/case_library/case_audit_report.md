@@ -10,10 +10,10 @@ This audit does not browse the web and does not confirm whether a case summary i
 
 ## Audit Summary
 
-- Generated at: `2026-06-15 17:13:42`
+- Generated at: `2026-06-15 18:51:24`
 - Total case files checked: `7`
-- Case files marked OK: `5`
-- Case files needing review: `2`
+- Case files marked OK: `7`
+- Case files needing review: `0`
 
 ---
 
@@ -45,29 +45,9 @@ No issues found.
 
 ### imy_kry_meta_pixel.md
 
-- Status: `Needs review`
+- Status: `OK`
 
-#### Issues
-
-- Missing section: `## Case type`
-- Missing section: `## Jurisdiction`
-- Missing section: `## Year`
-- Missing section: `## Authority or court`
-- Missing section: `## Topic`
-- Missing section: `## Short summary`
-- Missing section: `## What happened`
-- Missing section: `## Legal issue`
-- Missing section: `## Decision or outcome`
-- Missing section: `## Fine or cost`
-- Missing section: `## Why it matters for CyberLex`
-- Missing section: `## Similar CyberLex questions`
-- Missing section: `## Related CyberLex topics`
-- Missing section: `## Official source`
-- Missing section: `## Case metadata`
-- Missing section: `## Disclaimer`
-- Missing official source link
-- Missing case source date
-- Missing case version notes
+No issues found.
 
 ---
 
@@ -89,28 +69,8 @@ No issues found.
 
 ### imy_wrong_email_customer_data.md
 
-- Status: `Needs review`
+- Status: `OK`
 
-#### Issues
-
-- Missing section: `## Case type`
-- Missing section: `## Jurisdiction`
-- Missing section: `## Year`
-- Missing section: `## Authority or court`
-- Missing section: `## Topic`
-- Missing section: `## Short summary`
-- Missing section: `## What happened`
-- Missing section: `## Legal issue`
-- Missing section: `## Decision or outcome`
-- Missing section: `## Fine or cost`
-- Missing section: `## Why it matters for CyberLex`
-- Missing section: `## Similar CyberLex questions`
-- Missing section: `## Related CyberLex topics`
-- Missing section: `## Official source`
-- Missing section: `## Case metadata`
-- Missing section: `## Disclaimer`
-- Missing official source link
-- Missing case source date
-- Missing case version notes
+No issues found.
 
 ---
