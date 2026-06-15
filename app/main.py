@@ -8668,6 +8668,215 @@ badge_html = "".join(
     [f'<span class="topic-badge">{topic}</span>' for topic in topic_badges]
 )
 
+
+
+def should_show_risk_cost_context(question):
+    # Decides whether CyberLex should show the educational risk/cost context card.
+    # This is not a fine calculator. It only gives common cost categories and
+    # historical examples from related authority decisions.
+    q = normalize_query_text(question)
+
+    risk_cost_terms = [
+        "cost",
+        "costs",
+        "fine",
+        "fines",
+        "administrative fine",
+        "penalty",
+        "penalties",
+        "risk",
+        "risks",
+        "what can it cost",
+        "what can this cost",
+        "what can weak security measures cost",
+        "what can a gdpr breach cost",
+        "gdpr fine",
+        "gdpr fines",
+        "meta pixel",
+        "metapixel",
+        "web form",
+        "tracking",
+        "analytics",
+        "data leak",
+        "personal data breach",
+        "weak security",
+        "security measures",
+        "sanktionsavgift",
+        "sanktionsavgifter",
+        "böter",
+        "vite",
+        "kostnad",
+        "kostnader",
+        "kosta",
+        "vad kan det kosta",
+        "vad kan en gdpr-läcka kosta",
+        "vad kan svaga säkerhetsåtgärder kosta",
+        "risk",
+        "risker",
+        "webbformulär",
+        "webbform",
+        "spårning",
+        "analysverktyg",
+        "dataläcka",
+        "personuppgiftsincident",
+        "svaga säkerhetsåtgärder",
+        "säkerhetsåtgärder",
+    ]
+
+    return contains_any(q, risk_cost_terms)
+
+
+def get_short_fine_example_text(fine_text):
+    # Extracts only the useful SEK amount lines from a case fine section.
+    # This keeps the risk/cost card clean and avoids showing Markdown code-fence
+    # artifacts from the source Markdown files.
+    text = str(fine_text or "")
+
+    if not text.strip():
+        return ""
+
+    cleaned_lines = []
+
+    for raw_line in text.splitlines():
+        line = raw_line.strip()
+
+        if not line:
+            continue
+
+        # Remove Markdown code fences and accidental code-block metadata.
+        if line.startswith("```"):
+            continue
+
+        line = line.replace("`", "")
+        line = re.sub(r"\btext\b", "", line).strip()
+        line = re.sub(r"id=\"[^\"]+\"", "", line).strip()
+
+        lower_line = line.lower()
+
+        # Skip explanatory warning text. The shared disclaimer already covers this.
+        skip_markers = [
+            "cyberlex should not",
+            "fine amounts are",
+            "the fine amount is",
+            "amounts from related",
+            "beloppen i relaterade",
+            "ska inte användas",
+            "historical examples",
+            "prediction",
+            "prognos",
+        ]
+
+        if any(marker in lower_line for marker in skip_markers):
+            continue
+
+        if "sek" in lower_line:
+            line = re.sub(r"\s+", " ", line).strip()
+            line = line.replace("Official fine:", "").replace("Official fines:", "")
+            line = line.replace("Officiell sanktionsavgift:", "")
+            line = line.strip(" -:;")
+
+            if line:
+                cleaned_lines.append(line)
+
+    if cleaned_lines:
+        result = "; ".join(cleaned_lines[:3])
+    else:
+        # Fallback: extract raw SEK amounts if the line-based cleanup found none.
+        amounts = re.findall(r"SEK\s*[0-9][0-9, ]*", text, flags=re.IGNORECASE)
+        result = "; ".join(amounts[:3])
+
+    result = re.sub(r"\s+", " ", result).strip()
+
+    if len(result) > 180:
+        result = result[:180].rsplit(" ", 1)[0] + "..."
+
+    return result
+
+
+def display_risk_cost_context(question, language="English"):
+    if not should_show_risk_cost_context(question):
+        return
+
+    related_cases = search_related_cases(question, limit=3)
+    use_swedish = language == "Svenska"
+
+    if use_swedish:
+        heading = "Risk- och kostnadskontext"
+        intro = (
+            "CyberLex förutspår inte böter, skadestånd eller rättsliga resultat. "
+            "Detta är en utbildande riskbild baserad på vanliga kostnadskategorier "
+            "och historiska exempel från relaterade myndighetsbeslut."
+        )
+        categories_title = "Möjliga kostnadskategorier"
+        categories = [
+            "teknisk incidenthantering och felsökning",
+            "forensisk analys och logggranskning",
+            "juridisk och dataskyddsrättslig bedömning",
+            "dokumentation, intern rapportering och beslutsunderlag",
+            "eventuell anmälan till IMY eller annan myndighet",
+            "information till berörda personer om risken är hög",
+            "säkerhetsförbättringar, processändringar och tekniska åtgärder",
+            "ryktesrisk, förtroendeskada och verksamhetspåverkan",
+            "möjlig sanktionsavgift beroende på omständigheterna",
+        ]
+        examples_title = "Historiska exempel från relaterade fall"
+        no_examples = "Inga relaterade fall med kostnadsexempel hittades."
+        disclaimer = (
+            "Beloppen i relaterade fall är historiska exempel. De ska inte användas "
+            "som prognos för nya incidenter."
+        )
+    else:
+        heading = "Risk and cost context"
+        intro = (
+            "CyberLex does not predict fines, damages, or legal outcomes. "
+            "This is an educational risk context based on common cost categories "
+            "and historical examples from related authority decisions."
+        )
+        categories_title = "Possible cost categories"
+        categories = [
+            "technical incident response and troubleshooting",
+            "forensic analysis and log review",
+            "legal and data protection assessment",
+            "documentation, internal reporting, and decision records",
+            "possible notification to IMY or another authority",
+            "communication to affected individuals if the risk is high",
+            "security improvements, process changes, and technical remediation",
+            "reputational impact, loss of trust, and business disruption",
+            "possible administrative fine depending on the facts",
+        ]
+        examples_title = "Historical examples from related cases"
+        no_examples = "No related cases with cost examples were found."
+        disclaimer = (
+            "Amounts from related cases are historical examples. They should not be used "
+            "as predictions for new incidents."
+        )
+
+    with st.expander(heading):
+        st.info(intro)
+
+        st.markdown(f"**{categories_title}:**")
+        for item in categories:
+            st.markdown(f"- {item}")
+
+        st.markdown(f"**{examples_title}:**")
+
+        shown_examples = 0
+
+        for case in related_cases:
+            fine_example = get_short_fine_example_text(case.get("fine_or_cost", ""))
+
+            if not fine_example:
+                continue
+
+            st.markdown(f"- **{case['title']}**: {fine_example}")
+            shown_examples += 1
+
+        if shown_examples == 0:
+            st.markdown(f"- {no_examples}")
+
+        st.caption(disclaimer)
+
+
 def display_related_cases(question, language="English"):
     # Displays related authority decisions and case examples from the local
     # CyberLex case library. These are educational examples, not legal advice
@@ -8753,8 +8962,8 @@ else:
     interface_language = "English"
 
 if interface_language == "Svenska":
-    ask_heading = "Ställ en fråga"
-    question_label = "Skriv en fråga om svensk cybersäkerhetsrätt:"
+    ask_heading = "Ställ en fråga till CyberLex"
+    question_label = "Skriv din fråga"
     status_header = "CyberLex-status"
     loaded_documents_label = "Inlästa dokument"
     searchable_chunks_label = "Sökbara källsektioner"
@@ -8784,8 +8993,8 @@ if interface_language == "Svenska":
     documents_caption = "Detta är de lokala Markdown-källor som CyberLex använder när den svarar."
     sidebar_caption = "CyberLex Sweden är en utbildningsprototyp och ger inte juridisk rådgivning."
 else:
-    ask_heading = "Ask a question"
-    question_label = "Write a question about Swedish cybersecurity law:"
+    ask_heading = "Ask CyberLex a question"
+    question_label = "Write your question"
     status_header = "CyberLex Status"
     loaded_documents_label = "Loaded documents"
     searchable_chunks_label = "Searchable chunks"
@@ -8859,6 +9068,9 @@ if "show_example_questions" not in st.session_state:
 if "main_question_input" not in st.session_state:
     st.session_state.main_question_input = st.session_state.selected_example_question
 
+if "submitted_question" not in st.session_state:
+    st.session_state.submitted_question = ""
+
 if "pending_example_question" in st.session_state:
     st.session_state.selected_example_question = st.session_state.pending_example_question
     st.session_state.main_question_input = st.session_state.pending_example_question
@@ -8879,12 +9091,28 @@ question_placeholder = (
     else "Enter a question to search the CyberLex Sweden knowledge base"
 )
 
-question = st.text_input(
-    question_label,
-    key="main_question_input",
-    placeholder=question_placeholder,
-    label_visibility="collapsed",
+search_button_label = (
+    "Sök i CyberLex"
+    if interface_language == "Svenska"
+    else "Search CyberLex"
 )
+
+with st.form("cyberlex_question_form", clear_on_submit=False):
+    st.text_input(
+        question_label,
+        key="main_question_input",
+        placeholder=question_placeholder,
+        label_visibility="collapsed",
+    )
+
+    search_submitted = st.form_submit_button(search_button_label)
+
+if search_submitted:
+    submitted_question = str(st.session_state.get("main_question_input", "")).strip()
+    st.session_state.submitted_question = submitted_question
+    st.session_state.selected_example_question = submitted_question
+
+question = str(st.session_state.get("submitted_question", "")).strip()
 
 if interface_language == "Svenska":
     example_questions_heading = "Exempelfrågor"
@@ -9105,6 +9333,7 @@ if question:
                         )
 
 
+                display_risk_cost_context(question, language)
                 display_related_cases(question, language)
 
                 if show_technical_diagnostics:
