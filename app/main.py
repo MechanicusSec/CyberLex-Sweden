@@ -1,5 +1,8 @@
+
 from pathlib import Path
+from case_search import search_related_cases
 import re
+import html
 import streamlit as st
 from vector_search import build_chunk_index, search_chunks as experimental_search_chunks
 
@@ -10,6 +13,7 @@ st.set_page_config(
 )
 
 DATA_DIR = Path("data")
+CASES_DIR = Path("cases")
 
 
 @st.cache_data
@@ -50,6 +54,13 @@ def normalize_query_text(text):
         "kryptats": "krypterats",
         "kund data": "kunddata",
         "customerdata": "customer data",
+        "app-fel": "appfel",
+        "app fel": "appfel",
+        "app error": "app bug",
+        "application error": "app bug",
+        "users' data": "users data",
+        "user data": "users data",
+        "kontoseparation": "kontoseparering",
     }
 
     for wrong, right in replacements.items():
@@ -191,6 +202,8 @@ def detect_ui_language_from_question(question):
         "mejl", "e-post", "inloggning", "inloggningar", "obehörig",
         "åtkomst", "krypterats", "krypterade", "utpressningsvirus",
         "anmälas", "rapporteras", "tillsyn", "myndighet", "svensk", "svenska",
+        "appfel", "kunduppgifter", "exponera", "exponerar", "exponerade",
+        "exponering", "användare", "uppgifter", "kontoseparering",
     }
 
     common_swedish_markers = {
@@ -1461,6 +1474,37 @@ def expand_question_terms(question):
             "manufacturer",
             "security requirements",
         ],
+        "app bug": [
+            "personal data breach",
+            "customer data exposure",
+            "data protection",
+            "gdpr",
+            "imy",
+            "security measures",
+            "privacy by design",
+        ],
+        "appfel": [
+            "personuppgiftsincident",
+            "kunduppgifter",
+            "exponerade personuppgifter",
+            "gdpr",
+            "imy",
+            "säkerhetsåtgärder",
+        ],
+        "users see other users data": [
+            "customer data exposure",
+            "personal data breach",
+            "session handling",
+            "account separation",
+            "gdpr",
+        ],
+        "användare se andra användares uppgifter": [
+            "kunduppgifter",
+            "personuppgiftsincident",
+            "kontoseparering",
+            "sessioner",
+            "gdpr",
+        ],
         "imy": [
             "gdpr",
             "data protection",
@@ -1935,9 +1979,92 @@ def has_mfa_term(question):
         or "2fa" in words
     )
 
+
+def is_case_library_context_question(question):
+    # Detects questions that are mainly about case-library-style GDPR/cyber
+    # examples, fines, tracking tools, wrong disclosure, or public data leaks.
+    # These should not route to the generic incident-response playbook unless
+    # the user is asking "what do we do now?".
+    q = normalize_query_text(question).strip()
+
+    terms = [
+        "meta pixel", "meta-pixel", "facebook pixel", "tracking", "analytics",
+        "hashed data", "hashade", "hashade uppgifter", "kry", "apoteket",
+        "apohem", "avanza", "sportadmin", "trygg-hansa", "trygg hansa",
+        "wrong email", "wrong recipient", "wrong attachment", "sent customer data",
+        "email by mistake", "fel mejl", "fel e-post", "fel mottagare",
+        "fel bilaga", "skickat kunduppgifter fel", "web form", "webform",
+        "website form", "complaint form", "webbformulär", "formulär",
+        "darknet", "dark web", "darkweb", "published on the darknet",
+        "publicerad på darknet", "published data", "data published",
+        "data is published", "what happens if data is published",
+        "weak security", "security deficiencies", "security flaws",
+        "bristande säkerhet", "säkerhetsbrister", "article 32",
+        "what can weak security measures cost", "vad kan svaga säkerhetsåtgärder kosta",
+        "what can a gdpr breach cost", "vad kan en gdpr-läcka kosta",
+        "app bug", "app incident", "app error", "application error",
+        "appfel", "appincident", "appuppdatering",
+        "customer data exposure", "customer data exposed", "exposed customer data",
+        "users see other users data", "users could see other users data",
+        "other users data", "see other users data",
+        "kunduppgifter", "kunduppgifter exponerades", "exponera kunduppgifter",
+        "användare se andra användares uppgifter", "andra användares uppgifter",
+        "account separation", "session handling", "kontoseparering",
+        "klarna", "finansinspektionen",
+        "administrative fine", "sanktionsavgift", "gdpr fine", "fine",
+    ]
+
+    return contains_any(q, terms)
+
 def get_target_source_file(question):
     # Routes clear questions to a specific knowledge file.
     question_lower = normalize_query_text(question).strip()
+
+    # Case-library-style questions should use GDPR/data protection source context,
+    # while the actual real-world examples are shown in the related-cases section.
+    # This avoids weird combinations like a Meta Pixel question using the generic
+    # incident-response playbook as the main source card.
+    if is_case_library_context_question(question_lower):
+        if contains_any(
+            question_lower,
+            [
+                "app bug", "app incident", "app error", "application error",
+                "appfel", "appincident", "appuppdatering",
+                "customer data exposure", "customer data exposed", "exposed customer data",
+                "users see other users data", "users could see other users data",
+                "other users data", "see other users data",
+                "kunduppgifter", "kunduppgifter exponerades", "exponera kunduppgifter",
+                "användare se andra användares uppgifter", "andra användares uppgifter",
+                "account separation", "session handling", "kontoseparering",
+                "klarna", "finansinspektionen",
+            ],
+        ):
+            return "gdpr_personal_data_breach.md"
+
+        if contains_any(
+            question_lower,
+            [
+                "wrong email", "wrong recipient", "wrong attachment",
+                "sent customer data", "email by mistake", "fel mejl",
+                "fel e-post", "fel mottagare", "fel bilaga",
+                "data is published", "published on the darknet", "darknet",
+                "dark web", "darkweb", "data breach", "personal data breach",
+                "dataläcka", "personuppgiftsincident",
+            ],
+        ):
+            return "gdpr_personal_data_breach.md"
+
+        if contains_any(
+            question_lower,
+            [
+                "weak security", "security deficiencies", "security flaws",
+                "bristande säkerhet", "säkerhetsbrister", "article 32",
+                "security measures", "säkerhetsåtgärder",
+            ],
+        ):
+            return "imy_gdpr_security_measures.md"
+
+        return "gdpr_imy_edpb_security_guidance.md"
 
     # NIS2 sector/scope/applicability questions should use the dedicated scope file
     # before generic NIS2 and before GDPR security routing.
@@ -6844,6 +6971,210 @@ def generate_enhanced_basic_summary(question, language="English"):
     return ""
 
 
+
+def generate_case_aware_summary(question, language="English"):
+    # Builds a more specific main answer for questions that are clearly connected
+    # to the local case library. This keeps CyberLex from answering every
+    # case-related question with a generic GDPR breach paragraph. A tiny miracle,
+    # if one ignores the amount of string matching required to get there.
+    question_lower = normalize_query_text(question).strip()
+    use_swedish = language == "Svenska"
+
+    meta_terms = [
+        "meta pixel", "meta-pixel", "meta", "pixel", "facebook pixel",
+        "tracking pixel", "tracking", "analytics", "third-party script",
+        "third party script", "website tracking", "marketing pixel",
+    ]
+    hashed_kry_terms = [
+        "hashed", "hashade", "hashed data", "hashed contact", "hashade kontaktuppgifter",
+        "kry", "healthcare", "vård", "reprimand", "reprimand instead of fine",
+    ]
+    web_form_terms = [
+        "web form", "webform", "form", "website form", "online form",
+        "complaint form", "contact form", "formulär", "webbformulär",
+        "kontaktformulär", "klagomålsformulär",
+    ]
+    wrong_email_terms = [
+        "wrong email", "wrong recipient", "wrong attachment", "sent customer data",
+        "email by mistake", "customer data to the wrong", "fel mejl", "fel e-post",
+        "fel mottagare", "fel bilaga", "skickat kunduppgifter fel",
+        "kunduppgifter skickades fel",
+    ]
+    darknet_terms = [
+        "darknet", "dark web", "darkweb", "published on the darknet",
+        "data published", "data is published", "published data", "publicerad på darknet",
+        "publicerades på darknet", "uppgifter publiceras", "uppgifter publicerades",
+    ]
+    cyber_attack_case_terms = [
+        "cyber attack", "cyberattack", "it attack", "hacked", "hackad",
+        "sportadmin", "children", "young people", "barn", "unga",
+    ]
+    weak_security_terms = [
+        "weak security", "poor security", "security deficiencies", "security flaws",
+        "security measures cost", "weak security measures", "insufficient security",
+        "access control", "exposed online", "unauthorized access risk",
+        "svaga säkerhetsåtgärder", "bristande säkerhet", "säkerhetsbrister",
+        "otillräckliga säkerhetsåtgärder", "åtkomstkontroll",
+    ]
+    cost_terms = [
+        "cost", "fine", "fines", "administrative fine", "sanction", "sanctions",
+        "sek", "kosta", "kostar", "böter", "sanktionsavgift", "sanktionsavgifter",
+    ]
+    sensitive_terms = [
+        "sensitive", "sensitive personal data", "health", "pharmacy",
+        "känsliga", "känsliga personuppgifter", "hälsa", "apotek",
+    ]
+    app_exposure_terms = [
+        "app bug", "app incident", "app error", "application error",
+        "appfel", "appincident", "appuppdatering",
+        "customer data exposure", "customer data exposed", "exposed customer data",
+        "expose customer data", "exposed in an app", "data exposed in an app",
+        "users see other users data", "users could see other users data",
+        "see other users data", "other users data",
+        "kunduppgifter", "exponera kunduppgifter", "kunduppgifter exponerades",
+        "användare se andra användares uppgifter", "andra användares uppgifter",
+        "account separation", "session handling", "kontoseparering",
+        "klarna", "finansinspektionen",
+    ]
+
+    has_meta = contains_any(question_lower, meta_terms)
+    has_hashed_kry = contains_any(question_lower, hashed_kry_terms)
+    has_web_form = contains_any(question_lower, web_form_terms)
+    has_wrong_email = contains_any(question_lower, wrong_email_terms)
+    has_darknet = contains_any(question_lower, darknet_terms)
+    has_cyber_attack_case = contains_any(question_lower, cyber_attack_case_terms)
+    has_weak_security = contains_any(question_lower, weak_security_terms)
+    has_cost = contains_any(question_lower, cost_terms)
+    has_sensitive = contains_any(question_lower, sensitive_terms)
+    has_app_exposure = contains_any(question_lower, app_exposure_terms)
+    has_breach_or_leak = contains_any(
+        question_lower,
+        [
+            "breach", "data breach", "personal data breach", "data leak", "leak",
+            "incident", "personuppgiftsincident", "dataläcka", "läcka", "gdpr-läcka",
+        ],
+    )
+
+    if has_app_exposure:
+        if use_swedish:
+            return (
+                "Ja. Ett appfel eller ett fel vid en uppdatering kan exponera kunduppgifter om användare får se information som tillhör andra kunder, om sessioner blandas ihop eller om kontoseparering inte fungerar korrekt. "
+                "Det kan skapa risker för integritet, konfidentialitet, GDPR, incidenthantering och förtroende även om det inte handlar om ett intrång. "
+                "CyberLex behandlar inte varje appfel som en bekräftad personuppgiftsincident. Viktiga frågor är vilka uppgifter som exponerades, vem som kunde se dem, hur länge felet pågick, om personer kan identifieras, hur snabbt incidenten stoppades och om anmälan till IMY eller information till berörda personer kan behöva bedömas. "
+                "Klarna-fallet nedan används som ett utbildande incidentexempel, inte som ett bekräftat IMY-finebeslut för just den appincidenten."
+            )
+        return (
+            "Yes. An app bug or deployment mistake can expose customer data if users are shown information that belongs to other customers, if sessions are mixed up, or if account separation fails. "
+            "This can create privacy, confidentiality, GDPR, incident-response, and trust risks even if there is no hacking. "
+            "CyberLex does not treat every app bug as a confirmed GDPR breach. The key questions are what data was exposed, who could access it, how long the exposure lasted, whether affected users can be identified, how quickly the issue was contained, and whether notification to IMY or affected individuals may need to be assessed. "
+            "The Klarna case below is used as an educational public incident example, not as a confirmed IMY fine decision for that specific app incident."
+        )
+
+    if has_wrong_email:
+        if use_swedish:
+            return (
+                "Ja. Att skicka kunduppgifter till fel mottagare eller med fel bilaga kan vara en personuppgiftsincident enligt GDPR. "
+                "Organisationen bör snabbt bedöma vilka uppgifter som skickats, hur många personer som berörs, vem som mottagit uppgifterna, om mottagaren kan radera eller returnera materialet, och om incidenten innebär risk för de registrerades rättigheter och friheter. "
+                "Det relaterade Indecap-fallet visar att även ett misstag i e-posthantering kan leda till IMY-tillsyn och sanktionsavgift om säkerhetsrutinerna inte är tillräckliga."
+            )
+        return (
+            "Yes. Sending customer data to the wrong recipient or attaching the wrong file can be a personal data breach under GDPR. "
+            "The organization should quickly assess what data was sent, how many people are affected, who received the information, whether the recipient can delete or return it, and whether the incident creates risk to individuals' rights and freedoms. "
+            "The related Indecap wrong-email case shows that an ordinary email mistake can still lead to IMY supervision and an administrative fine if the security routines are not sufficient."
+        )
+
+    if has_darknet or has_cyber_attack_case:
+        if use_swedish:
+            return (
+                "Om personuppgifter publiceras på Darknet eller på annat sätt görs tillgängliga efter en cyberattack är det en allvarlig incident som bör hanteras både tekniskt och dataskyddsrättsligt. "
+                "Organisationen behöver bedöma vilken data som läckt, om uppgifterna rör barn, känsliga uppgifter eller skyddade identiteter, hur många som påverkas, vilka skyddsåtgärder som fanns, och om IMY eller andra myndigheter ska informeras. "
+                "Sportadmin-fallet nedan visar hur en stor cyberattack och publicering av personuppgifter på Darknet kan få betydande GDPR-konsekvenser."
+            )
+        return (
+            "If personal data is published on the Darknet or otherwise made available after a cyber attack, the incident should be handled as both a technical security incident and a data-protection issue. "
+            "The organization needs to assess what data was leaked, whether it concerns children, sensitive data, or protected identities, how many people are affected, what security measures were in place, and whether IMY or other authorities must be notified. "
+            "The related Sportadmin case shows how a large cyber attack and Darknet publication of personal data can lead to significant GDPR consequences."
+        )
+
+    if has_hashed_kry and has_meta:
+        if use_swedish:
+            return (
+                "Ja. Hashade uppgifter som skickas genom Meta Pixel kan fortfarande skapa GDPR-risk. Hashning gör inte automatiskt att uppgifterna slutar vara personuppgifter, särskilt om de kan kopplas till individer eller används för matchning mot en tredje part. "
+                "Organisationen bör kontrollera vilka uppgifter som överförs, om överföringen var avsedd, vilken rättslig grund som finns, hur verktyget är konfigurerat, och om tillräckliga tekniska och organisatoriska åtgärder finns. "
+                "Kry-fallet nedan är användbart eftersom IMY bedömde Meta Pixel och hashade kontaktuppgifter, men utfallet blev en reprimand i stället för sanktionsavgift."
+            )
+        return (
+            "Yes. Hashed data sent through Meta Pixel can still create GDPR risk. Hashing does not automatically mean the data is no longer personal data, especially if it can be linked to individuals or used for matching by a third party. "
+            "The organization should check what data is transferred, whether the transfer was intended, what legal basis applies, how the tool is configured, and whether appropriate technical and organisational measures are in place. "
+            "The Kry case below is useful because IMY assessed Meta Pixel and hashed contact information, but the outcome was a reprimand rather than an administrative fine."
+        )
+
+    if has_meta:
+        if use_swedish:
+            return (
+                "Ja. Meta Pixel och liknande spårningsteknik kan skapa GDPR-risk om verktyget gör att personuppgifter skickas till Meta eller andra tredje parter utan tillräcklig kontroll, transparens, rättslig grund eller säkerhetsbedömning. "
+                "Risken blir högre om uppgifterna rör kunder, konton, köp, hälsa eller andra känsliga sammanhang. Organisationen bör därför kartlägga exakt vilka uppgifter som samlas in, vem som tar emot dem, om användare har informerats, om samtycke eller annan rättslig grund finns, och om privacy by design har följts. "
+                "De relaterade fallen nedan visar hur svenska myndighetsbeslut har bedömt liknande problem med Meta Pixel och överföring av personuppgifter."
+            )
+        return (
+            "Yes. Meta Pixel and similar tracking technology can create GDPR risk if it causes personal data to be sent to Meta or other third parties without sufficient control, transparency, legal basis, or security assessment. "
+            "The risk becomes higher if the data relates to customers, accounts, purchases, health, or other sensitive contexts. An organization should map exactly what data the pixel collects, who receives it, whether users were informed, whether consent or another legal basis exists, and whether privacy by design was applied. "
+            "The related cases below show how Swedish authority decisions have assessed similar Meta Pixel and personal-data transfer issues."
+        )
+
+    if has_web_form:
+        if use_swedish:
+            return (
+                "Ja. Ett webbformulär kan orsaka en personuppgiftsincident om formuläret samlar in personuppgifter och uppgifterna av misstag exponeras, skickas till analysverktyg, lämnas till ett personuppgiftsbiträde på fel sätt, lagras osäkert eller blir tillgängliga för obehöriga. "
+                "Risken blir högre om formuläret innehåller klagomål, identitetsuppgifter, hälsouppgifter, diskrimineringsuppgifter eller annan känslig information. Organisationen bör kontrollera formulärets dataflöden, loggning, åtkomstkontroller, analysverktyg, personuppgiftsbiträden och om uppgifterna kan ha lämnats ut felaktigt. "
+                "Det relaterade DO-fallet nedan är ett tydligt exempel på hur ett webbformulär och en bristande säkerhetsåtgärd kan leda till GDPR-konsekvenser."
+            )
+        return (
+            "Yes. A web form can cause a personal data breach if it collects personal data and that data is accidentally exposed, sent to analytics tools, disclosed incorrectly to a processor, stored insecurely, or made accessible to unauthorized persons. "
+            "The risk becomes higher if the form contains complaints, identity details, health data, discrimination-related information, or other sensitive information. An organization should check the form's data flows, logging, access controls, analytics tools, processors, and whether any information may have been disclosed incorrectly. "
+            "The related Equality Ombudsman case below is a clear example of how a web form and a failed security measure can lead to GDPR consequences."
+        )
+
+    if has_weak_security:
+        if use_swedish:
+            return (
+                "Bristande säkerhetsåtgärder kan skapa GDPR-risk eftersom organisationer måste skydda personuppgifter med lämpliga tekniska och organisatoriska åtgärder. "
+                "Exempel kan vara svag åtkomstkontroll, otillräcklig autentisering, bristande loggning, osäkra system, felkonfigurationer eller uppgifter som blir åtkomliga via internet. "
+                "Konsekvenserna kan bli intern utredning, teknisk åtgärd, dokumentation, anmälan till IMY, information till berörda personer, kostnader för incidenthantering och i vissa fall sanktionsavgifter. De relaterade fallen nedan visar verkliga exempel på hur sådana risker har bedömts."
+            )
+        return (
+            "Weak security measures can create GDPR risk because organizations must protect personal data with appropriate technical and organisational measures. "
+            "Examples can include poor access control, weak authentication, insufficient logging, insecure systems, misconfiguration, or information being accessible via the internet. "
+            "Consequences can include internal investigation, technical remediation, documentation, notification to IMY, communication to affected individuals, incident-response costs, and in some cases administrative fines. The related cases below show real examples of how these risks have been assessed."
+        )
+
+    if has_cost and (has_breach_or_leak or "gdpr" in question_lower or "imy" in question_lower):
+        if use_swedish:
+            return (
+                "Kostnaden för en GDPR-relaterad incident kan variera mycket. Den kan omfatta teknisk incidenthantering, forensisk analys, juridisk bedömning, dokumentation, information till berörda personer, driftstopp, förbättrade säkerhetsåtgärder, ryktepåverkan och eventuell sanktionsavgift. "
+                "CyberLex bör inte förutsäga böter, eftersom belopp beror på de faktiska omständigheterna, typen av personuppgifter, antal berörda personer, risknivå, säkerhetsåtgärder, oaktsamhet eller avsikt, åtgärder efter incidenten och samarbete med myndigheten. "
+                "De relaterade fallen nedan visar historiska exempel på beslut och belopp, inte en prognos för nya ärenden."
+            )
+        return (
+            "The cost of a GDPR-related incident can vary widely. It can include technical incident response, forensic analysis, legal assessment, documentation, communication to affected individuals, downtime, security improvements, reputational impact, and a possible administrative fine. "
+            "CyberLex should not predict fines because amounts depend on the specific facts, the type of personal data, number of affected people, level of risk, security measures, negligence or intent, mitigation, and cooperation with the authority. "
+            "The related cases below show historical examples of decisions and amounts, not a prediction for new incidents."
+        )
+
+    if has_sensitive and ("gdpr" in question_lower or has_breach_or_leak):
+        if use_swedish:
+            return (
+                "Känsliga personuppgifter innebär normalt högre GDPR-risk. Om sådana uppgifter exponeras, överförs till en tredje part eller behandlas utan tillräcklig kontroll kan organisationen behöva göra en noggrann riskbedömning, dokumentera händelsen, överväga anmälan till IMY och i vissa fall informera berörda personer. "
+                "Särskilt viktigt är att kontrollera rättslig grund, säkerhetsåtgärder, åtkomst, leverantörer och om privacy by design har följts. Relaterade fall nedan visar exempel där känsliga sammanhang påverkade bedömningen."
+            )
+        return (
+            "Sensitive personal data normally creates higher GDPR risk. If such data is exposed, transferred to a third party, or processed without sufficient control, the organization may need to perform a careful risk assessment, document the event, consider notification to IMY, and in some cases inform affected individuals. "
+            "Key checks include legal basis, security measures, access, suppliers, and whether privacy by design was applied. The related cases below show examples where sensitive contexts affected the assessment."
+        )
+
+    return ""
+
+
 def generate_simple_answer(question, best_match, language="English", include_technical_details=False):
     # Generates a simple source-based answer from the best matching chunk.
     question_lower = normalize_query_text(question)
@@ -6856,9 +7187,9 @@ def generate_simple_answer(question, best_match, language="English", include_tec
     ):
         return generate_incident_response_answer(question, language)
 
-    enhanced_basic_answer = ""
+    enhanced_basic_answer = generate_case_aware_summary(question, language)
 
-    if is_nis2_sector_scope_question(question):
+    if not enhanced_basic_answer and is_nis2_sector_scope_question(question):
         if use_swedish:
             if "bilaga" in question_lower or "annex" in question_lower:
                 answer = (
@@ -6958,7 +7289,7 @@ def generate_simple_answer(question, best_match, language="English", include_tec
 
         return answer
 
-    if is_gdpr_security_guidance_question(question):
+    if not enhanced_basic_answer and is_gdpr_security_guidance_question(question):
         is_mfa_question = has_mfa_term(question_lower)
         is_encryption_question = (
             "kryptering" in question_lower
@@ -7082,7 +7413,7 @@ def generate_simple_answer(question, best_match, language="English", include_tec
                     "The organization should then decide whether IMY must be notified within 72 hours, whether affected individuals must be informed if the risk is high, which protective measures reduce harm, and how the decision should be documented."
                 )
         enhanced_basic_answer = answer
-    else:
+    if not enhanced_basic_answer:
         enhanced_basic_answer = generate_enhanced_basic_summary(question, language)
 
     if enhanced_basic_answer:
@@ -7792,6 +8123,20 @@ def is_cyberlaw_question(question):
         "controller",
         "processor",
         "accountability",
+        "app bug",
+        "app incident",
+        "app error",
+        "appfel",
+        "appincident",
+        "kunduppgifter",
+        "exponera kunduppgifter",
+        "andra användares uppgifter",
+        "users see other users data",
+        "other users data",
+        "customer data exposure",
+        "account separation",
+        "session handling",
+        "klarna",
         "principles"
     }
 
@@ -7801,6 +8146,7 @@ def is_cyberlaw_question(question):
     # Otherwise small word-order differences in Swedish can be refused before search starts.
     if (
         is_nis2_sector_scope_question(question_lower)
+        or is_case_library_context_question(question_lower)
         or is_gdpr_security_guidance_question(question_lower)
         or is_practical_incident_response_question(question_lower)
         or is_compromised_account_question(question_lower)
@@ -8554,6 +8900,954 @@ badge_html = "".join(
     [f'<span class="topic-badge">{topic}</span>' for topic in topic_badges]
 )
 
+
+
+
+def extract_case_title(content, fallback):
+    # Extracts the visible title from a case Markdown file.
+    for line in str(content or "").splitlines():
+        stripped = line.strip()
+        if stripped.startswith("# "):
+            return stripped.replace("# ", "", 1).strip()
+
+    return str(fallback or "Untitled case").replace("_", " ").title()
+
+
+def load_case_library_entries():
+    # Loads case-library Markdown files for the browseable Case Intelligence page.
+    # Template and index files are excluded because they are not actual cases.
+    #
+    # English sections are the default source of truth.
+    # Swedish sections are optional. If a Swedish section is missing, CyberLex
+    # falls back to the English version so older case files still work.
+    ignored_files = {"CASE_TEMPLATE.md", "CASE_INDEX.md"}
+    cases = []
+
+    if not CASES_DIR.exists():
+        return cases
+
+    for path in sorted(CASES_DIR.glob("*.md")):
+        if path.name in ignored_files:
+            continue
+
+        content = path.read_text(encoding="utf-8")
+
+        english_summary = extract_section_text(content, "## Short summary")
+        swedish_summary = extract_section_text(content, "## Swedish short summary")
+
+        english_fine_or_cost = extract_section_text(content, "## Fine or cost")
+        swedish_fine_or_cost = extract_section_text(content, "## Swedish fine or cost")
+
+        english_related_topics = extract_section_text(content, "## Related CyberLex topics")
+        swedish_related_topics = extract_section_text(content, "## Swedish related CyberLex topics")
+
+        english_official_source = extract_section_text(content, "## Official source")
+        swedish_official_source = extract_section_text(content, "## Swedish official source")
+
+        english_what_happened = extract_section_text(content, "## What happened")
+        swedish_what_happened = extract_section_text(content, "## Swedish what happened")
+
+        english_decision = extract_section_text(content, "## Decision or outcome")
+        swedish_decision = extract_section_text(content, "## Swedish decision or outcome")
+
+        english_learning_note = extract_section_text(content, "## Learning note")
+        swedish_learning_note = extract_section_text(content, "## Swedish learning note")
+
+        cases.append(
+            {
+                "title": extract_case_title(content, path.stem),
+                "summary": english_summary,
+                "summary_sv": swedish_summary or english_summary,
+                "fine_or_cost": english_fine_or_cost,
+                "fine_or_cost_sv": swedish_fine_or_cost or english_fine_or_cost,
+                "related_topics": english_related_topics,
+                "related_topics_sv": swedish_related_topics or english_related_topics,
+                "what_happened": english_what_happened,
+                "what_happened_sv": swedish_what_happened or english_what_happened,
+                "decision": english_decision,
+                "decision_sv": swedish_decision or english_decision,
+                "learning_note": english_learning_note,
+                "learning_note_sv": swedish_learning_note or english_learning_note,
+                "official_source": english_official_source,
+                "official_source_sv": swedish_official_source or english_official_source,
+            }
+        )
+
+    return cases
+
+def case_library_plain_html(text):
+    # Converts simple Markdown-ish case text into safe HTML for the sidebar cards.
+    # Yes, this exists because raw Markdown in Streamlit sidebars can look like it
+    # was formatted by a sleepy toaster.
+    cleaned = str(text or "").strip()
+
+    if not cleaned:
+        return ""
+
+    cleaned = re.sub(r"```[a-zA-Z0-9_-]*", "", cleaned)
+    cleaned = cleaned.replace("```", "")
+    cleaned = re.sub(r"`([^`]*)`", r"\1", cleaned)
+    cleaned = re.sub(r"\s+", " ", cleaned).strip()
+
+    return html.escape(cleaned)
+
+
+def case_library_links_html(markdown_text):
+    # Converts Markdown links and bullet links into sidebar-friendly HTML links.
+    text = str(markdown_text or "").strip()
+
+    if not text:
+        return ""
+
+    lines = []
+    link_pattern = re.compile(r"\[([^\]]+)\]\((https?://[^\)]+)\)")
+
+    for raw_line in text.splitlines():
+        line = raw_line.strip()
+
+        if not line:
+            continue
+
+        line = line.lstrip("-* ").strip()
+        match = link_pattern.search(line)
+
+        if match:
+            label = html.escape(match.group(1).strip())
+            url = html.escape(match.group(2).strip(), quote=True)
+            lines.append(
+                f'<li><a href="{url}" target="_blank" rel="noopener noreferrer">{label}</a></li>'
+            )
+            continue
+
+        if line.startswith("http://") or line.startswith("https://"):
+            safe_url = html.escape(line, quote=True)
+            lines.append(
+                f'<li><a href="{safe_url}" target="_blank" rel="noopener noreferrer">{safe_url}</a></li>'
+            )
+            continue
+
+        lines.append(f"<li>{html.escape(line)}</li>")
+
+    if not lines:
+        return ""
+
+    return "<ul>" + "".join(lines) + "</ul>"
+
+
+def case_library_topics_html(topics_text):
+    # Turns the topic list into compact SOC-style tags.
+    text = str(topics_text or "").strip()
+
+    if not text:
+        return ""
+
+    topics = []
+
+    for raw_line in text.splitlines():
+        line = raw_line.strip().lstrip("-* ").strip()
+        if line:
+            topics.append(line)
+
+    if not topics:
+        return ""
+
+    tags = "".join(
+        f'<span class="case-intel-tag">{html.escape(topic)}</span>'
+        for topic in topics
+    )
+
+    return f'<div class="case-intel-tags">{tags}</div>'
+
+
+def clean_case_markdown_for_display(text):
+    # Cleans case-library Markdown before displaying it in the main UI.
+    # It removes accidental code-fence artifacts while keeping normal Markdown
+    # such as bullets and links usable.
+    cleaned = str(text or "").strip()
+
+    if not cleaned:
+        return ""
+
+    cleaned = re.sub(r"```[a-zA-Z0-9_-]*", "", cleaned)
+    cleaned = cleaned.replace("```", "")
+    cleaned = re.sub(r"\btext\b", "", cleaned)
+    cleaned = re.sub(r'id="[^"]+"', "", cleaned)
+    cleaned = re.sub(r"\n{3,}", "\n\n", cleaned).strip()
+
+    return cleaned
+
+
+
+
+def strip_repeated_case_section_intro(text, labels):
+    # Removes duplicate first-line headings from case sections.
+    # The UI already prints labels such as "Administrative fine or outcome".
+    # If the Markdown section starts with the same label, showing both looks clumsy.
+    cleaned = str(text or "").strip()
+
+    if not cleaned:
+        return ""
+
+    normalized_labels = {str(label or "").strip().lower().rstrip(":") for label in labels}
+    lines = cleaned.splitlines()
+
+    while lines and not lines[0].strip():
+        lines.pop(0)
+
+    if lines:
+        first_line = lines[0].strip().lower().rstrip(":")
+
+        if first_line in normalized_labels:
+            lines.pop(0)
+
+            # Remove one empty spacer line after the repeated label.
+            if lines and not lines[0].strip():
+                lines.pop(0)
+
+    return "\n".join(lines).strip()
+
+
+def case_topics_to_badges(topics_text):
+    # Turns Related CyberLex topics into compact blue-team style badges.
+    topics = []
+
+    for raw_line in str(topics_text or "").splitlines():
+        line = raw_line.strip().lstrip("-* ").strip()
+
+        if line:
+            topics.append(line)
+
+    if not topics:
+        return ""
+
+    badges = "".join(
+        f'<span class="case-topic-badge">{html.escape(topic)}</span>'
+        for topic in topics
+    )
+
+    return f'<div class="case-topic-badge-row">{badges}</div>'
+
+
+
+
+def looks_like_swedish_source_line(line):
+    # Heuristic used when older case files have Swedish and English links mixed
+    # inside the same "## Official source" section.
+    # Prefer explicit "## Swedish official source" sections when available,
+    # but this keeps the current case files usable without another migration ritual.
+    text = str(line or "").lower()
+
+    swedish_markers = [
+        "imy.se/nyheter/",
+        "imy.se/tillsyner/",
+        "sanktionsavgift",
+        "sanktionsavgifter",
+        "tillsyn",
+        "gällande",
+        "överföring",
+        "personuppgifter",
+        "bristande",
+        "säkerhet",
+        "bolag som skickat",
+        "är det förbjudet",
+        "kunduppgifter",
+    ]
+
+    if any(marker in text for marker in swedish_markers):
+        return True
+
+    return any(letter in text for letter in "åäö")
+
+
+def looks_like_english_source_line(line):
+    # Heuristic used when older case files have Swedish and English links mixed
+    # inside the same "## Official source" section.
+    text = str(line or "").lower()
+
+    english_markers = [
+        "/en/",
+        "edpb.europa.eu",
+        "administrative fine",
+        "administrative fines",
+        "english translation",
+        "transferring customer data",
+        "transferring personal data",
+        "security deficiencies",
+        "has for an incident",
+        "against sportadmin",
+        "collected via a web form",
+    ]
+
+    return any(marker in text for marker in english_markers)
+
+
+def filter_official_source_links(markdown_text, target_language="Auto"):
+    # Filters Markdown source links for explicit English or Swedish language mode.
+    # Auto mode returns all links.
+    mode = str(target_language or "Auto")
+    text = str(markdown_text or "").strip()
+
+    if not text or mode == "Auto":
+        return text
+
+    kept_lines = []
+
+    for raw_line in text.splitlines():
+        line = raw_line.strip()
+
+        if not line:
+            continue
+
+        is_swedish = looks_like_swedish_source_line(line)
+        is_english = looks_like_english_source_line(line)
+
+        if mode == "Svenska":
+            if is_swedish or (not is_english and not is_swedish):
+                kept_lines.append(raw_line)
+        elif mode == "English":
+            if is_english or (not is_english and not is_swedish):
+                kept_lines.append(raw_line)
+
+    return "\n".join(kept_lines).strip()
+
+
+def select_case_official_source(case, source_language_mode="Auto"):
+    # Selects official case sources according to the language selector:
+    # - Auto: show all available official source links
+    # - English: prefer English links
+    # - Svenska: prefer Swedish links
+    #
+    # Important: some case files only have one official source language stored.
+    # If strict filtering finds nothing, CyberLex falls back to available official
+    # sources instead of showing an empty source section. Empty source sections are
+    # not transparency. They are just a tiny bureaucracy wearing a crash helmet.
+    mode = str(source_language_mode or "Auto")
+    english_source = str(case.get("official_source", "") or "").strip()
+    swedish_source_raw = str(case.get("official_source_sv", "") or "").strip()
+
+    # Treat official_source_sv as a real Swedish section only when it is different
+    # from the English source. Older cases may mirror English into _sv as fallback.
+    has_real_swedish_section = bool(swedish_source_raw and swedish_source_raw != english_source)
+
+    if mode == "Auto":
+        combined_parts = []
+        if english_source:
+            combined_parts.append(english_source)
+        if has_real_swedish_section:
+            combined_parts.append(swedish_source_raw)
+        return "\n".join(combined_parts).strip()
+
+    if mode == "Svenska":
+        # Prefer an explicit Swedish source section when the case file has one.
+        if has_real_swedish_section:
+            return swedish_source_raw
+
+        # Otherwise filter mixed links from the normal Official source section.
+        swedish_filtered = filter_official_source_links(english_source, "Svenska")
+        if swedish_filtered:
+            return swedish_filtered
+
+        # Last-resort fallback: show available sources rather than hiding all links.
+        # This happens when the case currently only stores English/EDPB sources.
+        return english_source
+
+    if mode == "English":
+        english_filtered = filter_official_source_links(english_source, "English")
+        if english_filtered:
+            return english_filtered
+
+        # If an English source section is missing but Swedish links exist, keep the
+        # source visible. The user can still verify the case instead of staring at
+        # an empty box like a punished servitor.
+        return english_source or swedish_source_raw
+
+    return english_source
+
+def display_case_intelligence_page(language="English", source_language_mode="Auto"):
+    # Full Case Intelligence page inside main.py.
+    # We keep this in the same file for now so CyberLex does not instantly turn
+    # into eight files and a small municipal bureaucracy.
+    cases = load_case_library_entries()
+    use_swedish = language == "Svenska"
+
+    if use_swedish:
+        page_title = "Case Intelligence"
+        page_subtitle = "Cyberrelaterade sanktionsavgifter och myndighetsbeslut"
+        page_intro = (
+            "Här kan du bläddra bland myndighetsbeslut och fall som CyberLex använder "
+            "som utbildande referenser. Fallen används för att visa hur liknande "
+            "cyber-, GDPR- och dataskyddsfrågor har bedömts i praktiken."
+        )
+        search_label = "Filtrera fall"
+        search_placeholder = "Sök på t.ex. Meta Pixel, säkerhet, e-post, dataläcka..."
+        count_label = "fall i biblioteket"
+        shown_label = "visade fall"
+        summary_label = "Sammanfattning"
+        learning_label = "Lärdom från fallet"
+        outcome_label = "Sanktionsavgift eller utfall"
+        topics_label = "Relaterade CyberLex-ämnen"
+        source_label = "Officiella källor"
+        no_result_text = "Inga fall matchade filtret."
+        empty_label = "Ingen information lagrad i denna sektion ännu."
+        disclaimer_title = "Viktig begränsning"
+        disclaimer_text = (
+            "Belopp och utfall är historiska exempel. CyberLex förutspår inte böter, "
+            "skadestånd eller rättsliga resultat för nya incidenter."
+        )
+    else:
+        page_title = "Case Intelligence"
+        page_subtitle = "Cyber-related fines and authority decisions"
+        page_intro = (
+            "Browse authority decisions and case examples used by CyberLex as educational "
+            "references. These cases help show how similar cyber, GDPR, and data-protection "
+            "issues have been assessed in practice."
+        )
+        search_label = "Filter cases"
+        search_placeholder = "Search for Meta Pixel, security, email, data leak..."
+        count_label = "cases in library"
+        shown_label = "shown cases"
+        summary_label = "Summary"
+        learning_label = "Learning note"
+        outcome_label = "Administrative fine or outcome"
+        topics_label = "Related CyberLex topics"
+        source_label = "Official sources"
+        no_result_text = "No cases matched the filter."
+        empty_label = "No information is stored in this section yet."
+        disclaimer_title = "Important limitation"
+        disclaimer_text = (
+            "Amounts and outcomes are historical examples. CyberLex does not predict fines, "
+            "damages, or legal outcomes for new incidents."
+        )
+
+    st.markdown(
+        """
+        <style>
+            .case-page-hero {
+                border: 1px solid rgba(96, 165, 250, 0.42);
+                border-left: 5px solid #60a5fa;
+                border-radius: 18px;
+                padding: 1.15rem 1.25rem;
+                background: linear-gradient(135deg, rgba(30, 64, 175, 0.26), rgba(15, 23, 42, 0.72));
+                margin: 0.35rem 0 1.2rem 0;
+                box-shadow: 0 10px 30px rgba(15, 23, 42, 0.18);
+            }
+
+            .case-page-kicker {
+                color: #93c5fd;
+                font-size: 0.78rem;
+                font-weight: 850;
+                text-transform: uppercase;
+                letter-spacing: 0.07em;
+                margin-bottom: 0.35rem;
+            }
+
+            .case-page-title {
+                color: #f8fafc;
+                font-size: 2.05rem;
+                font-weight: 850;
+                line-height: 1.15;
+                margin-bottom: 0.3rem;
+            }
+
+            .case-page-intro {
+                color: #d1d5db;
+                font-size: 0.98rem;
+                line-height: 1.6;
+                max-width: 900px;
+            }
+
+            .case-page-stat-row {
+                display: flex;
+                gap: 0.65rem;
+                flex-wrap: wrap;
+                margin: 0.7rem 0 1rem 0;
+            }
+
+            .case-page-stat {
+                display: inline-flex;
+                align-items: center;
+                border: 1px solid rgba(96, 165, 250, 0.32);
+                background: rgba(59, 130, 246, 0.14);
+                color: #dbeafe;
+                border-radius: 999px;
+                padding: 0.32rem 0.75rem;
+                font-size: 0.82rem;
+                font-weight: 750;
+            }
+
+            .case-topic-badge-row {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.35rem;
+                margin-top: 0.25rem;
+            }
+
+            .case-topic-badge {
+                border: 1px solid rgba(96, 165, 250, 0.28);
+                background: rgba(59, 130, 246, 0.13);
+                color: #dbeafe;
+                border-radius: 999px;
+                padding: 0.18rem 0.55rem;
+                font-size: 0.76rem;
+                font-weight: 700;
+            }
+
+            .case-page-warning {
+                border: 1px solid rgba(245, 158, 11, 0.32);
+                border-radius: 14px;
+                background: rgba(245, 158, 11, 0.11);
+                padding: 0.85rem 1rem;
+                margin: 1.1rem 0;
+                color: #f8fafc;
+                line-height: 1.5;
+            }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        f"""
+        <div class="case-page-hero">
+            <div class="case-page-kicker">🛡️ {page_title}</div>
+            <div class="case-page-title">{page_subtitle}</div>
+            <div class="case-page-intro">{page_intro}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    filter_text = st.text_input(
+        search_label,
+        placeholder=search_placeholder,
+        key="case_intelligence_filter",
+    ).strip()
+
+    normalized_filter = normalize_query_text(filter_text)
+
+    if normalized_filter:
+        filtered_cases = []
+
+        for case in cases:
+            haystack = normalize_query_text(
+                " ".join(
+                    [
+                        case.get("title", ""),
+                        case.get("summary", ""),
+                        case.get("summary_sv", ""),
+                        case.get("fine_or_cost", ""),
+                        case.get("fine_or_cost_sv", ""),
+                        case.get("related_topics", ""),
+                        case.get("related_topics_sv", ""),
+                        case.get("what_happened", ""),
+                        case.get("what_happened_sv", ""),
+                        case.get("decision", ""),
+                        case.get("decision_sv", ""),
+                        case.get("learning_note", ""),
+                        case.get("learning_note_sv", ""),
+                        case.get("official_source", ""),
+                        case.get("official_source_sv", ""),
+                    ]
+                )
+            )
+
+            if normalized_filter in haystack:
+                filtered_cases.append(case)
+    else:
+        filtered_cases = cases
+
+    st.markdown(
+        f"""
+        <div class="case-page-stat-row">
+            <div class="case-page-stat">● {len(cases)} {count_label}</div>
+            <div class="case-page-stat">◆ {len(filtered_cases)} {shown_label}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        f"""
+        <div class="case-page-warning">
+            <strong>{disclaimer_title}:</strong> {disclaimer_text}
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    if not filtered_cases:
+        st.info(no_result_text)
+        return
+
+    for case in filtered_cases:
+        case_title = case.get("title", "Untitled case")
+
+        if use_swedish:
+            summary = clean_case_markdown_for_display(case.get("summary_sv", ""))
+            learning_note = clean_case_markdown_for_display(case.get("learning_note_sv", ""))
+            fine_or_cost = clean_case_markdown_for_display(case.get("fine_or_cost_sv", ""))
+            related_topics = str(case.get("related_topics_sv", "")).strip()
+        else:
+            summary = clean_case_markdown_for_display(case.get("summary", ""))
+            learning_note = clean_case_markdown_for_display(case.get("learning_note", ""))
+            fine_or_cost = clean_case_markdown_for_display(case.get("fine_or_cost", ""))
+            related_topics = str(case.get("related_topics", "")).strip()
+
+        fine_or_cost = strip_repeated_case_section_intro(
+            fine_or_cost,
+            [
+                outcome_label,
+                "Administrative fine or outcome",
+                "Administrative fine or outcome:",
+                "Administrativ sanktionsavgift eller utfall",
+                "Administrativ sanktionsavgift eller utfall:",
+                "Official fine",
+                "Official fine:",
+                "Administrativ sanktionsavgift",
+                "Administrativ sanktionsavgift:",
+            ],
+        )
+
+        official_source = clean_case_markdown_for_display(
+            select_case_official_source(case, source_language_mode)
+        )
+
+        with st.expander(f"🧾 {case_title}", expanded=False):
+            st.markdown(f"**{summary_label}:**")
+            st.markdown(summary if summary else empty_label)
+
+            if learning_note:
+                st.markdown(f"**{learning_label}:**")
+                st.markdown(learning_note)
+
+            st.markdown(f"**{outcome_label}:**")
+            st.markdown(fine_or_cost if fine_or_cost else empty_label)
+
+            st.markdown(f"**{topics_label}:**")
+            topics_badges = case_topics_to_badges(related_topics)
+
+            if topics_badges:
+                st.markdown(topics_badges, unsafe_allow_html=True)
+            else:
+                st.markdown(empty_label)
+
+            st.markdown(f"**{source_label}:**")
+            st.markdown(official_source if official_source else empty_label)
+
+def should_show_risk_cost_context(question):
+    # Decides whether CyberLex should show the educational risk/cost context card.
+    # This is not a fine calculator. It only gives common cost categories and
+    # historical examples from related authority decisions.
+    q = normalize_query_text(question)
+
+    risk_cost_terms = [
+        "cost",
+        "costs",
+        "fine",
+        "fines",
+        "administrative fine",
+        "penalty",
+        "penalties",
+        "risk",
+        "risks",
+        "what can it cost",
+        "what can this cost",
+        "what can weak security measures cost",
+        "what can a gdpr breach cost",
+        "gdpr fine",
+        "gdpr fines",
+        "meta pixel",
+        "metapixel",
+        "web form",
+        "tracking",
+        "analytics",
+        "data leak",
+        "personal data breach",
+        "weak security",
+        "security measures",
+        "sanktionsavgift",
+        "sanktionsavgifter",
+        "böter",
+        "vite",
+        "kostnad",
+        "kostnader",
+        "kosta",
+        "vad kan det kosta",
+        "vad kan en gdpr-läcka kosta",
+        "vad kan svaga säkerhetsåtgärder kosta",
+        "risk",
+        "risker",
+        "webbformulär",
+        "webbform",
+        "spårning",
+        "analysverktyg",
+        "dataläcka",
+        "personuppgiftsincident",
+        "svaga säkerhetsåtgärder",
+        "säkerhetsåtgärder",
+    ]
+
+    return contains_any(q, risk_cost_terms)
+
+
+def get_short_fine_example_text(fine_text):
+    # Extracts only the useful SEK amount lines from a case fine section.
+    # This keeps the risk/cost card clean and avoids showing Markdown code-fence
+    # artifacts from the source Markdown files.
+    text = str(fine_text or "")
+
+    if not text.strip():
+        return ""
+
+    cleaned_lines = []
+
+    for raw_line in text.splitlines():
+        line = raw_line.strip()
+
+        if not line:
+            continue
+
+        # Remove Markdown code fences and accidental code-block metadata.
+        if line.startswith("```"):
+            continue
+
+        line = line.replace("`", "")
+        line = re.sub(r"\btext\b", "", line).strip()
+        line = re.sub(r"id=\"[^\"]+\"", "", line).strip()
+
+        lower_line = line.lower()
+
+        # Skip explanatory warning text. The shared disclaimer already covers this.
+        skip_markers = [
+            "cyberlex should not",
+            "fine amounts are",
+            "the fine amount is",
+            "amounts from related",
+            "beloppen i relaterade",
+            "ska inte användas",
+            "historical examples",
+            "prediction",
+            "prognos",
+        ]
+
+        if any(marker in lower_line for marker in skip_markers):
+            continue
+
+        if "sek" in lower_line:
+            line = re.sub(r"\s+", " ", line).strip()
+            line = line.replace("Official fine:", "").replace("Official fines:", "")
+            line = line.replace("Officiell sanktionsavgift:", "")
+            line = line.strip(" -:;")
+
+            if line:
+                cleaned_lines.append(line)
+
+    if cleaned_lines:
+        result = "; ".join(cleaned_lines[:3])
+    else:
+        # Fallback: extract raw SEK amounts if the line-based cleanup found none.
+        amounts = re.findall(r"SEK\s*[0-9][0-9, ]*", text, flags=re.IGNORECASE)
+        result = "; ".join(amounts[:3])
+
+    result = re.sub(r"\s+", " ", result).strip()
+
+    if len(result) > 180:
+        result = result[:180].rsplit(" ", 1)[0] + "..."
+
+    return result
+
+
+def display_risk_cost_context(question, language="English"):
+    if not should_show_risk_cost_context(question):
+        return
+
+    related_cases = search_related_cases(question, limit=3)
+    use_swedish = language == "Svenska"
+
+    if use_swedish:
+        heading = "Risk- och kostnadskontext"
+        intro = (
+            "CyberLex förutspår inte böter, skadestånd eller rättsliga resultat. "
+            "Detta är en utbildande riskbild baserad på vanliga kostnadskategorier "
+            "och historiska exempel från relaterade myndighetsbeslut."
+        )
+        categories_title = "Möjliga kostnadskategorier"
+        categories = [
+            "teknisk incidenthantering och felsökning",
+            "forensisk analys och logggranskning",
+            "juridisk och dataskyddsrättslig bedömning",
+            "dokumentation, intern rapportering och beslutsunderlag",
+            "eventuell anmälan till IMY eller annan myndighet",
+            "information till berörda personer om risken är hög",
+            "säkerhetsförbättringar, processändringar och tekniska åtgärder",
+            "ryktesrisk, förtroendeskada och verksamhetspåverkan",
+            "möjlig sanktionsavgift beroende på omständigheterna",
+        ]
+        examples_title = "Historiska exempel från relaterade fall"
+        no_examples = "Inga relaterade fall med kostnadsexempel hittades."
+        disclaimer = (
+            "Beloppen i relaterade fall är historiska exempel. De ska inte användas "
+            "som prognos för nya incidenter."
+        )
+    else:
+        heading = "Risk and cost context"
+        intro = (
+            "CyberLex does not predict fines, damages, or legal outcomes. "
+            "This is an educational risk context based on common cost categories "
+            "and historical examples from related authority decisions."
+        )
+        categories_title = "Possible cost categories"
+        categories = [
+            "technical incident response and troubleshooting",
+            "forensic analysis and log review",
+            "legal and data protection assessment",
+            "documentation, internal reporting, and decision records",
+            "possible notification to IMY or another authority",
+            "communication to affected individuals if the risk is high",
+            "security improvements, process changes, and technical remediation",
+            "reputational impact, loss of trust, and business disruption",
+            "possible administrative fine depending on the facts",
+        ]
+        examples_title = "Historical examples from related cases"
+        no_examples = "No related cases with cost examples were found."
+        disclaimer = (
+            "Amounts from related cases are historical examples. They should not be used "
+            "as predictions for new incidents."
+        )
+
+    with st.expander(heading):
+        st.info(intro)
+
+        st.markdown(f"**{categories_title}:**")
+        for item in categories:
+            st.markdown(f"- {item}")
+
+        st.markdown(f"**{examples_title}:**")
+
+        shown_examples = 0
+
+        for case in related_cases:
+            fine_example = get_short_fine_example_text(case.get("fine_or_cost", ""))
+
+            if not fine_example:
+                continue
+
+            st.markdown(f"- **{case['title']}**: {fine_example}")
+            shown_examples += 1
+
+        if shown_examples == 0:
+            st.markdown(f"- {no_examples}")
+
+        st.caption(disclaimer)
+
+
+def display_related_cases(question, language="English", source_language_mode="Auto"):
+    # Displays related authority decisions and case examples from the local
+    # CyberLex case library. These are educational examples, not legal advice
+    # and not fine predictions.
+    related_cases = search_related_cases(question, limit=3)
+
+    if not related_cases:
+        return
+
+    use_swedish = language == "Svenska"
+
+    # Load the richer Case Intelligence entries too.
+    # case_search.py returns the related case ranking, while main.py keeps the
+    # bilingual display sections for the Case Intelligence page.
+    case_library_entries = load_case_library_entries()
+    case_library_by_title = {
+        normalize_query_text(case.get("title", "")): case
+        for case in case_library_entries
+        if case.get("title")
+    }
+
+    if use_swedish:
+        heading = "Relaterade fall och incidentexempel"
+        intro_text = (
+            "CyberLex hittade relaterade fall eller incidentexempel som kan hjälpa till att förklara "
+            "hur liknande GDPR-, integritets- eller cybersäkerhetsrisker har uppstått eller bedömts i praktiken. "
+            "Dessa används som utbildande exempel, inte som juridisk rådgivning."
+        )
+        summary_label = "Sammanfattning"
+        learning_label = "Lärdom från fallet"
+        fine_label = "Kostnad eller sanktionsavgift"
+        source_label = "Officiella källor"
+        disclaimer = (
+            "CyberLex förutspår inte böter eller rättsliga resultat. "
+            "Beloppen i fallen är historiska exempel och beror på de specifika omständigheterna."
+        )
+    else:
+        heading = "Related cases and incident examples"
+        intro_text = (
+            "CyberLex found related cases or incident examples that may help explain how similar "
+            "GDPR, privacy, or cybersecurity risks have appeared or been assessed in practice. "
+            "These are used as educational examples, not legal advice."
+        )
+        summary_label = "Summary"
+        learning_label = "Learning note"
+        fine_label = "Cost or administrative fine"
+        source_label = "Official sources"
+        disclaimer = (
+            "CyberLex does not predict fines or legal outcomes. "
+            "The amounts shown in these cases are historical examples and depend on the specific circumstances."
+        )
+
+    st.subheader(heading)
+    st.info(intro_text)
+
+    for related_case in related_cases:
+        case_title = related_case.get("title", "Untitled case")
+        display_case = case_library_by_title.get(normalize_query_text(case_title), related_case)
+
+        with st.expander(case_title):
+            if use_swedish:
+                summary = str(display_case.get("summary_sv", display_case.get("summary", ""))).strip()
+                learning_note = str(display_case.get("learning_note_sv", display_case.get("learning_note", ""))).strip()
+                fine_or_cost = str(display_case.get("fine_or_cost_sv", display_case.get("fine_or_cost", ""))).strip()
+            else:
+                summary = str(display_case.get("summary", "")).strip()
+                learning_note = str(display_case.get("learning_note", "")).strip()
+                fine_or_cost = str(display_case.get("fine_or_cost", "")).strip()
+
+            fine_or_cost = strip_repeated_case_section_intro(
+                clean_case_markdown_for_display(fine_or_cost),
+                [
+                    fine_label,
+                    "Cost or administrative fine",
+                    "Administrative fine or outcome",
+                    "Administrative fine or outcome:",
+                    "Sanktionsavgift eller utfall",
+                    "Administrativ sanktionsavgift eller utfall",
+                    "Administrativ sanktionsavgift eller utfall:",
+                    "Official fine",
+                    "Official fine:",
+                    "Administrativ sanktionsavgift",
+                    "Administrativ sanktionsavgift:",
+                ],
+            )
+            learning_note = clean_case_markdown_for_display(learning_note)
+
+            official_source = select_case_official_source(display_case, source_language_mode)
+
+            if summary:
+                st.markdown(f"**{summary_label}:**")
+                st.markdown(summary)
+
+            if learning_note:
+                st.markdown(f"**{learning_label}:**")
+                st.markdown(learning_note)
+
+            if fine_or_cost:
+                st.markdown(f"**{fine_label}:**")
+                st.markdown(fine_or_cost)
+
+            if official_source:
+                st.markdown(f"**{source_label}:**")
+                st.markdown(official_source)
+
+    st.caption(disclaimer)
+
 def detect_question_language(question):
     # Detects whether the answer should be Swedish or English.
     # Uses the same scoring logic as the preview detector so the page and answer stay aligned.
@@ -8574,8 +9868,8 @@ else:
     interface_language = "English"
 
 if interface_language == "Svenska":
-    ask_heading = "Ställ en fråga"
-    question_label = "Skriv en fråga om svensk cybersäkerhetsrätt:"
+    ask_heading = "Ställ en fråga till CyberLex"
+    question_label = "Skriv din fråga"
     status_header = "CyberLex-status"
     loaded_documents_label = "Inlästa dokument"
     searchable_chunks_label = "Sökbara källsektioner"
@@ -8605,8 +9899,8 @@ if interface_language == "Svenska":
     documents_caption = "Detta är de lokala Markdown-källor som CyberLex använder när den svarar."
     sidebar_caption = "CyberLex Sweden är en utbildningsprototyp och ger inte juridisk rådgivning."
 else:
-    ask_heading = "Ask a question"
-    question_label = "Write a question about Swedish cybersecurity law:"
+    ask_heading = "Ask CyberLex a question"
+    question_label = "Write your question"
     status_header = "CyberLex Status"
     loaded_documents_label = "Loaded documents"
     searchable_chunks_label = "Searchable chunks"
@@ -8669,6 +9963,38 @@ st.sidebar.markdown(
 with st.sidebar.expander(suggested_test_flow_header, expanded=False):
     st.markdown(suggested_test_flow_text)
 
+if interface_language == "Svenska":
+    navigation_header = "Navigering"
+    ask_page_label = "Fråga CyberLex"
+    case_page_label = "Case Intelligence"
+else:
+    navigation_header = "Navigation"
+    ask_page_label = "Ask CyberLex"
+    case_page_label = "Case Intelligence"
+
+st.sidebar.markdown("---")
+selected_page = st.sidebar.radio(
+    navigation_header,
+    [ask_page_label, case_page_label],
+    key="cyberlex_navigation",
+)
+
+if selected_page == case_page_label:
+    display_case_intelligence_page(interface_language, language_mode)
+
+    case_footer_label = (
+        "© 2026 CyberLex Sweden · Policy · Om · Copyright"
+        if interface_language == "Svenska"
+        else "© 2026 CyberLex Sweden · Policy · About · Copyright"
+    )
+
+    st.markdown(
+        f'<div class="footer-note">{case_footer_label}</div>',
+        unsafe_allow_html=True,
+    )
+
+    st.stop()
+
 st.markdown(f'<div class="ask-heading">{ask_heading}</div>', unsafe_allow_html=True)
 
 if "selected_example_question" not in st.session_state:
@@ -8679,6 +10005,9 @@ if "show_example_questions" not in st.session_state:
 
 if "main_question_input" not in st.session_state:
     st.session_state.main_question_input = st.session_state.selected_example_question
+
+if "submitted_question" not in st.session_state:
+    st.session_state.submitted_question = ""
 
 if "pending_example_question" in st.session_state:
     st.session_state.selected_example_question = st.session_state.pending_example_question
@@ -8700,12 +10029,28 @@ question_placeholder = (
     else "Enter a question to search the CyberLex Sweden knowledge base"
 )
 
-question = st.text_input(
-    question_label,
-    key="main_question_input",
-    placeholder=question_placeholder,
-    label_visibility="collapsed",
+search_button_label = (
+    "Sök i CyberLex"
+    if interface_language == "Svenska"
+    else "Search CyberLex"
 )
+
+with st.form("cyberlex_question_form", clear_on_submit=False):
+    st.text_input(
+        question_label,
+        key="main_question_input",
+        placeholder=question_placeholder,
+        label_visibility="collapsed",
+    )
+
+    search_submitted = st.form_submit_button(search_button_label)
+
+if search_submitted:
+    submitted_question = str(st.session_state.get("main_question_input", "")).strip()
+    st.session_state.submitted_question = submitted_question
+    st.session_state.selected_example_question = submitted_question
+
+question = str(st.session_state.get("submitted_question", "")).strip()
 
 if interface_language == "Svenska":
     example_questions_heading = "Exempelfrågor"
@@ -8924,6 +10269,10 @@ if question:
                             source_context_html,
                             unsafe_allow_html=True
                         )
+
+
+                display_risk_cost_context(question, language)
+                display_related_cases(question, language, language_mode)
 
                 if show_technical_diagnostics:
                     with st.expander(other_matches_header, expanded=False):
