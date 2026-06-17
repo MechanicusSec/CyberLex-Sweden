@@ -1,6 +1,16 @@
 from case_search import search_related_cases
 from config import APP_ICON, APP_LAYOUT, APP_TITLE, CASES_DIR, DATA_DIR
 from styles import apply_app_styles
+from text_utils import clean_words, normalize_query_text, contains_any
+from language import (
+    detect_ui_language_from_question,
+    get_current_ui_language,
+    clean_example_question_for_language,
+    localize_section_name,
+    get_effective_ui_language,
+    localize_case_title,
+    localize_source_label,
+)
 import re
 import html
 import streamlit as st
@@ -18,61 +28,6 @@ def load_experimental_search_index():
     # Loads the experimental search chunks once and keeps them cached.
     # This avoids rebuilding the test index every time Streamlit refreshes.
     return build_chunk_index()
-
-
-def clean_words(text):
-
-    # Converts text into simple searchable lowercase words.
-    punctuation = ",.?!:;()[]{}\"'`"
-    text = text.lower()
-
-    for mark in punctuation:
-        text = text.replace(mark, " ")
-
-    return text.split()
-
-
-def normalize_query_text(text):
-    # Normalizes common wording and small typos before intent matching.
-    # This keeps CyberLex from refusing a good question because of one tiny human typo.
-    text_lower = str(text or "").lower()
-
-    replacements = {
-        "kontör": "konto",
-        "kontr": "konto",
-        "kontot": "konto",
-        "e post": "e-post",
-        "epost": "e-post",
-        "mail": "mejl",
-        "vårat": "vårt",
-        "inlogning": "inloggning",
-        "ransomewere": "ransomware",
-        "ransomwere": "ransomware",
-        "kryptats": "krypterats",
-        "kund data": "kunddata",
-        "customerdata": "customer data",
-        "app-fel": "appfel",
-        "app fel": "appfel",
-        "app error": "app bug",
-        "application error": "app bug",
-        "users' data": "users data",
-        "user data": "users data",
-        "kontoseparation": "kontoseparering",
-    }
-
-    for wrong, right in replacements.items():
-        text_lower = text_lower.replace(wrong, right)
-
-    return text_lower
-
-
-def contains_any(text, terms):
-    # Returns True if any phrase in terms exists in text.
-    # CyberLex uses this for simple intent detection.
-    text_lower = normalize_query_text(text)
-    normalized_terms = [normalize_query_text(term) for term in terms]
-    return any(term in text_lower for term in normalized_terms)
-
 
 
 def is_cyberlex_self_description_question(question):
@@ -174,347 +129,6 @@ def generate_cyberlex_self_description_answer(language="English"):
         f'<div class="attention-limitation"><strong>{limitation_title}:</strong> {limitation}</div>'
         f'</div>'
     )
-
-
-
-
-def detect_ui_language_from_question(question):
-    # Detects whether a user question should be handled in Swedish or English.
-    # This is intentionally broader than a strict dictionary lookup because users
-    # often mix Swedish grammar with English security words such as malware,
-    # ransomware, phishing, GDPR, NIS2, DORA, or MFA.
-    question_lower = normalize_query_text(question).strip()
-
-    if not question_lower:
-        return "English"
-
-    words = set(clean_words(question_lower))
-
-    strong_swedish_markers = {
-        "är", "å", "ä", "ö", "vårt", "vårat", "vår", "våra",
-        "misstänker", "misstänkt", "hackning", "hackad", "hackade",
-        "intrång", "dataläcka", "läckt", "komprometterat", "komprometterad",
-        "personuppgift", "personuppgifter", "personuppgiftsincident",
-        "cybersäkerhet", "cybersäkerhetslagen", "dataintrång", "nätfiske",
-        "mejl", "e-post", "inloggning", "inloggningar", "obehörig",
-        "åtkomst", "krypterats", "krypterade", "utpressningsvirus",
-        "anmälas", "rapporteras", "tillsyn", "myndighet", "svensk", "svenska",
-        "appfel", "kunduppgifter", "exponera", "exponerar", "exponerade",
-        "exponering", "användare", "uppgifter", "kontoseparering",
-    }
-
-    common_swedish_markers = {
-        "jag", "vi", "du", "ni", "han", "hon", "de", "det", "den",
-        "har", "haft", "fått", "fick", "blev", "blivit", "tror", "verkar",
-        "någon", "nagon", "oss", "vårt", "vårat", "system", "konto",
-        "vad", "när", "vilken", "vilka", "hur", "varför", "ska", "bör",
-        "måste", "kan", "efter", "om", "i", "på", "av", "för", "med",
-        "sverige", "lag", "brott", "ansvarar", "isolera", "bevara", "loggar",
-        "cyberincident", "säkerhetsincident", "it-incident", "incidenthantering",
-    }
-
-    english_markers = {
-        "what", "when", "which", "how", "why", "should", "must", "can",
-        "we", "our", "have", "had", "been", "got", "received", "think",
-        "believe", "someone", "system", "account", "hacked", "breach",
-        "incident", "authority", "law", "report", "reporting", "source",
-    }
-
-    language_neutral_cyber_terms = {
-        "gdpr", "nis2", "dora", "imy", "mfa", "cert-se", "malware",
-        "ransomware", "phishing", "it", "api", "vpn", "oauth",
-    }
-
-    swedish_score = 0
-    english_score = 0
-
-    swedish_score += 4 * len(words.intersection(strong_swedish_markers))
-    swedish_score += 2 * len(words.intersection(common_swedish_markers))
-    english_score += 2 * len(words.intersection(english_markers))
-
-    # Swedish letters are a strong signal even when the rest of the question
-    # contains English cyber terminology.
-    if any(letter in question_lower for letter in "åäö"):
-        swedish_score += 4
-
-    # Common Swedish sentence patterns that users type during incident reports.
-    swedish_phrases = [
-        "vi har", "vi har fått", "vi har haft", "vi har blivit",
-        "jag tror", "jag tror att vi", "det verkar", "någon har",
-        "någon tagit sig in", "vårt system", "vårat system",
-        "i vårt system", "i vårat system", "vad gör vi", "vad ska vi",
-        "vad bör vi", "hur ska vi", "hur bör vi",
-    ]
-    english_phrases = [
-        "what should", "what do we", "we have", "we had", "we got",
-        "i think", "i believe", "someone hacked", "our system",
-    ]
-
-    for phrase in swedish_phrases:
-        if phrase in question_lower:
-            swedish_score += 5
-
-    for phrase in english_phrases:
-        if phrase in question_lower:
-            english_score += 4
-
-    # If the grammar is Swedish but the incident word is language-neutral
-    # or English, keep the UI and answer in Swedish.
-    if words.intersection(language_neutral_cyber_terms) and swedish_score >= 4:
-        return "Svenska"
-
-    if swedish_score > english_score and swedish_score >= 3:
-        return "Svenska"
-
-    return "English"
-
-
-
-
-
-
-def get_current_ui_language():
-    # Safely returns the current CyberLex UI language for places where the
-    # normal language variable may not yet be available.
-    # This prevents example-question rendering from crashing with NameError.
-    for variable_name in ("selected_language", "answer_language", "language"):
-        if variable_name in globals():
-            value = globals().get(variable_name)
-            if value in ("English", "Svenska"):
-                return value
-
-    for state_key in ("selected_language", "answer_language", "language", "ui_language"):
-        value = st.session_state.get(state_key)
-        if value in ("English", "Svenska"):
-            return value
-
-    return "English"
-
-
-def clean_example_question_for_language(question, language="English"):
-    # Keeps example questions aligned with the selected UI language.
-    # English examples should not contain Swedish legal terms unless the term is
-    # the official name/acronym being explained, such as IMY or NIS2.
-    # Swedish examples should stay Swedish.
-    question_text = str(question or "").strip()
-
-    if language == "Svenska":
-        return question_text
-
-    english_replacements = {
-        "dataintrång": "data intrusion",
-        "cybersäkerhetslagen": "the Swedish Cybersecurity Act",
-        "personuppgiftsincident": "personal data breach",
-        "misstänkt mejl": "suspicious email",
-        "misstänkt inloggning": "suspicious login activity",
-        "dataläcka": "data leak",
-        "komprometterat konto": "compromised account",
-        "krypterade filer": "encrypted files",
-    }
-
-    cleaned = question_text
-    for swedish_term, english_term in english_replacements.items():
-        cleaned = re.sub(
-            re.escape(swedish_term),
-            english_term,
-            cleaned,
-            flags=re.IGNORECASE,
-        )
-
-    # Polish a few common phrasing outcomes.
-    cleaned = cleaned.replace("What is data intrusion?", "What is data intrusion?")
-    cleaned = cleaned.replace("What is the Swedish Cybersecurity Act?", "What is the Swedish Cybersecurity Act?")
-
-    return cleaned
-
-
-def localize_section_name(section_name, language="English"):
-    # Converts internal Markdown section headings into user-facing labels.
-    # The source files intentionally contain mixed English/Swedish headings so
-    # search routing can work, but the UI should not show English section names
-    # inside the Swedish interface or Swedish section names inside the English UI.
-    use_swedish = language == "Svenska"
-    raw_section = str(section_name or "").strip()
-    normalized = raw_section.lower().strip()
-
-    swedish_names = {
-        "introduction": "Introduktion",
-        "topic": "Ämne",
-        "main authority": "Huvudmyndighet",
-        "key idea": "Huvudidé",
-        "important points": "Viktiga punkter",
-        "swedish summary": "Svensk sammanfattning",
-        "useful questions": "Exempelfrågor",
-        "swedish useful questions": "Svenska exempelfrågor",
-        "official source": "Officiella källor",
-        "source metadata": "Källmetadata",
-        "disclaimer": "Ansvarsbegränsning",
-        "suspected hacking first steps": "Första steg vid misstänkt hackning eller intrång",
-        "unauthorized access first steps": "Första steg vid obehörig åtkomst",
-        "suspected data leak first steps": "Första steg vid misstänkt dataläcka",
-        "ransomware first steps": "Första steg vid ransomware",
-        "malware infection first steps": "Första steg vid skadlig kod",
-        "compromised account first steps": "Första steg vid komprometterat konto",
-        "suspicious login activity first steps": "Första steg vid misstänkt inloggning",
-        "swedish suspicious login activity first steps": "Första steg vid misstänkt inloggning",
-        "suspicious email and phishing first steps": "Första steg vid misstänkt mejl eller phishing",
-        "swedish suspicious email and phishing first steps": "Första steg vid misstänkt mejl eller phishing",
-        "suspicious login assessment checklist": "Checklista för misstänkt inloggning",
-        "swedish suspicious login assessment checklist": "Checklista för misstänkt inloggning",
-        "suspicious email assessment checklist": "Checklista för misstänkt mejl eller phishing",
-        "swedish suspicious email assessment checklist": "Checklista för misstänkt mejl eller phishing",
-        "first 15 minutes checklist": "Checklista: första 15 minuterna",
-        "first hour checklist": "Checklista: första timmen",
-        "first 24 hours checklist": "Checklista: första dygnet",
-        "first 72 hours checklist": "Checklista: första 72 timmarna",
-        "technical containment examples": "Exempel på teknisk begränsning",
-        "evidence preservation examples": "Exempel på bevarande av bevisning",
-        "documentation template": "Dokumentationsmall",
-        "data leak assessment checklist": "Checklista för dataläckebedömning",
-        "ransomware assessment checklist": "Checklista för ransomwarebedömning",
-        "compromised account checklist": "Checklista för komprometterat konto",
-        "communication guidance": "Kommunikationsstöd",
-        "what not to do": "Vad man inte bör göra",
-        "when to contact cert-se": "När CERT-SE bör övervägas",
-        "when to assess imy reporting": "När IMY-anmälan bör bedömas",
-        "when to assess cybersecurity incident reporting": "När cybersäkerhetsrapportering bör bedömas",
-        "relationship with gdpr": "Relation till GDPR",
-        "relationship with nis2 and the swedish cybersecurity act": "Relation till NIS2 och cybersäkerhetslagen",
-        "relationship with swedish cybercrime and dataintrång": "Relation till dataintrång och cyberbrott",
-        "swedish step-by-step answer for suspected hacking": "Steg för steg vid misstänkt hackning eller intrång",
-        "swedish step-by-step answer for suspected data leak": "Steg för steg vid misstänkt dataläcka",
-        "english step-by-step answer for suspected hacking": "Steg för steg vid misstänkt hackning eller intrång",
-        "english step-by-step answer for suspected data leak": "Steg för steg vid misstänkt dataläcka",
-        "incident assessment checklist": "Checklista för incidentbedömning",
-        "reporting to imy": "Anmälan till IMY",
-        "incident reporting": "Incidentrapportering",
-        "relationship with gdpr breach reporting": "Relation till GDPR och personuppgiftsincidenter",
-        "relationship with personal data breaches": "Relation till personuppgiftsincidenter",
-        "relationship with incident response": "Relation till incidenthantering",
-        "swedish relationship with incident response": "Relation till incidenthantering",
-        "english relationship with incident response": "Relation till incidenthantering",
-        "data protection by design and by default": "Dataskydd genom design och som standard",
-        "swedish data protection by design and by default": "Dataskydd genom design och som standard",
-        "english data protection by design and by default": "Dataskydd genom design och som standard",
-        "legal reference": "Rättslig koppling",
-        "practical explanation": "Praktisk förklaring",
-        "swedish practical explanation": "Praktisk förklaring",
-        "english practical explanation": "Praktisk förklaring",
-        "answer guidance": "Svarsstöd",
-        "swedish answer guidance": "Svarsstöd",
-        "english answer guidance": "Svarsstöd",
-        "cybersecurity connection": "Cybersäkerhetskoppling",
-        "swedish connection": "Svensk koppling",
-        "third-party ict risk": "ICT-tredjepartsrisk",
-        "covered sectors": "Omfattade sektorer",
-        "swedish covered sectors": "Omfattade sektorer",
-        "size assessment": "Storleksbedömning",
-        "swedish size assessment": "Storleksbedömning",
-        "public administration, municipalities and regions": "Offentlig förvaltning, kommuner och regioner",
-        "swedish public administration, municipalities and regions": "Offentlig förvaltning, kommuner och regioner",
-        "essential and important entities": "Väsentliga och viktiga verksamhetsutövare",
-        "swedish essential and important entities": "Väsentliga och viktiga verksamhetsutövare",
-        "annex 1 and annex 2": "Bilaga 1 och bilaga 2",
-        "swedish annex 1 and annex 2": "Bilaga 1 och bilaga 2",
-        "bilaga 1 och bilaga 2": "Bilaga 1 och bilaga 2",
-        "registration": "Anmälan och registrering",
-        "swedish registration": "Anmälan och registrering",
-        "cyberlex answer guidance": "Svarsstöd",
-        "swedish cyberlex answer guidance": "Svarsstöd",
-    }
-
-    english_names = {
-        "swedish summary": "Swedish summary",
-        "swedish useful questions": "Swedish example questions",
-        "swedish step-by-step answer for suspected hacking": "Step-by-step answer for suspected hacking or intrusion",
-        "swedish step-by-step answer for suspected data leak": "Step-by-step answer for suspected data leak",
-        "english step-by-step answer for suspected hacking": "Step-by-step answer for suspected hacking or intrusion",
-        "english step-by-step answer for suspected data leak": "Step-by-step answer for suspected data leak",
-        "first 15 minutes checklist": "First 15 minutes checklist",
-        "first hour checklist": "First hour checklist",
-        "first 24 hours checklist": "First 24 hours checklist",
-        "first 72 hours checklist": "First 72 hours checklist",
-        "compromised account first steps": "First steps for a compromised account",
-        "suspected hacking first steps": "First steps for suspected hacking or intrusion",
-        "suspected data leak first steps": "First steps for a suspected data leak",
-        "unauthorized access first steps": "First steps for unauthorized access",
-        "malware infection first steps": "First steps for malware infection",
-        "ransomware first steps": "First steps for ransomware",
-        "suspicious login activity first steps": "First steps for suspicious login activity",
-        "swedish suspicious login activity first steps": "First steps for suspicious login activity",
-        "suspicious email and phishing first steps": "First steps for suspicious email or phishing",
-        "swedish suspicious email and phishing first steps": "First steps for suspicious email or phishing",
-        "suspicious login assessment checklist": "Suspicious login assessment checklist",
-        "swedish suspicious login assessment checklist": "Suspicious login assessment checklist",
-        "suspicious email assessment checklist": "Suspicious email or phishing assessment checklist",
-        "swedish suspicious email assessment checklist": "Suspicious email or phishing assessment checklist",
-        "relationship with personal data breaches": "Relationship with personal data breaches",
-        "relationship with incident response": "Relationship with incident response",
-        "swedish relationship with incident response": "Relationship with incident response",
-        "english relationship with incident response": "Relationship with incident response",
-        "data protection by design and by default": "Data protection by design and by default",
-        "swedish data protection by design and by default": "Data protection by design and by default",
-        "english data protection by design and by default": "Data protection by design and by default",
-        "covered sectors": "Covered sectors",
-        "swedish covered sectors": "Covered sectors",
-        "size assessment": "Size assessment",
-        "swedish size assessment": "Size assessment",
-        "public administration, municipalities and regions": "Public administration, municipalities and regions",
-        "swedish public administration, municipalities and regions": "Public administration, municipalities and regions",
-        "essential and important entities": "Essential and important entities",
-        "swedish essential and important entities": "Essential and important entities",
-        "annex 1 and annex 2": "Annex 1 and Annex 2",
-        "swedish annex 1 and annex 2": "Annex 1 and Annex 2",
-        "bilaga 1 och bilaga 2": "Annex 1 and Annex 2",
-        "registration": "Registration",
-        "swedish registration": "Registration",
-        "practical explanation": "Practical explanation",
-        "swedish practical explanation": "Practical explanation",
-        "english practical explanation": "Practical explanation",
-        "answer guidance": "Answer guidance",
-        "swedish answer guidance": "Answer guidance",
-        "english answer guidance": "Answer guidance",
-        "cyberlex answer guidance": "Answer guidance",
-        "swedish cyberlex answer guidance": "Answer guidance",
-    }
-
-    if use_swedish:
-        if normalized in swedish_names:
-            return swedish_names[normalized]
-
-        # Remove leading language markers if a source heading contains them.
-        if normalized.startswith("swedish "):
-            stripped = raw_section[8:].strip()
-            stripped_normalized = stripped.lower().strip()
-            if stripped_normalized in swedish_names:
-                return swedish_names[stripped_normalized]
-            return stripped[:1].upper() + stripped[1:]
-        if normalized.startswith("english "):
-            stripped = raw_section[8:].strip()
-            stripped_normalized = stripped.lower().strip()
-            if stripped_normalized in swedish_names:
-                return swedish_names[stripped_normalized]
-            return stripped[:1].upper() + stripped[1:]
-
-        return raw_section
-
-    if normalized in english_names:
-        return english_names[normalized]
-
-    if normalized.startswith("swedish "):
-        stripped = raw_section[8:].strip()
-        stripped_normalized = stripped.lower().strip()
-        if stripped_normalized in english_names:
-            return english_names[stripped_normalized]
-        return stripped[:1].upper() + stripped[1:]
-    if normalized.startswith("english "):
-        stripped = raw_section[8:].strip()
-        stripped_normalized = stripped.lower().strip()
-        if stripped_normalized in english_names:
-            return english_names[stripped_normalized]
-        return stripped[:1].upper() + stripped[1:]
-
-    return raw_section
 
 
 def is_practical_incident_response_question(question):
@@ -8174,16 +7788,27 @@ language_mode_preview = st.sidebar.selectbox(
     key="language_selector"
 )
 
+# In Auto mode, the sidebar should follow the latest typed or submitted question.
+# Streamlit reruns top-to-bottom, so we must read session state here before
+# rendering sidebar labels. Otherwise the answer can be Swedish while the sidebar
+# keeps mumbling English, because naturally UI state is where joy goes to die.
+early_language_probe_question = (
+    st.session_state.get("submitted_question", "")
+    or st.session_state.get("main_question_input", "")
+    or st.session_state.get("selected_example_question", "")
+)
+sidebar_language_preview = get_effective_ui_language(language_mode_preview, early_language_probe_question)
+
 diagnostics_label = (
     "Visa teknisk diagnostik"
-    if language_mode_preview == "Svenska"
+    if sidebar_language_preview == "Svenska"
     else "Show technical diagnostics"
 )
 
 diagnostics_help = (
     "Visar interna källfiler, matchade sektioner och relevanspoäng. "
     "Använd detta för test och utveckling, inte för vanlig användardemo."
-    if language_mode_preview == "Svenska"
+    if sidebar_language_preview == "Svenska"
     else "Shows internal source files, matched sections, and relevance scores. "
     "Use this for testing and development, not for normal user demos."
 )
@@ -8203,14 +7828,12 @@ def detect_question_language_preview(question):
 
 
 preview_question = (
-    st.session_state.get("main_question_input", "")
+    st.session_state.get("submitted_question", "")
+    or st.session_state.get("main_question_input", "")
     or st.session_state.get("selected_example_question", "")
 )
 
-if language_mode_preview == "Auto" and preview_question:
-    page_language_preview = detect_question_language_preview(preview_question)
-else:
-    page_language_preview = language_mode_preview
+page_language_preview = get_effective_ui_language(language_mode_preview, preview_question)
 
 if page_language_preview == "Svenska":
     page_subtitle = (
@@ -8292,8 +7915,6 @@ badge_html = "".join(
 )
 
 
-
-
 def extract_case_title(content, fallback):
     # Extracts the visible title from a case Markdown file.
     for line in str(content or "").splitlines():
@@ -8304,55 +7925,38 @@ def extract_case_title(content, fallback):
     return str(fallback or "Untitled case").replace("_", " ").title()
 
 
-def normalize_display_key(value):
-    # Creates a stable lookup key for UI localization.
-    # This is separate from normalize_query_text because that function rewrites
-    # "email" into "emejl" when "mail" is replaced globally. Yes, really. Tiny
-    # string gremlins, everywhere.
-    key = str(value or "").lower()
-    key = key.replace("&", " and ")
-    key = re.sub(r"[^a-zåäö0-9]+", " ", key)
-    key = re.sub(r"\s+", " ", key)
-    return key.strip()
-
-
 def localize_case_title(title, language="English"):
     # Localizes common case titles for Swedish UI display.
     # The Markdown files keep English # titles for stable filenames/search, but
     # users should not see English case names in an otherwise Swedish answer.
     if language != "Svenska":
-        return str(title or "Untitled case")
+        return str(title or "Namnlöst fall")
 
-    raw_title = str(title or "").strip()
-    key = normalize_display_key(raw_title)
-
+    normalized = normalize_query_text(title).strip()
     title_map = {
         "klarna app data exposure 2021": "Klarna appdataexponering 2021",
         "wrong email customer data case": "Kunduppgifter skickade till fel e-postmottagare",
-        "wrong e mail customer data case": "Kunduppgifter skickade till fel e-postmottagare",
-        "customer data sent to the wrong email recipient": "Kunduppgifter skickade till fel e-postmottagare",
         "trygg hansa security deficiencies": "Trygg-Hansa: säkerhetsbrister",
-        "trygg hansa security deficiencies and customer data exposure": "Trygg-Hansa: säkerhetsbrister och kunddataexponering",
+        "trygg-hansa security deficiencies": "Trygg-Hansa: säkerhetsbrister",
         "apoteket and apohem meta pixel": "Apoteket och Apohem: Meta Pixel",
         "avanza bank and meta pixel": "Avanza Bank och Meta Pixel",
         "imy kry meta pixel": "IMY: Kry och Meta Pixel",
         "kry meta pixel": "Kry och Meta Pixel",
         "equality ombudsman web form": "DO: webbformulär och säkerhetsåtgärder",
         "sportadmin security breach": "Sportadmin: säkerhetsincident",
-        "sportadmin security breach affecting children and young people": "Sportadmin: säkerhetsincident som berörde barn och unga",
     }
 
-    return title_map.get(key, raw_title or "Namnlöst fall")
+    return title_map.get(normalized, str(title or "Namnlöst fall"))
 
 
 def localize_source_label(label, language="English"):
     # Localizes official-source link labels for Swedish answers.
-    # URLs stay unchanged; only the visible text changes.
+    # URLs stay unchanged; only the visible text changes. Tiny mercy for the UI.
     if language != "Svenska":
         return str(label or "Official source")
 
     raw_label = str(label or "").strip()
-    key = normalize_display_key(raw_label)
+    normalized = normalize_query_text(raw_label).strip()
 
     exact_map = {
         "imy personal data breach guidance": "IMY: vägledning om personuppgiftsincidenter",
@@ -8366,24 +7970,12 @@ def localize_source_label(label, language="English"):
         "msb incidentrapportering enligt cybersäkerhetslagen": "MSB: incidentrapportering enligt cybersäkerhetslagen",
         "cisa ransomware response checklist": "CISA: checklista för ransomware-respons",
         "cisa i ve been hit by ransomware": "CISA: om du har drabbats av ransomware",
-        "edpb guidelines 01 2021 on examples regarding personal data breach notification": "EDPB: riktlinjer med exempel om anmälan av personuppgiftsincidenter",
-        "edpb guidelines 4 2019 on article 25 data protection by design and by default": "EDPB: riktlinjer om dataskydd genom design och som standard",
-        "imy så här arbetar imy med personuppgiftsincidenter": "IMY: så arbetar IMY med personuppgiftsincidenter",
-        "imy personuppgiftsincidenter": "IMY: personuppgiftsincidenter",
     }
 
-    if key in exact_map:
-        return exact_map[key]
+    if normalized in exact_map:
+        return exact_map[normalized]
 
     replacements = [
-        ("Do we have to report all personal data breaches to IMY?", "måste alla personuppgiftsincidenter anmälas?"),
-        ("Do we have to report all personal data breaches to IMY", "måste alla personuppgiftsincidenter anmälas?"),
-        ("Personal data breach guidance", "vägledning om personuppgiftsincidenter"),
-        ("personal data breach guidance", "vägledning om personuppgiftsincidenter"),
-        ("Notification of a personal data breach", "anmälan av personuppgiftsincident"),
-        ("notification of a personal data breach", "anmälan av personuppgiftsincident"),
-        ("Personal data breaches", "personuppgiftsincidenter"),
-        ("personal data breaches", "personuppgiftsincidenter"),
         ("Personal data breach", "personuppgiftsincident"),
         ("personal data breach", "personuppgiftsincident"),
         ("Personal data", "personuppgifter"),
@@ -8397,8 +7989,8 @@ def localize_source_label(label, language="English"):
     ]
 
     localized = raw_label
-    for old, new_value in replacements:
-        localized = localized.replace(old, new_value)
+    for old, new in replacements:
+        localized = localized.replace(old, new)
 
     return localized or "Officiell källa"
 
@@ -8567,8 +8159,6 @@ def clean_case_markdown_for_display(text):
     return cleaned
 
 
-
-
 def strip_repeated_case_section_intro(text, labels):
     # Removes duplicate first-line headings from case sections.
     # The UI already prints labels such as "Administrative fine or outcome".
@@ -8616,8 +8206,6 @@ def case_topics_to_badges(topics_text):
     )
 
     return f'<div class="case-topic-badge-row">{badges}</div>'
-
-
 
 
 def looks_like_swedish_source_line(line):
@@ -9290,6 +8878,17 @@ def display_related_cases(question, language="English", source_language_mode="Au
         case_title = related_case.get("title", "Untitled case")
         display_case = case_library_by_title.get(normalize_query_text(case_title), related_case)
         display_case_title = localize_case_title(case_title, language)
+        if language == "Svenska" and display_case_title == case_title:
+            fallback_case_titles = {
+                "Wrong Email Customer Data Case": "Kunduppgifter skickade till fel e-postmottagare",
+                "Wrong Email Customer Data": "Kunduppgifter skickade till fel e-postmottagare",
+                "Klarna App Data Exposure 2021": "Klarna appdataexponering 2021",
+                "Trygg-Hansa Security Deficiencies": "Trygg-Hansa: säkerhetsbrister",
+                "Apoteket and Apohem Meta Pixel": "Apoteket och Apohem: Meta Pixel",
+                "Avanza Bank and Meta Pixel": "Avanza Bank och Meta Pixel",
+                "IMY Kry Meta Pixel": "Kry: Meta Pixel",
+            }
+            display_case_title = fallback_case_titles.get(case_title, display_case_title)
 
         with st.expander(display_case_title):
             if use_swedish:
@@ -9351,12 +8950,7 @@ language_mode = language_mode_preview
 
 # This controls fixed interface text.
 # In Auto mode, the whole page follows the detected question language after a question is typed.
-if language_mode == "Auto" and preview_question:
-    interface_language = page_language_preview
-elif language_mode == "Svenska":
-    interface_language = "Svenska"
-else:
-    interface_language = "English"
+interface_language = page_language_preview
 
 if interface_language == "Svenska":
     ask_heading = "Ställ en fråga till CyberLex"
@@ -9457,7 +9051,7 @@ with st.sidebar.expander(suggested_test_flow_header, expanded=False):
 if interface_language == "Svenska":
     navigation_header = "Navigering"
     ask_page_label = "Fråga CyberLex"
-    case_page_label = "Case Intelligence"
+    case_page_label = "Fallbibliotek"
 else:
     navigation_header = "Navigation"
     ask_page_label = "Ask CyberLex"
@@ -9605,7 +9199,7 @@ if st.session_state.show_example_questions:
             use_question_button_label,
             key=f"example_question_{index}_{interface_language}",
             on_click=select_example_question,
-            args=(clean_example_question_for_language(example_question, get_current_ui_language()),),
+            args=(clean_example_question_for_language(example_question, interface_language),),
         )
 
 st.markdown(
@@ -9626,13 +9220,8 @@ st.markdown(
 st.divider()
 
 # This controls the answer language.
-# Auto detects Swedish or English only after the user has typed a question.
-if language_mode == "Auto" and question:
-    language = detect_question_language(question)
-elif language_mode == "Svenska":
-    language = "Svenska"
-else:
-    language = "English"
+# Auto detects Swedish or English after the user has typed a question.
+language = get_effective_ui_language(language_mode, question)
 
 if language == "Svenska":
     source_context_caption = "Detta visar flera källsektioner som CyberLex använde som stöd för svaret."
@@ -9763,7 +9352,7 @@ if question:
 
 
                 display_risk_cost_context(question, language)
-                display_related_cases(question, language, language_mode)
+                display_related_cases(question, language, language)
 
                 if show_technical_diagnostics:
                     with st.expander(other_matches_header, expanded=False):
