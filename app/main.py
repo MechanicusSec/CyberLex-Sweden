@@ -54,6 +54,13 @@ def normalize_query_text(text):
         "kryptats": "krypterats",
         "kund data": "kunddata",
         "customerdata": "customer data",
+        "app-fel": "appfel",
+        "app fel": "appfel",
+        "app error": "app bug",
+        "application error": "app bug",
+        "users' data": "users data",
+        "user data": "users data",
+        "kontoseparation": "kontoseparering",
     }
 
     for wrong, right in replacements.items():
@@ -195,6 +202,8 @@ def detect_ui_language_from_question(question):
         "mejl", "e-post", "inloggning", "inloggningar", "obehörig",
         "åtkomst", "krypterats", "krypterade", "utpressningsvirus",
         "anmälas", "rapporteras", "tillsyn", "myndighet", "svensk", "svenska",
+        "appfel", "kunduppgifter", "exponera", "exponerar", "exponerade",
+        "exponering", "användare", "uppgifter", "kontoseparering",
     }
 
     common_swedish_markers = {
@@ -1465,6 +1474,37 @@ def expand_question_terms(question):
             "manufacturer",
             "security requirements",
         ],
+        "app bug": [
+            "personal data breach",
+            "customer data exposure",
+            "data protection",
+            "gdpr",
+            "imy",
+            "security measures",
+            "privacy by design",
+        ],
+        "appfel": [
+            "personuppgiftsincident",
+            "kunduppgifter",
+            "exponerade personuppgifter",
+            "gdpr",
+            "imy",
+            "säkerhetsåtgärder",
+        ],
+        "users see other users data": [
+            "customer data exposure",
+            "personal data breach",
+            "session handling",
+            "account separation",
+            "gdpr",
+        ],
+        "användare se andra användares uppgifter": [
+            "kunduppgifter",
+            "personuppgiftsincident",
+            "kontoseparering",
+            "sessioner",
+            "gdpr",
+        ],
         "imy": [
             "gdpr",
             "data protection",
@@ -1962,6 +2002,15 @@ def is_case_library_context_question(question):
         "bristande säkerhet", "säkerhetsbrister", "article 32",
         "what can weak security measures cost", "vad kan svaga säkerhetsåtgärder kosta",
         "what can a gdpr breach cost", "vad kan en gdpr-läcka kosta",
+        "app bug", "app incident", "app error", "application error",
+        "appfel", "appincident", "appuppdatering",
+        "customer data exposure", "customer data exposed", "exposed customer data",
+        "users see other users data", "users could see other users data",
+        "other users data", "see other users data",
+        "kunduppgifter", "kunduppgifter exponerades", "exponera kunduppgifter",
+        "användare se andra användares uppgifter", "andra användares uppgifter",
+        "account separation", "session handling", "kontoseparering",
+        "klarna", "finansinspektionen",
         "administrative fine", "sanktionsavgift", "gdpr fine", "fine",
     ]
 
@@ -1976,6 +2025,22 @@ def get_target_source_file(question):
     # This avoids weird combinations like a Meta Pixel question using the generic
     # incident-response playbook as the main source card.
     if is_case_library_context_question(question_lower):
+        if contains_any(
+            question_lower,
+            [
+                "app bug", "app incident", "app error", "application error",
+                "appfel", "appincident", "appuppdatering",
+                "customer data exposure", "customer data exposed", "exposed customer data",
+                "users see other users data", "users could see other users data",
+                "other users data", "see other users data",
+                "kunduppgifter", "kunduppgifter exponerades", "exponera kunduppgifter",
+                "användare se andra användares uppgifter", "andra användares uppgifter",
+                "account separation", "session handling", "kontoseparering",
+                "klarna", "finansinspektionen",
+            ],
+        ):
+            return "gdpr_personal_data_breach.md"
+
         if contains_any(
             question_lower,
             [
@@ -6959,6 +7024,18 @@ def generate_case_aware_summary(question, language="English"):
         "sensitive", "sensitive personal data", "health", "pharmacy",
         "känsliga", "känsliga personuppgifter", "hälsa", "apotek",
     ]
+    app_exposure_terms = [
+        "app bug", "app incident", "app error", "application error",
+        "appfel", "appincident", "appuppdatering",
+        "customer data exposure", "customer data exposed", "exposed customer data",
+        "expose customer data", "exposed in an app", "data exposed in an app",
+        "users see other users data", "users could see other users data",
+        "see other users data", "other users data",
+        "kunduppgifter", "exponera kunduppgifter", "kunduppgifter exponerades",
+        "användare se andra användares uppgifter", "andra användares uppgifter",
+        "account separation", "session handling", "kontoseparering",
+        "klarna", "finansinspektionen",
+    ]
 
     has_meta = contains_any(question_lower, meta_terms)
     has_hashed_kry = contains_any(question_lower, hashed_kry_terms)
@@ -6969,6 +7046,7 @@ def generate_case_aware_summary(question, language="English"):
     has_weak_security = contains_any(question_lower, weak_security_terms)
     has_cost = contains_any(question_lower, cost_terms)
     has_sensitive = contains_any(question_lower, sensitive_terms)
+    has_app_exposure = contains_any(question_lower, app_exposure_terms)
     has_breach_or_leak = contains_any(
         question_lower,
         [
@@ -6976,6 +7054,21 @@ def generate_case_aware_summary(question, language="English"):
             "incident", "personuppgiftsincident", "dataläcka", "läcka", "gdpr-läcka",
         ],
     )
+
+    if has_app_exposure:
+        if use_swedish:
+            return (
+                "Ja. Ett appfel eller ett fel vid en uppdatering kan exponera kunduppgifter om användare får se information som tillhör andra kunder, om sessioner blandas ihop eller om kontoseparering inte fungerar korrekt. "
+                "Det kan skapa risker för integritet, konfidentialitet, GDPR, incidenthantering och förtroende även om det inte handlar om ett intrång. "
+                "CyberLex behandlar inte varje appfel som en bekräftad personuppgiftsincident. Viktiga frågor är vilka uppgifter som exponerades, vem som kunde se dem, hur länge felet pågick, om personer kan identifieras, hur snabbt incidenten stoppades och om anmälan till IMY eller information till berörda personer kan behöva bedömas. "
+                "Klarna-fallet nedan används som ett utbildande incidentexempel, inte som ett bekräftat IMY-finebeslut för just den appincidenten."
+            )
+        return (
+            "Yes. An app bug or deployment mistake can expose customer data if users are shown information that belongs to other customers, if sessions are mixed up, or if account separation fails. "
+            "This can create privacy, confidentiality, GDPR, incident-response, and trust risks even if there is no hacking. "
+            "CyberLex does not treat every app bug as a confirmed GDPR breach. The key questions are what data was exposed, who could access it, how long the exposure lasted, whether affected users can be identified, how quickly the issue was contained, and whether notification to IMY or affected individuals may need to be assessed. "
+            "The Klarna case below is used as an educational public incident example, not as a confirmed IMY fine decision for that specific app incident."
+        )
 
     if has_wrong_email:
         if use_swedish:
@@ -8030,6 +8123,20 @@ def is_cyberlaw_question(question):
         "controller",
         "processor",
         "accountability",
+        "app bug",
+        "app incident",
+        "app error",
+        "appfel",
+        "appincident",
+        "kunduppgifter",
+        "exponera kunduppgifter",
+        "andra användares uppgifter",
+        "users see other users data",
+        "other users data",
+        "customer data exposure",
+        "account separation",
+        "session handling",
+        "klarna",
         "principles"
     }
 
@@ -8039,6 +8146,7 @@ def is_cyberlaw_question(question):
     # Otherwise small word-order differences in Swedish can be refused before search starts.
     if (
         is_nis2_sector_scope_question(question_lower)
+        or is_case_library_context_question(question_lower)
         or is_gdpr_security_guidance_question(question_lower)
         or is_practical_incident_response_question(question_lower)
         or is_compromised_account_question(question_lower)
@@ -9655,11 +9763,11 @@ def display_related_cases(question, language="English", source_language_mode="Au
     }
 
     if use_swedish:
-        heading = "Relaterade fall och myndighetsbeslut"
+        heading = "Relaterade fall och incidentexempel"
         intro_text = (
-            "CyberLex hittade relaterade myndighetsbeslut som kan visa hur liknande "
-            "GDPR- eller cybersäkerhetsfrågor har bedömts i praktiken. Dessa används "
-            "som utbildande exempel, inte som juridisk rådgivning."
+            "CyberLex hittade relaterade fall eller incidentexempel som kan hjälpa till att förklara "
+            "hur liknande GDPR-, integritets- eller cybersäkerhetsrisker har uppstått eller bedömts i praktiken. "
+            "Dessa används som utbildande exempel, inte som juridisk rådgivning."
         )
         summary_label = "Sammanfattning"
         learning_label = "Lärdom från fallet"
@@ -9670,11 +9778,11 @@ def display_related_cases(question, language="English", source_language_mode="Au
             "Beloppen i fallen är historiska exempel och beror på de specifika omständigheterna."
         )
     else:
-        heading = "Related cases and authority decisions"
+        heading = "Related cases and incident examples"
         intro_text = (
-            "CyberLex found related authority decisions that may help explain how similar "
-            "GDPR or cybersecurity issues have been assessed in practice. These are used "
-            "as educational examples, not legal advice."
+            "CyberLex found related cases or incident examples that may help explain how similar "
+            "GDPR, privacy, or cybersecurity risks have appeared or been assessed in practice. "
+            "These are used as educational examples, not legal advice."
         )
         summary_label = "Summary"
         learning_label = "Learning note"
