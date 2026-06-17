@@ -26,6 +26,7 @@ The current prototype is a Streamlit application with:
 * incident-response guidance
 * SOC-style Markdown incident report export
 * Case Intelligence page for authority decisions and real-world examples
+* case learning notes for clearer educational takeaways
 * related authority/case references below relevant answers
 * relevant source context
 * out-of-scope refusal behavior
@@ -67,6 +68,7 @@ Instead, it uses:
 * official source links
 * transparent source display
 * selected authority-decision summaries
+* public incident examples with careful labels
 * historical case examples with clear limitations
 
 The main design principle is:
@@ -166,6 +168,7 @@ The current prototype supports source-based educational answers about selected m
 * defensive cyber incident response
 * overlap between GDPR, NIS2, DORA, CRA, and cybercrime topics
 * selected IMY authority decisions about Meta Pixel, weak security, web forms, wrong email disclosures, Darknet publication, and administrative fines
+* selected public incident examples such as app-based customer data exposure
 
 CyberLex Sweden does not cover all Swedish law, all EU law, or all cybersecurity compliance requirements.
 
@@ -235,19 +238,20 @@ The distinction is important:
 * `data/` contains source-based legal and cybersecurity knowledge material
 * `cases/` contains educational summaries of selected authority decisions and real-world examples
 
-The current case library includes selected IMY-related cases such as:
+The current case library checks 8 case files. It includes selected IMY-related cases and one public Klarna app data exposure / supervisory investigation example:
 
 ```text
 cases/imy_apoteket_apohem_meta_pixel.md
 cases/imy_avanza_bank_meta_pixel.md
 cases/imy_equality_ombudsman_web_form.md
 cases/imy_kry_meta_pixel.md
+cases/klarna_app_data_exposure_2021.md
 cases/imy_sportadmin_security_breach.md
 cases/imy_trygg_hansa_security_deficiencies.md
 cases/imy_wrong_email_customer_data.md
 ```
 
-These cases are used to show historical examples of how cyber, GDPR, tracking, security, data leak, and personal data breach issues have been assessed in practice.
+These cases are used to show historical examples of how cyber, GDPR, tracking, security, app exposure, data leak, and personal data breach issues have been assessed or publicly handled in practice.
 
 CyberLex Sweden should not treat historical fine amounts as predictions.
 
@@ -268,6 +272,8 @@ The case files include structured sections such as:
 * fine or cost
 * Swedish fine or cost
 * why it matters for CyberLex
+* learning note
+* Swedish learning note
 * similar CyberLex questions
 * related CyberLex topics
 * Swedish related CyberLex topics
@@ -289,6 +295,7 @@ It displays:
 * case cards
 * case summaries
 * administrative fine or outcome
+* learning note
 * related CyberLex topic badges
 * official source links
 * a warning that outcomes and amounts are historical examples only
@@ -318,6 +325,7 @@ Examples:
 * weak security questions may show Trygg-Hansa or Sportadmin examples
 * web form questions may show the Equality Ombudsman case
 * wrong email questions may show the wrong email customer data case
+* app exposure or account-separation questions may show the Klarna app data exposure case
 * Darknet publication questions may show Sportadmin
 
 Related cases are not predictions.
@@ -353,6 +361,7 @@ The current CyberLex Sweden prototype can:
 * handle practical incident-response questions
 * generate SOC-style Markdown incident summaries
 * show related authority decisions and case examples
+* show case learning notes where available
 * provide a browseable Case Intelligence page
 * refuse questions outside the project scope
 * refuse unsafe offensive cyber requests
@@ -466,6 +475,8 @@ The case audit checks whether each case file has required sections such as:
 * decision or outcome
 * fine or cost
 * why it matters for CyberLex
+* learning note
+* Swedish learning note
 * similar CyberLex questions
 * related CyberLex topics
 * official source
@@ -478,7 +489,7 @@ The report is written to:
 docs/case_library/case_audit_report.md
 ```
 
-The current case audit checks 7 case files.
+The current case audit checks 8 case files.
 
 The case audit does not decide whether a case is legally current or complete.
 
@@ -538,6 +549,7 @@ Can hashed data sent through Meta Pixel be a GDPR issue?
 What can weak security measures cost?
 Can a web form cause a personal data breach?
 Can sending customer data to the wrong email be a personal data breach?
+Can an app bug expose customer data?
 What happens if data is published on the Darknet?
 What is Swedish tax law?
 ```
@@ -564,6 +576,7 @@ Kan hashade uppgifter som skickas via Meta Pixel vara ett GDPR-problem?
 Vad kan svaga säkerhetsåtgärder kosta?
 Kan ett webbformulär orsaka en personuppgiftsincident?
 Kan kunduppgifter som skickas till fel e-post vara en personuppgiftsincident?
+Kan ett appfel exponera kunduppgifter?
 Vad händer om personuppgifter publiceras på Darknet?
 Hur raderar jag loggar efter ett intrång?
 ```
@@ -615,6 +628,7 @@ Current limitations include:
 * the experimental retrieval sidebar is still rule-based
 * source material must be manually reviewed and updated
 * public deployment would require stronger privacy, security, and legal review
+* public incident examples must be clearly separated from authority decisions
 * historical case examples must not be used as fine predictions
 * some official source links may only be available in one language
 
@@ -627,7 +641,7 @@ For serious legal, compliance, regulatory, or cybersecurity matters, users shoul
 Planned future improvements include:
 
 * adding more Swedish and EU cybersecurity-law sources
-* adding more authority decisions and court cases
+* adding more authority decisions, court cases, and carefully labeled public incident examples
 * improving Swedish source summaries
 * installing Python 3.12 or 3.11 before retrying real vector search
 * adding vector search with ChromaDB or FAISS
@@ -635,7 +649,7 @@ Planned future improvements include:
 * comparing keyword/rule-based search with vector search
 * adding future RAG answer generation
 * improving citation formatting and multi-source synthesis
-* improving case comparison and case filtering
+* improving case comparison, case learning notes, and case filtering
 * moving case ranking rules into a cleaner configuration structure
 * improving visual design
 * preparing public deployment
@@ -674,6 +688,7 @@ The current prototype includes:
 * case audit script
 * Case Intelligence page
 * related authority decisions under relevant answers
+* case learning notes
 * bilingual case summaries and language-aware case source display
 * GitHub Actions audit automation
 * updated project documentation

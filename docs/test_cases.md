@@ -23,7 +23,7 @@ The goal is to verify that CyberLex Sweden can:
 * avoid unsupported answers when no trusted source exists
 * display the case library and Case Intelligence page
 * show related cases and authority decisions where relevant
-* show bilingual case summaries, outcomes, topics, and source links
+* show bilingual case summaries, outcomes, learning notes, topics, and source links
 * support English, Swedish, and Auto behavior for case-library source links
 
 CyberLex Sweden is an educational prototype. It does not provide legal advice and does not replace official authority guidance, a lawyer, data protection officer, compliance expert, or professional incident-response team.
@@ -1323,9 +1323,10 @@ CyberLex should display the case-library page with a short explanation, a case f
 
 * the page loads without errors
 * all available case files appear
+* the number of displayed cases should currently be 8
 * the number of displayed cases matches the number of cases in the local case library
 * template or index files are not displayed as real cases
-* each case card shows a title, summary, fine or outcome, related topics, and official sources where available
+* each case card shows a title, summary, learning note where available, fine or outcome, related topics, and official sources where available
 
 ### Pass Condition
 
@@ -1345,9 +1346,10 @@ Case cards should use Swedish labels and Swedish case sections where available.
 
 ### Expected Behavior
 
-* headings such as `Sammanfattning`, `Sanktionsavgift eller utfall`, `Relaterade CyberLex-ämnen`, and `Officiella källor` appear in Swedish
+* headings such as `Sammanfattning`, `Lärdom från fallet`, `Sanktionsavgift eller utfall`, `Relaterade CyberLex-ämnen`, and `Officiella källor` appear in Swedish where relevant
 * case summaries are shown in Swedish where Swedish sections exist
 * fines and outcomes are shown in Swedish where Swedish sections exist
+* learning notes are shown in Swedish where Swedish learning-note sections exist
 * related topic chips are shown in Swedish where Swedish topic sections exist
 * if a Swedish section is missing, CyberLex should fall back gracefully instead of showing broken output
 
@@ -1369,9 +1371,10 @@ Case cards should use English labels and English case sections.
 
 ### Expected Behavior
 
-* headings such as `Summary`, `Administrative fine or outcome`, `Related CyberLex topics`, and `Official sources` appear in English
+* headings such as `Summary`, `Learning note`, `Administrative fine or outcome`, `Related CyberLex topics`, and `Official sources` appear in English where relevant
 * English case summaries are shown
 * English fine or outcome text is shown
+* English learning notes are shown where learning-note sections exist
 * English related topic chips are shown
 * Swedish-only wording should not dominate the English view unless no English equivalent exists
 
@@ -1417,6 +1420,9 @@ säkerhet
 e-post
 dataläcka
 Darknet
+Klarna
+app
+customer data
 ```
 
 ### Expected Result
@@ -1430,6 +1436,7 @@ CyberLex should filter the visible cases based on title, summary, outcome, topic
 * `e-post` should show the wrong-email customer-data case where relevant
 * `dataläcka` should show leak or breach-related cases where relevant
 * `Darknet` should show the Sportadmin case where relevant
+* `Klarna`, `app`, or `customer data` should show the Klarna app data exposure case where relevant
 
 ### Pass Condition
 
@@ -1470,7 +1477,39 @@ Related cases improve the answer without replacing the main source-grounded lega
 
 ---
 
-## Test Case 50: Case Audit
+## Test Case 50: Klarna App Data Exposure Case
+
+### Question
+
+```text
+Can an app bug expose customer data?
+```
+
+### Expected Result
+
+CyberLex should answer from the relevant knowledge base and may show the Klarna app data exposure case as a related public incident example.
+
+### Expected Case Example
+
+```text
+Klarna App Data Exposure 2021
+```
+
+### Expected Behavior
+
+* the case should be described as a public incident / supervisory investigation example
+* the case should not be presented as an IMY administrative fine decision
+* the answer should explain that app bugs, deployment mistakes, account-separation issues, or session-handling problems can expose customer data
+* any cost or outcome language should avoid fine prediction
+* source links should remain visible according to the selected language mode
+
+### Pass Condition
+
+The Klarna case appears as an educational support example where relevant, without being mislabeled as a confirmed IMY fine case.
+
+---
+
+## Test Case 51: Case Audit
 
 ### Command
 
@@ -1490,7 +1529,7 @@ docs/case_library/case_audit_report.md
 
 * the script runs without errors
 * the audit report is updated
-* all real case files are checked
+* all 8 real case files are checked
 * missing required headings, official sources, metadata, or version notes are visible in the report
 * template and index files are not treated as real cases
 
@@ -1795,6 +1834,7 @@ What is DORA?
 What is the Cyber Resilience Act?
 What is dataintrång?
 Can Meta Pixel create GDPR risk?
+Can an app bug expose customer data?
 What can weak security measures cost?
 Customer data may have leaked
 Our files are encrypted
@@ -1813,7 +1853,8 @@ Expected smoke-test result:
 * SOC Markdown report download appears only for practical incident questions
 * out-of-scope questions are refused
 * unsafe cyber requests are refused cleanly
-* Case Intelligence page loads and displays all case cards
+* Case Intelligence page loads and displays all 8 case cards
+* case learning notes appear where available
 * case source links follow English, Swedish, and Auto behavior
 
 ---
@@ -1824,4 +1865,4 @@ These test cases are manual regression checks for an educational prototype.
 
 Passing these tests does not mean CyberLex Sweden is legally complete, production-ready, or guaranteed current.
 
-The purpose is to show that the prototype has a clear scope, trusted local sources, source-grounded answers, bilingual behavior, practical defensive support, authority-decision case examples, language-aware source links, and safety boundaries.
+The purpose is to show that the prototype has a clear scope, trusted local sources, source-grounded answers, bilingual behavior, practical defensive support, authority-decision case examples, carefully labeled public incident examples, case learning notes, language-aware source links, and safety boundaries.

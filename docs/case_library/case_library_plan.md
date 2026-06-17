@@ -27,9 +27,10 @@ CyberLex Sweden currently includes:
 * language-aware official source display
 * a case audit script
 * a generated case audit report
+* case learning notes in English and Swedish
 * educational limitation text warning that historical outcomes are not fine predictions
 
-The current case audit checks 7 case files.
+The current case audit checks 8 case files.
 
 ---
 
@@ -73,6 +74,8 @@ The first case library focuses on cases and authority decisions related to:
 * use of tracking tools such as Meta Pixel where personal data was transferred
 * web forms and analytics tools
 * accidental disclosure by email
+* app data exposure caused by technical or deployment errors
+* supervisory investigations and public incident examples
 * administrative fines
 * reprimands
 * cybersecurity-related compliance failures
@@ -95,8 +98,9 @@ Preferred sources:
 * official authority reports
 * official cybersecurity authority guidance
 * official company statements only as supporting context, not as the main legal source
+* high-quality public reporting for public incident examples where no authority decision is available
 
-Secondary sources may be used only for orientation, not as the main source, unless no official source is available.
+Secondary sources may be used only for orientation, not as the main source, unless no official source is available. If a case is based partly on public reporting, CyberLex should label it clearly as a public incident or supervisory investigation example instead of presenting it as an authority decision.
 
 ---
 
@@ -109,6 +113,7 @@ cases/imy_apoteket_apohem_meta_pixel.md
 cases/imy_avanza_bank_meta_pixel.md
 cases/imy_equality_ombudsman_web_form.md
 cases/imy_kry_meta_pixel.md
+cases/klarna_app_data_exposure_2021.md
 cases/imy_sportadmin_security_breach.md
 cases/imy_trygg_hansa_security_deficiencies.md
 cases/imy_wrong_email_customer_data.md
@@ -120,6 +125,7 @@ These files currently cover:
 * Avanza Bank and Meta Pixel
 * Equality Ombudsman web form security case
 * Kry Meta Pixel
+* Klarna app data exposure 2021
 * Sportadmin security breach
 * Trygg-Hansa security deficiencies
 * Wrong email customer data case
@@ -247,6 +253,14 @@ Explain what CyberLex users can learn from this case.
 
 Explain the educational value in Swedish.
 
+## Learning note
+
+Short English educational lesson from the case.
+
+## Swedish learning note
+
+Short Swedish educational lesson from the case.
+
 ## Similar CyberLex questions
 
 - Example user question
@@ -305,6 +319,7 @@ The app can show:
 * Swedish fine or outcome sections in Swedish mode
 * English related topic chips in English mode
 * Swedish related topic chips in Swedish mode
+* English and Swedish learning notes where available
 * language-aware source links
 
 The app uses fallback behavior when a section is missing.
@@ -398,6 +413,7 @@ A good related-case display should include:
 * case title
 * short summary
 * fine or outcome
+* learning note
 * related CyberLex topics
 * official source links
 * educational limitation
@@ -434,6 +450,9 @@ Sportadmin
 Avanza
 Apoteket
 Kry
+Klarna
+app
+customer data
 ```
 
 The page should respect the selected language mode.
@@ -551,6 +570,8 @@ Current progress:
 * source-language display behavior improved
 * manual regression tests added
 * documentation updated
+* case learning notes added
+* Klarna app data exposure 2021 added as a public incident / supervisory investigation example
 
 Remaining possible next steps:
 
@@ -588,4 +609,4 @@ It should also stay careful, source-grounded, and educational.
 
 Cases should help users understand real-world consequences, but CyberLex should not pretend to predict legal outcomes.
 
-The current case-library implementation is a strong local milestone, but future additions should still be added slowly and tested carefully.
+The current case-library implementation is a strong local milestone with 8 case files, including IMY-related decisions and one Klarna public app data exposure / supervisory investigation example. Future additions should still be added slowly and tested carefully.
