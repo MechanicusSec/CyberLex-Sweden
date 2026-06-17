@@ -8364,22 +8364,41 @@ search_button_label = (
     else "Search CyberLex"
 )
 
-with st.form("cyberlex_question_form", clear_on_submit=False):
-    st.text_input(
-        question_label,
-        key="main_question_input",
-        placeholder=question_placeholder,
-        label_visibility="collapsed",
-    )
-
-    search_submitted = st.form_submit_button(search_button_label)
-
-if search_submitted:
+def submit_main_question():
+    # Saves the current question immediately when the user presses Enter in
+    # the input field or clicks the Search button.
     submitted_question = str(st.session_state.get("main_question_input", "")).strip()
-    st.session_state.submitted_question = submitted_question
-    st.session_state.selected_example_question = submitted_question
 
-question = str(st.session_state.get("submitted_question", "")).strip()
+    if submitted_question:
+        st.session_state.submitted_question = submitted_question
+        st.session_state.selected_example_question = submitted_question
+
+    st.session_state.show_example_questions = False
+
+
+st.text_input(
+    question_label,
+    key="main_question_input",
+    placeholder=question_placeholder,
+    label_visibility="collapsed",
+    on_change=submit_main_question,
+)
+
+if st.button(search_button_label, key="main_question_search_button"):
+    submit_main_question()
+    st.rerun()
+
+current_input_question = str(st.session_state.get("main_question_input", "")).strip()
+submitted_state_question = str(st.session_state.get("submitted_question", "")).strip()
+
+# Use the current visible input as the active question whenever it has text.
+# This prevents Auto language mode from answering with the previous question's
+# language after the user switches between Swedish and English.
+question = current_input_question or submitted_state_question
+
+if current_input_question and current_input_question != submitted_state_question:
+    st.session_state.submitted_question = current_input_question
+    st.session_state.selected_example_question = current_input_question
 
 if interface_language == "Svenska":
     example_questions_heading = "Exempelfrågor"

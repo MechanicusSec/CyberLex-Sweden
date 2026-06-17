@@ -21,6 +21,30 @@ def detect_ui_language_from_question(question):
 
     words = set(clean_words(question_lower))
 
+    # English question starters should stay English unless there are real
+    # Swedish markers. This prevents mixed legal/cyber terms like "GDPR risk"
+    # or "Meta Pixel" from dragging an English question into Swedish.
+    english_question_starters = {
+        "can", "what", "when", "where", "which", "who", "why", "how",
+        "should", "must", "does", "do", "is", "are"
+    }
+
+    real_swedish_markers_for_early_detection = {
+        "kan", "vad", "när", "nar", "hur", "varför", "varfor",
+        "vilken", "vilka", "måste", "maste", "ska", "bör", "bor",
+        "är", "ar", "och", "skapa", "skapar", "orsaka", "orsakar",
+        "innebär", "innebara", "appfel", "kunduppgifter",
+        "personuppgifter", "personuppgiftsincident", "säkerhet",
+        "säkerhetsbedömning", "spårningsteknik"
+    }
+
+    if words.intersection(english_question_starters):
+        has_swedish_letters = any(letter in question_lower for letter in "åäö")
+        has_real_swedish_marker = bool(words.intersection(real_swedish_markers_for_early_detection))
+
+        if not has_swedish_letters and not has_real_swedish_marker:
+            return "English"
+
     strong_swedish_markers = {
         "är", "å", "ä", "ö", "vårt", "vårat", "vår", "våra",
         "misstänker", "misstänkt", "hackning", "hackad", "hackade",
@@ -32,6 +56,8 @@ def detect_ui_language_from_question(question):
         "anmälas", "rapporteras", "tillsyn", "myndighet", "svensk", "svenska",
         "appfel", "kunduppgifter", "exponera", "exponerar", "exponerade",
         "exponering", "användare", "uppgifter", "kontoseparering",
+        "skapa", "skapar", "orsaka", "orsakar", "innebära", "innebär",
+        "gdpr-risk", "gdprrisk",
     }
 
     common_swedish_markers = {
@@ -39,7 +65,9 @@ def detect_ui_language_from_question(question):
         "har", "haft", "fått", "fick", "blev", "blivit", "tror", "verkar",
         "någon", "nagon", "oss", "vårt", "vårat", "system", "konto",
         "vad", "när", "vilken", "vilka", "hur", "varför", "ska", "bör",
-        "måste", "kan", "efter", "om", "i", "på", "av", "för", "med",
+        "måste", "kan", "får", "finns", "blir", "skapa", "skapar",
+        "orsaka", "orsakar", "innebär", "innebära", "efter", "om",
+        "i", "på", "av", "för", "med",
         "sverige", "lag", "brott", "ansvarar", "isolera", "bevara", "loggar",
         "cyberincident", "säkerhetsincident", "it-incident", "incidenthantering",
     }
@@ -74,7 +102,10 @@ def detect_ui_language_from_question(question):
         "jag tror", "jag tror att vi", "det verkar", "någon har",
         "någon tagit sig in", "vårt system", "vårat system",
         "i vårt system", "i vårat system", "vad gör vi", "vad ska vi",
-        "vad bör vi", "hur ska vi", "hur bör vi",
+        "vad bör vi", "hur ska vi", "hur bör vi", "kan meta pixel",
+        "kan gdpr", "kan ett", "kan en", "kan detta", "skapa gdpr",
+        "skapa gdpr risk", "skapa gdpr-risk", "orsaka gdpr",
+        "innebära gdpr",
     ]
     english_phrases = [
         "what should", "what do we", "we have", "we had", "we got",
@@ -93,6 +124,31 @@ def detect_ui_language_from_question(question):
     # or English, keep the UI and answer in Swedish.
     if words.intersection(language_neutral_cyber_terms) and swedish_score >= 4:
         return "Svenska"
+
+    # Short Swedish questions often mix Swedish grammar with English product,
+    # vendor, legal, or cyber terms, for example:
+    # "Kan Meta Pixel skapa GDPR-risk?"
+    # Treat Swedish question grammar + neutral cyber/legal terms as Swedish even
+    # when there are not many Swedish-only words.
+    swedish_question_starters = {
+        "kan", "vad", "när", "nar", "hur", "varför", "varfor",
+        "vilken", "vilka", "måste", "maste", "ska", "bör", "bor"
+    }
+
+    mixed_legal_or_cyber_markers = {
+        "gdpr", "nis2", "dora", "imy", "meta", "pixel", "ransomware",
+        "malware", "phishing", "mfa", "api", "app", "cyberlex"
+    }
+
+    if words.intersection(swedish_question_starters) and words.intersection(mixed_legal_or_cyber_markers):
+        return "Svenska"
+
+
+    # Explicit Swedish mixed-language cyber/legal questions.
+    # Example: "Kan Meta Pixel skapa GDPR-risk?"
+    if question_lower.startswith(("kan ", "vad ", "hur ", "när ", "nar ", "vilken ", "vilka ", "måste ", "maste ", "ska ", "bör ", "bor ")):
+        if words.intersection({"gdpr", "nis2", "dora", "imy", "meta", "pixel", "ransomware", "malware", "phishing", "mfa", "cyberlex"}):
+            return "Svenska"
 
     if swedish_score > english_score and swedish_score >= 3:
         return "Svenska"
