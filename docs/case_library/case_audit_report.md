@@ -10,9 +10,9 @@ This audit does not browse the web and does not confirm whether a case summary i
 
 ## Audit Summary
 
-- Generated at: `2026-06-15 18:51:24`
-- Total case files checked: `7`
-- Case files marked OK: `7`
+- Generated at: `2026-06-17 08:41:27`
+- Total case files checked: `8`
+- Case files marked OK: `8`
 - Case files needing review: `0`
 
 ---
@@ -68,6 +68,14 @@ No issues found.
 ---
 
 ### imy_wrong_email_customer_data.md
+
+- Status: `OK`
+
+No issues found.
+
+---
+
+### klarna_app_data_exposure_2021.md
 
 - Status: `OK`
 

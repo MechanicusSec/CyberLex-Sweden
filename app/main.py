@@ -1,3 +1,4 @@
+
 from pathlib import Path
 from case_search import search_related_cases
 import re
@@ -8841,6 +8842,9 @@ def load_case_library_entries():
         english_decision = extract_section_text(content, "## Decision or outcome")
         swedish_decision = extract_section_text(content, "## Swedish decision or outcome")
 
+        english_learning_note = extract_section_text(content, "## Learning note")
+        swedish_learning_note = extract_section_text(content, "## Swedish learning note")
+
         cases.append(
             {
                 "title": extract_case_title(content, path.stem),
@@ -8854,6 +8858,8 @@ def load_case_library_entries():
                 "what_happened_sv": swedish_what_happened or english_what_happened,
                 "decision": english_decision,
                 "decision_sv": swedish_decision or english_decision,
+                "learning_note": english_learning_note,
+                "learning_note_sv": swedish_learning_note or english_learning_note,
                 "official_source": english_official_source,
                 "official_source_sv": swedish_official_source or english_official_source,
             }
@@ -8961,6 +8967,36 @@ def clean_case_markdown_for_display(text):
     cleaned = re.sub(r"\n{3,}", "\n\n", cleaned).strip()
 
     return cleaned
+
+
+
+
+def strip_repeated_case_section_intro(text, labels):
+    # Removes duplicate first-line headings from case sections.
+    # The UI already prints labels such as "Administrative fine or outcome".
+    # If the Markdown section starts with the same label, showing both looks clumsy.
+    cleaned = str(text or "").strip()
+
+    if not cleaned:
+        return ""
+
+    normalized_labels = {str(label or "").strip().lower().rstrip(":") for label in labels}
+    lines = cleaned.splitlines()
+
+    while lines and not lines[0].strip():
+        lines.pop(0)
+
+    if lines:
+        first_line = lines[0].strip().lower().rstrip(":")
+
+        if first_line in normalized_labels:
+            lines.pop(0)
+
+            # Remove one empty spacer line after the repeated label.
+            if lines and not lines[0].strip():
+                lines.pop(0)
+
+    return "\n".join(lines).strip()
 
 
 def case_topics_to_badges(topics_text):
@@ -9139,6 +9175,7 @@ def display_case_intelligence_page(language="English", source_language_mode="Aut
         count_label = "fall i biblioteket"
         shown_label = "visade fall"
         summary_label = "Sammanfattning"
+        learning_label = "Lärdom från fallet"
         outcome_label = "Sanktionsavgift eller utfall"
         topics_label = "Relaterade CyberLex-ämnen"
         source_label = "Officiella källor"
@@ -9162,6 +9199,7 @@ def display_case_intelligence_page(language="English", source_language_mode="Aut
         count_label = "cases in library"
         shown_label = "shown cases"
         summary_label = "Summary"
+        learning_label = "Learning note"
         outcome_label = "Administrative fine or outcome"
         topics_label = "Related CyberLex topics"
         source_label = "Official sources"
@@ -9297,6 +9335,8 @@ def display_case_intelligence_page(language="English", source_language_mode="Aut
                         case.get("what_happened_sv", ""),
                         case.get("decision", ""),
                         case.get("decision_sv", ""),
+                        case.get("learning_note", ""),
+                        case.get("learning_note_sv", ""),
                         case.get("official_source", ""),
                         case.get("official_source_sv", ""),
                     ]
@@ -9336,12 +9376,29 @@ def display_case_intelligence_page(language="English", source_language_mode="Aut
 
         if use_swedish:
             summary = clean_case_markdown_for_display(case.get("summary_sv", ""))
+            learning_note = clean_case_markdown_for_display(case.get("learning_note_sv", ""))
             fine_or_cost = clean_case_markdown_for_display(case.get("fine_or_cost_sv", ""))
             related_topics = str(case.get("related_topics_sv", "")).strip()
         else:
             summary = clean_case_markdown_for_display(case.get("summary", ""))
+            learning_note = clean_case_markdown_for_display(case.get("learning_note", ""))
             fine_or_cost = clean_case_markdown_for_display(case.get("fine_or_cost", ""))
             related_topics = str(case.get("related_topics", "")).strip()
+
+        fine_or_cost = strip_repeated_case_section_intro(
+            fine_or_cost,
+            [
+                outcome_label,
+                "Administrative fine or outcome",
+                "Administrative fine or outcome:",
+                "Administrativ sanktionsavgift eller utfall",
+                "Administrativ sanktionsavgift eller utfall:",
+                "Official fine",
+                "Official fine:",
+                "Administrativ sanktionsavgift",
+                "Administrativ sanktionsavgift:",
+            ],
+        )
 
         official_source = clean_case_markdown_for_display(
             select_case_official_source(case, source_language_mode)
@@ -9350,6 +9407,10 @@ def display_case_intelligence_page(language="English", source_language_mode="Aut
         with st.expander(f"🧾 {case_title}", expanded=False):
             st.markdown(f"**{summary_label}:**")
             st.markdown(summary if summary else empty_label)
+
+            if learning_note:
+                st.markdown(f"**{learning_label}:**")
+                st.markdown(learning_note)
 
             st.markdown(f"**{outcome_label}:**")
             st.markdown(fine_or_cost if fine_or_cost else empty_label)
@@ -9601,6 +9662,7 @@ def display_related_cases(question, language="English", source_language_mode="Au
             "som utbildande exempel, inte som juridisk rådgivning."
         )
         summary_label = "Sammanfattning"
+        learning_label = "Lärdom från fallet"
         fine_label = "Kostnad eller sanktionsavgift"
         source_label = "Officiella källor"
         disclaimer = (
@@ -9615,6 +9677,7 @@ def display_related_cases(question, language="English", source_language_mode="Au
             "as educational examples, not legal advice."
         )
         summary_label = "Summary"
+        learning_label = "Learning note"
         fine_label = "Cost or administrative fine"
         source_label = "Official sources"
         disclaimer = (
@@ -9632,16 +9695,40 @@ def display_related_cases(question, language="English", source_language_mode="Au
         with st.expander(case_title):
             if use_swedish:
                 summary = str(display_case.get("summary_sv", display_case.get("summary", ""))).strip()
+                learning_note = str(display_case.get("learning_note_sv", display_case.get("learning_note", ""))).strip()
                 fine_or_cost = str(display_case.get("fine_or_cost_sv", display_case.get("fine_or_cost", ""))).strip()
             else:
                 summary = str(display_case.get("summary", "")).strip()
+                learning_note = str(display_case.get("learning_note", "")).strip()
                 fine_or_cost = str(display_case.get("fine_or_cost", "")).strip()
+
+            fine_or_cost = strip_repeated_case_section_intro(
+                clean_case_markdown_for_display(fine_or_cost),
+                [
+                    fine_label,
+                    "Cost or administrative fine",
+                    "Administrative fine or outcome",
+                    "Administrative fine or outcome:",
+                    "Sanktionsavgift eller utfall",
+                    "Administrativ sanktionsavgift eller utfall",
+                    "Administrativ sanktionsavgift eller utfall:",
+                    "Official fine",
+                    "Official fine:",
+                    "Administrativ sanktionsavgift",
+                    "Administrativ sanktionsavgift:",
+                ],
+            )
+            learning_note = clean_case_markdown_for_display(learning_note)
 
             official_source = select_case_official_source(display_case, source_language_mode)
 
             if summary:
                 st.markdown(f"**{summary_label}:**")
                 st.markdown(summary)
+
+            if learning_note:
+                st.markdown(f"**{learning_label}:**")
+                st.markdown(learning_note)
 
             if fine_or_cost:
                 st.markdown(f"**{fine_label}:**")

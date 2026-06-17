@@ -174,6 +174,14 @@ Detta hjälper CyberLex att förklara att dataläckor kan ske genom:
 * bristande granskning av dataflöden
 * svagt dataskydd genom design
 
+## Learning note
+
+This case shows that website tracking and advertising tools can create serious GDPR risk when they transfer sensitive personal data to third parties. Cybersecurity and privacy risk can come from ordinary web integrations, not only from hacking or malware.
+
+## Swedish learning note
+
+Fallet visar att spårnings- och annonseringsverktyg på webbplatser kan skapa allvarlig GDPR-risk när känsliga personuppgifter överförs till tredje part. Cybersäkerhets- och integritetsrisk kan uppstå genom vanliga webbplatsintegrationer, inte bara genom hackning eller skadlig kod.
+
 ## Similar CyberLex questions
 
 * Can Meta Pixel create GDPR risk?

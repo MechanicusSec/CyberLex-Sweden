@@ -144,6 +144,14 @@ Fallet är användbart när CyberLex svarar på frågor som:
 * Kan svag systemsäkerhet leda till administrativa sanktionsavgifter?
 * Vad bör en organisation bedöma efter att ha upptäckt exponerade kunduppgifter?
 
+## Learning note
+
+This case shows that technical security weaknesses can create major GDPR consequences when customer data becomes accessible online. Access control, secure design, and risk-based technical measures are not just IT details, they are part of data protection compliance.
+
+## Swedish learning note
+
+Fallet visar att tekniska säkerhetsbrister kan få stora GDPR-konsekvenser när kunduppgifter blir tillgängliga online. Åtkomstkontroll, säker systemdesign och riskbaserade tekniska åtgärder är inte bara IT-detaljer, utan en del av dataskyddsefterlevnaden.
+
 ## Similar CyberLex questions
 
 * What can weak GDPR security measures cost?

@@ -104,6 +104,14 @@ Fallet är användbart för CyberLex eftersom det visar att alla personuppgiftsi
 
 Fallet är relevant för frågor om e-postsäkerhet, oavsiktligt röjande, kunduppgifter, finansiella uppgifter, mänskliga misstag, interna rutiner, godkännandeflöden och tekniska kontroller som minskar risken för att fel information skickas.
 
+## Learning note
+
+This case shows that personal data breaches do not always involve hackers. Human error, weak email routines, and missing technical controls can expose large amounts of customer data and lead to GDPR consequences.
+
+## Swedish learning note
+
+Fallet visar att personuppgiftsincidenter inte alltid handlar om hackare. Mänskliga misstag, svaga e-postrutiner och bristande tekniska kontroller kan exponera stora mängder kunduppgifter och leda till GDPR-konsekvenser.
+
 ## Similar CyberLex questions
 
 * Can sending an email to the wrong recipient be a personal data breach?

@@ -164,6 +164,14 @@ Fallet är användbart när CyberLex svarar på frågor som:
 * Kan oavsiktliga dataöverföringar leda till sanktionsavgifter?
 * Varför är tekniska och organisatoriska åtgärder viktiga enligt GDPR?
 
+## Learning note
+
+This case shows that financial-sector data and tracking technology require strong control before deployment. A misconfigured or poorly reviewed tracking tool can become a data protection incident even when there is no traditional cyberattack.
+
+## Swedish learning note
+
+Fallet visar att finansiella kunduppgifter och spårningsteknik kräver stark kontroll innan de används. Ett felkonfigurerat eller otillräckligt granskat spårningsverktyg kan bli en dataskyddsincident även utan en traditionell cyberattack.
+
 ## Similar CyberLex questions
 
 * Can tracking tools create GDPR risk?

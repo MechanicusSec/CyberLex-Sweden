@@ -112,6 +112,14 @@ Det visar att GDPR-konsekvenser är beroende av omständigheterna i det enskilda
 
 Fallet är relevant för frågor om spårningsverktyg, vårdrelaterade sammanhang, tredjepartsanalys, artikel 32 GDPR, dataskydd genom design, teknisk konfiguration och oavsiktliga personuppgiftsöverföringar.
 
+## Learning note
+
+This case shows that hashed contact information can still create GDPR risk when it is transferred through tracking technology. It also shows that outcomes can differ between cases, because IMY issued a reprimand instead of an administrative fine.
+
+## Swedish learning note
+
+Fallet visar att hashade kontaktuppgifter fortfarande kan skapa GDPR-risk när de överförs genom spårningsteknik. Det visar också att utfall kan skilja sig mellan fall, eftersom IMY utfärdade en reprimand i stället för en administrativ sanktionsavgift.
+
 ## Similar CyberLex questions
 
 * Can Meta Pixel create GDPR risk?

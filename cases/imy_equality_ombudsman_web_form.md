@@ -164,6 +164,14 @@ En personuppgiftsincident kan också uppstå när:
 
 Detta hjälper CyberLex att förklara att incidentförebyggande arbete och GDPR-efterlevnad kräver både planering och kontroll av att åtgärderna faktiskt fungerar.
 
+## Learning note
+
+This case shows that a security measure is not enough just because it exists. Organisations must verify that the measure actually works for the processing risk, especially when web forms may collect sensitive or potentially sensitive information.
+
+## Swedish learning note
+
+Fallet visar att en säkerhetsåtgärd inte räcker bara för att den finns. Organisationer måste kontrollera att åtgärden faktiskt fungerar i förhållande till behandlingsrisken, särskilt när webbformulär kan samla in känsliga eller potentiellt känsliga uppgifter.
+
 ## Similar CyberLex questions
 
 * Can a web form cause a personal data breach?

@@ -112,6 +112,14 @@ Det visar att en cyberattack inte automatiskt betyder att organisationen ansvara
 
 Fallet är också användbart för frågor om barns personuppgifter, känsliga uppgifter, storskaliga läckor, publicering på Darknet, intrångsdetektering, incidenthantering och kostnadskontexten kring svag säkerhet.
 
+## Learning note
+
+This case shows how weak security measures can lead to large-scale personal data exposure after a cyberattack. It is especially important because the incident affected children and young people and included sensitive information.
+
+## Swedish learning note
+
+Fallet visar hur svaga säkerhetsåtgärder kan leda till storskalig exponering av personuppgifter efter en cyberattack. Det är särskilt viktigt eftersom incidenten berörde barn och unga och omfattade känsliga uppgifter.
+
 ## Similar CyberLex questions
 
 * What can weak security measures cost?
