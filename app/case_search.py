@@ -51,6 +51,16 @@ def clean_text(text):
         "dark web": "darkweb",
         "trygg-hansa": "trygg hansa",
         "sport admin": "sportadmin",
+        "app-fel": "appfel",
+        "app error": "app bug",
+        "application error": "app bug",
+        "application bug": "app bug",
+        "app incident": "app incident",
+        "session-handling": "session handling",
+        "account-separation": "account separation",
+        "other user's data": "other users data",
+        "other users' data": "other users data",
+        "andra användares data": "andra användares uppgifter",
     }
 
     for old, new in replacements.items():
@@ -76,6 +86,9 @@ def get_case_profile(case):
 
     if "sportadmin" in combined:
         return "sportadmin_security_breach"
+
+    if "klarna" in combined or "app data exposure" in combined or "app exposure" in combined:
+        return "klarna_app_data_exposure"
 
     if "wrong email" in combined or "wrong recipient" in combined or "indecap" in combined or "wrong email customer" in filename:
         return "wrong_email_customer_data"
@@ -182,6 +195,25 @@ def get_keywords(question):
         "children": ["children", "young people", "sportadmin"],
         "barn": ["children", "young people", "sportadmin"],
 
+        # App / Klarna / customer exposure
+        "app": ["app", "app bug", "app incident", "customer data", "account separation", "session handling", "klarna"],
+        "appfel": ["appfel", "app bug", "app incident", "kunduppgifter", "klarna"],
+        "appincident": ["appincident", "app incident", "app bug", "kunduppgifter", "klarna"],
+        "bug": ["bug", "app bug", "app incident", "customer data", "klarna"],
+        "expose": ["expose", "exposure", "customer data", "data leak", "app bug", "klarna"],
+        "exposed": ["exposed", "exposure", "customer data", "data leak", "app bug", "klarna"],
+        "exposure": ["exposure", "customer data", "data leak", "app bug", "klarna"],
+        "exponera": ["exponera", "exponering", "kunduppgifter", "appfel", "klarna"],
+        "exponerade": ["exponerade", "exponering", "kunduppgifter", "appfel", "klarna"],
+        "exponering": ["exponering", "exposure", "kunduppgifter", "customer data", "klarna"],
+        "session": ["session", "session handling", "account separation", "customer data", "klarna"],
+        "account": ["account", "account separation", "session handling", "customer data", "klarna"],
+        "konto": ["konto", "kontoseparering", "session handling", "kunduppgifter", "klarna"],
+        "kontoseparering": ["kontoseparering", "account separation", "session handling", "kunduppgifter", "klarna"],
+        "finansinspektionen": ["finansinspektionen", "fi", "klarna", "supervisory investigation"],
+        "fi": ["fi", "finansinspektionen", "klarna", "supervisory investigation"],
+        "tillsyn": ["tillsyn", "supervisory investigation", "klarna"],
+
         # Named cases
         "sportadmin": ["sportadmin", "cyber attack", "darknet", "children", "security"],
         "trygg": ["trygg hansa", "security deficiencies", "customer data", "accessible"],
@@ -191,6 +223,7 @@ def get_keywords(question):
         "apoteket": ["apoteket", "apohem", "meta pixel", "sensitive personal data"],
         "apohem": ["apoteket", "apohem", "meta pixel", "sensitive personal data"],
         "indecap": ["indecap", "email", "customer data", "wrong attachment"],
+        "klarna": ["klarna", "app", "app bug", "app incident", "customer data", "account separation", "session handling", "finansinspektionen"],
     }
 
     expanded = []
@@ -228,6 +261,8 @@ def load_cases():
                 "outcome": get_section(content, "## Decision or outcome"),
                 "fine_or_cost": get_section(content, "## Fine or cost"),
                 "why_it_matters": get_section(content, "## Why it matters for CyberLex"),
+                "learning_note": get_section(content, "## Learning note"),
+                "swedish_learning_note": get_section(content, "## Swedish learning note"),
                 "similar_questions": get_section(content, "## Similar CyberLex questions"),
                 "related_topics": get_section(content, "## Related CyberLex topics"),
                 "official_source": get_section(content, "## Official source"),
@@ -305,8 +340,34 @@ def get_case_priority(question, case):
             "känsliga", "hälsa", "protected identity",
         ],
     )
+    asks_app_exposure = contains_phrase(
+        question_clean,
+        [
+            "klarna", "app bug", "app incident", "app error", "application error",
+            "customer data exposed", "exposed customer data", "customer data exposure",
+            "users see other users", "users could see other users",
+            "see other users data", "other users data", "other users information",
+            "account separation", "session handling", "financial app",
+            "finansinspektionen", "fi", "supervisory investigation",
+            "appfel", "appincident", "kunduppgifter exponerades",
+            "exponera kunduppgifter", "exponerade kunduppgifter",
+            "användare se andra användares uppgifter",
+            "andra användares uppgifter", "kontoseparering",
+        ],
+    )
 
     # Very specific intents first.
+    if asks_app_exposure:
+        if profile == "klarna_app_data_exposure":
+            return 1000
+        if profile in {
+            "trygg_hansa_security_deficiencies",
+            "wrong_email_customer_data",
+            "sportadmin_security_breach",
+        }:
+            return 350
+        return 0
+
     if asks_hashed_kry and asks_meta:
         if profile == "kry_meta_pixel":
             return 1000
@@ -468,6 +529,21 @@ def score_case(question, case):
         question_clean,
         ["sensitive personal data", "sensitive", "health data", "känsliga", "hälsa", "protected identity"],
     )
+    asks_app_exposure = contains_phrase(
+        question_clean,
+        [
+            "klarna", "app bug", "app incident", "app error", "application error",
+            "customer data exposed", "exposed customer data", "customer data exposure",
+            "users see other users", "users could see other users",
+            "see other users data", "other users data", "other users information",
+            "account separation", "session handling", "financial app",
+            "finansinspektionen", "fi", "supervisory investigation",
+            "appfel", "appincident", "kunduppgifter exponerades",
+            "exponera kunduppgifter", "exponerade kunduppgifter",
+            "användare se andra användares uppgifter",
+            "andra användares uppgifter", "kontoseparering",
+        ],
+    )
 
     # Kry must win when the question says hashed + Meta Pixel.
     if asks_hashed_kry and asks_meta:
@@ -543,6 +619,19 @@ def score_case(question, case):
         if profile in {"apoteket_apohem_meta_pixel", "sportadmin_security_breach", "kry_meta_pixel"}:
             score += 35
 
+    # App/customer-data exposure questions should prioritize Klarna.
+    if asks_app_exposure:
+        if profile == "klarna_app_data_exposure":
+            score += 180
+        elif profile in {
+            "trygg_hansa_security_deficiencies",
+            "wrong_email_customer_data",
+            "sportadmin_security_breach",
+        }:
+            score += 25
+        else:
+            score -= 10
+
     return max(score, 0)
 
 
@@ -564,6 +653,8 @@ def search_related_cases(question, limit=3):
                     "fine_or_cost": case["fine_or_cost"],
                     "official_source": case["official_source"],
                     "related_topics": case.get("related_topics", ""),
+                    "learning_note": case.get("learning_note", ""),
+                    "swedish_learning_note": case.get("swedish_learning_note", ""),
                 }
             )
 
@@ -593,6 +684,11 @@ if __name__ == "__main__":
         "What happens if data is published on the Darknet?",
         "Can hashed data sent through Meta Pixel be a GDPR issue?",
         "Kan ett företag få sanktionsavgift efter ett dataintrång?",
+        "Can an app bug expose customer data?",
+        "Can users see other users' data because of an app error?",
+        "What happens if customer data is exposed in an app?",
+        "Kan ett appfel exponera kunduppgifter?",
+        "Kan användare se andra användares uppgifter?",
     ]
 
     for question in questions:
