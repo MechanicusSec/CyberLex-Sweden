@@ -26,6 +26,7 @@ Instead, it uses:
 * case learning notes for clear educational takeaways
 * a Case Intelligence page for browsing GDPR and cybersecurity-related cases
 * bilingual case display for Swedish and English summaries, outcomes, topics, and source links
+* English, Swedish, and Auto language modes
 * an experimental retrieval panel
 
 CyberLex Sweden is designed as an educational legal-tech and cybersecurity-law prototype.
@@ -44,21 +45,23 @@ The Streamlit entry point is:
 app/main.py
 ```
 
-Earlier prototype versions placed most application logic directly inside `app/main.py`. The current version has been refactored into smaller modules so the application is easier to understand, test, maintain, and extend.
+Earlier prototype versions placed most application logic directly inside `app/main.py`.
+
+The current version has been partly refactored into smaller modules so the application is easier to understand, test, maintain, and extend.
 
 Current app module structure:
 
 ```text
 app/
-├── main.py              # Streamlit app flow and UI rendering
-├── config.py            # App settings and folder paths
+├── main.py              # Streamlit app flow, UI rendering, answer display, and remaining routing glue
+├── config.py            # App settings, page configuration, and folder paths
 ├── styles.py            # CSS and visual styling
 ├── text_utils.py        # Text normalization and matching helpers
 ├── language.py          # Swedish/English detection and localization
-├── source_loader.py     # Markdown source loading and chunking
+├── source_loader.py     # Markdown source loading, metadata extraction, and chunking
 ├── incident_engine.py   # Practical incident-response question detection
 ├── case_search.py       # Related case and incident-example search
-└── vector_search.py     # Experimental search functionality
+└── vector_search.py     # Experimental rule-based retrieval functionality
 ```
 
 The local knowledge base is stored in:
@@ -91,7 +94,7 @@ Case-library documentation and audit output are stored in:
 docs/case_library/
 ```
 
-The GitHub Actions workflow is stored in:
+The GitHub Actions source-audit workflow is stored in:
 
 ```text
 .github/workflows/source-audit.yml
@@ -110,12 +113,6 @@ The current architecture separates:
 * experimental retrieval
 
 This makes the project easier to understand, test, maintain, and expand.
-
-More detailed architecture notes are also documented in:
-
-```text
-docs/architecture.md
-```
 
 ---
 
@@ -141,8 +138,11 @@ It controls:
 * incident report download display
 * Case Intelligence page rendering
 * related case display rules
+* remaining answer-routing glue
 
-The file still contains a large amount of answer-routing and display logic, but it no longer contains every helper function from the prototype.
+The file still contains a large amount of answer-routing and display logic, but it no longer contains every helper function from the earliest prototype.
+
+Future refactoring may split more of this logic into separate modules, but the current structure is stable enough for the present prototype stage.
 
 ### `app/config.py`
 
@@ -179,6 +179,7 @@ It supports:
 * normalizing user questions
 * cleaning searchable words
 * checking whether text contains key terms or phrases
+* shared keyword and phrase matching
 
 These helpers are reused by routing, search, language detection, and incident detection.
 
@@ -188,9 +189,11 @@ These helpers are reused by routing, search, language detection, and incident de
 
 It supports:
 
-* English and Swedish detection
+* English detection
+* Swedish detection
 * Auto language mode
 * mixed Swedish/English cyber questions
+* localized labels
 * localized section names
 * localized source labels
 * localized related case titles
@@ -207,7 +210,9 @@ It supports:
 * loading Markdown files from `data/`
 * extracting official source links
 * extracting source metadata
-* extracting source dates and version notes
+* extracting source dates
+* extracting version notes
+* extracting sections
 * splitting Markdown files into searchable chunks
 
 This separates source loading from the Streamlit UI.
@@ -221,8 +226,10 @@ It detects questions about:
 * suspected hacking
 * unauthorized access
 * suspicious login activity
+* suspicious MFA activity
 * suspicious links
 * suspicious emails
+* phishing
 * compromised accounts
 * ransomware
 * malware
@@ -238,11 +245,17 @@ This module helps the app decide when to show defensive first-step guidance and 
 
 It loads case files from `cases/`, extracts structured case sections, expands keywords, scores case relevance, and returns related case examples.
 
+It supports related cases for suitable compliance and case-library questions.
+
+It should not turn historical cases into fine predictions.
+
 ### `app/vector_search.py`
 
 `vector_search.py` is an experimental retrieval module.
 
 Despite the name, it currently remains rule-based and does not yet use true embeddings, FAISS, ChromaDB, or a full RAG pipeline.
+
+The name is a little too ambitious, because apparently even filenames can have delusions of grandeur.
 
 ---
 
@@ -403,10 +416,10 @@ cases/imy_apoteket_apohem_meta_pixel.md
 cases/imy_avanza_bank_meta_pixel.md
 cases/imy_equality_ombudsman_web_form.md
 cases/imy_kry_meta_pixel.md
-cases/klarna_app_data_exposure_2021.md
 cases/imy_sportadmin_security_breach.md
 cases/imy_trygg_hansa_security_deficiencies.md
 cases/imy_wrong_email_customer_data.md
+cases/klarna_app_data_exposure_2021.md
 ```
 
 The case template is:
@@ -450,7 +463,9 @@ Each case file should contain structured sections such as:
 * case metadata
 * disclaimer
 
-The bilingual case sections allow the Case Intelligence page to display Swedish case content when the user selects Swedish, English content when the user selects English, and broader source visibility when the user uses automatic language mode. Learning-note sections are displayed only when real content exists, so the UI avoids empty placeholder sections.
+The bilingual case sections allow the Case Intelligence page to display Swedish case content when the user selects Swedish, English content when the user selects English, and broader source visibility when the user uses automatic language mode.
+
+Learning-note sections are displayed only when real content exists, so the UI avoids empty placeholder sections.
 
 ---
 
@@ -486,7 +501,9 @@ Can hashed data sent through Meta Pixel be a GDPR issue?
 ```text
 Can sending customer data to the wrong email be a personal data breach?
 → Wrong Email Customer Data Case should rank first
+```
 
+```text
 Can an app bug expose customer data?
 → Klarna App Data Exposure 2021 should rank highly
 ```
@@ -593,10 +610,11 @@ The expected current audit scope is:
 Case files checked: 8
 ```
 
-The case audit does not verify live legal accuracy online. It also does not decide whether a public incident example is equivalent to an authority decision, so case type labels must stay accurate in the Markdown files.
+The case audit does not verify live legal accuracy online.
+
+It also does not decide whether a public incident example is equivalent to an authority decision, so case type labels must stay accurate in the Markdown files.
 
 It checks whether the local case-library files follow the required CyberLex case structure.
-
 
 ---
 
@@ -615,6 +633,7 @@ The normal question flow is:
 9. The best source match is used to build the main CyberLex answer.
 10. The app displays supporting source links, source metadata, limitations, practical sections, and source context where relevant.
 11. Related cases are shown only when the question is suitable for case-library examples.
+12. SOC-style report download is shown only for practical incident-response questions.
 
 The app does not browse the web live during this process.
 
@@ -643,6 +662,16 @@ Kan Meta Pixel skapa GDPR-risk?
 → Svenska
 ```
 
+```text
+What is NIS2?
+→ English
+```
+
+```text
+Vad är NIS2?
+→ Svenska
+```
+
 The language system is rule-based and may still need continued refinement as new question patterns appear.
 
 ---
@@ -660,6 +689,8 @@ When a user clicks an example question:
 5. the app reruns and displays the answer directly
 
 This means the user should not need to click the normal search button after selecting an example question.
+
+In Swedish mode, the app displays Swedish example questions and Swedish button labels.
 
 ---
 
@@ -1235,14 +1266,17 @@ When a user asks an in-scope question, the app may display:
 9. assessment checklist
 10. relevant source context
 11. other matching source sections
-12. incident log template, where relevant
-13. SOC Markdown report download, where relevant
+12. related cases where relevant
+13. incident log template where relevant
+14. SOC Markdown report download where relevant
 
 Not every section appears for every question.
 
 Simple definition questions should not show unnecessary incident-response panels.
 
 Practical incident-response questions may show more structured support.
+
+Related cases should be hidden for urgent practical incident-response triage questions.
 
 ---
 
@@ -1301,7 +1335,7 @@ The report may include:
 
 The report is intended as a documentation aid for learning and testing.
 
-It is not an official incident record, forensic report, legal assessment, or regulatory notification.
+It is not an official incident record, forensic report, legal assessment, regulatory notification, breach notification to IMY, or NIS2 incident report.
 
 ---
 
@@ -1358,7 +1392,9 @@ The app can display:
 
 The knowledge base includes Swedish summaries and Swedish useful-question sections across several supported source files.
 
-The case library now also supports Swedish case sections. The Case Intelligence page can display Swedish summaries, Swedish fine/outcome text, Swedish learning notes, Swedish topic badges, and language-aware official source links.
+The case library now also supports Swedish case sections.
+
+The Case Intelligence page can display Swedish summaries, Swedish fine/outcome text, Swedish learning notes, Swedish topic badges, and language-aware official source links.
 
 Swedish answer wording and source coverage can still be improved further, but the project has a stronger bilingual foundation than the earlier prototype.
 
@@ -1381,6 +1417,7 @@ Current technical limitations include:
 * it does not provide legal advice
 * source material must be manually reviewed and updated
 * the source audit checks local source structure, not live legal changes
+* the case audit checks local case-file structure, not live legal or factual currentness
 * confidence labels describe local source matching only, not legal certainty
 * source freshness labels describe stored local review dates only, not live legal currency
 * detected topic labels describe question interpretation only, not legal classification
@@ -1389,6 +1426,7 @@ Current technical limitations include:
 * public incident examples must be clearly separated from authority decisions
 * some official case sources may exist only in English or only in Swedish
 * case source-language filtering depends on available links and local case-file structure
+* SOC reports are educational documentation aids, not official incident records
 
 ---
 
@@ -1420,6 +1458,37 @@ Future technical improvements may include:
 
 ---
 
+## Future Refactor Ideas
+
+Future refactoring could split more logic out of `app/main.py`.
+
+Possible future modules:
+
+```text
+app/answer_engine.py
+app/search_engine.py
+app/source_context.py
+app/incident_reports.py
+app/ui_components.py
+app/safety.py
+app/semantic_search.py
+```
+
+These should not be rushed unless there is enough time to test properly.
+
+The current priority should remain:
+
+```text
+Stable prototype first.
+Broader automated tests second.
+Real vector search later.
+RAG only after reliable retrieval.
+```
+
+Because breaking a working project for “cleaner architecture” right before a deadline is the sort of ritual only humans and failing startups perform.
+
+---
+
 ## Current Technical Status
 
 CyberLex Sweden currently has:
@@ -1427,7 +1496,7 @@ CyberLex Sweden currently has:
 * a working Streamlit interface
 * a modular app structure after refactoring `app/main.py`
 * a local Markdown knowledge base
-* 13 source files checked by the source audit
+* 13 source files checked by the source audit target
 * rule-based source-grounded answers
 * source routing
 * keyword ranking
@@ -1466,3 +1535,13 @@ CyberLex Sweden currently has:
 The source-improvement and case-intelligence phase is largely complete for the current prototype scope, with 8 checked case files and learning-note support.
 
 The next major technical step is broader test coverage for the refactored modules, case behavior, Auto language behavior, true vector search, and later a RAG-based answer mode that remains mandatory-source-grounded.
+
+---
+
+## Final Note
+
+CyberLex Sweden is intentionally local-first, source-grounded, and cautious.
+
+The current technical design favors transparency and control over flashy AI behavior.
+
+That is not as glamorous as a machine claiming it understands the law, but it is far less likely to confidently invent nonsense while wearing a digital judge wig.

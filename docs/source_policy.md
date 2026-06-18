@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document defines how CyberLex Sweden should handle legal, cybersecurity, compliance, and defensive incident-response sources.
+This document defines how CyberLex Sweden should handle legal, cybersecurity, compliance, case-library, and defensive incident-response sources.
 
 Because CyberLex Sweden deals with legal and cybersecurity-related information, the system must avoid unsupported answers and should rely on trusted source material only.
 
@@ -31,6 +31,14 @@ The system should not:
 * answer legal questions from general memory
 * claim legal certainty without source support
 * answer outside the project scope
+* treat case examples as legal predictions
+* treat local summaries as complete legal sources
+
+The core rule is:
+
+```text
+Better sources first. Better AI second.
+```
 
 ---
 
@@ -46,6 +54,7 @@ CyberLex Sweden should prioritize sources from the following categories:
 * official data protection authority guidance
 * defensive incident-response guidance from trusted authorities
 * documented educational summaries based on trusted sources
+* public authority decisions and public incident examples used as educational case material
 
 Examples of trusted sources include:
 
@@ -72,6 +81,12 @@ CyberLex Sweden currently answers from local Markdown files in:
 data/
 ```
 
+The local knowledge base contains simplified educational summaries based on official or trusted sources.
+
+The app should treat Markdown files as controlled educational summaries.
+
+The app should not treat them as complete legal sources. They are simplified project files based on official or trusted source material.
+
 The current local source audit checks 13 source files:
 
 ```text
@@ -90,34 +105,67 @@ data/nis2_incident_reporting.md
 data/nis2_sector_scope_guidance.md
 ```
 
-The current audit result is:
+The expected source audit target is:
 
 ```text
-Files marked OK: 12
-Files needing review: 1
+Files marked OK: 13
+Files needing review: 0
 ```
 
-The file currently needing review is:
+The real current audit result should always be confirmed by running:
+
+```powershell
+python scripts/source_audit.py
+```
+
+Important note:
+
+The source audit checks the local structure of the Markdown files. It does not browse the web and does not confirm live legal currency.
+
+If the audit reports any file as needing review, that file should be fixed before final hand-in or clearly marked as incomplete.
+
+---
+
+## Case Library Policy
+
+CyberLex Sweden also includes a separate local case library in:
 
 ```text
-data/gdpr_imy_edpb_security_guidance.md
+cases/
 ```
+
+The case library is different from the main source knowledge base.
+
+The `data/` folder contains the main legal, regulatory, cybersecurity, and incident-response source material.
+
+The `cases/` folder contains educational examples, authority decisions, public incident examples, outcomes, fines, learning notes, and related case context.
+
+Case examples may help explain real-world consequences, but they are not the main legal answer.
+
+The case library should not be used as a fine calculator or as proof that the same outcome will happen in another situation.
+
+Case examples should be used carefully for questions such as:
+
+* Can Meta Pixel create GDPR risk?
+* Kan Meta Pixel skapa GDPR-risk?
+* Can an app bug expose customer data?
+* Kan ett appfel exponera kunduppgifter?
+* What can weak security measures cost?
+* Vad kan svaga säkerhetsåtgärder kosta?
+* What happened in similar GDPR security cases?
+
+Related case examples should normally be hidden for urgent practical incident-response questions.
+
+For example, case examples should not distract from first-step triage when the user asks:
+
+* Our files are encrypted, what should we do?
+* Someone clicked a suspicious link, what should we do?
+* What should we do if an account is compromised?
+* Vi har fått en misstänkt login på ett konto, vad ska vi göra?
 
 Reason:
 
-```text
-Missing Official source section, official source links, Source metadata section, source date, and version notes.
-```
-
-Recommended action:
-
-This file should be fixed or removed before final hand-in.
-
-If it duplicates `data/imy_gdpr_security_measures.md`, it should probably be removed after confirming that the app does not depend on it.
-
-The app should treat Markdown files as controlled educational summaries.
-
-The app should not treat them as complete legal sources. They are simplified project files based on official or trusted source material.
+Practical incident triage should focus on containment, evidence preservation, escalation, assessment, recovery, and reporting support.
 
 ---
 
@@ -249,6 +297,11 @@ imy_gdpr_security_measures.md
 ```
 
 ```text
+gdpr_imy_edpb_security_guidance.md
+→ GDPR, IMY, and EDPB security guidance
+```
+
+```text
 eu_dora_digital_operational_resilience.md
 → EU digital operational resilience regulation source
 ```
@@ -303,18 +356,48 @@ The audit report is written to:
 docs/source_audit_report.md
 ```
 
-Current audit result:
+Expected audit target:
 
 ```text
-Files marked OK: 12
-Files needing review: 1
+Files marked OK: 13
+Files needing review: 0
 ```
+
+The real current audit result should always be confirmed by running the audit script locally.
 
 The source audit is a structure check.
 
 It does not browse the web and does not verify that laws, regulations, or authority guidance are currently up to date.
 
 This distinction must stay clear in documentation and user-facing explanations.
+
+---
+
+## Case Audit Policy
+
+CyberLex Sweden includes a local case audit script:
+
+```text
+scripts/case_audit.py
+```
+
+The case audit checks local case files in:
+
+```text
+cases/
+```
+
+The case audit report is written to:
+
+```text
+docs/case_library/case_audit_report.md
+```
+
+The case audit helps confirm that case files contain the expected structure for educational case examples.
+
+The case audit does not prove that a decision, fine, or legal interpretation is currently complete or still the latest development.
+
+Case files should be treated as educational examples and should link back to official or reliable sources where possible.
 
 ---
 
@@ -407,8 +490,53 @@ Defensive guidance should focus on:
 * recovery planning
 * GDPR/IMY assessment where relevant
 * NIS2 or Swedish cybersecurity-law assessment where relevant
+* SOC-style incident documentation where relevant
 
 It should not provide offensive instructions.
+
+SOC-style Markdown incident reports should only appear for practical incident-response questions.
+
+SOC reports should support documentation and triage. They should not include debug text, relevance scores, repeated source dumps, or instructions for attacking systems.
+
+---
+
+## Auto Language and Source Display Policy
+
+CyberLex Sweden supports English, Swedish, and Auto language mode.
+
+Auto mode should detect the language from the active submitted question.
+
+English questions should use English labels and explanations.
+
+Swedish questions should use Swedish labels and explanations.
+
+Swedish questions that include English technical or legal terms should still be handled as Swedish when the sentence structure is Swedish.
+
+Examples:
+
+```text
+Can Meta Pixel create GDPR risk?
+→ English
+```
+
+```text
+Kan Meta Pixel skapa GDPR-risk?
+→ Swedish
+```
+
+```text
+What is NIS2?
+→ English
+```
+
+```text
+Vad är NIS2?
+→ Swedish
+```
+
+Source links and case links should follow the selected or detected language where possible.
+
+In Auto mode, the app should prefer links and labels that match the detected question language.
 
 ---
 
@@ -436,6 +564,8 @@ The rule is:
 No trusted source, no answer.
 ```
 
+Real vector search, embeddings, or RAG should only be added after the trusted local source base and retrieval behavior are reliable.
+
 ---
 
 ## Supported Source Topics
@@ -456,6 +586,7 @@ CyberLex Sweden currently supports selected questions about:
 * Cyber Resilience Act
 * DORA and digital operational resilience
 * overlap between cybersecurity incidents and data protection duties
+* real-world GDPR and cybersecurity case examples from the local case library
 
 CyberLex Sweden does not cover all Swedish law or all EU digital regulation.
 
@@ -510,6 +641,16 @@ Examples that should normally not be committed:
 * temporary test files
 * downloaded model files
 
+The preferred workflow is:
+
+```text
+Work locally.
+Commit stable checkpoints.
+Push after 10 to 15 meaningful changes or a clear milestone.
+```
+
+This keeps the repository history readable while avoiding unnecessary public noise during active development.
+
 ---
 
 ## Future Source Review Workflow
@@ -536,7 +677,7 @@ This source policy defines how CyberLex Sweden should handle local project sourc
 
 It does not make CyberLex Sweden a legal authority.
 
-It does not prove that any law, regulation, or authority guidance is currently up to date.
+It does not prove that any law, regulation, authority decision, or authority guidance is currently up to date.
 
 For important legal, compliance, regulatory, or cybersecurity decisions, users should check official sources and qualified professional advice.
 

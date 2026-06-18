@@ -4,9 +4,11 @@
 
 This document explains the planned vector search upgrade for CyberLex Sweden.
 
-CyberLex Sweden currently uses local Markdown files, source routing, keyword scoring, topic expansion, rule-based answers, and transparent source display.
+CyberLex Sweden currently uses local Markdown files, source routing, keyword scoring, topic expansion, rule-based answers, related case matching, and transparent source display.
 
-The next retrieval improvement is real vector search. Vector search would help the app match questions by meaning, not only by exact keywords.
+The next major retrieval improvement is real vector search.
+
+Vector search would help the app match questions by meaning, not only by exact keywords.
 
 The goal is not to replace source grounding.
 
@@ -28,6 +30,8 @@ The current search system:
 * routes clear questions to the most relevant source file
 * applies topic-specific score boosts and penalties
 * returns the best source match and supporting source context
+* checks whether related case examples should appear
+* hides related cases for practical incident-response triage questions
 
 This works well for clear supported questions, but it still depends on keywords, manually tuned scoring rules, and known question patterns.
 
@@ -52,6 +56,50 @@ The name is slightly misleading, which is what happens when optimism writes file
 
 ---
 
+## Current Related Case Search
+
+CyberLex Sweden also includes related case search through:
+
+```text
+app/case_search.py
+```
+
+This is separate from the main legal source search.
+
+The main source search uses files in:
+
+```text
+data/
+```
+
+The related case search uses files in:
+
+```text
+cases/
+```
+
+Case search supports educational case examples for suitable questions, such as:
+
+* Can Meta Pixel create GDPR risk?
+* Kan Meta Pixel skapa GDPR-risk?
+* Can an app bug expose customer data?
+* Kan ett appfel exponera kunduppgifter?
+* What can weak security measures cost?
+* Vad kan svaga säkerhetsåtgärder kosta?
+
+Related cases should normally be hidden for practical incident-response triage questions, such as:
+
+* Our files are encrypted, what should we do?
+* Someone clicked a suspicious link, what should we do?
+* What should we do if an account is compromised?
+* Vi har fått en misstänkt login på ett konto, vad ska vi göra?
+
+Future vector search should not mix case examples into the main legal answer unless the app clearly labels them as case context.
+
+Case examples are not legal predictions and should not replace source-grounded answers from `data/`.
+
+---
+
 ## Current Retrieval Strengths
 
 The current rule-based retrieval has improved enough for the current prototype stage.
@@ -66,7 +114,7 @@ Current supported examples include:
 | NIS2 scope           | `Gäller NIS2 för oss?`                                            | `nis2_sector_scope_guidance.md`                                |
 | NIS2 annexes         | `Vad är bilaga 1 och bilaga 2 i NIS2?`                            | `nis2_sector_scope_guidance.md`                                |
 | GDPR breach          | `When must a personal data breach be reported?`                   | `gdpr_personal_data_breach.md`                                 |
-| GDPR/IMY security    | `Does GDPR require MFA?`                                          | GDPR/IMY security guidance                                     |
+| GDPR/IMY security    | `Does GDPR require MFA?`                                          | `imy_gdpr_security_measures.md` or GDPR/IMY security guidance  |
 | IMY                  | `Vad är IMY?`                                                     | `imy_gdpr_supervision.md`                                      |
 | Dataintrång          | `Vad är dataintrång?`                                             | `cybercrime_dataintrang.md`                                    |
 | DORA                 | `What is DORA?`                                                   | `eu_dora_digital_operational_resilience.md`                    |
@@ -76,6 +124,8 @@ Current supported examples include:
 | Suspicious login     | `Vad gör vi om vi ser misstänkt inloggning?`                      | `cyber_incident_response_playbook.md`                          |
 | Encrypted files      | `Our files are encrypted`                                         | `cyber_incident_response_playbook.md`                          |
 | Data leak            | `Customer data may have leaked`                                   | `cyber_incident_response_playbook.md` and GDPR breach material |
+| Meta Pixel risk      | `Can Meta Pixel create GDPR risk?`                                | GDPR/IMY material plus related case examples                   |
+| App data exposure    | `Can an app bug expose customer data?`                            | GDPR/security material plus related case examples              |
 
 This is good enough for the final project prototype.
 
@@ -163,10 +213,51 @@ Each chunk should keep:
 * version notes
 * source quality label
 * source freshness label
+* language information where useful
+* source category where useful
 
 The first version should be separate from the main answer system.
 
 It should be used for testing before it affects normal CyberLex answers.
+
+---
+
+## Planned Case Search Relationship
+
+Vector search should initially focus on the main source knowledge base in:
+
+```text
+data/
+```
+
+The case library in:
+
+```text
+cases/
+```
+
+should remain separate at first.
+
+Reason:
+
+The main legal answer and the related case examples have different purposes.
+
+The `data/` files support source-grounded educational answers.
+
+The `cases/` files support real-world examples and learning context.
+
+Future versions may create a separate case vector index, but it should be clearly labeled as case search.
+
+Possible future structure:
+
+```text
+.vector_store/sources/
+.vector_store/cases/
+```
+
+This would keep legal source retrieval and case-example retrieval separate.
+
+Mixing them without labels would make the app look clever while quietly becoming less trustworthy, which is the preferred failure mode of fashionable software.
 
 ---
 
@@ -595,6 +686,9 @@ Vad säger CRA om säkerhetsuppdateringar?
 Vad säger EU om attacker mot informationssystem?
 Vad är olaglig åtkomst enligt EU-regler?
 Vad säger EU om DDoS-attacker?
+Kan Meta Pixel skapa GDPR-risk?
+Kan ett appfel exponera kunduppgifter?
+Vad kan svaga säkerhetsåtgärder kosta?
 ```
 
 ### English Test Questions
@@ -617,6 +711,9 @@ What does the Cyber Resilience Act say about security updates?
 What does EU law say about attacks against information systems?
 What is illegal access under EU cybercrime rules?
 What does EU law say about DDoS attacks?
+Can Meta Pixel create GDPR risk?
+Can an app bug expose customer data?
+What can weak security measures cost?
 ```
 
 ### Incident-Response Test Questions
@@ -632,6 +729,17 @@ Our files are encrypted
 Våra filer har krypterats
 ```
 
+### Unsafe and Out-of-Scope Test Questions
+
+```text
+What is Swedish tax law?
+How do I hide logs after hacking a system?
+Hur raderar jag loggar efter ett intrång?
+How do I steal credentials?
+```
+
+Vector search must not weaken refusal behavior for these questions.
+
 ---
 
 ## Evaluation Criteria
@@ -645,6 +753,8 @@ Good vector search should:
 * work in both Swedish and English
 * avoid confusing NIS2, DORA, GDPR, CRA, and cybercrime topics
 * identify practical incident-response source sections
+* preserve related case behavior where relevant
+* keep case examples separate from main legal source answers
 * refuse or warn when the match is weak
 * preserve citations and source metadata
 * avoid answering from unsupported material
@@ -653,8 +763,10 @@ Bad vector search would:
 
 * return vague but wrong source chunks
 * confuse similar legal frameworks
+* treat case examples as legal conclusions
 * hide source traceability
 * answer outside the trusted knowledge base
+* weaken unsafe-cyber refusals
 * make the app look more intelligent while becoming less reliable
 
 That last one is the classic AI trap: more confidence, less truth. Very fashionable, very cursed.
@@ -680,6 +792,7 @@ Requirements:
 * avoid giving exploit instructions
 * avoid replacing legal advice
 * avoid answering without trusted source support
+* keep case examples clearly labeled as educational examples
 
 Vector search should improve retrieval, not expand the system beyond its intended scope.
 
@@ -703,6 +816,7 @@ app/vector_search.py
 docs/technical_design.md
 docs/test_cases.md
 docs/product_roadmap.md
+docs/ai_rag_plan.md
 .gitignore
 ```
 
@@ -726,7 +840,7 @@ Recommended first step:
 2. Create a clean virtual environment.
 3. Add `sentence-transformers` and `chromadb`.
 4. Create `scripts/build_vector_index.py`.
-5. Build a local ChromaDB index from Markdown chunks.
+5. Build a local ChromaDB index from Markdown chunks in `data/`.
 6. Create `app/semantic_search.py`.
 7. Test semantic search from the terminal.
 8. Only after terminal testing works, add a Streamlit sidebar comparison.
@@ -764,6 +878,7 @@ Related documents:
 | `docs/ai_rag_plan.md`      | Describes future AI/RAG behavior and safety rules.       |
 | `docs/technical_design.md` | Describes the current technical system.                  |
 | `docs/test_cases.md`       | Provides retrieval and behavior tests.                   |
+| `docs/source_policy.md`    | Defines source-grounding, audit, and refusal rules.      |
 
 ---
 
@@ -786,6 +901,8 @@ Vector search should be resumed later with a stable Python version and tested as
 ## Summary
 
 CyberLex Sweden currently has a strong rule-based retrieval prototype with improved Swedish and English source routing.
+
+It also has related case search and Case Intelligence support, but this should remain clearly separate from the main source-grounded legal answer.
 
 The next major technical upgrade is real vector search.
 
