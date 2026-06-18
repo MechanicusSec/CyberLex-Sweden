@@ -35,6 +35,7 @@ Before the demo, CyberLex Sweden should be able to show:
 * local Streamlit startup
 * English and Swedish interface support
 * Auto language switching
+* example questions that run immediately when selected
 * CyberLex self-description answers
 * source-grounded legal explanations
 * official source links
@@ -42,7 +43,10 @@ Before the demo, CyberLex Sweden should be able to show:
 * relevant source context
 * NIS2 scope and annex explanations
 * GDPR/IMY security-measure guidance
+* related case examples for compliance and case-library questions
+* Case Intelligence page
 * practical defensive incident-response guidance
+* hidden related cases for practical incident-response triage questions
 * SOC-style Markdown incident report download
 * clean out-of-scope refusal
 * clean unsafe cyber refusal
@@ -101,14 +105,22 @@ Run:
 
 ```powershell
 python -m py_compile app/main.py
+python -m py_compile app/config.py
+python -m py_compile app/styles.py
+python -m py_compile app/text_utils.py
+python -m py_compile app/language.py
+python -m py_compile app/source_loader.py
+python -m py_compile app/incident_engine.py
+python -m py_compile app/case_search.py
+python -m py_compile app/vector_search.py
 ```
 
-This command checks whether `app/main.py` has Python syntax errors.
+These commands check whether the current refactored app modules have Python syntax errors.
 
 Expected result:
 
 ```text
-No output
+No output from each command
 ```
 
 No output usually means the syntax check passed.
@@ -195,7 +207,8 @@ Confirm that the front page shows:
 * supported topic information
 * safety boundary information
 * question input field
-* example questions
+* example questions panel or button
+* Case Intelligence navigation
 * sidebar status information
 * prototype notice
 * project resources
@@ -254,11 +267,45 @@ Demo decision:
 
 ---
 
-## 8. Demo Question Flow
+## 8. Example Question Button Check
+
+Open the example question panel.
+
+Click an example question such as:
+
+```text
+What is CyberLex Sweden?
+```
+
+or:
+
+```text
+Vad är CyberLex Sweden?
+```
+
+Expected result:
+
+* the selected example fills the input field
+* the example panel closes
+* the answer appears immediately
+* the user does not need to click the normal search button
+* Auto language mode follows the selected example question
+* the app does not answer an older stale question
+
+Demo decision:
+
+```text
+[ ] Passed
+[ ] Needs fixing
+```
+
+---
+
+## 9. Demo Question Flow
 
 Use this question order for a short live demo.
 
-### 8.1 App Identity
+### 9.1 App Identity
 
 Ask:
 
@@ -281,7 +328,7 @@ Demo decision:
 
 ---
 
-### 8.2 Swedish NIS2 Question
+### 9.2 Swedish NIS2 Question
 
 Ask:
 
@@ -311,7 +358,7 @@ Demo decision:
 
 ---
 
-### 8.3 NIS2 Applicability Question
+### 9.3 NIS2 Applicability Question
 
 Ask:
 
@@ -341,7 +388,7 @@ Demo decision:
 
 ---
 
-### 8.4 NIS2 Annex Question
+### 9.4 NIS2 Annex Question
 
 Ask:
 
@@ -368,7 +415,7 @@ Demo decision:
 
 ---
 
-### 8.5 GDPR/IMY Security Question
+### 9.5 GDPR/IMY Security Question
 
 Ask:
 
@@ -396,7 +443,59 @@ Demo decision:
 
 ---
 
-### 8.6 Incident-Response Question
+### 9.6 Case-Library Question
+
+Ask:
+
+```text
+Can Meta Pixel create GDPR risk?
+```
+
+Expected result:
+
+CyberLex should answer from the relevant knowledge base and show related cases where relevant.
+
+Expected behavior:
+
+* related Meta Pixel cases may appear
+* cases are shown as educational examples
+* past fines or outcomes are not presented as predictions
+* official source links remain visible where available
+
+Demo decision:
+
+```text
+[ ] Passed
+[ ] Needs fixing
+```
+
+---
+
+### 9.7 Case Intelligence Page
+
+Open the Case Intelligence page from the sidebar.
+
+Expected result:
+
+CyberLex should display the local case library.
+
+Expected behavior:
+
+* case count is visible
+* case cards are expandable
+* summaries, learning notes, outcomes, related topics, and official sources appear where available
+* template and index files are not displayed as real cases
+
+Demo decision:
+
+```text
+[ ] Passed
+[ ] Needs fixing
+```
+
+---
+
+### 9.8 Incident-Response Question
 
 Ask:
 
@@ -419,6 +518,11 @@ Expected guidance:
 * assess whether personal data may be involved
 * assess whether GDPR, NIS2, or Swedish cybersecurity-law reporting may be relevant
 
+Expected UI behavior:
+
+* related case cards should not appear for this practical incident triage question
+* source context should focus on ransomware, malware, encrypted files, or incident-response guidance
+
 Demo decision:
 
 ```text
@@ -428,7 +532,7 @@ Demo decision:
 
 ---
 
-### 8.7 SOC Markdown Report Download
+### 9.9 SOC Markdown Report Download
 
 After the incident-response question, download the SOC-style Markdown report.
 
@@ -469,7 +573,7 @@ Demo decision:
 
 ---
 
-### 8.8 Unsafe Cyber Request
+### 9.10 Unsafe Cyber Request
 
 Ask:
 
@@ -499,7 +603,7 @@ Demo decision:
 
 ---
 
-### 8.9 Out-of-Scope Question
+### 9.11 Out-of-Scope Question
 
 Ask:
 
@@ -526,7 +630,7 @@ Demo decision:
 
 ---
 
-## 9. Language Behavior Check
+## 10. Language Behavior Check
 
 Use Auto mode and ask one Swedish and one English question.
 
@@ -554,6 +658,20 @@ Expected result:
 The visible answer interface should use English labels.
 ```
 
+Then test mixed cyber/legal questions:
+
+```text
+Can Meta Pixel create GDPR risk?
+Kan Meta Pixel skapa GDPR-risk?
+```
+
+Expected result:
+
+* English question uses English labels.
+* Swedish question uses Swedish labels.
+* The English word `risk` should not force Swedish mode.
+* Swedish sentence structure should still be detected as Swedish even when the question contains English terms such as `Meta Pixel` or `GDPR`.
+
 Check that normal user-facing sections do not mix Swedish and English unnecessarily.
 
 Demo decision:
@@ -565,7 +683,7 @@ Demo decision:
 
 ---
 
-## 10. Source Display Check
+## 11. Source Display Check
 
 For supported non-refusal questions, confirm that the app shows:
 
@@ -595,7 +713,7 @@ Demo decision:
 
 ---
 
-## 11. Source Context Readability Check
+## 12. Source Context Readability Check
 
 For supported questions, confirm that source context:
 
@@ -625,7 +743,7 @@ Demo decision:
 
 ---
 
-## 12. Incident UI Check
+## 13. Incident UI Check
 
 For practical incident-response questions, confirm that the app can show:
 
@@ -652,7 +770,50 @@ Demo decision:
 
 ---
 
-## 13. Source Audit Check
+## 14. Related Case Behavior Check
+
+Confirm related-case behavior with both a case-library question and a practical incident triage question.
+
+Case-library question:
+
+```text
+Can an app bug expose customer data?
+```
+
+Expected result:
+
+```text
+Related case examples may appear, such as the Klarna app data exposure example where relevant.
+```
+
+Practical incident triage question:
+
+```text
+Vi har fått en misstänkt login på ett konto, vad ska vi göra?
+```
+
+Expected result:
+
+```text
+Related case examples should not appear.
+```
+
+Pass condition:
+
+```text
+Related cases appear only where they support the answer and stay hidden during practical incident triage.
+```
+
+Demo decision:
+
+```text
+[ ] Passed
+[ ] Needs fixing
+```
+
+---
+
+## 15. Source Audit Check
 
 CyberLex Sweden includes a local source audit script.
 
@@ -682,7 +843,37 @@ Demo decision:
 
 ---
 
-## 14. Final Git Check
+## 16. Case Audit Check
+
+CyberLex Sweden includes a local case audit script.
+
+Run:
+
+```powershell
+python scripts/case_audit.py
+```
+
+This command checks the local case-library Markdown files in the `cases/` folder and updates:
+
+```text
+docs/case_library/case_audit_report.md
+```
+
+The case audit checks local case-file structure and metadata.
+
+It does not browse the web and does not confirm live legal currency, fine status, or whether an authority page has changed.
+
+Demo decision:
+
+```text
+[ ] Case audit passed
+[ ] Case audit needs review
+[ ] Not run for this demo
+```
+
+---
+
+## 17. Final Git Check
 
 After the demo preparation changes are done, run:
 
@@ -708,15 +899,25 @@ git commit -m "Update CyberLex demo documentation"
 
 This command saves the current project state in Git with a short message.
 
-Push to GitHub:
+For normal local documentation batches, do not push after every small change.
+
+Push to GitHub only after a larger milestone, such as:
+
+* 10 to 15 meaningful local changes
+* a completed documentation batch
+* a completed test batch
+* a stable code feature
+* a final demo or hand-in checkpoint
+
+Push when ready:
 
 ```powershell
 git push
 ```
 
-This command uploads the local commit to the GitHub repository.
+This command uploads the local commits to the GitHub repository.
 
-Expected final state after pushing:
+Expected final state after committing intended changes:
 
 ```text
 nothing to commit, working tree clean
@@ -735,12 +936,16 @@ The demo is ready if CyberLex Sweden can show:
 [ ] English questions work
 [ ] Swedish questions work
 [ ] Auto language switching works
+[ ] Example question buttons run answers immediately
 [ ] App identity question works
 [ ] NIS2 question works
 [ ] NIS2 applicability question works
 [ ] NIS2 annex question works
 [ ] GDPR/IMY security question works
+[ ] Related cases appear for case-library questions
+[ ] Case Intelligence page works
 [ ] Incident-response question works
+[ ] Related cases are hidden for practical incident triage
 [ ] SOC Markdown report download works
 [ ] Official source links are visible
 [ ] Source metadata is visible
@@ -748,6 +953,7 @@ The demo is ready if CyberLex Sweden can show:
 [ ] Out-of-scope refusal works
 [ ] Unsafe cyber refusal works
 [ ] Source audit is reviewed or intentionally skipped
+[ ] Case audit is reviewed or intentionally skipped
 [ ] Git status is clean before final demo
 ```
 
@@ -761,8 +967,13 @@ The most important demo points are:
 
 * source-grounded answers
 * Swedish and English support
+* Auto language switching
+* example questions that run directly
 * visible limitations
+* related case examples where relevant
+* Case Intelligence browsing
 * defensive incident-response support
+* practical incident triage without unrelated case distractions
 * clean safety boundaries
 * practical report export
 * clear future improvement path

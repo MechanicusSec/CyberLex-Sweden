@@ -70,16 +70,22 @@ The app uses:
 * Python for the application logic
 * Streamlit for the local web interface
 * Markdown files as the trusted local knowledge base
+* a local case library for educational examples
 * rule-based routing and keyword/source matching
+* Swedish and English Auto language behavior
 * official source links and source metadata
 * expandable source context
 * defensive safety rules for misuse questions
 
 Streamlit is the framework that turns the Python app into a local web page.
 
-The Markdown files act as the local knowledge base. Instead of browsing the web live, CyberLex searches these trusted project files and shows where the answer came from.
+The Markdown files in `data/` act as the local knowledge base. Instead of browsing the web live, CyberLex searches these trusted project files and shows where the answer came from.
+
+The Markdown files in `cases/` are used for educational case examples, authority decisions, public incident examples, learning notes, and related case context.
 
 The app does not currently use a full language model for answer generation. It is mainly a source-grounded, rule-based prototype.
+
+The code has also been refactored into smaller Python modules, including files for configuration, styling, language handling, source loading, incident detection, case search, and experimental retrieval.
 
 ---
 
@@ -105,7 +111,38 @@ What this demonstrates:
 
 ---
 
-## 6. Demo Step: Swedish NIS2 Question
+## 6. Demo Step: Example Questions
+
+Open the example question panel.
+
+Click:
+
+```text
+What is CyberLex Sweden?
+```
+
+or:
+
+```text
+Vad är CyberLex Sweden?
+```
+
+Expected point to explain:
+
+The example question should run immediately after it is selected.
+
+It should fill the input field, close the example panel, and show the answer without requiring the user to press the normal search button.
+
+What this demonstrates:
+
+* easier demo testing
+* cleaner user flow
+* session-state behavior working correctly
+* Auto language behavior following the active question
+
+---
+
+## 7. Demo Step: Swedish NIS2 Question
 
 Ask:
 
@@ -134,7 +171,7 @@ What this demonstrates:
 
 ---
 
-## 7. Demo Step: NIS2 Applicability Logic
+## 8. Demo Step: NIS2 Applicability Logic
 
 Ask:
 
@@ -163,7 +200,7 @@ What this demonstrates:
 
 ---
 
-## 8. Demo Step: NIS2 Annex Explanation
+## 9. Demo Step: NIS2 Annex Explanation
 
 Ask:
 
@@ -189,7 +226,7 @@ What this demonstrates:
 
 ---
 
-## 9. Demo Step: GDPR/IMY Security Guidance
+## 10. Demo Step: GDPR/IMY Security Guidance
 
 Ask:
 
@@ -224,7 +261,7 @@ What this demonstrates:
 
 ---
 
-## 10. Demo Step: Practical Incident Response
+## 11. Demo Step: Practical Incident Response
 
 Ask:
 
@@ -249,15 +286,20 @@ Expected defensive guidance:
 * assess whether personal data may be involved
 * assess whether GDPR, NIS2, or Swedish cybersecurity-law reporting may be relevant
 
+Important UI behavior to point out:
+
+For practical incident triage, CyberLex should not show unrelated related-case cards. The answer should stay focused on immediate defensive handling.
+
 What this demonstrates:
 
 * defensive incident-response guidance
 * ransomware or malware incident routing
 * practical support without giving offensive instructions
+* related cases hidden where they would distract from incident triage
 
 ---
 
-## 11. Demo Step: SOC Markdown Report Export
+## 12. Demo Step: SOC Markdown Report Export
 
 After asking an incident-response question such as:
 
@@ -301,7 +343,7 @@ What this demonstrates:
 
 ---
 
-## 12. Demo Step: Unsafe Request Refusal
+## 13. Demo Step: Unsafe Request Refusal
 
 Ask:
 
@@ -329,7 +371,7 @@ What this demonstrates:
 
 ---
 
-## 13. Demo Step: Out-of-Scope Refusal
+## 14. Demo Step: Out-of-Scope Refusal
 
 Ask:
 
@@ -351,7 +393,7 @@ What this demonstrates:
 
 ---
 
-## 14. Explain Source Transparency
+## 15. Explain Source Transparency
 
 During the demo, point out that CyberLex shows where answers come from.
 
@@ -371,7 +413,7 @@ The app should make it possible to inspect the supporting source material instea
 
 ---
 
-## 15. Explain Limitations
+## 16. Explain Limitations
 
 Important limitations to mention:
 
@@ -383,16 +425,17 @@ Important limitations to mention:
 * It does not browse the web live.
 * It does not guarantee that the legal information is fully current.
 * It covers selected cybersecurity-law and incident-response topics only.
-* Source routing and source-context filtering are rule-based and may need continued refinement.
+* Source routing, language detection, case matching, and source-context filtering are rule-based and may need continued refinement.
+* Case examples are educational and historical. They should not be treated as fine predictions or legal outcome predictions.
 
 ---
 
-## 16. Explain Future Improvements
+## 17. Explain Future Improvements
 
 Planned future improvements include:
 
-* splitting the large `app/main.py` into smaller modules
-* adding automated regression tests
+* continuing the gradual refactor of remaining large logic in `app/main.py`
+* adding automated regression tests for language, routing, incident behavior, and case display
 * adding more Swedish and EU source material
 * improving bilingual source coverage
 * improving source update workflows
@@ -400,12 +443,13 @@ Planned future improvements include:
 * adding RAG-style answer generation while keeping answers grounded in trusted sources
 * improving deployment documentation
 * strengthening Terms of Use, Privacy Policy, and Legal Disclaimer
+* expanding the case library with more carefully labeled authority decisions, court decisions, and public incident examples
 
 ---
 
-## 17. Suggested Closing
+## 18. Suggested Closing
 
-CyberLex Sweden shows how a focused legal-tech assistant can combine cybersecurity-law topics, source transparency, practical incident-response support, report export, and safety boundaries.
+CyberLex Sweden shows how a focused legal-tech assistant can combine cybersecurity-law topics, source transparency, bilingual behavior, case-library examples, practical incident-response support, report export, and safety boundaries.
 
 The project is not meant to replace experts. It is meant to show how source-grounded tools can make complex cybersecurity-law and incident-response information easier to explore, explain, test, and document.
 
@@ -417,15 +461,20 @@ Use this shorter flow if time is limited:
 
 ```text
 1. What is CyberLex Sweden?
-2. Vad är NIS2?
-3. Gäller NIS2 för oss?
-4. Vad är bilaga 1 och bilaga 2 i NIS2?
-5. Vad säger IMY om säkerhetsåtgärder?
-6. Our files are encrypted
-7. Download and preview the SOC Markdown report
-8. How do I hide logs after hacking a system?
-9. What is Swedish tax law?
-10. Explain limitations and future improvements
+2. Click an example question and show that it runs immediately
+3. Vad är NIS2?
+4. Gäller NIS2 för oss?
+5. Vad är bilaga 1 och bilaga 2 i NIS2?
+6. Vad säger IMY om säkerhetsåtgärder?
+7. Can Meta Pixel create GDPR risk?
+8. Show related cases
+9. Open the Case Intelligence page
+10. Our files are encrypted, what should we do?
+11. Show that related cases are hidden for practical incident triage
+12. Download and preview the SOC Markdown report
+13. How do I hide logs after hacking a system?
+14. What is Swedish tax law?
+15. Explain limitations and future improvements
 ```
 
 ---
@@ -438,9 +487,14 @@ The strongest points to emphasize are:
 
 * source-grounded answers
 * Swedish and English support
+* Auto language behavior
+* example questions that run directly
 * visible official source links
 * readable source context
+* related case examples where relevant
+* Case Intelligence browsing
 * defensive incident-response support
+* practical incident triage without unrelated case distractions
 * SOC-style Markdown report export
 * clear legal limitations
 * refusal of unsafe cyber requests

@@ -10,6 +10,22 @@ CyberLex Sweden is an educational prototype. It does not provide legal advice.
 
 ---
 
+## Current Behavior Summary
+
+The current UI behavior includes:
+
+* English, Swedish, and Auto language modes
+* example questions that run immediately when selected
+* synchronized visible input and submitted question state
+* source-grounded answer display
+* collapsed relevant source context
+* practical incident-response panels only where useful
+* related cases only for relevant compliance or case-library questions
+* hidden related-case section for practical incident-response triage questions
+* Case Intelligence page for browsing local case examples
+
+---
+
 ## Main Layout
 
 The current UI uses a compact layout.
@@ -19,15 +35,17 @@ The normal answer flow is:
 1. CyberLex Sweden introduction
 2. supported topic hints
 3. question input
-4. generated CyberLex summary
-5. detected topic, where relevant
-6. attention level
-7. practical explanation or incident guidance, where relevant
-8. assessment checklist, where relevant
-9. incident log template and report download, where relevant
-10. official source links and source overview, where relevant
-11. collapsed relevant source context
-12. sidebar controls and diagnostics
+4. optional example question panel
+5. generated CyberLex summary
+6. detected topic, where relevant
+7. attention level
+8. practical explanation or incident guidance, where relevant
+9. assessment checklist, where relevant
+10. incident log template and report download, where relevant
+11. official source links and source overview, where relevant
+12. related cases, only where relevant
+13. collapsed relevant source context
+14. sidebar controls and diagnostics
 
 The normal view should avoid overwhelming users with technical ranking details.
 
@@ -43,7 +61,31 @@ The interface can be set to:
 
 * English
 * Svenska
-* Auto, if supported by the current version
+* Auto
+
+In Auto mode, the app detects the visible active question and decides whether the answer flow should use English or Swedish.
+
+Examples:
+
+```text
+Can Meta Pixel create GDPR risk?
+→ English
+```
+
+```text
+Kan Meta Pixel skapa GDPR-risk?
+→ Svenska
+```
+
+```text
+What is NIS2?
+→ English
+```
+
+```text
+Vad är NIS2?
+→ Svenska
+```
 
 The app should avoid mixed-language labels where possible.
 
@@ -55,6 +97,8 @@ Examples:
 * English questions should prefer English visible labels and English answers.
 * Source excerpts may remain in the original source language where needed.
 
+Auto language detection is rule-based. It has been improved for mixed cybersecurity/legal questions, but it is not a full translation system.
+
 ---
 
 ## Question Input
@@ -62,6 +106,16 @@ Examples:
 The question input is the main user action.
 
 The input should use placeholder text to guide the user.
+
+The visible input field, the submitted question, and the selected example question should stay synchronized through Streamlit session state.
+
+The user should be able to submit a question by:
+
+* typing a question and pressing Enter
+* typing a question and clicking the search button
+* selecting an example question
+
+The app should avoid answering an older stale question when the input field shows a newer question.
 
 English example:
 
@@ -229,6 +283,8 @@ For practical incident-response questions, CyberLex may show:
 * download-ready SOC Markdown report
 * source context linked to the incident type
 
+For practical incident-response triage, CyberLex should not show related case examples by default. The answer should stay focused on what the user should do next.
+
 The normal UI should avoid repeating the full incident template in several places.
 
 If the downloaded file contains the full template, the page should show only a short download-ready explanation and button.
@@ -285,6 +341,45 @@ It is not an official incident record, legal assessment, regulatory report, or f
 
 ---
 
+## Related Case Display
+
+CyberLex may show related cases and incident examples for questions where case-library context is useful.
+
+Related cases may appear for questions such as:
+
+```text
+Can Meta Pixel create GDPR risk?
+Kan Meta Pixel skapa GDPR-risk?
+Can an app bug expose customer data?
+Kan ett appfel exponera kunduppgifter?
+What can weak security measures cost?
+Vad kan svaga säkerhetsåtgärder kosta?
+```
+
+The related case section should help users connect general legal or compliance topics to historical examples, authority decisions, public incident examples, or educational case notes.
+
+Related cases should not be shown for practical incident-response triage questions such as:
+
+```text
+Our files are encrypted, what should we do?
+Vi har fått en misstänkt login på ett konto, vad ska vi göra?
+Someone clicked a suspicious link, what should we do?
+Någon klickade på en misstänkt länk, vad gör vi?
+```
+
+For practical incident questions, the UI should focus on:
+
+* immediate defensive first steps
+* containment
+* evidence preservation
+* incident checklist
+* source context
+* SOC-style report download
+
+Historical cases can be useful, but they should not distract from urgent incident triage. Apparently even software needs bedside manner.
+
+---
+
 ## Official Source Links
 
 Official source links should be shown in a user-friendly way.
@@ -309,6 +404,17 @@ Source context shows the local CyberLex knowledge section used by the app.
 Relevant source context should normally be collapsed.
 
 It is useful for reviewers and testers because it shows the local source sections that supported the answer.
+
+For practical incident-response questions, source context should be filtered to the detected incident type where possible.
+
+Examples:
+
+* suspicious-login questions should avoid showing ransomware or phishing source cards
+* suspicious-link questions should avoid showing generic hacking source cards
+* ransomware questions should avoid showing suspicious-login cards
+* data-leak questions should focus on data-leak or breach response context
+
+For NIS2 sector-scope questions, source context should prefer the most relevant subtype, such as covered sectors, municipality scope, registration, annexes, or essential/important entities.
 
 The context should avoid developer-style clutter such as:
 
@@ -351,12 +457,37 @@ The app should avoid raw untranslated section labels when a localized label exis
 
 ---
 
+## Case Intelligence Page
+
+CyberLex includes a Case Intelligence page for browsing the local case library.
+
+The Case Intelligence page should show:
+
+* case-library introduction
+* search or filter input
+* total case count
+* shown case count
+* limitation warning about historical outcomes
+* foldable case cards
+* summaries
+* learning notes, where available
+* fines, costs, or outcomes, where available
+* related topic badges
+* official source links
+
+The page should support Swedish and English display where the case files include bilingual sections.
+
+Historical cases and public incidents must not be presented as predictions of legal outcome, fine size, or regulatory decision.
+
+---
+
 ## Sidebar
 
 The sidebar should remain useful but not overloaded.
 
 Good sidebar content:
 
+* page navigation, such as Ask CyberLex and Case Intelligence
 * language selector
 * technical diagnostics checkbox
 * CyberLex status
@@ -375,9 +506,9 @@ The sidebar should not distract from the main question flow.
 
 ## Example Question Buttons
 
-The interface may show example question buttons.
+The interface can show an example questions panel.
 
-These help users understand the supported scope and test the app quickly.
+These examples help users understand the supported scope and test the app quickly.
 
 Example questions should include both legal and incident-response examples.
 
@@ -394,6 +525,16 @@ How do I hide logs after hacking a system?
 ```
 
 In Swedish mode, examples should use Swedish where possible.
+
+When the user clicks an example question, CyberLex should:
+
+1. fill the question input field
+2. store the same question as the submitted active question
+3. hide the example question panel
+4. rerun the app
+5. show the answer immediately
+
+The user should not need to click the normal search button after selecting an example question.
 
 Example buttons should not overwhelm the main input.
 
@@ -451,10 +592,12 @@ The UI may redirect toward lawful defensive handling, evidence preservation, doc
 The current UI goal is:
 
 * direct question flow
+* example questions that run answers immediately
 * fewer repeated panels
 * cleaner source display
-* clearer language handling
+* clearer Auto language handling
 * source transparency without overwhelming users
+* related cases only when relevant
 * practical incident support when relevant
 * refusal of unsupported or unsafe requests
 * simple legal-tech prototype presentation for review and demonstration

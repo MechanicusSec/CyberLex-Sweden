@@ -16,6 +16,7 @@ CyberLex Sweden currently works as a local Streamlit application.
 
 The current prototype includes:
 
+* modular Python app structure after refactoring `app/main.py`
 * local Markdown knowledge base in `data/`
 * source-based search and chunk ranking
 * rule-based source routing
@@ -33,9 +34,10 @@ The current prototype includes:
 * relevant source context
 * expandable source excerpts
 * other matching source sections
-* clickable example questions
+* clickable example questions that run immediately when selected
 * experimental retrieval sidebar
 * defensive incident-response guidance
+* hidden related cases for practical incident-response triage questions
 * SOC-style Markdown incident report export
 * out-of-scope refusal behavior
 * unsafe cyber refusal behavior
@@ -45,6 +47,9 @@ The current prototype includes:
 * manual test cases
 * demo documentation
 * technical design documentation
+* architecture documentation
+* UI behavior documentation
+* source-context behavior documentation
 * legal/privacy/disclaimer drafts
 
 The current system does not yet use:
@@ -123,6 +128,7 @@ Completed for the current school project phase.
 ### Completed Features
 
 * Streamlit web interface
+* refactored modular Python app structure
 * local Markdown knowledge base
 * source loading
 * chunk-based source search
@@ -135,7 +141,7 @@ Completed for the current school project phase.
 * important limitation notices
 * English and Swedish interface support
 * Auto language detection
-* example question buttons
+* example question buttons that run immediately
 * source context display
 * practical explanation support
 * assessment checklist support
@@ -213,6 +219,10 @@ Completed for final project preparation.
 * `docs/demo_checklist.md`
 * `docs/test_run_checklist.md`
 * `docs/test_cases.md`
+* `docs/architecture.md`
+* `docs/ui_behavior.md`
+* `docs/source_context_behavior.md`
+* `docs/technical_design.md`
 
 ### Completed Testing Areas
 
@@ -220,6 +230,7 @@ Completed for final project preparation.
 * English questions
 * Swedish questions
 * Auto language switching
+* example question immediate-run behavior
 * source routing
 * official source links
 * source metadata
@@ -230,13 +241,52 @@ Completed for final project preparation.
 * CRA questions
 * cybercrime questions
 * incident-response questions
+* related cases shown for case-library questions
+* related cases hidden for practical incident triage
+* Case Intelligence page behavior
 * SOC Markdown report download
+* Case Intelligence page
+* related cases shown only where relevant
+* hidden related cases for practical incident triage
 * out-of-scope refusal
 * unsafe cyber refusal
 
 ### Why This Matters
 
 The project can now be demonstrated and reviewed without relying only on the developer's memory, which is good because memory is just biological cache and humans keep proving why that is a terrible storage system.
+
+---
+
+## Completed Milestone: Case Intelligence and Case Library
+
+### Status
+
+Completed for the current prototype phase.
+
+### Completed Features
+
+* separate local case library in `cases/`
+* 8 checked case files
+* case audit script
+* case audit report
+* Case Intelligence page
+* expandable case cards
+* case summaries
+* Swedish case summaries where available
+* learning notes
+* Swedish learning notes where available
+* administrative fine or outcome sections
+* related topic badges
+* official source links
+* language-aware case source display
+* related cases under relevant normal answers
+* related cases hidden for practical incident-response triage questions
+
+### Why This Matters
+
+The case library helps CyberLex connect legal and compliance questions to carefully labeled examples.
+
+It also keeps historical examples separate from the main legal knowledge base. That separation matters because past cases are educational context, not automatic predictions of future fines or legal outcomes.
 
 ---
 
@@ -416,33 +466,53 @@ This phase is successful when answers become easier to read while still remainin
 
 ### Status
 
-Future improvement.
+Partly completed.
+
+### Completed Work
+
+The earlier large `app/main.py` file has been partially refactored into smaller modules:
+
+```text
+app/config.py
+app/styles.py
+app/text_utils.py
+app/language.py
+app/source_loader.py
+app/incident_engine.py
+app/case_search.py
+app/vector_search.py
+```
+
+The Streamlit entry point remains:
+
+```text
+app/main.py
+```
 
 ### Goal
 
-Make the codebase easier to maintain after the final project hand-in.
+Continue making the codebase easier to maintain without breaking the working prototype.
 
-### Planned Refactor
+### Planned Improvements
 
-The current `app/main.py` could later be split into smaller modules:
+Remaining future refactor work could include moving more logic into modules such as:
 
 ```text
-app/ui.py
 app/answer_engine.py
-app/source_loader.py
+app/search_engine.py
 app/source_context.py
 app/incident_reports.py
-app/language_utils.py
+app/ui_components.py
 app/safety.py
 ```
 
 ### Why This Matters
 
-The current app works, but the main file has become large.
+The current app works and is more modular than before, but `app/main.py` still contains a large amount of answer flow and UI logic.
 
-Splitting the code later would make it easier to test, debug, and expand.
+Future refactoring should be gradual and tested carefully.
 
-This should not be done right before hand-in unless there is enough time and low risk.
+This should not be done immediately before a demo or hand-in unless there is enough time and low risk.
 
 ---
 
@@ -463,10 +533,14 @@ Partly completed.
 * styled source context
 * styled attention levels
 * collapsible source sections
-* clickable example questions
+* clickable example questions that run immediately
 * bilingual interface controls
+* Auto language behavior
 * cleaner incident-response layout
 * SOC Markdown report download
+* Case Intelligence page
+* related cases shown only where relevant
+* hidden related cases for practical incident triage
 
 ### Planned Improvements
 
@@ -614,6 +688,8 @@ CyberLex Sweden currently supports:
 * Swedish source summaries in key knowledge files
 * Swedish useful questions in many source files
 * Swedish routing for supported topics
+* mixed Swedish/English cyber and legal question handling
+* case title and source-label localization
 
 ### Planned Improvements
 
@@ -642,35 +718,43 @@ Swedish and English should both feel like first-class language modes, not one re
 | Cyber misuse           | Users may ask harmful cybercrime questions    | Refuse harmful or out-of-scope requests                             |
 | False legal currency   | Users may assume sources are live-updated     | Explain that source audit does not verify live legal changes        |
 | AI hallucination risk  | Future AI may generate unsupported statements | Require source-grounded RAG and refusal rules                       |
-| Code complexity        | `app/main.py` may become hard to maintain     | Refactor into modules after hand-in                                 |
+| Case misuse            | Users may treat historical cases as predictions | Label cases as educational examples and avoid fine prediction        |
+| Code complexity        | `app/main.py` may still contain too much logic | Continue gradual module refactor with syntax checks and manual tests |
 
 ---
 
 ## Near-Term Roadmap
 
-Before final hand-in, the near-term roadmap is:
+Before the next major push or final hand-in, the near-term roadmap is:
 
-1. Finish documentation cleanup.
+1. Finish the current documentation cleanup batch.
 2. Review source documentation.
-3. Run source audit.
-4. Run final manual smoke tests.
-5. Confirm the demo flow works.
-6. Confirm SOC Markdown report export works.
-7. Check out-of-scope refusal.
-8. Check unsafe cyber refusal.
-9. Review README and final presentation material.
-10. Commit and push the final clean version.
+3. Run Python syntax checks for all app modules.
+4. Run source audit.
+5. Run case audit.
+6. Run final manual smoke tests.
+7. Confirm Auto language behavior works.
+8. Confirm example questions run immediately.
+9. Confirm related cases appear only where relevant.
+10. Confirm practical incident triage hides unrelated case cards.
+11. Confirm SOC Markdown report export works.
+12. Check out-of-scope refusal.
+13. Check unsafe cyber refusal.
+14. Review README and final presentation material.
+15. Commit local changes.
+16. Push only after the documentation/test batch is stable.
 
 After hand-in, the roadmap is:
 
-1. Refactor `app/main.py` into smaller modules.
+1. Continue gradual refactor of remaining `app/main.py` logic.
 2. Prepare Python 3.12 or 3.11 environment.
 3. Add real vector search as a separate test mode.
 4. Compare vector search against existing test cases.
 5. Improve source update routines.
 6. Expand Swedish and EU source coverage.
-7. Consider RAG only after retrieval is reliable.
-8. Review legal/privacy/disclaimer documents before any public deployment.
+7. Expand case library with carefully labeled examples.
+8. Consider RAG only after retrieval is reliable.
+9. Review legal/privacy/disclaimer documents before any public deployment.
 
 ---
 
@@ -693,12 +777,36 @@ A mature version should:
 
 ---
 
+## Git and Release Checkpoint Policy
+
+CyberLex Sweden should not be pushed to GitHub after every tiny edit.
+
+A better workflow is:
+
+1. work locally
+2. test changed behavior
+3. commit stable checkpoints locally
+4. collect several meaningful changes
+5. push after a larger milestone or stable batch
+
+Good push moments include:
+
+* 10 to 15 meaningful local changes
+* a completed documentation cleanup batch
+* a completed test batch
+* a stable code feature
+* a final demo or hand-in checkpoint
+
+This keeps the public repository cleaner and reduces unnecessary noise while the project is still changing quickly.
+
+---
+
 ## Summary
 
 CyberLex Sweden has moved beyond a basic prototype.
 
-The project now has a working local application, trusted knowledge files, source-grounded answers, source metadata, official source links, bilingual interface support, incident-response guidance, SOC Markdown report export, test cases, source audit support, and a realistic development roadmap.
+The project now has a working local application, a more modular Python structure, trusted knowledge files, source-grounded answers, source metadata, official source links, bilingual and Auto language support, instant example-question behavior, related case examples, Case Intelligence browsing, incident-response guidance, SOC Markdown report export, test cases, source audit support, case audit support, and a realistic development roadmap.
 
-The next major technical step is real vector search.
+The next major technical step is broader automated testing and then real vector search.
 
 The long-term product direction should remain cautious: better sources first, better retrieval second, AI-generated answers only when source grounding is reliable.

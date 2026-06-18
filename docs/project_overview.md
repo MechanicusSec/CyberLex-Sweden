@@ -13,7 +13,9 @@ CyberLex Sweden is currently a local educational prototype.
 The current prototype is a Streamlit application with:
 
 * source-grounded responses
+* modular Python app structure after refactoring `app/main.py`
 * bilingual English and Swedish interface support
+* Auto language detection
 * local Markdown knowledge files
 * citation details
 * official source links
@@ -27,7 +29,8 @@ The current prototype is a Streamlit application with:
 * SOC-style Markdown incident report export
 * Case Intelligence page for authority decisions and real-world examples
 * case learning notes for clearer educational takeaways
-* related authority/case references below relevant answers
+* related authority/case references below relevant answers where relevant
+* hidden related-case section for practical incident-response triage questions
 * relevant source context
 * out-of-scope refusal behavior
 * unsafe cyber refusal behavior
@@ -126,6 +129,51 @@ The system is designed to:
 The goal is not to replace official sources or legal professionals.
 
 The goal is to make selected cybersecurity-law information easier to search, inspect, understand, and document.
+
+---
+
+## Current Application Architecture
+
+CyberLex Sweden has been refactored from an earlier single-file prototype into a more modular Python application.
+
+The main Streamlit entry point is still:
+
+```text
+app/main.py
+```
+
+Supporting logic is now separated into smaller modules:
+
+```text
+app/config.py
+app/styles.py
+app/text_utils.py
+app/language.py
+app/source_loader.py
+app/incident_engine.py
+app/case_search.py
+app/vector_search.py
+```
+
+The current structure separates:
+
+* app configuration
+* visual styling
+* text normalization
+* Swedish/English language detection and localization
+* Markdown source loading
+* practical incident-response detection
+* case-library search
+* experimental retrieval testing
+
+This makes the project easier to understand, test, maintain, and expand.
+
+The current architecture is documented in:
+
+```text
+docs/architecture.md
+docs/technical_design.md
+```
 
 ---
 
@@ -332,6 +380,15 @@ Related cases are not predictions.
 
 They are used to support education, comparison, and risk awareness.
 
+Related cases should not be shown by default for practical incident-response triage questions such as:
+
+```text
+Our files are encrypted, what should we do?
+Vi har fått en misstänkt login på ett konto, vad ska vi göra?
+```
+
+For those questions, CyberLex should focus on first steps, containment, evidence preservation, reporting assessment, source context, and SOC-style report support.
+
 
 ---
 
@@ -365,9 +422,35 @@ The current CyberLex Sweden prototype can:
 * provide a browseable Case Intelligence page
 * refuse questions outside the project scope
 * refuse unsafe offensive cyber requests
-* support English and Swedish interface modes
-* provide clickable example questions
+* support English, Swedish, and Auto interface behavior
+* provide clickable example questions that run immediately when selected
 * display an experimental retrieval sidebar
+
+---
+
+## Current UI Behavior
+
+The current UI is designed to keep the normal answer view readable while preserving source transparency.
+
+Important current UI behavior includes:
+
+* English, Swedish, and Auto language modes
+* example questions that run immediately when selected
+* synchronized visible input and submitted-question state
+* source-grounded answer sections
+* collapsed source context where useful
+* practical incident-response cards only where relevant
+* SOC-style report download only for practical incident-response questions
+* related cases only for suitable legal, compliance, and case-library questions
+* hidden related cases for practical incident-response triage questions
+* Case Intelligence page for browsing local case examples
+
+The current UI behavior is documented in:
+
+```text
+docs/ui_behavior.md
+docs/source_context_behavior.md
+```
 
 ---
 
@@ -543,6 +626,7 @@ What should we do if we receive a suspicious email?
 What should we do if an account is compromised?
 Customer data may have leaked
 Our files are encrypted
+Our files are encrypted, what should we do?
 How do I hide logs after hacking a system?
 Can Meta Pixel create GDPR risk?
 Can hashed data sent through Meta Pixel be a GDPR issue?
@@ -571,6 +655,7 @@ När måste en personuppgiftsincident rapporteras?
 Vad gör vi om vi ser misstänkt inloggning?
 Kunddata kan ha läckt
 Våra filer har krypterats
+Vi har fått en misstänkt login på ett konto, vad ska vi göra?
 Kan Meta Pixel skapa GDPR-risk?
 Kan hashade uppgifter som skickas via Meta Pixel vara ett GDPR-problem?
 Vad kan svaga säkerhetsåtgärder kosta?
@@ -580,6 +665,40 @@ Kan ett appfel exponera kunduppgifter?
 Vad händer om personuppgifter publiceras på Darknet?
 Hur raderar jag loggar efter ett intrång?
 ```
+
+---
+
+## Testing and Documentation
+
+CyberLex Sweden includes testing and documentation files for manual regression testing, demo preparation, and project review.
+
+Important testing documents include:
+
+```text
+docs/test_cases.md
+docs/test_run_checklist.md
+docs/testing_and_demo.md
+docs/demo_checklist.md
+docs/demo_script.md
+```
+
+These documents now cover:
+
+* refactored Python module syntax checks
+* app startup
+* English, Swedish, and Auto language behavior
+* example questions that run immediately
+* source visibility
+* source-context readability
+* related cases shown only where relevant
+* related cases hidden for practical incident-response triage
+* Case Intelligence page behavior
+* incident-response behavior
+* SOC-style report export
+* out-of-scope refusal
+* unsafe cyber refusal
+
+This helps make the prototype easier to test without relying only on screenshots or memory, because apparently “it worked yesterday” is not a test strategy, despite humanity's best efforts.
 
 ---
 
@@ -626,6 +745,8 @@ Current limitations include:
 * it does not yet use a full language model
 * it does not yet use RAG answer generation
 * the experimental retrieval sidebar is still rule-based
+* Auto language detection is rule-based and may need continued refinement
+* related case matching is rule-based and may need continued refinement
 * source material must be manually reviewed and updated
 * public deployment would require stronger privacy, security, and legal review
 * public incident examples must be clearly separated from authority decisions
@@ -650,6 +771,7 @@ Planned future improvements include:
 * adding future RAG answer generation
 * improving citation formatting and multi-source synthesis
 * improving case comparison, case learning notes, and case filtering
+* moving remaining large answer-routing and UI logic out of `app/main.py` gradually
 * moving case ranking rules into a cleaner configuration structure
 * improving visual design
 * preparing public deployment
@@ -671,6 +793,7 @@ CyberLex Sweden has developed from a basic local search prototype into a more st
 The current prototype includes:
 
 * local Streamlit app
+* refactored modular Python structure
 * Markdown knowledge base
 * citation details
 * official source links
@@ -681,18 +804,21 @@ The current prototype includes:
 * practical explanations
 * assessment checklists
 * bilingual interface support
+* Auto language behavior
+* example questions that run immediately when selected
 * defensive incident-response support
 * SOC-style Markdown report export
 * experimental retrieval testing
 * source audit scripts
 * case audit script
 * Case Intelligence page
-* related authority decisions under relevant answers
+* related authority decisions under relevant answers where relevant
+* related cases hidden for practical incident-response triage questions
 * case learning notes
 * bilingual case summaries and language-aware case source display
 * GitHub Actions audit automation
-* updated project documentation
+* updated architecture, UI, source-context, testing, and demo documentation
 
-The next major technical step is real vector search, but that should be retried later with a more compatible Python version.
+The next major technical step is broader automated testing and then real vector search, but vector search should be retried later with a more compatible Python version.
 
 For now, the project has a strong foundation as a transparent educational prototype for selected Swedish and EU cybersecurity-law topics, with a growing case-intelligence layer for practical examples and authority decisions.

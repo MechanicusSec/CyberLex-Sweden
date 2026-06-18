@@ -24,7 +24,7 @@ The current phase is focused on:
 * final GitHub cleanup
 * optional low-risk polish before hand-in
 
-Larger technical upgrades, such as real vector search, RAG, public deployment, and code modularization, should be treated as future work.
+Larger technical upgrades, such as real vector search, RAG, public deployment, and further code modularization, should be treated as future work.
 
 ---
 
@@ -53,6 +53,7 @@ CyberLex Sweden is currently a working local prototype.
 Completed major features include:
 
 * Streamlit web interface
+* modular Python app structure after refactoring `app/main.py`
 * local Markdown knowledge base
 * source-based search
 * rule-based routing
@@ -71,9 +72,10 @@ Completed major features include:
 * relevant source context display
 * expandable source excerpts
 * other matching source sections
-* example question buttons
+* example question buttons that run immediately when selected
 * experimental retrieval sidebar
 * defensive incident-response guidance
+* hidden related-case section for practical incident-response triage questions
 * SOC-style Markdown incident report export
 * out-of-scope refusal behavior
 * unsafe cyber refusal behavior
@@ -82,6 +84,9 @@ Completed major features include:
 * GitHub Actions source audit workflow
 * testing and demo documentation
 * technical design documentation
+* architecture documentation
+* UI behavior documentation
+* source-context behavior documentation
 * source policy documentation
 * final project documentation
 
@@ -100,18 +105,19 @@ data/
 Current local source files include:
 
 ```text
+data/cyber_incident_response_playbook.md
 data/cybercrime_dataintrang.md
 data/eu_attacks_against_information_systems.md
 data/eu_cyber_resilience_act.md
 data/eu_dora_digital_operational_resilience.md
 data/gdpr_core_principles.md
+data/gdpr_imy_edpb_security_guidance.md
 data/gdpr_personal_data_breach.md
+data/imy_gdpr_security_measures.md
 data/imy_gdpr_supervision.md
 data/nis2_cybersecurity_law.md
 data/nis2_incident_reporting.md
 data/nis2_sector_scope_guidance.md
-data/gdpr_imy_security_measures.md
-data/cyber_incident_response_playbook.md
 ```
 
 The exact source list should be checked against:
@@ -188,7 +194,7 @@ Build a working local app that can answer selected questions from the local know
 
 ### Completed Work
 
-* Created the main app file:
+* Created the main app entry point:
 
 ```text
 app/main.py
@@ -259,6 +265,7 @@ Make the prototype easier to understand, test, and demonstrate.
 * Relevant source context expanders
 * Other matching source sections
 * Example question buttons
+* Example questions that run immediately when selected
 * Improved layout spacing
 * Cleaner footer and disclaimer placement
 * More compact source context by default
@@ -289,6 +296,7 @@ Support both English and Swedish as main project languages.
 * Swedish incident-response behavior
 * Swedish unsafe-request refusal behavior
 * Swedish source-section localization for selected labels
+* mixed Swedish/English cybersecurity-law question handling
 
 ### Current Supported Examples
 
@@ -346,6 +354,8 @@ Incident answers focus on:
 * recovery planning
 * GDPR/NIS2 reporting assessment where relevant
 
+For practical incident-response triage questions, related historical case examples should stay hidden by default so the answer stays focused on immediate defensive handling.
+
 ### SOC Markdown Report Export
 
 CyberLex Sweden can generate a SOC-style Markdown incident report for practical incident-response questions.
@@ -400,7 +410,53 @@ This is important because CyberLex Sweden covers cybersecurity topics and should
 
 ---
 
-## Phase 9: Source Audit and Maintenance
+## Phase 9: Case Library and Case Intelligence
+
+### Goal
+
+Add educational case examples so users can connect general legal and cybersecurity questions to real-world authority decisions, public incidents, and historical examples.
+
+### Completed Work
+
+* Added separate case library folder:
+
+```text
+cases/
+```
+
+* Added 8 checked case files
+* Added case index and case template
+* Added related case search
+* Added Case Intelligence page
+* Added expandable case cards
+* Added case summaries
+* Added Swedish case summaries where available
+* Added learning notes
+* Added Swedish learning notes where available
+* Added administrative fine or outcome sections
+* Added official source links
+* Added language-aware case source display
+* Added case audit script:
+
+```text
+scripts/case_audit.py
+```
+
+* Added case audit report:
+
+```text
+docs/case_library/case_audit_report.md
+```
+
+### Result
+
+CyberLex Sweden can show related case examples for suitable compliance and case-library questions while keeping those examples separate from the main legal/source knowledge base.
+
+Historical case examples are educational context and should not be presented as fine predictions or legal outcome predictions.
+
+---
+
+## Phase 10: Source Audit and Maintenance
 
 ### Goal
 
@@ -459,7 +515,7 @@ CyberLex Sweden now has a repeatable local source-audit process.
 
 ---
 
-## Phase 10: Testing and Validation
+## Phase 11: Testing and Validation
 
 ### Goal
 
@@ -508,6 +564,7 @@ CyberLex Sweden has been tested for:
 * English answers
 * Swedish answers
 * Auto language switching
+* example questions that run immediately
 * official source links
 * source metadata
 * source context readability
@@ -517,6 +574,9 @@ CyberLex Sweden has been tested for:
 * Cyber Resilience Act questions
 * cybercrime questions
 * incident-response questions
+* related cases shown for case-library questions
+* related cases hidden for practical incident triage
+* Case Intelligence page
 * SOC Markdown report download
 * out-of-scope refusal
 * unsafe cyber refusal
@@ -527,7 +587,7 @@ The project has a documented manual testing process and expected behavior for th
 
 ---
 
-## Phase 11: Documentation and Final Preparation
+## Phase 12: Documentation and Final Preparation
 
 ### Goal
 
@@ -540,6 +600,9 @@ The project documentation includes:
 * project overview
 * project plan
 * technical design
+* architecture
+* UI behavior
+* source context behavior
 * source list
 * source policy
 * source history
@@ -595,23 +658,39 @@ The detailed plan is documented in:
 docs/ai_rag_plan.md
 ```
 
-### Code Modularization
+### Further Code Modularization
 
-The current `app/main.py` works but has become large.
-
-A future refactor could split it into modules such as:
+The earlier large `app/main.py` file has already been partly refactored into smaller modules:
 
 ```text
-app/ui.py
-app/answer_engine.py
+app/config.py
+app/styles.py
+app/text_utils.py
+app/language.py
 app/source_loader.py
+app/incident_engine.py
+app/case_search.py
+app/vector_search.py
+```
+
+The app entry point is still:
+
+```text
+app/main.py
+```
+
+Further future refactor work could split remaining logic into modules such as:
+
+```text
+app/ui_components.py
+app/answer_engine.py
+app/search_engine.py
 app/source_context.py
 app/incident_reports.py
-app/language_utils.py
 app/safety.py
 ```
 
-This should not be done immediately before final hand-in unless there is enough time and low risk.
+Further refactoring should be gradual and tested carefully, not done immediately before final hand-in unless there is enough time and low risk.
 
 ---
 
@@ -619,12 +698,17 @@ This should not be done immediately before final hand-in unless there is enough 
 
 Before final delivery, check:
 
-* [ ] `python -m py_compile app/main.py` runs successfully
+* [ ] Python syntax checks pass for all current app modules
 * [ ] `python scripts/source_audit.py` runs successfully
+* [ ] `python scripts/case_audit.py` runs successfully
 * [ ] `python -m streamlit run app/main.py` starts correctly
 * [ ] main English questions work
 * [ ] main Swedish questions work
 * [ ] Auto language switching works
+* [ ] example questions run immediately when selected
+* [ ] related cases appear for suitable case-library questions
+* [ ] related cases are hidden for practical incident triage questions
+* [ ] Case Intelligence page loads correctly
 * [ ] source context is readable
 * [ ] official source links are visible
 * [ ] SOC Markdown report download works
@@ -635,6 +719,30 @@ Before final delivery, check:
 * [ ] final report or presentation material is current
 * [ ] no unwanted generated files are committed
 * [ ] `git status` shows a clean working tree
+
+---
+
+## Git and Push Policy
+
+For the current cleanup phase, CyberLex Sweden should not be pushed to GitHub after every small edit.
+
+Recommended workflow:
+
+1. make local changes
+2. test the changed behavior
+3. commit stable local checkpoints
+4. collect several meaningful changes
+5. push after a stable batch or milestone
+
+Good push moments include:
+
+* 10 to 15 meaningful local changes
+* a completed documentation batch
+* a completed test batch
+* a stable code feature
+* a final hand-in or demo checkpoint
+
+This keeps the repository cleaner while the project is still changing quickly.
 
 ---
 
@@ -652,9 +760,17 @@ Check Python syntax:
 
 ```powershell
 python -m py_compile app/main.py
+python -m py_compile app/config.py
+python -m py_compile app/styles.py
+python -m py_compile app/text_utils.py
+python -m py_compile app/language.py
+python -m py_compile app/source_loader.py
+python -m py_compile app/incident_engine.py
+python -m py_compile app/case_search.py
+python -m py_compile app/vector_search.py
 ```
 
-This command checks whether the main Python file has syntax errors.
+These commands check whether the current Python app modules have syntax errors.
 
 Run source audit:
 
@@ -663,6 +779,14 @@ python scripts/source_audit.py
 ```
 
 This command checks the local Markdown source files and updates the source audit report.
+
+Run case audit:
+
+```powershell
+python scripts/case_audit.py
+```
+
+This command checks the local case-library files and updates the case audit report.
 
 Start the app:
 
@@ -696,13 +820,15 @@ git commit -m "Update CyberLex project planning documentation"
 
 This command saves the staged changes in Git with a clear message.
 
-Push changes:
+Push changes only after a stable batch or milestone:
 
 ```powershell
 git push
 ```
 
-This command uploads the local commit to GitHub.
+This command uploads local commits to GitHub.
+
+Do not push after every small documentation or code edit. A better workflow is to push after 10 to 15 meaningful changes, a completed documentation batch, a completed test batch, or a final demo/hand-in checkpoint.
 
 ---
 
@@ -716,11 +842,16 @@ The current project phase is successful when CyberLex Sweden can:
 * display source details and official links
 * show source metadata and limitations
 * support English and Swedish questions
+* support Auto language behavior
+* run example questions immediately when selected
+* show related cases where relevant
+* hide related cases during practical incident triage
 * provide defensive incident-response guidance where useful
 * generate a SOC-style Markdown incident report
 * refuse out-of-scope questions
 * refuse unsafe cyber requests
 * pass the main manual test cases
+* load the Case Intelligence page correctly
 * maintain clear documentation
 * remain honest about limitations
 
@@ -733,20 +864,26 @@ The original 4 to 6 week project plan has been largely completed for the current
 CyberLex Sweden now has:
 
 * a working local Streamlit app
+* a partly refactored modular Python app structure
 * a trusted local Markdown knowledge base
 * source-grounded answers
 * official source links
 * source metadata
 * bilingual interface support
+* Auto language behavior
+* example questions that run immediately
+* related case examples where relevant
+* Case Intelligence page
 * practical incident-response support
 * SOC-style Markdown report export
 * safety refusal behavior
 * source audit support
+* case audit support
 * manual test cases
 * demo documentation
 * roadmap documentation
 * future AI and vector search plans
 
-The next major technical upgrade is real vector search, but this should be done later with a stable Python version and a low-risk implementation plan.
+The next major technical upgrade is broader automated testing and then real vector search, but vector search should be done later with a stable Python version and a low-risk implementation plan.
 
 For the final hand-in, the focus should remain on polish, testing, documentation consistency, and presentation readiness.

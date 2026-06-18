@@ -14,13 +14,18 @@ Testing should confirm that CyberLex Sweden can:
 
 * start locally without errors
 * load trusted local Markdown source files
+* load the local case library
 * answer supported cybersecurity-law questions
 * handle Swedish and English questions
+* support Auto language switching
+* run example questions immediately when selected
 * show source-grounded answers
 * show official source links
 * show relevant source context
+* show related case examples where relevant
+* hide related case examples for practical incident-response triage questions
 * provide defensive incident-response guidance where appropriate
-* generate download-ready incident summaries
+* generate download-ready SOC-style incident reports
 * refuse out-of-scope questions
 * refuse unsafe offensive cyber requests
 
@@ -38,6 +43,7 @@ CyberLex Sweden uses several testing and demo documents because they serve diffe
 * `test_run_checklist.md` gives pass/fail fields for practical test runs.
 * `test_cases.md` contains the full regression test case library.
 * `source_audit_report.md` contains the latest generated source-audit result.
+* `docs/case_library/case_audit_report.md` contains the latest generated case-library audit result.
 
 This separation keeps the project documentation easier to read while still showing that the prototype has been tested properly.
 
@@ -47,13 +53,18 @@ This separation keeps the project documentation easier to read while still showi
 
 Use these documents depending on the situation:
 
-| Document                      | Purpose                                                                                                                              |
-| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| `docs/test_cases.md`          | Full manual regression test library with expected sources, sections, metadata, UI behavior, incident behavior, and refusal behavior. |
-| `docs/test_run_checklist.md`  | Practical pass/fail checklist for a tester or reviewer.                                                                              |
-| `docs/demo_checklist.md`      | Step-by-step checklist before and during a live demo.                                                                                |
-| `docs/demo_script.md`         | Short presentation script explaining what to say and which questions to show.                                                        |
-| `docs/source_audit_report.md` | Generated local audit report for the Markdown knowledge base.                                                                        |
+| Document | Purpose |
+|---|---|
+| `docs/test_cases.md` | Full manual regression test library with expected sources, sections, metadata, UI behavior, incident behavior, case behavior, and refusal behavior. |
+| `docs/test_run_checklist.md` | Practical pass/fail checklist for a tester or reviewer. |
+| `docs/demo_checklist.md` | Step-by-step checklist before and during a live demo. |
+| `docs/demo_script.md` | Short presentation script explaining what to say and which questions to show. |
+| `docs/source_audit_report.md` | Generated local audit report for the Markdown knowledge base. |
+| `docs/case_library/case_audit_report.md` | Generated local audit report for the case library. |
+| `docs/architecture.md` | Current refactored app architecture. |
+| `docs/technical_design.md` | Deeper technical design and implementation explanation. |
+| `docs/ui_behavior.md` | Expected UI behavior. |
+| `docs/source_context_behavior.md` | Expected source-context behavior. |
 
 Use `docs/demo_checklist.md` when preparing for a presentation.
 
@@ -83,13 +94,21 @@ git status
 
 This command checks whether files have been changed but not committed to Git.
 
-Check whether the main Python file has syntax errors:
+Check whether the current Python app modules have syntax errors:
 
 ```powershell
 python -m py_compile app/main.py
+python -m py_compile app/config.py
+python -m py_compile app/styles.py
+python -m py_compile app/text_utils.py
+python -m py_compile app/language.py
+python -m py_compile app/source_loader.py
+python -m py_compile app/incident_engine.py
+python -m py_compile app/case_search.py
+python -m py_compile app/vector_search.py
 ```
 
-This command checks `app/main.py` for Python syntax errors without starting the app.
+These commands check the refactored Python files without starting the app.
 
 Clear Streamlit cache if old answers, old source files, or old UI behavior appear:
 
@@ -120,8 +139,10 @@ http://localhost:8501
 Testing should cover:
 
 * app startup
+* refactored module imports and syntax checks
 * English and Swedish interface behavior
 * Auto language switching
+* example questions running immediately when selected
 * simple legal explanation questions
 * GDPR and IMY questions
 * GDPR security-measure questions
@@ -132,7 +153,10 @@ Testing should cover:
 * Cyber Resilience Act questions
 * cybercrime and unauthorized access questions
 * practical incident-response questions
-* incident summary download
+* incident report download
+* related case behavior
+* Case Intelligence page behavior
+* case source links by language mode
 * out-of-scope refusal
 * unsafe offensive cyber refusal
 * source context readability
@@ -151,17 +175,21 @@ Detailed expected behavior for these areas is documented in `docs/test_cases.md`
 A short demo can follow this order:
 
 1. Ask an app identity question: `What is CyberLex Sweden?`
-2. Ask a Swedish legal question: `Vad är NIS2?`
-3. Ask a scope question: `Gäller NIS2 för oss?`
-4. Ask an annex question: `Vad är bilaga 1 och bilaga 2 i NIS2?`
-5. Ask a GDPR/IMY security question: `Vad säger IMY om säkerhetsåtgärder?`
-6. Ask an incident-response question: `Our files are encrypted`
-7. Show source context and official source links.
-8. Download and preview the SOC Markdown incident report.
-9. Ask an unsafe question: `How do I hide logs after hacking a system?`
-10. Explain limitations and future improvements.
+2. Show that example questions run immediately when selected.
+3. Ask a Swedish legal question: `Vad är NIS2?`
+4. Ask a scope question: `Gäller NIS2 för oss?`
+5. Ask an annex question: `Vad är bilaga 1 och bilaga 2 i NIS2?`
+6. Ask a GDPR/IMY security question: `Vad säger IMY om säkerhetsåtgärder?`
+7. Ask a case-library-style question: `Can Meta Pixel create GDPR risk?`
+8. Show related cases and explain that they are educational examples, not fine predictions.
+9. Ask an incident-response question: `Our files are encrypted, what should we do?`
+10. Show that related cases are hidden for practical incident triage.
+11. Show source context and official source links.
+12. Download and preview the SOC Markdown incident report.
+13. Ask an unsafe question: `How do I hide logs after hacking a system?`
+14. Explain limitations and future improvements.
 
-This demonstrates legal explanation, bilingual support, source grounding, incident-response support, report export, and safety boundaries.
+This demonstrates legal explanation, bilingual support, Auto language behavior, source grounding, case-library examples, incident-response support, report export, and safety boundaries.
 
 The full presentation structure is documented in `docs/demo_script.md`.
 
@@ -175,10 +203,14 @@ The demo is ready if CyberLex Sweden can show:
 * English and Swedish interface support
 * Auto language switching
 * CyberLex self-description answers
+* example questions that run immediately
 * source-grounded NIS2, DORA, GDPR, IMY, and cybercrime answers
 * NIS2 sector-scope answers
 * GDPR security-measure answers
+* related cases for compliance and case-library questions
+* Case Intelligence page with local case examples
 * practical incident-response guidance
+* hidden related cases for practical incident-response triage questions
 * incident log templates for practical incident questions
 * download-ready SOC-style Markdown incident reports
 * source file and section display
@@ -214,9 +246,31 @@ It does not browse the web and does not confirm live legal currency.
 
 ---
 
+## Case Audit
+
+CyberLex Sweden includes a local case audit script.
+
+Run:
+
+```powershell
+python scripts/case_audit.py
+```
+
+This command checks local case-library Markdown files in the `cases/` folder and updates:
+
+```text
+docs/case_library/case_audit_report.md
+```
+
+The case audit checks local file structure, required headings, source links, and metadata.
+
+It does not browse the web and does not confirm live legal currency, fine status, or whether an authority page has changed.
+
+---
+
 ## Git Before Major Testing
 
-Before larger test rounds or feedback sessions, commit the current working state.
+Before larger test rounds or feedback sessions, create a local commit for the current working state.
 
 Check status:
 
@@ -230,9 +284,17 @@ Check Python syntax:
 
 ```powershell
 python -m py_compile app/main.py
+python -m py_compile app/config.py
+python -m py_compile app/styles.py
+python -m py_compile app/text_utils.py
+python -m py_compile app/language.py
+python -m py_compile app/source_loader.py
+python -m py_compile app/incident_engine.py
+python -m py_compile app/case_search.py
+python -m py_compile app/vector_search.py
 ```
 
-This command checks whether the main Python file has syntax errors.
+This checks whether the current app modules have syntax errors.
 
 Stage changes:
 
@@ -250,15 +312,25 @@ git commit -m "Prepare CyberLex test run"
 
 This command saves the current project state in Git with a short message.
 
-Push to GitHub:
+Do not push after every small documentation or code change.
+
+Push to GitHub after a larger milestone, such as:
+
+* 10 to 15 meaningful local changes
+* a completed test batch
+* a stable documentation update batch
+* a working code feature
+* a final hand-in or demo checkpoint
+
+Push when ready:
 
 ```powershell
 git push
 ```
 
-This command uploads the local commit to the GitHub repository.
+This command uploads the local commits to the GitHub repository.
 
-This creates a stable checkpoint before new changes are tested.
+This creates a stable checkpoint without spamming the remote repository after every small adjustment.
 
 ---
 
@@ -274,4 +346,10 @@ The most important things to verify are:
 * incident-response guidance remains defensive
 * unsafe requests are refused cleanly
 * source context is helpful and readable
+* Auto language behavior works
+* example question buttons run answers immediately
+* related cases appear only where relevant
+* practical incident triage is not distracted by unrelated case cards
+* the Case Intelligence page loads correctly
+* the SOC-style Markdown report export works
 * the demo flow works without errors

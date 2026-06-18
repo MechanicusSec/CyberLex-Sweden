@@ -55,6 +55,44 @@ docs/source_list.md
 
 ---
 
+## Source-Context Code Responsibilities
+
+Source-context behavior is currently split across several app modules.
+
+```text
+app/source_loader.py
+```
+
+handles loading Markdown files, extracting official source links, extracting metadata, and splitting local source files into searchable chunks.
+
+```text
+app/text_utils.py
+```
+
+handles shared text normalization and phrase matching.
+
+```text
+app/language.py
+```
+
+handles localized source labels, localized section names, and Swedish/English display behavior.
+
+```text
+app/incident_engine.py
+```
+
+handles practical incident-response question detection.
+
+```text
+app/main.py
+```
+
+still controls the final source-context display flow, filtering, routing decisions, and which cards are shown to the user.
+
+This separation keeps the source system easier to maintain than the earlier single-file prototype. A low bar, yes, but software often trips over low bars with theatrical confidence.
+
+---
+
 ## Current Source Areas
 
 CyberLex Sweden currently includes source areas for:
@@ -72,15 +110,47 @@ CyberLex Sweden currently includes source areas for:
 * NIS2 incident reporting
 * NIS2 sector scope and entity classification
 
-The local source audit currently checks 13 files.
+The local source audit currently checks 13 source files.
 
-The current known audit issue is:
+The target state is:
 
-```text id="mz81a2"
-data/gdpr_imy_edpb_security_guidance.md
+```text
+Files marked OK: 13
+Files needing review: 0
 ```
 
-This file should not be treated as a clean source until it has official links and metadata or is removed.
+If the audit later reports a file needing review, that file should be checked for official source links, source metadata, source date, freshness information, and version notes before it is treated as fully reviewed.
+
+---
+
+## Case Library and Source Context
+
+CyberLex has two separate local content areas:
+
+```text
+data/
+```
+
+contains legal, regulatory, authority, and cybersecurity source summaries used for the main answer.
+
+```text
+cases/
+```
+
+contains educational case examples, authority decisions, public incident examples, outcomes, fines, and learning notes.
+
+The app should not treat case files as the main legal source for an answer.
+
+Instead:
+
+* `data/` should support the main CyberLex answer
+* `cases/` should provide related examples where useful
+* case examples should appear only when the question is suitable for case-library context
+* case examples should not be shown for practical incident triage by default
+
+For example, a Meta Pixel or app-data-exposure question may show related cases.
+
+A ransomware or suspicious-login triage question should focus on incident-response source context, not historical case examples.
 
 ---
 
@@ -135,6 +205,30 @@ It does not mean the app checked the internet live.
 
 ---
 
+## Source Routing and Target Files
+
+CyberLex uses source routing before normal ranking where the question clearly points to a specific source file.
+
+Examples:
+
+| Question type | Preferred target source |
+|---|---|
+| GDPR personal data breach | `gdpr_personal_data_breach.md` |
+| GDPR/IMY security measures | `imy_gdpr_security_measures.md` |
+| IMY authority role | `imy_gdpr_supervision.md` |
+| NIS2 sector scope | `nis2_sector_scope_guidance.md` |
+| NIS2 incident reporting | `nis2_incident_reporting.md` |
+| DORA | `eu_dora_digital_operational_resilience.md` |
+| Cyber Resilience Act | `eu_cyber_resilience_act.md` |
+| Swedish dataintrång | `cybercrime_dataintrang.md` |
+| Practical incident response | `cyber_incident_response_playbook.md` |
+
+Case-library-style questions, such as Meta Pixel, wrong-recipient disclosure, app data exposure, weak security measures, or fines, should route the main answer toward a relevant GDPR, IMY, security, or breach source while showing case examples separately.
+
+This prevents the app from using a historical case as if it were the main legal explanation.
+
+---
+
 ## Relevant Source Context
 
 Relevant source context shows supporting source text that CyberLex used or considered useful for the answer.
@@ -154,8 +248,9 @@ The normal user view should prioritize:
 2. practical explanation, where relevant
 3. important limitation
 4. source details
-5. relevant source context
-6. optional additional matched sections
+5. related cases, only where relevant
+6. relevant source context
+7. optional additional matched sections
 
 ---
 
@@ -273,6 +368,30 @@ It should not show raw English section labels as the visible card title in Swedi
 
 ---
 
+## Auto Language Source Behavior
+
+In Auto language mode, source-context labels should follow the detected language of the active question.
+
+Examples:
+
+```text
+Can an app bug expose customer data?
+→ English source labels and English answer flow
+```
+
+```text
+Kan ett appfel exponera kunduppgifter?
+→ Swedish source labels and Swedish answer flow
+```
+
+The active question should come from the visible input field or the submitted example question.
+
+The app should avoid using an older stored question for source-context language. If the input field shows a new question, that question should control the visible answer language and source-context labels.
+
+Source excerpts may still remain in their original source language.
+
+---
+
 ## Source Context Length and Readability
 
 Source context should be useful but not overwhelming.
@@ -301,6 +420,48 @@ Utdraget har förkortats för läsbarhet.
 
 ---
 
+## Related Case Display Behavior
+
+Related cases should be shown only when they make the answer more useful.
+
+They are useful for questions about:
+
+* Meta Pixel
+* tracking technologies
+* app data exposure
+* wrong-recipient disclosures
+* weak security measures
+* personal data exposure
+* GDPR fines or costs
+* public cybersecurity or privacy incidents
+* authority decisions or public case examples
+
+Examples:
+
+```text
+Can Meta Pixel create GDPR risk?
+Kan Meta Pixel skapa GDPR-risk?
+Can an app bug expose customer data?
+Kan ett appfel exponera kunduppgifter?
+What can weak security measures cost?
+Vad kan svaga säkerhetsåtgärder kosta?
+```
+
+Related cases should not be shown by default for practical incident-response triage questions.
+
+Examples:
+
+```text
+Our files are encrypted, what should we do?
+Vi har fått en misstänkt login på ett konto, vad ska vi göra?
+Someone clicked a suspicious link, what should we do?
+Någon klickade på en misstänkt länk, vad gör vi?
+```
+
+For practical incident-response triage, source context should focus on immediate defensive handling and the relevant incident playbook sections.
+
+---
+
 ## Incident-Type Source Filtering
 
 For practical incident-response questions, source context should match the incident type.
@@ -324,6 +485,25 @@ For example:
 * data leak questions should not mainly show generic NIS2-only context
 * ransomware questions should not mainly show GDPR principles
 * GDPR security-measure questions should not mainly show hacking incident cards
+
+---
+
+## Example Questions and Source Context
+
+When a user selects an example question, the source-context system should treat that example as the active submitted question immediately.
+
+The app should:
+
+1. store the selected example question
+2. store it as the submitted active question
+3. fill the input field
+4. hide the example question panel
+5. rerun the app
+6. generate the answer and source context directly
+
+The user should not need to press the normal search button after selecting an example question.
+
+This matters because source routing, Auto language detection, related-case display, and source-context filtering all depend on the active question.
 
 ---
 
@@ -486,6 +666,10 @@ Examples:
 | `What are essential and important entities?`      | Essential and important entities                  |
 
 This keeps different NIS2 questions from showing the same generic source cards.
+
+Specific NIS2 scope questions should usually show only one highly relevant source card. Broader scope questions may show two when the answer depends on several facts.
+
+In Swedish mode, Swedish source sections should be preferred where available. In English mode, English source sections should be preferred where available.
 
 ---
 
@@ -678,7 +862,9 @@ The current source context goal is:
 * avoid repeated or unrelated source sections
 * make official source links easy to find
 * keep legal and incident-response answers grounded in local trusted source material
-* localize source-context labels according to Swedish or English mode
+* localize source-context labels according to Swedish, English, or detected Auto mode
+* keep related cases separate from main source context
+* hide related cases for practical incident-response triage questions
 * avoid generic fallback summaries for supported incident-response statements
 * treat unexpected encrypted files as a possible ransomware or malware incident in cybersecurity context
 * treat customer-data leak statements as possible data-leak or personal-data-breach incidents
@@ -692,6 +878,8 @@ Source context exists to make CyberLex Sweden more transparent.
 
 It should help users and reviewers understand why an answer was shown.
 
-It should not become a wall of raw source dumps, debug values, or unrelated cards.
+It should not become a wall of raw source dumps, debug values, unrelated cards, or historical cases shoved into an urgent incident answer because the algorithm got emotionally attached to matching keywords.
+
+The source display is local and source-grounded. It does not confirm live legal currency online.
 
 The source display should support trust, not bury the user under Markdown confetti.
