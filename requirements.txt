@@ -13,6 +13,10 @@ python-dotenv
 requests
 beautifulsoup4
 
+# Local automated tests
+
+pytest
+
 # Notes:
 
 # The current CyberLex Sweden prototype is rule-based and local-first.
