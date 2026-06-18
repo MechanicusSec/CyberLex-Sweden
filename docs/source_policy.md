@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document defines how CyberLex Sweden should handle legal, cybersecurity, compliance, case-library, and defensive incident-response sources.
+This document defines how CyberLex Sweden should handle legal, cybersecurity, compliance, case-library, online source monitoring, and defensive incident-response sources.
 
 Because CyberLex Sweden deals with legal and cybersecurity-related information, the system must avoid unsupported answers and should rely on trusted source material only.
 
@@ -33,6 +33,7 @@ The system should not:
 * answer outside the project scope
 * treat case examples as legal predictions
 * treat local summaries as complete legal sources
+* automatically rewrite legal summaries based only on detected webpage changes
 
 The core rule is:
 
@@ -60,6 +61,7 @@ Examples of trusted sources include:
 
 * Sveriges Riksdag
 * IMY, Integritetsskyddsmyndigheten
+* MCF, Myndigheten för civilt försvar
 * MSB, Myndigheten för samhällsskydd och beredskap
 * CERT-SE
 * EUR-Lex
@@ -70,6 +72,8 @@ Examples of trusted sources include:
 * European Data Protection Board, EDPB
 
 CyberLex Sweden may use other sources later, but official sources should normally be preferred.
+
+For NIS2 and the Swedish Cybersecurity Act, CyberLex Sweden should use current official Swedish sources such as MCF and Riksdagen where relevant. Older MSB links may redirect to MCF or become outdated.
 
 ---
 
@@ -112,17 +116,31 @@ Files marked OK: 13
 Files needing review: 0
 ```
 
-The real current audit result should always be confirmed by running:
+The expected source watch target is:
+
+```text
+Changed sources: 0
+Failed checks: 0
+```
+
+The real current audit and watch results should always be confirmed by running:
 
 ```powershell
+python scripts/source_watch.py
 python scripts/source_audit.py
 ```
 
 Important note:
 
-The source audit checks the local structure of the Markdown files. It does not browse the web and does not confirm live legal currency.
+The source audit checks the local structure of the Markdown files.
+
+The source watch checks official source URLs online for reachability and possible content changes.
+
+Neither one proves that the law is currently correct inside the CyberLex summaries.
 
 If the audit reports any file as needing review, that file should be fixed before final hand-in or clearly marked as incomplete.
+
+If the source watch reports changed or failed sources, those sources should be reviewed manually before the local Markdown files are updated.
 
 ---
 
@@ -219,10 +237,20 @@ Examples:
 
 * EUR-Lex pages for EU regulations and directives
 * IMY guidance pages for GDPR and personal data breach topics
-* MSB pages for NIS2 and Swedish cybersecurity guidance
+* MCF pages for NIS2 and the Swedish Cybersecurity Act
 * Riksdag pages for Swedish law
 * CERT-SE pages for defensive incident-response support
 * EDPB pages for GDPR guidance
+
+Official source links should be checked with:
+
+```powershell
+python scripts/source_watch.py
+```
+
+If a source returns a failed check, the link should be reviewed and updated if needed.
+
+If a source is marked as changed, the local CyberLex summary should be manually compared with the official source before updating the local Markdown file.
 
 ---
 
@@ -235,7 +263,7 @@ Preferred format:
 ```markdown
 ## Source metadata
 
-Source date: Last checked: 2026-06-10
+Source date: Last checked: 2026-06-18
 
 Version notes: Source reviewed for CyberLex Sweden educational prototype.
 ```
@@ -246,6 +274,8 @@ The version notes explain what was added, cleaned, or changed.
 
 Source metadata improves transparency, but it does not prove that the law is currently up to date.
 
+If `scripts/source_watch.py` detects a changed or failed official source, and the local file is then manually reviewed or updated, the source date and version notes should be updated.
+
 ---
 
 ## Source Freshness Labels
@@ -255,7 +285,7 @@ CyberLex Sweden may display source freshness labels based on the stored source d
 Examples:
 
 ```text
-Last checked: 2026-06-08
+Last checked: 2026-06-18
 → Recently checked
 ```
 
@@ -271,7 +301,7 @@ Older stored review date
 
 These labels are transparency indicators only.
 
-They do not check the internet and do not confirm current legal validity.
+They do not confirm current legal validity.
 
 ---
 
@@ -319,6 +349,16 @@ eu_attacks_against_information_systems.md
 ```text
 cyber_incident_response_playbook.md
 → Defensive incident-response guidance
+```
+
+```text
+nis2_cybersecurity_law.md
+→ NIS2 and Swedish Cybersecurity Act source
+```
+
+```text
+nis2_sector_scope_guidance.md
+→ NIS2 sector scope and applicability source
 ```
 
 The source quality label explains the type of source category.
@@ -373,6 +413,76 @@ This distinction must stay clear in documentation and user-facing explanations.
 
 ---
 
+## Source Watch Policy
+
+CyberLex Sweden includes an online source watch script:
+
+```text
+scripts/source_watch.py
+```
+
+The source watcher reads official source URLs from the `## Official source` sections inside local Markdown files in:
+
+```text
+data/
+```
+
+It checks whether each official URL can be reached and whether the fetched content appears to have changed since the previous source watch run.
+
+The source watch report is written to:
+
+```text
+docs/source_watch_report.md
+```
+
+The source watch state is stored in:
+
+```text
+source_snapshots/source_watch_state.json
+```
+
+The source watch state stores URL fingerprints and metadata. It does not store full webpage copies.
+
+Expected watch target:
+
+```text
+Changed sources: 0
+Failed checks: 0
+```
+
+The source watcher can report:
+
+* first snapshots
+* unchanged sources
+* changed sources
+* failed checks
+* redirects
+* HTTP status codes
+* content hashes
+* recommended manual review actions
+
+The source watcher does not automatically update CyberLex legal summaries.
+
+Changed or failed sources should be reviewed manually.
+
+Correct source-watch workflow:
+
+```text
+1. Run source watcher.
+2. Review docs/source_watch_report.md.
+3. If a source changed or failed, open the official source manually.
+4. Compare the official source with the local Markdown summary.
+5. Update the local source file only when needed.
+6. Update source metadata and version notes.
+7. Run source_watch.py again.
+8. Run source_audit.py again.
+9. Commit the changed source file, reports, and state file.
+```
+
+This keeps automation useful without allowing a script to silently rewrite legal explanations like an overconfident compliance gremlin.
+
+---
+
 ## Case Audit Policy
 
 CyberLex Sweden includes a local case audit script:
@@ -422,6 +532,44 @@ The workflow is intended to:
 This workflow helps keep the audit report updated, but it does not perform live legal review.
 
 The workflow should not be described as confirming that legal sources are current.
+
+---
+
+## GitHub Actions Source Watch Policy
+
+CyberLex Sweden includes a GitHub Actions workflow:
+
+```text
+.github/workflows/source-watch.yml
+```
+
+The workflow runs the online source watcher automatically on a schedule and can also be started manually from GitHub Actions.
+
+The workflow is intended to:
+
+1. check out the repository
+2. set up Python
+3. install project dependencies
+4. run `python scripts/source_watch.py`
+5. run `python scripts/source_audit.py`
+6. update generated reports and source-watch state
+7. commit changed reports or source-watch state if needed
+
+The source watch workflow may update:
+
+```text
+docs/source_watch_report.md
+docs/source_audit_report.md
+source_snapshots/source_watch_state.json
+```
+
+The workflow checks whether official URLs appear reachable and whether fetched content appears to have changed.
+
+The workflow does not decide whether legal meaning changed.
+
+The workflow does not update local source summaries in `data/`.
+
+Any changed or failed source in `docs/source_watch_report.md` should be reviewed manually.
 
 ---
 
@@ -566,6 +714,8 @@ No trusted source, no answer.
 
 Real vector search, embeddings, or RAG should only be added after the trusted local source base and retrieval behavior are reliable.
 
+Online source watching should support source maintenance, not replace source-grounded retrieval.
+
 ---
 
 ## Supported Source Topics
@@ -607,6 +757,7 @@ The source history should describe:
 * why it was changed
 * what result or test case confirmed the update
 * whether retrieval logic was changed
+* whether a source-watch result triggered the update
 
 This helps reviewers understand how the knowledge base developed over time.
 
@@ -626,9 +777,13 @@ Improve Swedish CRA source support
 Update source history with EU attacks support
 Update source list with current knowledge base
 Update source policy for current audit status
+Add online source monitoring
+Document source watch automation
 ```
 
 The purpose is to make the project history understandable.
+
+Generated reports and source-watch state files may be committed intentionally when they are part of the source monitoring system.
 
 Generated or temporary files should not be committed unless intentionally included.
 
@@ -640,6 +795,13 @@ Examples that should normally not be committed:
 * generated vector index files
 * temporary test files
 * downloaded model files
+
+Examples that may be committed intentionally:
+
+* `docs/source_audit_report.md`
+* `docs/source_watch_report.md`
+* `docs/case_library/case_audit_report.md`
+* `source_snapshots/source_watch_state.json`
 
 The preferred workflow is:
 
@@ -659,13 +821,15 @@ Future versions of CyberLex Sweden may improve source review by adding:
 
 * source owners or reviewers
 * source status labels such as active, needs review, outdated, retired
-* automated link checking
 * scheduled source review reminders
 * separate review dates for each official link
 * source change detection
 * live legal update review workflow
 * better distinction between Swedish law, EU law, and authority guidance
 * source-to-chunk metadata for future vector search or RAG
+* better filtering of webpage noise in source-watch hashing
+* stronger handling of PDF and EUR-Lex source formats
+* source-change review checklist in the app UI
 
 These improvements would make the source system stronger if CyberLex Sweden becomes public or more product-like.
 
@@ -673,11 +837,13 @@ These improvements would make the source system stronger if CyberLex Sweden beco
 
 ## Important Limitation
 
-This source policy defines how CyberLex Sweden should handle local project sources.
+This source policy defines how CyberLex Sweden should handle local project sources and online source monitoring.
 
 It does not make CyberLex Sweden a legal authority.
 
 It does not prove that any law, regulation, authority decision, or authority guidance is currently up to date.
+
+The online source watcher can detect changed or failed official source URLs, but it does not understand legal meaning and does not update local legal summaries automatically.
 
 For important legal, compliance, regulatory, or cybersecurity decisions, users should check official sources and qualified professional advice.
 
