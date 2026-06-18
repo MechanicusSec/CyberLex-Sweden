@@ -1,22 +1,106 @@
 # Python cache
-__pycache__/
-*.pyc
 
-# Virtual environment
+**pycache**/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+
+.venv/
 venv/
+env/
+ENV/
+
+# Python packaging and build output
+
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Environment and secrets
+
 .env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+*.pfx
+*.p12
+secrets/
+.env.local
 
-# VS Code settings
-.vscode/
+# Streamlit
 
-# Temporary files
-*.tmp
+.streamlit/secrets.toml
+
+# Logs and temporary files
+
 *.log
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*.old
+tmp/
+temp/
 
 # Local database files
-chroma_db/
-*.sqlite3
 
-# System files
+*.sqlite
+*.sqlite3
+*.db
+chroma_db/
+
+# Future vector search / embedding stores
+
+.vector_store/
+chroma/
+faiss.index
+metadata.json
+
+# Generated local reports and exports
+
+downloads/
+exports/
+generated_reports/
+incident_reports/
+
+# Test and coverage output
+
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# Jupyter / notebooks
+
+.ipynb_checkpoints/
+
+# VS Code settings
+
+.vscode/
+
+# JetBrains / PyCharm
+
+.idea/
+
+# Operating system files
+
 .DS_Store
 Thumbs.db
+desktop.ini
+
+# OneDrive / sync conflict files
+
+* * Copy.*
+* * Kopia.*
+    *conflicted copy*
+    *sync-conflict*
+
+# Local-only notes
+
+local_notes/
+scratch/
