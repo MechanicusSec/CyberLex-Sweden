@@ -886,6 +886,95 @@ def should_show_related_cases(question):
 
     return is_case_library_context_question(question)
 
+
+def build_question_behavior_profile(question, language="English"):
+    """
+    Builds one central behavior profile for the current question.
+
+    CyberLex is still a rule-based, source-grounded prototype. This profile
+    simply makes the existing rules behave more consistently by deciding once
+    what kind of question the user asked, then reusing that decision in the
+    answer flow.
+    """
+
+    question_text = str(question or "").strip()
+
+    is_self_description = is_cyberlex_self_description_question(question_text)
+    is_unsafe = is_unsafe_cyber_request(question_text)
+    is_in_scope = is_cyberlaw_question(question_text)
+
+    is_practical_incident = is_practical_incident_response_question(question_text)
+    is_case_context = is_case_library_context_question(question_text)
+    is_nis2_scope = is_nis2_sector_scope_question(question_text)
+    is_gdpr_security = is_gdpr_security_guidance_question(question_text)
+    is_imy_security = is_imy_gdpr_security_measures_question(question_text)
+
+    # Practical incident-response questions should stay operational.
+    # Old case examples and fine examples can be useful later, but not while the
+    # user is asking what to do about ransomware, phishing, suspicious login, etc.
+    show_related_cases = False
+    show_risk_cost_context = False
+
+    if not is_practical_incident:
+        show_related_cases = is_case_context
+        show_risk_cost_context = is_case_context
+
+    show_practical_explanation = should_show_practical_explanation(question_text)
+    show_assessment_checklist = is_practical_incident
+    show_soc_report = is_practical_incident
+
+    source_context_max_results = 3
+
+    if is_practical_incident:
+        source_context_max_results = 2
+
+    if is_nis2_scope:
+        source_context_max_results = get_nis2_scope_max_context_cards(question_text)
+
+    if is_case_context:
+        source_context_max_results = 2
+
+    target_source_file = get_target_source_file(question_text)
+
+    if is_self_description:
+        answer_mode = "self_description"
+    elif is_unsafe:
+        answer_mode = "unsafe_refusal"
+    elif not is_in_scope:
+        answer_mode = "out_of_scope"
+    elif is_practical_incident:
+        answer_mode = "incident_response"
+    elif is_case_context:
+        answer_mode = "case_context"
+    elif is_nis2_scope:
+        answer_mode = "nis2_scope"
+    elif is_imy_security:
+        answer_mode = "imy_security"
+    elif is_gdpr_security:
+        answer_mode = "gdpr_security"
+    else:
+        answer_mode = "source_answer"
+
+    return {
+        "answer_mode": answer_mode,
+        "language": language,
+        "target_source_file": target_source_file,
+        "is_self_description": is_self_description,
+        "is_unsafe": is_unsafe,
+        "is_in_scope": is_in_scope,
+        "is_practical_incident": is_practical_incident,
+        "is_case_context": is_case_context,
+        "is_nis2_scope": is_nis2_scope,
+        "is_gdpr_security": is_gdpr_security,
+        "is_imy_security": is_imy_security,
+        "show_practical_explanation": show_practical_explanation,
+        "show_assessment_checklist": show_assessment_checklist,
+        "show_soc_report": show_soc_report,
+        "show_related_cases": show_related_cases,
+        "show_risk_cost_context": show_risk_cost_context,
+        "source_context_max_results": source_context_max_results,
+    }
+
 def get_target_source_file(question):
     # Routes clear questions to a specific knowledge file.
     question_lower = normalize_query_text(question).strip()
@@ -8533,12 +8622,15 @@ else:
     other_matches_caption = "Technical developer view showing internal source files, matched sections, and relevance scores. Only shown when technical diagnostics is enabled."
 
 if question:
-    if is_cyberlex_self_description_question(question):
+    question_profile = build_question_behavior_profile(question, language)
+
+    if question_profile["is_self_description"]:
         st.markdown(
             generate_cyberlex_self_description_answer(language),
             unsafe_allow_html=True
         )
-    elif is_unsafe_cyber_request(question):
+
+    elif question_profile["is_unsafe"]:
         st.markdown(
             generate_unsafe_refusal_answer(question, language),
             unsafe_allow_html=True
@@ -8547,8 +8639,10 @@ if question:
             generate_attention_level(question, [], language),
             unsafe_allow_html=True
         )
-    elif not is_cyberlaw_question(question):
+
+    elif not question_profile["is_in_scope"]:
         st.error(out_of_scope_text)
+
     else:
         search_results = search_chunks(question, chunks)
 
@@ -8558,24 +8652,34 @@ if question:
 
             if best_match["score"] < minimum_score:
                 st.error(out_of_scope_text)
+
             else:
                 st.markdown(
-                    generate_simple_answer(question, best_match, language, include_technical_details=show_technical_diagnostics),
+                    generate_simple_answer(
+                        question,
+                        best_match,
+                        language,
+                        include_technical_details=show_technical_diagnostics
+                    ),
                     unsafe_allow_html=True
                 )
+
                 st.markdown(
                     generate_attention_level(question, search_results, language),
                     unsafe_allow_html=True
                 )
-                if should_show_practical_explanation(question):
+
+                if question_profile["show_practical_explanation"]:
                     st.markdown(
                         generate_practical_explanation(question, search_results, language),
                         unsafe_allow_html=True
                     )
 
-                if is_practical_incident_response_question(question):
+                if question_profile["show_assessment_checklist"]:
                     with st.expander(
-                        "CyberLex assessment checklist" if language != "Svenska" else "CyberLex bedömningschecklista",
+                        "CyberLex assessment checklist"
+                        if language != "Svenska"
+                        else "CyberLex bedömningschecklista",
                         expanded=False
                     ):
                         st.markdown(
@@ -8583,6 +8687,7 @@ if question:
                             unsafe_allow_html=True
                         )
 
+                if question_profile["show_soc_report"]:
                     copy_ready_summary = generate_copy_ready_incident_summary(
                         question,
                         best_match,
@@ -8591,7 +8696,9 @@ if question:
                     )
 
                     with st.expander(
-                        "Incident log and download" if language != "Svenska" else "Incidentlogg och nedladdning",
+                        "Incident log and download"
+                        if language != "Svenska"
+                        else "Incidentlogg och nedladdning",
                         expanded=False
                     ):
                         st.markdown(
@@ -8615,13 +8722,15 @@ if question:
                 source_context_html = build_source_context(
                     search_results,
                     language,
-                    max_results=3,
+                    max_results=question_profile["source_context_max_results"],
                     question=question,
                 )
 
                 if str(source_context_html or "").strip():
                     with st.expander(
-                        "Relevant source context" if language != "Svenska" else "Relevant källkontext",
+                        "Relevant source context"
+                        if language != "Svenska"
+                        else "Relevant källkontext",
                         expanded=False
                     ):
                         st.caption(source_context_caption)
@@ -8630,9 +8739,10 @@ if question:
                             unsafe_allow_html=True
                         )
 
+                if question_profile["show_risk_cost_context"]:
+                    display_risk_cost_context(question, language)
 
-                display_risk_cost_context(question, language)
-                if should_show_related_cases(question):
+                if question_profile["show_related_cases"]:
                     display_related_cases(question, language, language)
 
                 if show_technical_diagnostics:
@@ -8640,7 +8750,11 @@ if question:
                         st.caption(other_matches_caption)
 
                         for result in search_results[:5]:
-                            display_result_section = localize_section_name(result.get("section", ""), language)
+                            display_result_section = localize_section_name(
+                                result.get("section", ""),
+                                language
+                            )
+
                             if language == "Svenska":
                                 st.markdown(
                                     f'<div class="match-card">'
@@ -8659,12 +8773,12 @@ if question:
                                     f'</div>',
                                     unsafe_allow_html=True
                                 )
+
         else:
             st.error(out_of_scope_text)
 else:
     # Keep the empty state clean. The input placeholder already explains what to do.
     pass
-
 
 footer_label = (
     "© 2026 CyberLex Sweden · Policy · Om · Copyright"
