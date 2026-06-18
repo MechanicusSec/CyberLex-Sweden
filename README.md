@@ -45,13 +45,17 @@ CyberLex Sweden is currently a **working local prototype** prepared for final pr
 Current implemented status:
 
 - local Streamlit application
-- Swedish and English question handling
+- modular Python app structure after refactoring `app/main.py`
+- Swedish and English question handling with Auto language detection
+- example questions that run immediately when selected
 - source-grounded answers from a local Markdown knowledge base
 - official source links and source metadata
 - expandable relevant source context
 - rule-based routing for supported legal, compliance, and incident-response questions
 - defensive incident-response support for selected scenarios
 - SOC-style Markdown incident report export for practical incident questions
+- related case and incident examples for relevant compliance/case-library questions
+- hidden related-case section for practical incident-response triage questions
 - refusal behavior for out-of-scope and unsafe cyber misuse questions
 - local source audit support through scripts and GitHub Actions
 
@@ -84,7 +88,9 @@ CyberLex Sweden currently supports:
 - explains selected GDPR, IMY, NIS2, DORA, Cyber Resilience Act, cybercrime, and digital compliance topics
 - shows source freshness labels based on local review dates
 - displays detected topic labels and CyberLex attention levels
-- supports Swedish and English interface handling
+- supports Swedish and English interface handling with Auto language detection
+- shows related case and incident examples when relevant to compliance or case-library questions
+- avoids showing unrelated case examples for practical incident-response triage questions
 
 ### Defensive incident-response support
 
@@ -313,6 +319,38 @@ docs/privacy_and_data_handling.md
 
 ---
 
+## Application Architecture
+
+CyberLex Sweden has been refactored from a large single-file prototype into a more modular Python application.
+
+The Streamlit entry point is still:
+
+```text
+app/main.py
+```
+
+Supporting logic is now split into smaller modules:
+
+| File | Purpose |
+|---|---|
+| `app/main.py` | Streamlit app flow, UI rendering, answer display, and page behavior |
+| `app/config.py` | App settings, constants, and folder paths |
+| `app/styles.py` | CSS and visual styling |
+| `app/text_utils.py` | Text normalization and phrase-matching helpers |
+| `app/language.py` | Swedish/English detection, Auto language mode, and localization |
+| `app/source_loader.py` | Markdown source loading, metadata extraction, and chunking |
+| `app/incident_engine.py` | Practical incident-response question detection |
+| `app/case_search.py` | Related case and incident-example search |
+| `app/vector_search.py` | Experimental search functionality |
+
+More detail is available in:
+
+```text
+docs/architecture.md
+```
+
+---
+
 ## Project Structure
 
 ```text
@@ -322,10 +360,21 @@ CyberLex-Sweden
 │       └── source-audit.yml
 ├── app
 │   ├── main.py
+│   ├── config.py
+│   ├── styles.py
+│   ├── text_utils.py
+│   ├── language.py
+│   ├── source_loader.py
+│   ├── incident_engine.py
+│   ├── case_search.py
 │   └── vector_search.py
+├── cases
+│   └── local case-library Markdown files
 ├── data
 │   └── local Markdown knowledge base files
 ├── docs
+│   ├── architecture.md
+│   ├── case_library
 │   └── project documentation
 ├── report
 │   └── final_report.md
@@ -436,9 +485,17 @@ Check Python syntax for the main app:
 python -m py_compile app/main.py
 ```
 
-Check Python syntax for the experimental retrieval module:
+Check Python syntax for all current app modules:
 
 ```powershell
+python -m py_compile app/main.py
+python -m py_compile app/config.py
+python -m py_compile app/styles.py
+python -m py_compile app/text_utils.py
+python -m py_compile app/language.py
+python -m py_compile app/source_loader.py
+python -m py_compile app/incident_engine.py
+python -m py_compile app/case_search.py
 python -m py_compile app/vector_search.py
 ```
 
@@ -462,12 +519,13 @@ Additional project documentation is available in the `docs/` folder.
 
 Important documents include:
 
+- `docs/architecture.md` - current modular app architecture
 - `docs/project_overview.md` - project overview and background
 - `docs/project_plan.md` - project plan and schedule
 - `docs/source_list.md` - trusted source list
 - `docs/source_policy.md` - source quality policy
 - `docs/source_context_behavior.md` - source routing and source-context behavior
-- `docs/source_update_history.md` - source update history and knowledge base change log
+- `docs/source_history.md` - source update history and knowledge base change log
 - `docs/source_audit_report.md` - generated local source audit report
 - `docs/test_cases.md` - manual and experimental retrieval test cases
 - `docs/testing_and_demo.md` - practical testing and demo guidance
@@ -480,7 +538,6 @@ Important documents include:
 - `docs/ai_rag_plan.md` - future RAG plan
 - `docs/privacy_and_data_handling.md` - privacy and local data-handling notes
 - `docs/terms_of_use.md` - draft terms of use
-- `docs/privacy_policy.md` - draft privacy policy
 - `docs/legal_disclaimer.md` - legal disclaimer for educational use
 
 ---
@@ -572,6 +629,7 @@ Current limitations:
 - it only answers from local Markdown source files
 - it covers selected cybersecurity-law and incident-response topics only
 - the current answers are rule-based
+- the current module split improves maintainability but does not make the app production-ready
 - the experimental AI search is not real vector search yet
 - source freshness labels describe stored local review dates only
 - the source audit checks file structure, not live legal currency
@@ -591,9 +649,10 @@ Planned or possible improvements include:
 
 ### Code and architecture
 
-- split the large `app/main.py` file into smaller modules after the final demo
-- move UI rendering, answer routing, source loading, source context, language utilities, safety checks, and report export into separate files
+- continue reducing `app/main.py` gradually where it makes sense
+- consider moving answer routing, search ranking, UI rendering, and report export into separate modules later
 - add automated regression tests for routing, language handling, safety refusals, and report export
+- add automated tests for example-question behavior and Auto language switching
 - improve maintainability without changing the current working demo behavior
 
 ### Search and AI/RAG development
