@@ -54,6 +54,7 @@ Current implemented status:
 * source quality labels and source freshness labels
 * expandable relevant source context
 * rule-based routing for supported legal, compliance, and incident-response questions
+* improved answer-routing profile logic in `app/main.py`
 * defensive incident-response support for selected scenarios
 * SOC-style Markdown incident report export for practical incident questions
 * local case library with selected GDPR and cybersecurity-related examples
@@ -61,13 +62,14 @@ Current implemented status:
 * hidden related-case section for practical incident-response triage questions
 * Case Intelligence page for browsing case examples
 * local source audit support through scripts and GitHub Actions
+* online source watch support for checking official source URLs
 * local case audit support through `scripts/case_audit.py`
 * refusal behavior for out-of-scope and unsafe cyber misuse questions
 
 CyberLex Sweden does not yet use:
 
 * a full language model for final answer generation
-* live web browsing
+* live web browsing inside the Streamlit answer flow
 * production vector search
 * embeddings, ChromaDB, or FAISS
 * RAG-style answer generation
@@ -116,6 +118,17 @@ CyberLex Sweden currently supports several core functions.
 * supports suspicious login, phishing, compromised account, data leak, ransomware, malware, and suspected intrusion scenarios
 * shows incident log templates where useful
 * creates SOC-style Markdown incident reports for documentation support
+
+### Source monitoring and audits
+
+* checks local source-file structure through `scripts/source_audit.py`
+* checks local case-file structure through `scripts/case_audit.py`
+* checks official online source URLs through `scripts/source_watch.py`
+* stores source-watch URL fingerprints in `source_snapshots/source_watch_state.json`
+* generates source-watch reports in `docs/source_watch_report.md`
+* uses GitHub Actions to run source audit and source watch workflows on a schedule
+
+The source watcher does not rewrite legal content automatically. It only detects changed or failed official source URLs so a human can review the source and update local Markdown files if needed. An automated legal-content rewrite script would be very impressive right up until it confidently vandalized the law.
 
 ### Safety boundaries
 
@@ -311,7 +324,14 @@ Files marked OK: 13
 Files needing review: 0
 ```
 
-The actual result should always be checked by running the local source audit.
+The current source watch target is:
+
+```text
+Changed sources: 0
+Failed checks: 0
+```
+
+The actual result should always be checked by running the local source audit and source watch scripts.
 
 ---
 
@@ -414,9 +434,11 @@ docs/privacy_and_data_handling.md
 | Markdown       | Used for documentation, local source files, and case-library files |
 | Git            | Tracks project changes and commit history                          |
 | GitHub         | Stores the project online                                          |
-| GitHub Actions | Runs the source audit workflow                                     |
+| GitHub Actions | Runs source audit and source watch workflows                       |
 | VS Code        | Code editor used during development                                |
 | PowerShell     | Used to run local commands on Windows                              |
+| Requests       | Used by the source watcher to fetch official URLs                  |
+| BeautifulSoup  | Used by the source watcher to extract readable page text           |
 
 ---
 
@@ -432,17 +454,17 @@ app/main.py
 
 Supporting logic is now split into smaller modules:
 
-| File                     | Purpose                                                             |
-| ------------------------ | ------------------------------------------------------------------- |
-| `app/main.py`            | Streamlit app flow, UI rendering, answer display, and page behavior |
-| `app/config.py`          | App settings, constants, and folder paths                           |
-| `app/styles.py`          | CSS and visual styling                                              |
-| `app/text_utils.py`      | Text normalization and phrase-matching helpers                      |
-| `app/language.py`        | Swedish/English detection, Auto language mode, and localization     |
-| `app/source_loader.py`   | Markdown source loading, metadata extraction, and chunking          |
-| `app/incident_engine.py` | Practical incident-response question detection                      |
-| `app/case_search.py`     | Related case and incident-example search                            |
-| `app/vector_search.py`   | Experimental rule-based search functionality                        |
+| File                     | Purpose                                                                                                |
+| ------------------------ | ------------------------------------------------------------------------------------------------------ |
+| `app/main.py`            | Streamlit app flow, UI rendering, answer display, page behavior, and central question-behavior profile |
+| `app/config.py`          | App settings, constants, and folder paths                                                              |
+| `app/styles.py`          | CSS and visual styling                                                                                 |
+| `app/text_utils.py`      | Text normalization and phrase-matching helpers                                                         |
+| `app/language.py`        | Swedish/English detection, Auto language mode, and localization                                        |
+| `app/source_loader.py`   | Markdown source loading, metadata extraction, and chunking                                             |
+| `app/incident_engine.py` | Practical incident-response question detection                                                         |
+| `app/case_search.py`     | Related case and incident-example search                                                               |
+| `app/vector_search.py`   | Experimental rule-based search functionality                                                           |
 
 More detail is available in:
 
@@ -459,7 +481,8 @@ docs/architecture.md
 CyberLex-Sweden
 ├── .github
 │   └── workflows
-│       └── source-audit.yml
+│       ├── source-audit.yml
+│       └── source-watch.yml
 ├── app
 │   ├── main.py
 │   ├── config.py
@@ -476,6 +499,7 @@ CyberLex-Sweden
 │   └── local Markdown knowledge base files
 ├── docs
 │   ├── architecture.md
+│   ├── source_watch_report.md
 │   ├── case_library
 │   └── project documentation
 ├── report
@@ -484,7 +508,10 @@ CyberLex-Sweden
 ├── scripts
 │   ├── add_missing_metadata.py
 │   ├── case_audit.py
-│   └── source_audit.py
+│   ├── source_audit.py
+│   └── source_watch.py
+├── source_snapshots
+│   └── source_watch_state.json
 ├── sources
 ├── .gitignore
 ├── COPYRIGHT.md
@@ -548,26 +575,30 @@ python -m py_compile app/source_loader.py
 python -m py_compile app/incident_engine.py
 python -m py_compile app/case_search.py
 python -m py_compile app/vector_search.py
+python -m py_compile scripts/source_watch.py
 ```
 
-This checks whether the current app modules have Python syntax errors.
+This checks whether the current app modules and the source watcher have Python syntax errors.
 
 If the commands give no output, the syntax checks usually passed. Naturally, the silence of software is the closest it gets to mercy.
 
-### 6. Run audits
+### 6. Run audits and source watch
 
 ```powershell
+python scripts/source_watch.py
 python scripts/source_audit.py
 python scripts/case_audit.py
 ```
 
-These commands run the local source audit and case audit.
+These commands run the online source watch, local source audit, and local case audit.
+
+The source watch checks official URLs from the local source files and detects possible changes, failed URLs, and first snapshots.
 
 The source audit checks local files in `data/`.
 
 The case audit checks local files in `cases/`.
 
-These audits check local file structure and metadata. They do not browse the web or confirm live legal currency.
+The source audit and case audit check local file structure and metadata. They do not confirm live legal currentness.
 
 ### 7. Start the app
 
@@ -593,6 +624,12 @@ Run the app:
 python -m streamlit run app/main.py
 ```
 
+Run the online source watch:
+
+```powershell
+python scripts/source_watch.py
+```
+
 Run the source audit:
 
 ```powershell
@@ -605,13 +642,21 @@ Run the case audit:
 python scripts/case_audit.py
 ```
 
+Run all source checks:
+
+```powershell
+python scripts/source_watch.py
+python scripts/source_audit.py
+python scripts/case_audit.py
+```
+
 Run the experimental retrieval module:
 
 ```powershell
 python app/vector_search.py
 ```
 
-Check Python syntax for all current app modules:
+Check Python syntax for all current app modules and the source watcher:
 
 ```powershell
 python -m py_compile app/main.py
@@ -623,6 +668,7 @@ python -m py_compile app/source_loader.py
 python -m py_compile app/incident_engine.py
 python -m py_compile app/case_search.py
 python -m py_compile app/vector_search.py
+python -m py_compile scripts/source_watch.py
 ```
 
 Clear Streamlit cache:
@@ -653,6 +699,7 @@ Important documents include:
 * `docs/source_context_behavior.md` - source routing and source-context behavior
 * `docs/source_history.md` - source update history and knowledge base change log
 * `docs/source_audit_report.md` - generated local source audit report
+* `docs/source_watch_report.md` - generated online source watch report
 * `docs/case_library/case_audit_report.md` - generated local case audit report
 * `docs/test_cases.md` - manual and experimental retrieval test cases
 * `docs/testing_and_demo.md` - practical testing and demo guidance
@@ -685,12 +732,6 @@ docs/demo_checklist.md
 docs/test_run_checklist.md
 ```
 
-A focused battle-readiness test file has also been prepared for colleague testing:
-
-```text
-docs/cyberlex_battle_readiness_test_questions.md
-```
-
 Testing should include:
 
 * core legal questions
@@ -710,6 +751,7 @@ Testing should include:
 * out-of-scope refusal behavior
 * unsafe offensive cyber refusal behavior
 * source-context readability checks
+* source watch checks
 * source audit checks
 * case audit checks
 
@@ -748,6 +790,55 @@ A GitHub Actions workflow also exists for source auditing:
 
 ---
 
+## Source Watch System
+
+CyberLex Sweden includes an online source watch script:
+
+```text
+scripts/source_watch.py
+```
+
+The script reads official source URLs from the `## Official source` sections inside the local Markdown files in `data/`.
+
+It checks whether each official source URL can be reached and whether the fetched content appears to have changed since the previous run.
+
+It generates:
+
+```text
+docs/source_watch_report.md
+```
+
+It stores URL fingerprints in:
+
+```text
+source_snapshots/source_watch_state.json
+```
+
+The source watch report can show:
+
+* first snapshots
+* unchanged sources
+* changed sources
+* failed checks
+* redirects
+* HTTP status codes
+* content hashes
+* recommended manual review actions
+
+The source watcher does **not** automatically update local legal summaries. It only creates review signals.
+
+A GitHub Actions workflow also exists for online source monitoring:
+
+```text
+.github/workflows/source-watch.yml
+```
+
+This workflow can run manually or on a weekly schedule.
+
+If official sources change or fail, the report should be reviewed manually before local source files are updated.
+
+---
+
 ## Case Audit System
 
 CyberLex Sweden includes a local case audit script:
@@ -770,6 +861,54 @@ It only checks the local case-library files.
 
 ---
 
+## GitHub Actions Automation
+
+CyberLex Sweden currently uses two GitHub Actions workflows:
+
+```text
+.github/workflows/source-audit.yml
+.github/workflows/source-watch.yml
+```
+
+### Weekly Source Audit
+
+The source audit workflow runs:
+
+```powershell
+python scripts/source_audit.py
+```
+
+It updates:
+
+```text
+docs/source_audit_report.md
+```
+
+This checks local Markdown source structure.
+
+### Weekly Source Watch
+
+The source watch workflow runs:
+
+```powershell
+python scripts/source_watch.py
+python scripts/source_audit.py
+```
+
+It updates:
+
+```text
+docs/source_watch_report.md
+docs/source_audit_report.md
+source_snapshots/source_watch_state.json
+```
+
+This checks official online source URLs and then reruns the local source audit.
+
+These workflows are designed to help detect stale source links, changed official pages, missing metadata, or local source-file problems before they quietly rot inside the repository like forgotten leftovers in a student fridge.
+
+---
+
 ## Known Limitations
 
 CyberLex Sweden is an educational prototype. These limitations are intentional and should be understood before using or demonstrating the app.
@@ -780,8 +919,10 @@ Current limitations:
 * it does not replace official authority guidance
 * it does not replace a qualified lawyer or professional compliance review
 * it does not replace a professional incident-response team
-* it does not browse the web live
+* it does not browse the web live during user answers
 * it only answers from local Markdown source files
+* the source watcher checks official URLs, but it does not automatically update legal summaries
+* the source watcher detects possible content changes, not legal meaning
 * it covers selected cybersecurity-law and incident-response topics only
 * the current answers are rule-based
 * the current module split improves maintainability but does not make the app production-ready
@@ -832,6 +973,7 @@ Planned or possible improvements include:
 * continue refining incident-type source context filtering
 * improve source update workflows
 * strengthen source freshness review routines
+* improve online source-watch review routines
 * add more carefully labeled authority decisions and public incident examples
 * continue improving case metadata, source links, and learning notes
 
@@ -859,5 +1001,3 @@ CyberLex Sweden is a school project and educational prototype.
 It provides simplified information from selected local source summaries, local case examples, and official source links.
 
 It is not legal advice, does not guarantee legal accuracy or currentness, and should not be used as the sole basis for legal, compliance, privacy, regulatory, or security decisions.
-
-For real incidents, legal questions, regulatory reporting, or compliance decisions, users should check official sources and contact qualified professionals.
