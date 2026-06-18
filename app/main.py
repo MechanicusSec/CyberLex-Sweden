@@ -8355,15 +8355,17 @@ if "submitted_question" not in st.session_state:
 
 if "pending_example_question" in st.session_state:
     st.session_state.selected_example_question = st.session_state.pending_example_question
+    st.session_state.submitted_question = st.session_state.pending_example_question
     st.session_state.main_question_input = st.session_state.pending_example_question
     del st.session_state.pending_example_question
 
 def select_example_question(example_question):
-    # Store the clicked example question and apply it before the text input
-    # widget is created on the next Streamlit rerun.
-    # This avoids StreamlitAPIException from modifying a widget key after
-    # the widget has already been instantiated.
+    # Store and submit the clicked example question immediately.
+    # The pending key is applied before the text input widget is created on the
+    # next Streamlit rerun, which avoids StreamlitAPIException from modifying a
+    # widget key after the widget has already been instantiated.
     st.session_state.selected_example_question = example_question
+    st.session_state.submitted_question = example_question
     st.session_state.pending_example_question = example_question
     st.session_state.show_example_questions = False
 
@@ -8383,8 +8385,11 @@ def submit_main_question():
     # Saves the current question immediately when the user presses Enter in
     # the input field or clicks the Search button.
     submitted_question = str(st.session_state.get("main_question_input", "")).strip()
-    st.session_state.submitted_question = submitted_question
-    st.session_state.selected_example_question = submitted_question
+
+    if submitted_question:
+        st.session_state.submitted_question = submitted_question
+        st.session_state.selected_example_question = submitted_question
+
     st.session_state.show_example_questions = False
 
 
@@ -8400,7 +8405,17 @@ if st.button(search_button_label, key="main_question_search_button"):
     submit_main_question()
     st.rerun()
 
-question = str(st.session_state.get("submitted_question", "")).strip()
+current_input_question = str(st.session_state.get("main_question_input", "")).strip()
+submitted_state_question = str(st.session_state.get("submitted_question", "")).strip()
+
+# Use the current visible input as the active question whenever it has text.
+# This keeps manual typing, Search button clicks, Enter submits, and example
+# question clicks aligned with the same active question.
+question = current_input_question or submitted_state_question
+
+if current_input_question and current_input_question != submitted_state_question:
+    st.session_state.submitted_question = current_input_question
+    st.session_state.selected_example_question = current_input_question
 
 if interface_language == "Svenska":
     example_questions_heading = "Exempelfrågor"
