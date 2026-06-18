@@ -25,21 +25,25 @@ The current prototype is a Streamlit application with:
 * source freshness labels
 * practical explanations
 * assessment checklists
-* incident-response guidance
+* defensive incident-response guidance
 * SOC-style Markdown incident report export
 * Case Intelligence page for authority decisions and real-world examples
 * case learning notes for clearer educational takeaways
-* related authority/case references below relevant answers where relevant
+* related authority and case references below relevant answers where appropriate
 * hidden related-case section for practical incident-response triage questions
 * relevant source context
 * out-of-scope refusal behavior
 * unsafe cyber refusal behavior
-* an experimental retrieval sidebar
-* a separate audited case library in `cases/`
+* experimental retrieval sidebar
+* source audit system
+* case audit system
+* separate audited case library in `cases/`
 
 CyberLex Sweden is an educational prototype.
 
 It does not provide legal advice.
+
+It should not replace official authority guidance, qualified legal advice, compliance review, data protection officer review, or professional incident-response support.
 
 ---
 
@@ -47,9 +51,11 @@ It does not provide legal advice.
 
 CyberLex Sweden is an educational legal-tech and cybersecurity-law assistant focused on selected Swedish and EU cybersecurity-law topics.
 
-The project explores how a focused AI-style assistant can help users understand selected cyber law, data protection, digital compliance, cybercrime, and incident-response topics in a safer and more transparent way than a general chatbot.
+The project explores how a focused source-grounded assistant can help users understand selected cyber law, data protection, digital compliance, cybercrime, and defensive incident-response topics in a safer and more transparent way than a general chatbot.
 
-The current version is local and rule-based. It also includes a separate case library for selected authority decisions and real-world GDPR/cybersecurity examples, so users can see how similar issues have been assessed in practice.
+The current version is local and rule-based.
+
+It also includes a separate case library for selected authority decisions and real-world GDPR/cybersecurity examples, so users can see how similar issues have been assessed or publicly handled in practice.
 
 It does not currently use:
 
@@ -58,6 +64,8 @@ It does not currently use:
 * real vector search
 * ChromaDB
 * FAISS
+* embeddings
+* external AI APIs
 * RAG answer generation
 
 Instead, it uses:
@@ -76,7 +84,7 @@ Instead, it uses:
 
 The main design principle is:
 
-```text
+```text id="20xw7h"
 Better sources first. Better AI second.
 ```
 
@@ -94,12 +102,14 @@ Cybersecurity law is difficult to understand because relevant information is spr
 * data protection authorities
 * sector-specific compliance guidance
 * official legal databases
+* authority decisions
+* practical incident-response guidance
 
 This can make it difficult for students, IT workers, and small organizations to understand which rules may be relevant after a cyber incident or in a digital compliance situation.
 
 A general chatbot may answer confidently without showing clear legal sources or separating legal guidance from historical case examples.
 
-That is risky for legal and cybersecurity topics.
+That is risky for legal, privacy, compliance, and cybersecurity topics.
 
 CyberLex Sweden was created to test a more transparent approach: answers should be based on selected local source material, and users should be able to see which source file and source section supported the answer.
 
@@ -119,12 +129,12 @@ The system is designed to:
 * show source quality and source freshness labels
 * display practical explanations and assessment checklists
 * provide defensive incident-response support where relevant
-* generate SOC-style Markdown incident summaries
+* generate SOC-style Markdown incident summaries for practical incident questions
 * display related authority decisions and case examples where relevant
 * provide a browseable Case Intelligence page
 * refuse unsupported or out-of-scope questions
 * refuse unsafe offensive cyber requests
-* support both English and Swedish interface text
+* support English, Swedish, and Auto interface behavior
 
 The goal is not to replace official sources or legal professionals.
 
@@ -138,13 +148,13 @@ CyberLex Sweden has been refactored from an earlier single-file prototype into a
 
 The main Streamlit entry point is still:
 
-```text
+```text id="5820en"
 app/main.py
 ```
 
 Supporting logic is now separated into smaller modules:
 
-```text
+```text id="60cxq9"
 app/config.py
 app/styles.py
 app/text_utils.py
@@ -160,7 +170,7 @@ The current structure separates:
 * app configuration
 * visual styling
 * text normalization
-* Swedish/English language detection and localization
+* Swedish and English language detection and localization
 * Markdown source loading
 * practical incident-response detection
 * case-library search
@@ -170,7 +180,7 @@ This makes the project easier to understand, test, maintain, and expand.
 
 The current architecture is documented in:
 
-```text
+```text id="ezcrnw"
 docs/architecture.md
 docs/technical_design.md
 ```
@@ -188,6 +198,9 @@ CyberLex Sweden is designed for:
 * people learning about Swedish cybersecurity law
 * people learning about GDPR, NIS2, DORA, CRA, cybercrime, and incident reporting
 * people who want a clearer overview of selected Swedish and EU digital compliance topics
+* people who want educational examples of selected GDPR and cybersecurity-related cases
+
+CyberLex Sweden is not designed as a production legal, compliance, regulatory, or incident-response system.
 
 ---
 
@@ -226,13 +239,13 @@ CyberLex Sweden does not cover all Swedish law, all EU law, or all cybersecurity
 
 The current local knowledge base is stored in:
 
-```text
+```text id="v38v8s"
 data/
 ```
 
 The current source audit checks 13 source files:
 
-```text
+```text id="nljkrg"
 data/cyber_incident_response_playbook.md
 data/cybercrime_dataintrang.md
 data/eu_attacks_against_information_systems.md
@@ -257,7 +270,6 @@ Each source file should include structured sections such as:
 * practical or cybersecurity connection
 * useful questions
 * official source links
-* language-aware official source link display
 * source metadata
 * disclaimer
 
@@ -265,9 +277,20 @@ Several sources include Swedish summaries and Swedish useful questions to improv
 
 The current source list is documented in:
 
-```text
+```text id="4k7egw"
 docs/source_list.md
 ```
+
+The current source audit target is:
+
+```text id="xw7zt1"
+Files marked OK: 13
+Files needing review: 0
+```
+
+The source audit checks local file structure and metadata.
+
+It does not browse the web and does not confirm live legal currency.
 
 ---
 
@@ -275,28 +298,28 @@ docs/source_list.md
 
 CyberLex Sweden also includes a separate case library stored in:
 
-```text
+```text id="lgx0gr"
 cases/
 ```
 
-The case library is separate from the legal/source knowledge base.
+The case library is separate from the legal and source knowledge base.
 
 The distinction is important:
 
-* `data/` contains source-based legal and cybersecurity knowledge material
+* `data/` contains source-based legal, regulatory, cybersecurity, and defensive incident-response knowledge material
 * `cases/` contains educational summaries of selected authority decisions and real-world examples
 
-The current case library checks 8 case files. It includes selected IMY-related cases and one public Klarna app data exposure / supervisory investigation example:
+The current case audit checks 8 case files:
 
-```text
+```text id="32kqn3"
 cases/imy_apoteket_apohem_meta_pixel.md
 cases/imy_avanza_bank_meta_pixel.md
 cases/imy_equality_ombudsman_web_form.md
 cases/imy_kry_meta_pixel.md
-cases/klarna_app_data_exposure_2021.md
 cases/imy_sportadmin_security_breach.md
 cases/imy_trygg_hansa_security_deficiencies.md
 cases/imy_wrong_email_customer_data.md
+cases/klarna_app_data_exposure_2021.md
 ```
 
 These cases are used to show historical examples of how cyber, GDPR, tracking, security, app exposure, data leak, and personal data breach issues have been assessed or publicly handled in practice.
@@ -330,6 +353,17 @@ The case files include structured sections such as:
 * case metadata
 * disclaimer
 
+The current case audit target is:
+
+```text id="dfbs7g"
+Case files marked OK: 8
+Case files needing review: 0
+```
+
+The case audit checks local case structure.
+
+It does not verify live legal or factual currentness.
+
 ---
 
 ## Case Intelligence Page
@@ -346,7 +380,7 @@ It displays:
 * learning note
 * related CyberLex topic badges
 * official source links
-* a warning that outcomes and amounts are historical examples only
+* warning that outcomes and amounts are historical examples only
 * filtering/search across case titles, summaries, outcomes, topics, and source links
 
 The Case Intelligence page supports Swedish and English display logic.
@@ -382,13 +416,12 @@ They are used to support education, comparison, and risk awareness.
 
 Related cases should not be shown by default for practical incident-response triage questions such as:
 
-```text
+```text id="5br68o"
 Our files are encrypted, what should we do?
 Vi har fått en misstänkt login på ett konto, vad ska vi göra?
 ```
 
 For those questions, CyberLex should focus on first steps, containment, evidence preservation, reporting assessment, source context, and SOC-style report support.
-
 
 ---
 
@@ -400,7 +433,7 @@ The current CyberLex Sweden prototype can:
 * split documents into searchable sections
 * match user questions against relevant source sections
 * route clear topic questions to the correct source file
-* expand question terms with related cyber/legal terminology
+* expand question terms with related cyber and legal terminology
 * generate simple source-based answers
 * show detected topic labels
 * show citation details
@@ -447,7 +480,7 @@ Important current UI behavior includes:
 
 The current UI behavior is documented in:
 
-```text
+```text id="ia49jl"
 docs/ui_behavior.md
 docs/source_context_behavior.md
 ```
@@ -458,7 +491,7 @@ docs/source_context_behavior.md
 
 CyberLex Sweden includes an experimental retrieval module in:
 
-```text
+```text id="9evatg"
 app/vector_search.py
 ```
 
@@ -482,7 +515,7 @@ A real vector search attempt was paused because the local Python environment use
 
 The vector search plan remains documented for future work in:
 
-```text
+```text id="j7cvdf"
 docs/vector_search_plan.md
 ```
 
@@ -494,7 +527,7 @@ CyberLex Sweden includes a local source audit system.
 
 The audit script is:
 
-```text
+```text id="x1sdqj"
 scripts/source_audit.py
 ```
 
@@ -502,7 +535,6 @@ It checks local Markdown source files for:
 
 * official source sections
 * official source links
-* language-aware official source link display
 * source metadata sections
 * source dates
 * source freshness
@@ -510,13 +542,13 @@ It checks local Markdown source files for:
 
 The audit report is written to:
 
-```text
+```text id="wpc5z5"
 docs/source_audit_report.md
 ```
 
 The current target is:
 
-```text
+```text id="r1prx4"
 Files marked OK: 13
 Files needing review: 0
 ```
@@ -533,13 +565,13 @@ It only checks the structure and review metadata of local project files.
 
 CyberLex Sweden includes a separate case audit script:
 
-```text
+```text id="bwqei0"
 scripts/case_audit.py
 ```
 
 The script checks Markdown files in:
 
-```text
+```text id="dy6clw"
 cases/
 ```
 
@@ -568,7 +600,7 @@ The case audit checks whether each case file has required sections such as:
 
 The report is written to:
 
-```text
+```text id="ti0css"
 docs/case_library/case_audit_report.md
 ```
 
@@ -584,7 +616,7 @@ It only checks whether the case files follow the expected local structure and co
 
 CyberLex Sweden includes a GitHub Actions source audit workflow:
 
-```text
+```text id="2vwtxw"
 .github/workflows/source-audit.yml
 ```
 
@@ -610,7 +642,7 @@ Example questions CyberLex Sweden should be able to handle include:
 
 ### English
 
-```text
+```text id="df7iq7"
 What is CyberLex Sweden?
 What is IMY?
 What is NIS2?
@@ -640,7 +672,7 @@ What is Swedish tax law?
 
 ### Swedish
 
-```text
+```text id="nvep8v"
 Vad är CyberLex Sweden?
 Vad är IMY?
 Vad är NIS2?
@@ -674,7 +706,7 @@ CyberLex Sweden includes testing and documentation files for manual regression t
 
 Important testing documents include:
 
-```text
+```text id="nz330o"
 docs/test_cases.md
 docs/test_run_checklist.md
 docs/testing_and_demo.md
@@ -682,7 +714,7 @@ docs/demo_checklist.md
 docs/demo_script.md
 ```
 
-These documents now cover:
+These documents cover:
 
 * refactored Python module syntax checks
 * app startup
@@ -751,9 +783,10 @@ Current limitations include:
 * public deployment would require stronger privacy, security, and legal review
 * public incident examples must be clearly separated from authority decisions
 * historical case examples must not be used as fine predictions
+* SOC-style incident reports are educational documentation aids, not official reports
 * some official source links may only be available in one language
 
-For serious legal, compliance, regulatory, or cybersecurity matters, users should check official sources or contact qualified professionals.
+For serious legal, compliance, regulatory, privacy, or cybersecurity matters, users should check official sources or contact qualified professionals.
 
 ---
 
@@ -775,12 +808,12 @@ Planned future improvements include:
 * moving case ranking rules into a cleaner configuration structure
 * improving visual design
 * preparing public deployment
-* strengthening legal disclaimer, privacy policy, and terms of use
+* strengthening legal disclaimer, privacy and data-handling documentation, and terms of use
 * reviewing possible trademark and brand protection if the project develops further
 
 The current design principle remains:
 
-```text
+```text id="hu3aj4"
 Better sources first. Better AI second.
 ```
 
