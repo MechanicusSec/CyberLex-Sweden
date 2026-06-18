@@ -10,7 +10,7 @@ This audit does not browse the web and does not confirm whether the law is curre
 
 ## Audit Summary
 
-- Generated at: `2026-06-18 09:06:41`
+- Generated at: `2026-06-18 10:49:51`
 - Total source files checked: `13`
 - Files marked OK: `13`
 - Files needing review: `0`
@@ -107,9 +107,9 @@ No issues found.
 
 - Status: `OK`
 - Official source links found: `8`
-- Source date: `Source date: Last checked: 2026-06-03`
+- Source date: `Source date: Last checked: 2026-06-18`
 - Source freshness: `Recently checked`
-- Version notes: `Version notes: Swedish summary added and GDPR personal data breach source expanded for bilingual CyberLex Sweden testing.`
+- Version notes: `Version notes: Removed outdated IMY English guidance URL that returned 404, added current Swedish IMY personal data breach guidance, and refreshed wording for GDPR Article 33 breach notification threshold and 72-hour timing.`
 
 No issues found.
 
@@ -142,10 +142,10 @@ No issues found.
 ### nis2_cybersecurity_law.md
 
 - Status: `OK`
-- Official source links found: `6`
-- Source date: `Source date: Last checked: 2026-06-03`
+- Official source links found: `8`
+- Source date: `Source date: Last checked: 2026-06-18`
 - Source freshness: `Recently checked`
-- Version notes: `Version notes: Source reviewed and expanded for CyberLex Sweden educational prototype. Added Swedish support for NIS2, the Swedish Cybersecurity Act, cybersecurity risk management, covered organizations, security measures, source routing, useful questions, official source links, and relationship with incident reporting.`
+- Version notes: `Version notes: Replaced outdated MSB Cybersäkerhetslagen URL that redirected to a 404 page, updated authority wording from MSB-only to MCF and official Swedish legal sources, added Riksdagen source for Cybersäkerhetslag (2025:1506), and refreshed Swedish implementation wording.`
 
 No issues found.
 

@@ -8,10 +8,17 @@ streamlit
 
 python-dotenv
 
+# Online source monitoring
+
+requests
+beautifulsoup4
+
 # Notes:
 
 # The current CyberLex Sweden prototype is rule-based and local-first.
 
 # It does not currently require external AI APIs, embeddings, ChromaDB, FAISS, or RAG dependencies.
 
-# Future vector search or AI/RAG dependencies should be added only after they are tested in a stable Python environment.
+# The source watcher only checks official source URLs for possible changes.
+
+# It does not automatically rewrite local legal summaries.

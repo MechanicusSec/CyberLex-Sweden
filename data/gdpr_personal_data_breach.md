@@ -30,7 +30,7 @@ A personal data breach may need to be reported to IMY.
 
 A controller must assess whether the breach is likely to result in a risk to the rights and freedoms of natural persons.
 
-If notification is required, the breach should normally be reported within 72 hours after the organization becomes aware of it.
+If notification is required, the breach should normally be reported without undue delay and, where feasible, within 72 hours after the controller becomes aware of it.
 
 If all information is not available immediately, supplementary information can be provided later.
 
@@ -48,12 +48,12 @@ CyberLex Sweden should explain that notification to IMY and communication to aff
 
 An organization may need to assess:
 
-- what personal data was affected
-- how sensitive the personal data is
-- how many individuals may be affected
-- whether the data was exposed, stolen, altered, destroyed, or made unavailable
-- what risks the breach may create for affected individuals
-- what measures were taken to reduce the risk
+* what personal data was affected
+* how sensitive the personal data is
+* how many individuals may be affected
+* whether the data was exposed, stolen, altered, destroyed, or made unavailable
+* what risks the breach may create for affected individuals
+* what measures were taken to reduce the risk
 
 ## Cybersecurity connection
 
@@ -69,17 +69,17 @@ After a data breach or suspected personal data breach, an organization should fi
 
 The organization should document:
 
-- when the breach or incident was discovered
-- when the organization became aware that personal data may have been affected
-- what personal data may have been affected
-- which systems, accounts, services, or records were involved
-- whether the personal data was accessed, disclosed, altered, lost, destroyed, or made unavailable
-- whether the breach may create a risk to individuals' rights and freedoms
-- whether notification to IMY is required within 72 hours
-- whether affected individuals may need to be informed if the risk is high
-- what containment and mitigation actions were taken
-- what evidence, logs, decisions, and timeline information were preserved
-- which official sources and internal procedures were checked
+* when the breach or incident was discovered
+* when the organization became aware that personal data may have been affected
+* what personal data may have been affected
+* which systems, accounts, services, or records were involved
+* whether the personal data was accessed, disclosed, altered, lost, destroyed, or made unavailable
+* whether the breach may create a risk to individuals' rights and freedoms
+* whether notification to IMY is required within 72 hours
+* whether affected individuals may need to be informed if the risk is high
+* what containment and mitigation actions were taken
+* what evidence, logs, decisions, and timeline information were preserved
+* which official sources and internal procedures were checked
 
 For practical cybersecurity questions, CyberLex Sweden should explain that an organization should contain the incident, preserve evidence, document the timeline, assess whether personal data was affected, assess the risk to individuals, check whether IMY notification is required, and consider whether affected individuals must be informed.
 
@@ -95,54 +95,54 @@ I Sverige är IMY, Integritetsskyddsmyndigheten, ansvarig tillsynsmyndighet för
 
 En organisation som upptäcker en möjlig personuppgiftsincident bör bedöma:
 
-- vad som har hänt
-- när incidenten upptäcktes
-- när organisationen blev medveten om att personuppgifter kan ha påverkats
-- vilka personuppgifter som kan ha påverkats
-- om personuppgifterna har röjts, ändrats, förstörts, gått förlorade eller blivit otillgängliga
-- om incidenten kan innebära en risk för fysiska personers rättigheter och friheter
-- om incidenten behöver anmälas till IMY inom 72 timmar
-- om berörda personer behöver informeras vid hög risk
-- vilka åtgärder som har vidtagits för att begränsa skadan
-- vilka loggar, bevis, beslut och tidslinjer som har sparats
+* vad som har hänt
+* när incidenten upptäcktes
+* när organisationen blev medveten om att personuppgifter kan ha påverkats
+* vilka personuppgifter som kan ha påverkats
+* om personuppgifterna har röjts, ändrats, förstörts, gått förlorade eller blivit otillgängliga
+* om incidenten kan innebära en risk för fysiska personers rättigheter och friheter
+* om incidenten behöver anmälas till IMY inom 72 timmar
+* om berörda personer behöver informeras vid hög risk
+* vilka åtgärder som har vidtagits för att begränsa skadan
+* vilka loggar, bevis, beslut och tidslinjer som har sparats
 
 Alla personuppgiftsincidenter behöver inte anmälas till IMY.
 
 Organisationen måste bedöma om incidenten sannolikt leder till en risk för fysiska personers rättigheter och friheter.
 
-Om anmälan krävs ska den normalt göras till IMY inom 72 timmar från att organisationen blev medveten om incidenten.
+Om anmälan krävs ska den normalt göras utan onödigt dröjsmål och, där det är möjligt, inom 72 timmar från att organisationen blev medveten om incidenten.
 
 CyberLex Sweden bör använda denna svenska sammanfattning när användaren ställer frågor på svenska om personuppgiftsincidenter, dataintrång med personuppgifter, GDPR, IMY, 72-timmarsregeln, dataläckor, ransomware med personuppgifter eller incidenter där personuppgifter kan ha påverkats.
 
 ## Useful questions CyberLex Sweden can answer from this source
 
-- What is a personal data breach?
-- When must a personal data breach be reported in Sweden?
-- Which authority handles GDPR breach notifications in Sweden?
-- What does the 72-hour rule mean?
-- What should an organization consider after a data breach?
-- Does every data breach need to be reported to IMY?
-- When must affected individuals be informed?
-- What should a company do after a personal data breach?
-- Vad är en personuppgiftsincident?
-- När måste en personuppgiftsincident anmälas till IMY?
-- Vad betyder 72-timmarsregeln?
-- Måste alla personuppgiftsincidenter anmälas?
-- Vad ska ett företag göra efter en personuppgiftsincident?
-- När behöver berörda personer informeras?
+* What is a personal data breach?
+* When must a personal data breach be reported in Sweden?
+* Which authority handles GDPR breach notifications in Sweden?
+* What does the 72-hour rule mean?
+* What should an organization consider after a data breach?
+* Does every data breach need to be reported to IMY?
+* When must affected individuals be informed?
+* What should a company do after a personal data breach?
+* Vad är en personuppgiftsincident?
+* När måste en personuppgiftsincident anmälas till IMY?
+* Vad betyder 72-timmarsregeln?
+* Måste alla personuppgiftsincidenter anmälas?
+* Vad ska ett företag göra efter en personuppgiftsincident?
+* När behöver berörda personer informeras?
 
 ## Official source
 
-- [IMY: Personal data breach guidance](https://www.imy.se/en/organisations/data-protection/this-applies-accordning-to-gdpr/personal-data-breach/)
-- [IMY: Notification of a personal data breach](https://www.imy.se/en/organisations/forms-and-e-services/notification-of-a-personal-data-breach/)
-- [IMY: Do we have to report all personal data breaches to IMY?](https://www.imy.se/en/frequently-asked-questions/do-we-have-to-report-all-personal-data-breaches-to-imy/)
-- [EU: GDPR Regulation](https://eur-lex.europa.eu/eli/reg/2016/679/oj/eng)
+* [IMY: Notification of a personal data breach](https://www.imy.se/en/organisations/forms-and-e-services/notification-of-a-personal-data-breach/)
+* [IMY: Do we have to report all personal data breaches to IMY?](https://www.imy.se/en/frequently-asked-questions/do-we-have-to-report-all-personal-data-breaches-to-imy/)
+* [IMY: Personuppgiftsincidenter](https://www.imy.se/verksamhet/dataskydd/det-har-galler-enligt-gdpr/personuppgiftsincidenter/)
+* [EU: GDPR Regulation](https://eur-lex.europa.eu/eli/reg/2016/679/oj/eng)
 
 ## Source metadata
 
-Source date: Last checked: 2026-06-03
+Source date: Last checked: 2026-06-18
 
-Version notes: Swedish summary added and GDPR personal data breach source expanded for bilingual CyberLex Sweden testing.
+Version notes: Removed outdated IMY English guidance URL that returned 404, added current Swedish IMY personal data breach guidance, and refreshed wording for GDPR Article 33 breach notification threshold and 72-hour timing.
 
 ## Disclaimer
 
