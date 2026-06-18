@@ -36,48 +36,29 @@ It does not provide legal advice and should not replace a qualified lawyer, offi
 
 ## Application Architecture
 
-The application is built with:
+CyberLex Sweden is built as a modular Python and Streamlit application.
 
-* Python
-* Streamlit
-* local Markdown files
-* rule-based source search
-* source routing
-* topic keyword expansion
-* source confidence explanations
-* source quality labels
-* source freshness labels
-* detected topic labels
-* source metadata extraction
-* citation display
-* bilingual interface support
-* practical explanation generation
-* topic-based assessment checklists
-* SOC-style Markdown report generation
-* experimental retrieval search
-* case library loading and case relevance search
-* bilingual case-intelligence display
-* case learning-note display
-* source audit scripts
-* case audit scripts
-* GitHub Actions source audit automation
-
-The main application file is:
+The Streamlit entry point is:
 
 ```text
 app/main.py
 ```
 
-The experimental retrieval module is:
+Earlier prototype versions placed most application logic directly inside `app/main.py`. The current version has been refactored into smaller modules so the application is easier to understand, test, maintain, and extend.
+
+Current app module structure:
 
 ```text
-app/vector_search.py
-```
-
-The case search module is:
-
-```text
-app/case_search.py
+app/
+├── main.py              # Streamlit app flow and UI rendering
+├── config.py            # App settings and folder paths
+├── styles.py            # CSS and visual styling
+├── text_utils.py        # Text normalization and matching helpers
+├── language.py          # Swedish/English detection and localization
+├── source_loader.py     # Markdown source loading and chunking
+├── incident_engine.py   # Practical incident-response question detection
+├── case_search.py       # Related case and incident-example search
+└── vector_search.py     # Experimental search functionality
 ```
 
 The local knowledge base is stored in:
@@ -116,13 +97,154 @@ The GitHub Actions workflow is stored in:
 .github/workflows/source-audit.yml
 ```
 
-This structure separates the main app, trusted source files, case files, documentation, maintenance scripts, and automation workflows.
+The current architecture separates:
+
+* Streamlit page flow
+* configuration
+* styling
+* text normalization
+* language detection and localization
+* Markdown source loading
+* incident-response detection
+* case-library search
+* experimental retrieval
 
 This makes the project easier to understand, test, maintain, and expand.
+
+More detailed architecture notes are also documented in:
+
+```text
+docs/architecture.md
+```
 
 ---
 
 ## Main Components
+
+## Current Python Modules
+
+The current app code is split across several Python modules.
+
+### `app/main.py`
+
+`main.py` is the Streamlit entry point.
+
+It controls:
+
+* page layout
+* sidebar navigation
+* question input
+* example question behavior
+* answer display flow
+* source result display
+* practical explanation sections
+* incident report download display
+* Case Intelligence page rendering
+* related case display rules
+
+The file still contains a large amount of answer-routing and display logic, but it no longer contains every helper function from the prototype.
+
+### `app/config.py`
+
+`config.py` stores shared app constants and folder paths.
+
+It includes:
+
+* app title
+* app icon
+* Streamlit layout mode
+* data folder path
+* case folder path
+
+### `app/styles.py`
+
+`styles.py` contains CSS and visual styling.
+
+It controls styling for:
+
+* cards
+* warnings
+* source context panels
+* topic badges
+* case sections
+* incident-response panels
+* general layout behavior
+
+### `app/text_utils.py`
+
+`text_utils.py` contains shared text helper functions.
+
+It supports:
+
+* normalizing user questions
+* cleaning searchable words
+* checking whether text contains key terms or phrases
+
+These helpers are reused by routing, search, language detection, and incident detection.
+
+### `app/language.py`
+
+`language.py` handles language detection and localization.
+
+It supports:
+
+* English and Swedish detection
+* Auto language mode
+* mixed Swedish/English cyber questions
+* localized section names
+* localized source labels
+* localized related case titles
+* example-question cleanup by language
+
+This module is important because CyberLex Sweden is intended to support both Swedish and English users.
+
+### `app/source_loader.py`
+
+`source_loader.py` handles the trusted Markdown knowledge base.
+
+It supports:
+
+* loading Markdown files from `data/`
+* extracting official source links
+* extracting source metadata
+* extracting source dates and version notes
+* splitting Markdown files into searchable chunks
+
+This separates source loading from the Streamlit UI.
+
+### `app/incident_engine.py`
+
+`incident_engine.py` contains practical incident-response detection logic.
+
+It detects questions about:
+
+* suspected hacking
+* unauthorized access
+* suspicious login activity
+* suspicious links
+* suspicious emails
+* compromised accounts
+* ransomware
+* malware
+* encrypted files
+* data leaks
+* practical incident-response situations
+
+This module helps the app decide when to show defensive first-step guidance and incident-response support.
+
+### `app/case_search.py`
+
+`case_search.py` handles case-library search.
+
+It loads case files from `cases/`, extracts structured case sections, expands keywords, scores case relevance, and returns related case examples.
+
+### `app/vector_search.py`
+
+`vector_search.py` is an experimental retrieval module.
+
+Despite the name, it currently remains rule-based and does not yet use true embeddings, FAISS, ChromaDB, or a full RAG pipeline.
+
+---
 
 ## Python
 
@@ -130,12 +252,13 @@ Python is the programming language used to build the application logic.
 
 It handles:
 
-* reading Markdown files
+* reading Markdown files through `source_loader.py`
 * splitting documents into searchable chunks
 * scoring search results
 * routing questions to source files
 * expanding question terms
 * detecting question topics
+* detecting practical incident-response questions through `incident_engine.py`
 * detecting source quality labels
 * detecting source freshness labels
 * generating answers
@@ -145,7 +268,7 @@ It handles:
 * generating source audit reports
 * displaying results through Streamlit
 * running experimental retrieval tests
-* loading educational case files
+* loading educational case files through `case_search.py`
 * scoring related cases
 * rendering bilingual case-library content
 * filtering official case source links by selected language
@@ -192,7 +315,15 @@ Streamlit is also used for interactive features such as:
 * sidebar controls
 * session state
 
-Streamlit session state is used to remember selected example questions and whether the example question panel should be open or hidden.
+Streamlit session state is used to manage:
+
+* selected example questions
+* submitted questions
+* the visible question input
+* whether the example question panel should be open or hidden
+* sidebar and navigation state
+
+When the user clicks an example question, the app now submits that example immediately instead of only filling the input field.
 
 ---
 
@@ -466,6 +597,103 @@ The case audit does not verify live legal accuracy online. It also does not deci
 
 It checks whether the local case-library files follow the required CyberLex case structure.
 
+
+---
+
+## Question and Answer Flow
+
+The normal question flow is:
+
+1. The user enters a question or selects an example question.
+2. Streamlit session state stores the active question.
+3. Auto language mode determines whether the active question should use Swedish or English.
+4. The app checks whether the question is about CyberLex Sweden itself.
+5. The app checks whether the question is in scope.
+6. The app checks whether the question is unsafe and should be refused.
+7. The app routes supported questions toward a relevant source file where possible.
+8. The app searches local Markdown chunks.
+9. The best source match is used to build the main CyberLex answer.
+10. The app displays supporting source links, source metadata, limitations, practical sections, and source context where relevant.
+11. Related cases are shown only when the question is suitable for case-library examples.
+
+The app does not browse the web live during this process.
+
+---
+
+## Auto Language Flow
+
+CyberLex Sweden supports English, Swedish, and Auto language mode.
+
+In Auto mode:
+
+1. The app looks at the active question text.
+2. `language.py` detects whether the question should be handled as English or Swedish.
+3. The interface labels, answer headings, source labels, and case titles follow the detected language.
+4. Mixed Swedish/English cybersecurity questions are handled with special rules.
+
+Examples:
+
+```text
+Can Meta Pixel create GDPR risk?
+→ English
+```
+
+```text
+Kan Meta Pixel skapa GDPR-risk?
+→ Svenska
+```
+
+The language system is rule-based and may still need continued refinement as new question patterns appear.
+
+---
+
+## Example Question Flow
+
+The example question panel is designed for testing and demonstration.
+
+When a user clicks an example question:
+
+1. the example is stored as the selected question
+2. the same question is stored as the submitted question
+3. the input field is filled
+4. the example panel is hidden
+5. the app reruns and displays the answer directly
+
+This means the user should not need to click the normal search button after selecting an example question.
+
+---
+
+## Related Case Display Rules
+
+CyberLex Sweden can show related cases and incident examples below normal answers.
+
+However, related cases are not shown for practical incident-response triage questions such as:
+
+```text
+Our files are encrypted, what should we do?
+```
+
+```text
+Vi har fått en misstänkt login på ett konto, vad ska vi göra?
+```
+
+For those questions, the app should focus on defensive first steps, containment, evidence preservation, source context, and incident report support.
+
+Related cases are mainly shown for legal, compliance, and case-library-style questions such as:
+
+```text
+Can Meta Pixel create GDPR risk?
+```
+
+```text
+Kan ett appfel exponera kunduppgifter?
+```
+
+```text
+What can weak security measures cost?
+```
+
+This keeps the answer focused on what the user is actually asking.
 
 ---
 
@@ -1092,9 +1320,10 @@ This is handled with Streamlit session state.
 When the user clicks an example question, CyberLex:
 
 1. stores the selected question in session state
-2. fills the question input field with that question
-3. hides the example questions panel
-4. reruns the Streamlit app so the answer is generated
+2. stores the question as the submitted active question
+3. fills the question input field with that question
+4. hides the example questions panel
+5. reruns the Streamlit app so the answer is generated immediately
 
 In Swedish mode, the app displays Swedish example questions and Swedish button labels.
 
@@ -1148,6 +1377,7 @@ Current technical limitations include:
 * it only answers from local Markdown sources
 * it only covers selected topics
 * it uses rule-based answers and routing
+* Auto language detection is rule-based and may need additional edge-case refinement
 * it does not provide legal advice
 * source material must be manually reviewed and updated
 * the source audit checks local source structure, not live legal changes
@@ -1172,6 +1402,8 @@ Future technical improvements may include:
 * local embeddings using sentence-transformers
 * AI-generated answers using a RAG design
 * stronger citation formatting
+* more automated tests for the refactored modules
+* possible future split of answer-generation, search-ranking, and UI rendering logic
 * source update reminders
 * live source review workflow
 * more Swedish official case links where available
@@ -1193,6 +1425,7 @@ Future technical improvements may include:
 CyberLex Sweden currently has:
 
 * a working Streamlit interface
+* a modular app structure after refactoring `app/main.py`
 * a local Markdown knowledge base
 * 13 source files checked by the source audit
 * rule-based source-grounded answers
@@ -1213,8 +1446,8 @@ CyberLex Sweden currently has:
 * SOC Markdown report export
 * relevant source context display
 * other matching source sections
-* example question buttons
-* bilingual interface support
+* example question buttons that run immediately when selected
+* bilingual interface support with Auto language detection
 * experimental retrieval sidebar
 * experimental retrieval module in `app/vector_search.py`
 * case search module in `app/case_search.py`
@@ -1222,7 +1455,8 @@ CyberLex Sweden currently has:
 * educational case library in `cases/`
 * 8 checked case files
 * bilingual case summaries, outcomes, learning notes, topics, and source links
-* related cases and authority decisions under relevant answers
+* related cases and incident examples under relevant compliance/case-library answers
+* hidden related-case section for practical incident-response triage questions
 * source audit script in `scripts/source_audit.py`
 * case audit script in `scripts/case_audit.py`
 * metadata helper script in `scripts/add_missing_metadata.py`
@@ -1231,4 +1465,4 @@ CyberLex Sweden currently has:
 
 The source-improvement and case-intelligence phase is largely complete for the current prototype scope, with 8 checked case files and learning-note support.
 
-The next major technical step is documentation cleanup, broader test coverage for case behavior, true vector search, and later a RAG-based answer mode that remains mandatory-source-grounded.
+The next major technical step is broader test coverage for the refactored modules, case behavior, Auto language behavior, true vector search, and later a RAG-based answer mode that remains mandatory-source-grounded.
