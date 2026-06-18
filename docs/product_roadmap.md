@@ -18,6 +18,7 @@ The current prototype includes:
 
 * modular Python app structure after refactoring `app/main.py`
 * local Markdown knowledge base in `data/`
+* separate local case library in `cases/`
 * source-based search and chunk ranking
 * rule-based source routing
 * source-grounded answer generation
@@ -37,12 +38,17 @@ The current prototype includes:
 * clickable example questions that run immediately when selected
 * experimental retrieval sidebar
 * defensive incident-response guidance
-* hidden related cases for practical incident-response triage questions
 * SOC-style Markdown incident report export
+* related cases under relevant legal, compliance, and case-library answers
+* hidden related cases for practical incident-response triage questions
+* Case Intelligence page
+* case learning notes
 * out-of-scope refusal behavior
 * unsafe cyber refusal behavior
 * local source audit script
 * source audit report
+* local case audit script
+* case audit report
 * GitHub Actions source audit workflow
 * manual test cases
 * demo documentation
@@ -50,7 +56,24 @@ The current prototype includes:
 * architecture documentation
 * UI behavior documentation
 * source-context behavior documentation
-* legal/privacy/disclaimer drafts
+* legal disclaimer
+* privacy and data-handling documentation
+* Terms of Use
+* copyright notice
+
+The current source audit target is:
+
+```text id="fg9qaw"
+Files marked OK: 13
+Files needing review: 0
+```
+
+The current case audit target is:
+
+```text id="vvf101"
+Case files marked OK: 8
+Case files needing review: 0
+```
 
 The current system does not yet use:
 
@@ -60,6 +83,7 @@ The current system does not yet use:
 * FAISS
 * full language-model answer generation
 * RAG answer generation
+* external AI APIs
 * production database
 * public deployment
 
@@ -79,9 +103,11 @@ CyberLex Sweden could develop in several possible directions:
 * bilingual Swedish/English legal-tech assistant
 * future startup concept
 
-The strongest direction is a focused source-grounded assistant for Swedish and EU cybersecurity law.
+The strongest direction is a focused source-grounded assistant for Swedish and EU cybersecurity law, digital compliance, and defensive incident-response learning.
 
 The product should stay narrow enough to remain trustworthy.
+
+A broad chatbot that claims to know everything would be easier to market and worse at reality, which is apparently the standard business model of our age.
 
 ---
 
@@ -95,7 +121,7 @@ Future development should follow these principles:
 
 2. **Clear scope**
 
-   CyberLex should stay focused on selected cybersecurity-law, data protection, digital compliance, cybercrime, and defensive incident-response topics.
+   CyberLex should stay focused on selected cybersecurity-law, data protection, digital compliance, cybercrime, case-library, and defensive incident-response topics.
 
 3. **Visible limitations**
 
@@ -113,7 +139,11 @@ Future development should follow these principles:
 
    Legal and cybersecurity sources must be reviewed and updated over time.
 
-7. **Privacy awareness**
+7. **Case separation**
+
+   Case examples should support learning, not become fine predictions or legal outcome predictions.
+
+8. **Privacy awareness**
 
    A public version must handle user questions carefully and avoid unnecessary data storage.
 
@@ -193,6 +223,7 @@ CyberLex Sweden currently supports selected material related to:
 * incident-response routing improved
 * unsafe refusal behavior improved
 * source audit workflow added
+* source audit target aligned to 13 checked files and 0 needing review
 
 ### Why This Matters
 
@@ -200,7 +231,7 @@ Better retrieval and better source structure make future AI features safer and m
 
 The design principle remains:
 
-```text
+```text id="pcubum"
 Better sources first. Better AI second.
 ```
 
@@ -223,6 +254,8 @@ Completed for final project preparation.
 * `docs/ui_behavior.md`
 * `docs/source_context_behavior.md`
 * `docs/technical_design.md`
+* `README.md`
+* `report/final_report.md`
 
 ### Completed Testing Areas
 
@@ -245,11 +278,10 @@ Completed for final project preparation.
 * related cases hidden for practical incident triage
 * Case Intelligence page behavior
 * SOC Markdown report download
-* Case Intelligence page
-* related cases shown only where relevant
-* hidden related cases for practical incident triage
 * out-of-scope refusal
 * unsafe cyber refusal
+* source audit
+* case audit
 
 ### Why This Matters
 
@@ -287,6 +319,39 @@ Completed for the current prototype phase.
 The case library helps CyberLex connect legal and compliance questions to carefully labeled examples.
 
 It also keeps historical examples separate from the main legal knowledge base. That separation matters because past cases are educational context, not automatic predictions of future fines or legal outcomes.
+
+---
+
+## Completed Milestone: Documentation and Policy Cleanup
+
+### Status
+
+Completed for the current documentation checkpoint.
+
+### Completed Files and Areas
+
+* README update
+* final report update
+* architecture update
+* technical design update
+* project overview update
+* source list update
+* source policy update
+* source history update
+* legal disclaimer update
+* privacy and data-handling update
+* Terms of Use update
+* vector search plan update
+* AI/RAG plan update
+* copyright notice update
+* requirements clarification
+* `.gitignore` hardening
+
+### Why This Matters
+
+The project documentation now better matches the actual prototype.
+
+This reduces confusion during review and makes future development less cursed by stale claims, old filenames, and optimistic references to features that do not exist yet.
 
 ---
 
@@ -382,7 +447,57 @@ A more serious product would need stronger source review and update routines.
 
 ---
 
-## Phase 3: Real Vector Search
+## Phase 3: Case Library Expansion
+
+### Status
+
+Future improvement.
+
+### Goal
+
+Expand the case library with more carefully labeled educational examples.
+
+### Possible Future Case Areas
+
+* more IMY decisions
+* Swedish court cases related to cybercrime or unauthorized access
+* public-sector data breach examples
+* supplier and third-party security incidents
+* DORA-related ICT incident examples
+* NIS2-related reporting examples once Swedish practice develops
+* Cyber Resilience Act product-security examples once enforcement develops
+* security-measure cases involving access control, MFA, encryption, logging, or vulnerability management
+
+### Requirements for New Case Files
+
+Each new case file should include:
+
+* case type
+* jurisdiction
+* year
+* authority or court where applicable
+* topic
+* short summary
+* Swedish summary where useful
+* what happened
+* legal issue
+* decision or outcome
+* fine or cost where known
+* why it matters for CyberLex
+* learning note
+* similar CyberLex questions
+* related CyberLex topics
+* official or reliable source links
+* case metadata
+* disclaimer
+
+### Success Criteria
+
+This phase is successful when more case examples improve learning without confusing users into treating historical outcomes as predictions.
+
+---
+
+## Phase 4: Real Vector Search
 
 ### Status
 
@@ -404,12 +519,13 @@ Improve retrieval quality beyond keyword matching and hand-written routing rules
 * add a retrieval comparison mode
 * add minimum confidence or similarity thresholds
 * preserve source-grounded refusal behavior
+* keep case retrieval separate from main legal source retrieval at first
 
 ### Related Document
 
 The detailed implementation plan is stored in:
 
-```text
+```text id="vtrwmk"
 docs/vector_search_plan.md
 ```
 
@@ -419,7 +535,7 @@ This phase is successful when CyberLex can find the correct source section even 
 
 ---
 
-## Phase 4: RAG and AI-Generated Answers
+## Phase 5: RAG and AI-Generated Answers
 
 ### Status
 
@@ -435,6 +551,8 @@ A future AI model should not answer legal or compliance questions from general m
 
 It should only answer using retrieved CyberLex source chunks.
 
+Case examples must remain clearly labeled as educational examples.
+
 ### Planned Improvements
 
 * retrieve source chunks before answer generation
@@ -447,12 +565,14 @@ It should only answer using retrieved CyberLex source chunks.
 * keep disclaimers visible
 * add multi-source synthesis
 * add answer traceability to source chunks
+* preserve English, Swedish, and Auto language behavior
+* keep related case examples separate from legal source conclusions
 
 ### Related Document
 
 The detailed AI/RAG plan is stored in:
 
-```text
+```text id="pvpkj1"
 docs/ai_rag_plan.md
 ```
 
@@ -462,7 +582,7 @@ This phase is successful when answers become easier to read while still remainin
 
 ---
 
-## Phase 5: Code Structure and Maintainability
+## Phase 6: Code Structure and Maintainability
 
 ### Status
 
@@ -472,7 +592,7 @@ Partly completed.
 
 The earlier large `app/main.py` file has been partially refactored into smaller modules:
 
-```text
+```text id="19fx43"
 app/config.py
 app/styles.py
 app/text_utils.py
@@ -485,7 +605,7 @@ app/vector_search.py
 
 The Streamlit entry point remains:
 
-```text
+```text id="5qr3yr"
 app/main.py
 ```
 
@@ -497,13 +617,14 @@ Continue making the codebase easier to maintain without breaking the working pro
 
 Remaining future refactor work could include moving more logic into modules such as:
 
-```text
+```text id="olpdfh"
 app/answer_engine.py
 app/search_engine.py
 app/source_context.py
 app/incident_reports.py
 app/ui_components.py
 app/safety.py
+app/semantic_search.py
 ```
 
 ### Why This Matters
@@ -516,7 +637,7 @@ This should not be done immediately before a demo or hand-in unless there is eno
 
 ---
 
-## Phase 6: User Experience and Visual Design
+## Phase 7: User Experience and Visual Design
 
 ### Status
 
@@ -559,7 +680,7 @@ This phase is successful when a new user can understand what CyberLex does witho
 
 ---
 
-## Phase 7: Public Deployment Preparation
+## Phase 8: Public Deployment Preparation
 
 ### Status
 
@@ -572,7 +693,7 @@ Prepare CyberLex Sweden for possible public deployment.
 ### Required Work Before Public Deployment
 
 * review Terms of Use
-* review Privacy Policy
+* review privacy and data-handling documentation
 * review Legal Disclaimer
 * decide whether user questions are stored
 * decide whether analytics are used
@@ -585,6 +706,7 @@ Prepare CyberLex Sweden for possible public deployment.
 * add abuse-prevention rules
 * add rate limiting if public
 * add contact/support information if public
+* decide how source updates and case updates are reviewed
 
 ### Possible Deployment Options
 
@@ -602,13 +724,15 @@ A public version must be treated differently from a local prototype.
 
 A public version may process real user input, which creates privacy, security, and legal concerns.
 
+Public deployment should not happen with real user data until legal, privacy, and security review has been completed.
+
 ### Success Criteria
 
 This phase is successful when the app can be deployed safely with clear user-facing policies and no exposed secrets.
 
 ---
 
-## Phase 8: Legal and Brand Protection
+## Phase 9: Legal and Brand Protection
 
 ### Status
 
@@ -623,7 +747,7 @@ Prepare CyberLex Sweden for possible long-term development as a brand or product
 * keep copyright notices
 * avoid adding an open-source license unless intentionally chosen
 * strengthen Terms of Use
-* strengthen Privacy Policy
+* strengthen privacy and data-handling documentation
 * strengthen Legal Disclaimer
 * check for name conflicts
 * consider registering the CyberLex Sweden name as a trademark
@@ -642,7 +766,7 @@ This phase is successful when the project has a clear identity, ownership notice
 
 ---
 
-## Phase 9: Product Direction Decision
+## Phase 10: Product Direction Decision
 
 ### Status
 
@@ -660,6 +784,7 @@ Decide whether CyberLex Sweden should remain a portfolio project or become a rea
 * Should CyberLex store user questions?
 * Should CyberLex use a cloud language model?
 * How should source updates be reviewed?
+* How should case updates be reviewed?
 * What legal review is required before public use?
 * Should CyberLex remain local/offline or become hosted?
 * Which sectors should be prioritized first?
@@ -690,6 +815,7 @@ CyberLex Sweden currently supports:
 * Swedish routing for supported topics
 * mixed Swedish/English cyber and legal question handling
 * case title and source-label localization
+* Swedish and English case summaries where available
 
 ### Planned Improvements
 
@@ -698,6 +824,7 @@ CyberLex Sweden currently supports:
 * more bilingual source summaries
 * more Swedish legal terminology support
 * more consistent bilingual source metadata
+* more bilingual case sections
 * better handling of mixed Swedish and English questions
 
 ### Success Criteria
@@ -708,18 +835,18 @@ Swedish and English should both feel like first-class language modes, not one re
 
 ## Risk Overview
 
-| Risk                   | Explanation                                   | Mitigation                                                          |
-| ---------------------- | --------------------------------------------- | ------------------------------------------------------------------- |
-| Outdated legal sources | Laws and guidance can change                  | Use source review dates, source history, and manual review routines |
-| Unsupported answers    | The system may answer without enough evidence | Use scope checks, source routing, and refusal behavior              |
-| Wrong source match     | Similar legal topics may confuse retrieval    | Use routing, tests, and later vector search                         |
-| Overreliance by users  | Users may treat answers as legal advice       | Keep disclaimers and Terms of Use clear                             |
-| Privacy issues         | Public deployment may process user input      | Add privacy policy and avoid unnecessary storage                    |
-| Cyber misuse           | Users may ask harmful cybercrime questions    | Refuse harmful or out-of-scope requests                             |
-| False legal currency   | Users may assume sources are live-updated     | Explain that source audit does not verify live legal changes        |
-| AI hallucination risk  | Future AI may generate unsupported statements | Require source-grounded RAG and refusal rules                       |
-| Case misuse            | Users may treat historical cases as predictions | Label cases as educational examples and avoid fine prediction        |
-| Code complexity        | `app/main.py` may still contain too much logic | Continue gradual module refactor with syntax checks and manual tests |
+| Risk                   | Explanation                                      | Mitigation                                                            |
+| ---------------------- | ------------------------------------------------ | --------------------------------------------------------------------- |
+| Outdated legal sources | Laws and guidance can change.                    | Use source review dates, source history, and manual review routines.  |
+| Unsupported answers    | The system may answer without enough evidence.   | Use scope checks, source routing, and refusal behavior.               |
+| Wrong source match     | Similar legal topics may confuse retrieval.      | Use routing, tests, and later vector search.                          |
+| Overreliance by users  | Users may treat answers as legal advice.         | Keep disclaimers and Terms of Use clear.                              |
+| Privacy issues         | Public deployment may process user input.        | Add privacy review and avoid unnecessary storage.                     |
+| Cyber misuse           | Users may ask harmful cybercrime questions.      | Refuse harmful or out-of-scope requests.                              |
+| False legal currency   | Users may assume sources are live-updated.       | Explain that source audit does not verify live legal changes.         |
+| AI hallucination risk  | Future AI may generate unsupported statements.   | Require source-grounded RAG and refusal rules.                        |
+| Case misuse            | Users may treat historical cases as predictions. | Label cases as educational examples and avoid fine prediction.        |
+| Code complexity        | `app/main.py` may still contain too much logic.  | Continue gradual module refactor with syntax checks and manual tests. |
 
 ---
 
@@ -754,7 +881,7 @@ After hand-in, the roadmap is:
 6. Expand Swedish and EU source coverage.
 7. Expand case library with carefully labeled examples.
 8. Consider RAG only after retrieval is reliable.
-9. Review legal/privacy/disclaimer documents before any public deployment.
+9. Review legal, privacy, and disclaimer documents before any public deployment.
 
 ---
 
@@ -769,6 +896,7 @@ A mature version should:
 * explain legal concepts in plain language
 * refuse unsupported questions
 * keep source history
+* keep case examples clearly labeled
 * protect user privacy
 * avoid harmful cybersecurity guidance
 * support both Swedish and English as first-class languages
@@ -805,7 +933,7 @@ This keeps the public repository cleaner and reduces unnecessary noise while the
 
 CyberLex Sweden has moved beyond a basic prototype.
 
-The project now has a working local application, a more modular Python structure, trusted knowledge files, source-grounded answers, source metadata, official source links, bilingual and Auto language support, instant example-question behavior, related case examples, Case Intelligence browsing, incident-response guidance, SOC Markdown report export, test cases, source audit support, case audit support, and a realistic development roadmap.
+The project now has a working local application, a more modular Python structure, trusted knowledge files, source-grounded answers, source metadata, official source links, bilingual and Auto language support, instant example-question behavior, related case examples, Case Intelligence browsing, incident-response guidance, SOC Markdown report export, test cases, source audit support, case audit support, legal/privacy/disclaimer documentation, and a realistic development roadmap.
 
 The next major technical step is broader automated testing and then real vector search.
 
