@@ -12,6 +12,8 @@ Instead, it uses:
 
 * source-based search
 * question intent matching
+* source routing
+* behavior-profile logic
 * rule-based answer generation
 * practical explanations
 * assessment checklists
@@ -27,6 +29,9 @@ Instead, it uses:
 * a Case Intelligence page for browsing GDPR and cybersecurity-related cases
 * bilingual case display for Swedish and English summaries, outcomes, topics, and source links
 * English, Swedish, and Auto language modes
+* online source monitoring for official source URLs
+* automated regression tests with `pytest`
+* GitHub Actions workflows for source audit, source watch, and tests
 * an experimental retrieval panel
 
 CyberLex Sweden is designed as an educational legal-tech and cybersecurity-law prototype.
@@ -53,7 +58,8 @@ Current app module structure:
 
 ```text
 app/
-├── main.py              # Streamlit app flow, UI rendering, answer display, and remaining routing glue
+├── main.py              # Streamlit app flow, UI rendering, answer display, and page behavior
+├── routing.py           # Question routing, behavior profiles, source targeting, and safety/scope routing
 ├── config.py            # App settings, page configuration, and folder paths
 ├── styles.py            # CSS and visual styling
 ├── text_utils.py        # Text normalization and matching helpers
@@ -94,10 +100,30 @@ Case-library documentation and audit output are stored in:
 docs/case_library/
 ```
 
-The GitHub Actions source-audit workflow is stored in:
+Online source-watch state is stored in:
+
+```text
+source_snapshots/
+```
+
+Automated tests are stored in:
+
+```text
+tests/
+```
+
+GitHub Actions workflows are stored in:
+
+```text
+.github/workflows/
+```
+
+Current important workflow files:
 
 ```text
 .github/workflows/source-audit.yml
+.github/workflows/source-watch.yml
+.github/workflows/tests.yml
 ```
 
 The current architecture separates:
@@ -108,9 +134,12 @@ The current architecture separates:
 * text normalization
 * language detection and localization
 * Markdown source loading
+* question routing and behavior-profile logic
 * incident-response detection
 * case-library search
+* online source monitoring
 * experimental retrieval
+* automated tests
 
 This makes the project easier to understand, test, maintain, and expand.
 
@@ -137,12 +166,103 @@ It controls:
 * practical explanation sections
 * incident report download display
 * Case Intelligence page rendering
-* related case display rules
-* remaining answer-routing glue
+* related case display
+* final UI rendering
 
-The file still contains a large amount of answer-routing and display logic, but it no longer contains every helper function from the earliest prototype.
+The file still contains Streamlit UI logic and answer-display flow.
 
-Future refactoring may split more of this logic into separate modules, but the current structure is stable enough for the present prototype stage.
+Pure routing and behavior-profile logic has been moved into:
+
+```text
+app/routing.py
+```
+
+This is important because `main.py` imports Streamlit and calls Streamlit page setup. That makes it less suitable for direct automated testing.
+
+The design goal is:
+
+```text
+main.py handles UI.
+routing.py handles testable decision logic.
+```
+
+Future refactoring may split more display and answer-generation logic into separate modules, but this should be done gradually so the current working prototype remains stable.
+
+### `app/routing.py`
+
+`routing.py` contains the main routing, scope, safety, and behavior-profile logic.
+
+It helps decide:
+
+* whether the question is about CyberLex Sweden itself
+* whether the question is inside the supported CyberLex scope
+* whether the question is unsafe and should be refused
+* whether the question is a practical incident-response question
+* whether the answer should show related cases
+* whether the answer should show risk/cost context
+* whether the answer should show a SOC-style report
+* whether the answer should route to GDPR, NIS2, DORA, cybercrime, incident response, or another source topic
+* which source file should be preferred
+* how many source-context cards should be shown
+* whether NIS2 scope questions need focused source context
+
+Important examples:
+
+```text
+What is CyberLex Sweden?
+→ self_description
+```
+
+```text
+Can Meta Pixel create GDPR risk?
+→ case_context
+```
+
+```text
+Our files are encrypted, what should we do?
+→ incident_response
+```
+
+```text
+Vad är bilaga 1 och bilaga 2 i NIS2?
+→ nis2_scope
+```
+
+```text
+How do I hide logs after hacking a system?
+→ unsafe_refusal
+```
+
+```text
+What is Swedish tax law?
+→ out_of_scope
+```
+
+The central behavior function is:
+
+```text
+build_question_behavior_profile(question, language)
+```
+
+This returns a dictionary that the app can use for consistent answer behavior.
+
+The behavior profile includes fields such as:
+
+* `answer_mode`
+* `target_source_file`
+* `is_self_description`
+* `is_unsafe`
+* `is_in_scope`
+* `is_practical_incident`
+* `is_case_context`
+* `is_nis2_scope`
+* `is_gdpr_security`
+* `show_assessment_checklist`
+* `show_soc_report`
+* `show_related_cases`
+* `source_context_max_results`
+
+This makes the app less fragile because the major decision is made once and reused.
 
 ### `app/config.py`
 
@@ -181,7 +301,7 @@ It supports:
 * checking whether text contains key terms or phrases
 * shared keyword and phrase matching
 
-These helpers are reused by routing, search, language detection, and incident detection.
+These helpers are reused by routing, search, language detection, case matching, and incident detection.
 
 ### `app/language.py`
 
@@ -268,7 +388,8 @@ It handles:
 * reading Markdown files through `source_loader.py`
 * splitting documents into searchable chunks
 * scoring search results
-* routing questions to source files
+* routing questions to source files through `routing.py`
+* building question behavior profiles through `routing.py`
 * expanding question terms
 * detecting question topics
 * detecting practical incident-response questions through `incident_engine.py`
@@ -279,12 +400,14 @@ It handles:
 * generating assessment checklists
 * generating incident-response report text
 * generating source audit reports
+* generating source watch reports
 * displaying results through Streamlit
 * running experimental retrieval tests
 * loading educational case files through `case_search.py`
 * scoring related cases
 * rendering bilingual case-library content
 * filtering official case source links by selected language
+* running automated tests with `pytest`
 
 Python is also used for the maintenance scripts in the `scripts/` folder.
 
@@ -336,7 +459,7 @@ Streamlit session state is used to manage:
 * whether the example question panel should be open or hidden
 * sidebar and navigation state
 
-When the user clicks an example question, the app now submits that example immediately instead of only filling the input field.
+When the user clicks an example question, the app submits that example immediately instead of only filling the input field.
 
 ---
 
@@ -625,17 +748,61 @@ The normal question flow is:
 1. The user enters a question or selects an example question.
 2. Streamlit session state stores the active question.
 3. Auto language mode determines whether the active question should use Swedish or English.
-4. The app checks whether the question is about CyberLex Sweden itself.
-5. The app checks whether the question is in scope.
+4. The app builds a behavior profile through `app/routing.py`.
+5. The app checks whether the question is about CyberLex Sweden itself.
 6. The app checks whether the question is unsafe and should be refused.
-7. The app routes supported questions toward a relevant source file where possible.
-8. The app searches local Markdown chunks.
-9. The best source match is used to build the main CyberLex answer.
-10. The app displays supporting source links, source metadata, limitations, practical sections, and source context where relevant.
-11. Related cases are shown only when the question is suitable for case-library examples.
-12. SOC-style report download is shown only for practical incident-response questions.
+7. The app checks whether the question is inside the supported CyberLex scope.
+8. The app routes supported questions toward a relevant source file where possible.
+9. The app searches local Markdown chunks.
+10. The best source match is used to build the main CyberLex answer.
+11. The app displays supporting source links, source metadata, limitations, practical sections, and source context where relevant.
+12. Related cases are shown only when the question is suitable for case-library examples.
+13. SOC-style report download is shown only for practical incident-response questions.
 
 The app does not browse the web live during this process.
+
+---
+
+## Question Behavior Profile
+
+CyberLex uses a centralized behavior profile to avoid making routing and UI decisions repeatedly in different places.
+
+The main function is:
+
+```text
+build_question_behavior_profile(question, language)
+```
+
+This function is located in:
+
+```text
+app/routing.py
+```
+
+The behavior profile decides answer behavior such as:
+
+* self-description answer
+* unsafe refusal
+* out-of-scope refusal
+* incident-response answer
+* case-context answer
+* NIS2 scope answer
+* IMY security answer
+* GDPR security answer
+* normal source-grounded answer
+
+The profile also controls UI support behavior such as:
+
+* whether to show practical explanation cards
+* whether to show assessment checklists
+* whether to show SOC report download
+* whether to show related cases
+* whether to show risk/cost context
+* how many source-context cards to display
+
+This design makes CyberLex more predictable.
+
+It also makes routing behavior easier to test with `pytest`.
 
 ---
 
@@ -683,7 +850,7 @@ The example question panel is designed for testing and demonstration.
 When a user clicks an example question:
 
 1. the example is stored as the selected question
-2. the same question is stored as the submitted question
+2. the same question is stored as the submitted active question
 3. the input field is filled
 4. the example panel is hidden
 5. the app reruns and displays the answer directly
@@ -777,13 +944,15 @@ expand_question_terms(question)
 
 adds related cybersecurity and legal terms when the user question contains important trigger words.
 
+This function is part of the routing and search support logic in the current design.
+
 Examples:
 
 * `ransomware` can expand into terms such as cyber incident, incident reporting, personal data breach, GDPR, NIS2, security measures, malware, logs, evidence, and unauthorized access.
 * `malware` can expand into terms such as ransomware, cyber incident, security incident, incident response, containment, recovery, logs, and reporting.
 * `unauthorized access` can expand into terms such as dataintrång, cybercrime, illegal access, information system, data intrusion, and unauthorized use.
 * `DORA` can expand into terms such as digital operational resilience, financial sector, ICT risk, ICT incident, third-party ICT, resilience testing, and operational disruption.
-* `NIS2` can expand into terms such as cybersecurity, incident reporting, essential entities, important entities, risk management, security measures, and MSB.
+* `NIS2` can expand into terms such as cybersecurity, incident reporting, essential entities, important entities, risk management, security measures, and Swedish Cybersecurity Act.
 * `personal data breach` can expand into terms such as GDPR, IMY, 72 hours, notification, risk to rights and freedoms, affected individuals, and controller.
 
 This helps the prototype find relevant source sections even when the user does not use the exact same words as the Markdown files.
@@ -803,6 +972,12 @@ get_target_source_file(question)
 ```
 
 routes clear questions to a specific knowledge file.
+
+This function is now located in:
+
+```text
+app/routing.py
+```
 
 Examples:
 
@@ -829,6 +1004,92 @@ For example:
 * a Swedish dataintrång question should not be confused with broader EU cybercrime framework questions
 
 Source routing is one of the main safeguards in the current prototype.
+
+---
+
+## NIS2 Scope Context Filtering
+
+CyberLex Sweden includes focused NIS2 scope handling.
+
+NIS2 and Swedish Cybersecurity Act scope questions may involve different subtopics, such as:
+
+* covered sectors
+* applicability
+* municipalities and regions
+* registration
+* small companies
+* essential and important entities
+* Annex 1 and Annex 2
+
+The routing logic can detect these subtopics and limit visible source context so the user does not see irrelevant NIS2 cards.
+
+Example:
+
+```text
+Vad är bilaga 1 och bilaga 2 i NIS2?
+```
+
+Expected routing behavior:
+
+```text
+target_source_file = nis2_sector_scope_guidance.md
+answer_mode = nis2_scope
+source context focuses on Annex 1 and Annex 2
+```
+
+This improves source-context precision.
+
+It also prevents broad NIS2 material from overwhelming specific scope questions.
+
+---
+
+## Incident Source Context Filtering
+
+CyberLex Sweden includes focused incident-source context filtering.
+
+Practical incident-response questions may involve different incident subtypes, such as:
+
+* suspicious login
+* suspicious email
+* suspicious link
+* compromised account
+* data leak
+* ransomware or malware
+* suspected hacking
+
+The routing and source-context logic tries to show source cards that match the detected incident subtype.
+
+Example:
+
+```text
+Vi har fått en misstänkt login på ett konto, vad ska vi göra?
+```
+
+Expected behavior:
+
+```text
+incident subtype = suspicious_login
+source context focuses on suspicious login guidance
+related cases hidden
+SOC report available
+```
+
+Example:
+
+```text
+Our files are encrypted, what should we do?
+```
+
+Expected behavior:
+
+```text
+incident subtype = ransomware_or_malware
+source context focuses on ransomware or malware guidance
+related cases hidden
+SOC report available
+```
+
+This keeps practical incident answers focused on triage rather than dumping every nearby incident section into the UI like a filing cabinet fell down the stairs.
 
 ---
 
@@ -1115,7 +1376,7 @@ checks the stored source date text from the matched Markdown knowledge file and 
 Examples:
 
 ```text
-Last checked: 2026-06-08
+Last checked: 2026-06-18
 → Recently checked
 ```
 
@@ -1187,6 +1448,69 @@ It only checks whether the local project files contain the required source struc
 
 ---
 
+## Online Source Watch System
+
+CyberLex Sweden includes an online source watch system.
+
+The source watch script is:
+
+```text
+scripts/source_watch.py
+```
+
+The script reads official source URLs from the `## Official source` sections in the local Markdown files in:
+
+```text
+data/
+```
+
+It checks whether official source URLs can be reached and whether fetched page content appears to have changed since the previous run.
+
+It generates:
+
+```text
+docs/source_watch_report.md
+```
+
+It stores URL fingerprints and source-watch metadata in:
+
+```text
+source_snapshots/source_watch_state.json
+```
+
+The source watch report can show:
+
+* first snapshots
+* unchanged sources
+* changed sources
+* failed checks
+* redirects
+* HTTP status codes
+* content hashes
+* recommended manual review actions
+
+The source watcher does not automatically rewrite CyberLex legal summaries.
+
+It only creates review signals.
+
+Correct review workflow:
+
+```text
+1. Run source_watch.py.
+2. Review docs/source_watch_report.md.
+3. If a source changed or failed, open the official source manually.
+4. Compare the official source with the local Markdown summary.
+5. Update the local source file only when needed.
+6. Update source metadata and version notes.
+7. Run source_watch.py again.
+8. Run source_audit.py again.
+9. Commit the source file, report, and state changes.
+```
+
+This keeps source maintenance safer than letting a script rewrite legal content like a caffeinated compliance goblin.
+
+---
+
 ## Metadata Helper Script
 
 CyberLex Sweden includes a helper script:
@@ -1211,41 +1535,168 @@ The helper script is not intended to replace proper source review.
 
 It is mainly a maintenance tool used when files are missing required metadata.
 
-The normal recurring check is handled by:
+The normal recurring structure check is handled by:
 
 ```text
 scripts/source_audit.py
 ```
 
+The online source-link and source-change check is handled by:
+
+```text
+scripts/source_watch.py
+```
+
 ---
 
-## GitHub Actions Audit
+## GitHub Actions Workflows
 
-CyberLex Sweden includes a GitHub Actions workflow for source auditing.
+CyberLex Sweden includes three GitHub Actions workflows.
 
-The workflow file is:
+Current workflow files:
 
 ```text
 .github/workflows/source-audit.yml
+.github/workflows/source-watch.yml
+.github/workflows/tests.yml
 ```
 
-The workflow can run manually from the GitHub Actions tab.
+### Source Audit Workflow
 
-It may also be scheduled to run automatically.
+The source audit workflow can run manually from the GitHub Actions tab and may also run on a schedule.
 
-The workflow performs these steps:
+It performs these steps:
 
 1. checks out the repository
 2. sets up Python
-3. runs the source audit script
+3. runs `python scripts/source_audit.py`
 4. updates `docs/source_audit_report.md`
 5. commits the updated report if changes are found
 
-The weekly audit does not check live legal changes online.
+This workflow does not check live legal changes online.
 
 It only checks whether the local source files contain official links, source metadata, review dates, and version notes.
 
-This means it is a source-structure audit, not a legal-currentness audit.
+### Source Watch Workflow
+
+The source watch workflow can run manually from the GitHub Actions tab and may also run on a schedule.
+
+It performs these steps:
+
+1. checks out the repository
+2. sets up Python
+3. installs dependencies from `requirements.txt`
+4. runs `python scripts/source_watch.py`
+5. runs `python scripts/source_audit.py`
+6. updates generated reports and source-watch state if changes are found
+7. commits changed reports or state files if needed
+
+The source watch workflow may update:
+
+```text
+docs/source_watch_report.md
+docs/source_audit_report.md
+source_snapshots/source_watch_state.json
+```
+
+This workflow detects possible source-link or source-content changes.
+
+It does not decide legal meaning.
+
+It does not update local legal summaries automatically.
+
+### Test Workflow
+
+The automated test workflow is:
+
+```text
+.github/workflows/tests.yml
+```
+
+It runs:
+
+```powershell
+python -m pytest
+```
+
+The workflow runs on:
+
+* pushes to `main`
+* pull requests to `main`
+* manual workflow dispatch
+
+It checks selected regression tests in:
+
+```text
+tests/
+```
+
+This helps prevent future code changes from breaking already-tested routing, language, and incident behavior.
+
+---
+
+## Automated Test System
+
+CyberLex Sweden includes automated tests using `pytest`.
+
+The current test folder is:
+
+```text
+tests/
+```
+
+Current test files:
+
+```text
+tests/test_incident_engine.py
+tests/test_language_detection.py
+tests/test_routing_logic.py
+```
+
+The automated tests currently check:
+
+* practical incident-response detection
+* ransomware and encrypted-file detection
+* data leak detection
+* suspected intrusion detection
+* suspicious login detection
+* suspicious link detection
+* suspicious email detection
+* compromised-account detection
+* Swedish and English language detection
+* mixed Swedish/English cyber wording
+* Meta Pixel language behavior
+* app bug language behavior
+* NIS2 language behavior
+* target source-file routing
+* behavior-profile answer modes
+* related-case visibility
+* SOC report visibility
+* unsafe request refusal
+* out-of-scope refusal
+* CyberLex self-description routing
+
+Run the tests locally with:
+
+```powershell
+python -m pytest
+```
+
+The expected current result is more than the original 22 tests because routing tests have been added.
+
+The test suite is still not a full UI test suite.
+
+It does not yet test:
+
+* complete Streamlit rendering
+* downloaded Markdown report contents
+* every source-routing branch
+* every Case Intelligence display path
+* GitHub Actions behavior itself
+
+It is a regression safety net for core logic.
+
+That is still a major improvement over “clicked around and it seemed fine,” the ancient human testing strategy responsible for half of software history’s haunted castles.
 
 ---
 
@@ -1409,7 +1860,7 @@ Current technical limitations include:
 * it does not use a full language model yet
 * it does not use true vector embeddings yet
 * the experimental retrieval module is still rule-based
-* it does not browse the web live
+* it does not browse the web live during user answers
 * it only answers from local Markdown sources
 * it only covers selected topics
 * it uses rule-based answers and routing
@@ -1417,11 +1868,13 @@ Current technical limitations include:
 * it does not provide legal advice
 * source material must be manually reviewed and updated
 * the source audit checks local source structure, not live legal changes
+* the source watcher checks source links and possible source-content changes, not legal meaning
 * the case audit checks local case-file structure, not live legal or factual currentness
 * confidence labels describe local source matching only, not legal certainty
 * source freshness labels describe stored local review dates only, not live legal currency
 * detected topic labels describe question interpretation only, not legal classification
 * the experimental search panel is for testing and does not replace the main answer system yet
+* automated tests currently cover selected core logic only, not the full UI
 * case examples are historical and must not be presented as fine predictions
 * public incident examples must be clearly separated from authority decisions
 * some official case sources may exist only in English or only in Swedish
@@ -1440,7 +1893,10 @@ Future technical improvements may include:
 * local embeddings using sentence-transformers
 * AI-generated answers using a RAG design
 * stronger citation formatting
-* more automated tests for the refactored modules
+* more automated tests for refactored modules
+* more routing tests for source-target behavior
+* automated tests for source watch behavior
+* automated tests for SOC report generation
 * possible future split of answer-generation, search-ranking, and UI rendering logic
 * source update reminders
 * live source review workflow
@@ -1495,12 +1951,14 @@ CyberLex Sweden currently has:
 
 * a working Streamlit interface
 * a modular app structure after refactoring `app/main.py`
+* a routing module in `app/routing.py`
 * a local Markdown knowledge base
 * 13 source files checked by the source audit target
 * rule-based source-grounded answers
 * source routing
 * keyword ranking
 * topic keyword expansion
+* question behavior profiles
 * detected topic labels
 * source quality labels
 * source freshness labels
@@ -1527,14 +1985,19 @@ CyberLex Sweden currently has:
 * related cases and incident examples under relevant compliance/case-library answers
 * hidden related-case section for practical incident-response triage questions
 * source audit script in `scripts/source_audit.py`
+* online source watch script in `scripts/source_watch.py`
+* source-watch state in `source_snapshots/source_watch_state.json`
 * case audit script in `scripts/case_audit.py`
 * metadata helper script in `scripts/add_missing_metadata.py`
+* automated tests in `tests/`
 * GitHub Actions source audit workflow
+* GitHub Actions source watch workflow
+* GitHub Actions test workflow
 * improved Swedish routing for NIS2, GDPR, IMY, dataintrång, DORA, CRA, and EU attacks against information systems
 
-The source-improvement and case-intelligence phase is largely complete for the current prototype scope, with 8 checked case files and learning-note support.
+The source-improvement, source-watch, case-intelligence, routing-refactor, and automated-test phases are largely complete for the current prototype scope.
 
-The next major technical step is broader test coverage for the refactored modules, case behavior, Auto language behavior, true vector search, and later a RAG-based answer mode that remains mandatory-source-grounded.
+The next major technical step is broader test coverage for source routing, case behavior, Auto language behavior, SOC report generation, true vector search, and later a RAG-based answer mode that remains mandatory-source-grounded.
 
 ---
 
