@@ -64,6 +64,8 @@ Current implemented status:
 * local source audit support through scripts and GitHub Actions
 * online source watch support for checking official source URLs
 * local case audit support through `scripts/case_audit.py`
+* automated regression tests for incident detection and language detection
+* GitHub Actions test workflow using `pytest`
 * refusal behavior for out-of-scope and unsafe cyber misuse questions
 
 CyberLex Sweden does not yet use:
@@ -129,6 +131,16 @@ CyberLex Sweden currently supports several core functions.
 * uses GitHub Actions to run source audit and source watch workflows on a schedule
 
 The source watcher does not rewrite legal content automatically. It only detects changed or failed official source URLs so a human can review the source and update local Markdown files if needed. An automated legal-content rewrite script would be very impressive right up until it confidently vandalized the law.
+
+### Automated tests
+
+* uses `pytest` for local automated tests
+* tests incident-response detection in `tests/test_incident_engine.py`
+* tests Swedish and English language detection in `tests/test_language_detection.py`
+* runs tests locally with `python -m pytest`
+* runs tests automatically in GitHub Actions through `.github/workflows/tests.yml`
+
+The tests help protect important behavior from breaking during future changes. They do not test the full Streamlit UI yet, but they do cover core logic that affects routing, incident detection, and language handling. A small safety net, yes, but still better than praying to the laptop fan.
 
 ### Safety boundaries
 
@@ -434,11 +446,12 @@ docs/privacy_and_data_handling.md
 | Markdown       | Used for documentation, local source files, and case-library files |
 | Git            | Tracks project changes and commit history                          |
 | GitHub         | Stores the project online                                          |
-| GitHub Actions | Runs source audit and source watch workflows                       |
+| GitHub Actions | Runs source audit, source watch, and automated test workflows      |
 | VS Code        | Code editor used during development                                |
 | PowerShell     | Used to run local commands on Windows                              |
 | Requests       | Used by the source watcher to fetch official URLs                  |
 | BeautifulSoup  | Used by the source watcher to extract readable page text           |
+| pytest         | Runs local and GitHub Actions regression tests                     |
 
 ---
 
@@ -482,7 +495,8 @@ CyberLex-Sweden
 ├── .github
 │   └── workflows
 │       ├── source-audit.yml
-│       └── source-watch.yml
+│       ├── source-watch.yml
+│       └── tests.yml
 ├── app
 │   ├── main.py
 │   ├── config.py
@@ -513,6 +527,9 @@ CyberLex-Sweden
 ├── source_snapshots
 │   └── source_watch_state.json
 ├── sources
+├── tests
+│   ├── test_incident_engine.py
+│   └── test_language_detection.py
 ├── .gitignore
 ├── COPYRIGHT.md
 ├── README.md
@@ -582,7 +599,23 @@ This checks whether the current app modules and the source watcher have Python s
 
 If the commands give no output, the syntax checks usually passed. Naturally, the silence of software is the closest it gets to mercy.
 
-### 6. Run audits and source watch
+### 6. Run automated tests
+
+```powershell
+python -m pytest
+```
+
+This runs the local automated test suite in `tests/`.
+
+The current tests check incident-response detection and Swedish/English language detection.
+
+Expected result:
+
+```text
+22 passed
+```
+
+### 7. Run audits and source watch
 
 ```powershell
 python scripts/source_watch.py
@@ -600,7 +633,7 @@ The case audit checks local files in `cases/`.
 
 The source audit and case audit check local file structure and metadata. They do not confirm live legal currentness.
 
-### 7. Start the app
+### 8. Start the app
 
 ```powershell
 python -m streamlit run app/main.py
@@ -624,6 +657,12 @@ Run the app:
 python -m streamlit run app/main.py
 ```
 
+Run the automated tests:
+
+```powershell
+python -m pytest
+```
+
 Run the online source watch:
 
 ```powershell
@@ -642,9 +681,10 @@ Run the case audit:
 python scripts/case_audit.py
 ```
 
-Run all source checks:
+Run all quality checks:
 
 ```powershell
+python -m pytest
 python scripts/source_watch.py
 python scripts/source_audit.py
 python scripts/case_audit.py
@@ -732,7 +772,47 @@ docs/demo_checklist.md
 docs/test_run_checklist.md
 ```
 
-Testing should include:
+Automated regression tests are stored in:
+
+```text
+tests/
+```
+
+Current automated test files:
+
+```text
+tests/test_incident_engine.py
+tests/test_language_detection.py
+```
+
+The automated tests currently check:
+
+* practical incident-response detection
+* ransomware and encrypted-file detection
+* data leak detection
+* suspicious login detection
+* suspicious link detection
+* suspicious email detection
+* compromised-account detection
+* Swedish and English language detection
+* mixed Swedish/English incident wording
+* Meta Pixel language behavior
+* app bug language behavior
+* NIS2 language behavior
+
+Automated tests can be run locally with:
+
+```powershell
+python -m pytest
+```
+
+They also run automatically through GitHub Actions:
+
+```text
+.github/workflows/tests.yml
+```
+
+Manual testing should still include:
 
 * core legal questions
 * Swedish and English language behavior
@@ -861,13 +941,72 @@ It only checks the local case-library files.
 
 ---
 
+## Automated Test System
+
+CyberLex Sweden includes automated Python tests using `pytest`.
+
+The current automated tests are stored in:
+
+```text
+tests/
+```
+
+Current test files:
+
+```text
+tests/test_incident_engine.py
+tests/test_language_detection.py
+```
+
+These tests check selected core logic without launching the Streamlit app.
+
+The current test suite focuses on:
+
+* practical incident-response detection
+* ransomware and encrypted-file detection
+* suspicious login detection
+* suspicious link detection
+* suspicious email detection
+* compromised-account detection
+* suspected intrusion detection
+* customer data leak detection
+* Swedish and English language detection
+* mixed Swedish/English cyber wording
+
+The tests can be run locally with:
+
+```powershell
+python -m pytest
+```
+
+The expected current result is:
+
+```text
+22 passed
+```
+
+A GitHub Actions workflow also exists for automated tests:
+
+```text
+.github/workflows/tests.yml
+```
+
+This workflow runs automatically on pushes to `main`, pull requests to `main`, and manual workflow dispatch.
+
+The automated tests are not a full UI test suite. They do not test the Streamlit interface, downloaded reports, or every routing branch yet.
+
+They are an early regression safety net for important behavior that previously required manual testing. In other words, they stop the project from silently stepping on its own shoelaces.
+
+---
+
 ## GitHub Actions Automation
 
-CyberLex Sweden currently uses two GitHub Actions workflows:
+CyberLex Sweden currently uses three GitHub Actions workflows:
 
 ```text
 .github/workflows/source-audit.yml
 .github/workflows/source-watch.yml
+.github/workflows/tests.yml
 ```
 
 ### Weekly Source Audit
@@ -905,7 +1044,23 @@ source_snapshots/source_watch_state.json
 
 This checks official online source URLs and then reruns the local source audit.
 
-These workflows are designed to help detect stale source links, changed official pages, missing metadata, or local source-file problems before they quietly rot inside the repository like forgotten leftovers in a student fridge.
+### Tests
+
+The test workflow runs:
+
+```powershell
+python -m pytest
+```
+
+It checks the current automated regression tests.
+
+The test workflow is triggered by:
+
+* pushes to `main`
+* pull requests to `main`
+* manual workflow dispatch from GitHub Actions
+
+These workflows are designed to help detect stale source links, changed official pages, missing metadata, local source-file problems, and broken core logic before they quietly rot inside the repository like forgotten leftovers in a student fridge.
 
 ---
 
@@ -927,6 +1082,8 @@ Current limitations:
 * the current answers are rule-based
 * the current module split improves maintainability but does not make the app production-ready
 * the experimental retrieval module is not real vector search yet
+* the automated tests currently cover selected core logic only
+* the automated tests do not yet cover the full Streamlit UI
 * source freshness labels describe stored local review dates only
 * the source audit checks file structure, not live legal currency
 * the case audit checks case-file structure, not live legal or factual currentness
@@ -950,8 +1107,9 @@ Planned or possible improvements include:
 
 * continue reducing `app/main.py` gradually where it makes sense
 * consider moving answer routing, search ranking, UI rendering, and report export into separate modules later
-* add automated regression tests for routing, language handling, safety refusals, and report export
+* expand automated regression tests for routing, language handling, safety refusals, and report export
 * add automated tests for example-question behavior and Auto language switching
+* add tests for source routing and case visibility behavior
 * improve maintainability without changing the current working demo behavior
 
 ### Search and AI/RAG development
@@ -1001,3 +1159,5 @@ CyberLex Sweden is a school project and educational prototype.
 It provides simplified information from selected local source summaries, local case examples, and official source links.
 
 It is not legal advice, does not guarantee legal accuracy or currentness, and should not be used as the sole basis for legal, compliance, privacy, regulatory, or security decisions.
+
+For real incidents, legal questions, regulatory reporting, or compliance decisions, users should check official sources and contact qualified professionals.
