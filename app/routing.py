@@ -893,6 +893,11 @@ def build_question_behavior_profile(question, language="English"):
 
     target_source_file = get_target_source_file(question_text)
 
+    # Final guardrail: practical incident-response questions must stay on the
+    # incident playbook even if other broad GDPR/security rules also match.
+    if is_practical_incident:
+        target_source_file = "cyber_incident_response_playbook.md"
+
     if is_self_description:
         answer_mode = "self_description"
     elif is_unsafe:
@@ -935,6 +940,13 @@ def build_question_behavior_profile(question, language="English"):
 def get_target_source_file(question):
     # Routes clear questions to a specific knowledge file.
     question_lower = normalize_query_text(question).strip()
+
+    # Practical incident-response questions should use the incident playbook before
+    # any broader GDPR/IMY security routing. This prevents encrypted-file or
+    # ransomware questions from being pulled into GDPR guidance instead of
+    # operational first-step guidance.
+    if is_practical_incident_response_question(question):
+        return "cyber_incident_response_playbook.md"
 
     # Case-library-style questions should use GDPR/data protection source context,
     # while the actual real-world examples are shown in the related-cases section.
@@ -987,18 +999,22 @@ def get_target_source_file(question):
     if is_nis2_sector_scope_question(question_lower):
         return "nis2_sector_scope_guidance.md"
 
+    # Practical incident-response questions should use the incident playbook
+    # before broader GDPR/IMY security guidance. Otherwise questions such as
+    # Swedish ransomware/encrypted-file incidents can be pulled into GDPR
+    # security guidance instead of operational first-step guidance.
+    if is_practical_incident_response_question(question):
+        return "cyber_incident_response_playbook.md"
+
     # IMY/GDPR security-measure questions should use the dedicated IMY security file
     # instead of the general breach/incident guidance source.
     if is_imy_gdpr_security_measures_question(question_lower):
         return "imy_gdpr_security_measures.md"
 
     # GDPR assessment/security questions are informational or compliance questions,
-    # not generic incident playbook questions. Route them before incident routing.
+    # not generic incident playbook questions.
     if is_gdpr_security_guidance_question(question_lower):
         return "gdpr_imy_edpb_security_guidance.md"
-
-    if is_practical_incident_response_question(question):
-        return "cyber_incident_response_playbook.md"
 
     if (
         "what is imy" in question_lower
