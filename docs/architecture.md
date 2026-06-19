@@ -37,7 +37,10 @@ The app currently supports:
 * hidden related cases for practical incident-response triage
 * Case Intelligence page
 * source audit
+* online source watch
 * case audit
+* automated regression tests with `pytest`
+* GitHub Actions for source audit, source watch, and tests
 * educational legal disclaimers
 * unsafe cyber refusal
 * out-of-scope refusal
@@ -64,7 +67,7 @@ It controls:
 * example questions
 * active submitted question state
 * answer flow
-* source search results
+* source search result display
 * UI sections
 * incident report display
 * related case display
@@ -73,9 +76,61 @@ It controls:
 
 `main.py` remains the entry point of the application.
 
-Earlier versions placed most logic inside this file. Larger support logic has now been moved into separate modules, but `main.py` still contains some app-flow, rendering, and routing glue.
+Earlier versions placed most logic inside this file. Larger support logic has now been moved into separate modules, especially routing logic, language handling, source loading, incident detection, and case search.
 
-Future refactoring may split more of this logic into smaller modules, but this should be done carefully so the current working prototype remains stable.
+`main.py` should mainly handle Streamlit UI flow and rendering. Pure logic should gradually be moved into separate modules where it can be tested without launching Streamlit.
+
+---
+
+## Routing and Question Behavior
+
+### `app/routing.py`
+
+This file contains the main question-routing and behavior-profile logic.
+
+It helps decide:
+
+* whether a question is about CyberLex Sweden itself
+* whether a question is inside CyberLex scope
+* whether a question is unsafe and should be refused
+* whether a question is a practical incident-response question
+* whether related cases should be shown
+* whether a SOC-style report should be shown
+* whether a question should route to GDPR, NIS2, DORA, cybercrime, incident response, or another source topic
+* which source file should be preferred for a question
+* how many source-context cards should be shown
+* whether NIS2 scope questions should use focused source context
+
+Important routing examples:
+
+```text
+What is CyberLex Sweden?
+→ self-description answer
+```
+
+```text
+Can Meta Pixel create GDPR risk?
+→ case-context answer with related cases
+```
+
+```text
+Our files are encrypted, what should we do?
+→ practical incident-response answer with SOC report support
+```
+
+```text
+Vad är bilaga 1 och bilaga 2 i NIS2?
+→ NIS2 sector-scope source routing
+```
+
+```text
+How do I hide logs after hacking a system?
+→ unsafe refusal
+```
+
+Moving this logic into `routing.py` makes it easier to test without importing the Streamlit app directly.
+
+This is important because importing `app/main.py` also triggers Streamlit setup, which is not ideal for automated tests. Apparently even tests prefer not to wake the UI beast.
 
 ---
 
@@ -113,7 +168,7 @@ It controls the visual design of:
 * incident-response sections
 * general layout styling
 
-Keeping styling in a separate file makes `main.py` easier to read, which is apparently something humans appreciate after creating a 900-line ritual scroll.
+Keeping styling in a separate file makes `main.py` easier to read, which is apparently something humans appreciate after creating a giant ritual scroll of UI code.
 
 ---
 
@@ -321,6 +376,8 @@ The `docs/` folder contains project documentation, including:
 * source list
 * source policy
 * source history
+* source audit report
+* source watch report
 * test cases
 * demo guidance
 * legal disclaimer
@@ -338,13 +395,76 @@ Current important scripts include:
 
 ```text
 scripts/source_audit.py
+scripts/source_watch.py
 scripts/case_audit.py
 scripts/add_missing_metadata.py
 ```
 
-These help check source structure, case structure, and metadata.
+These scripts support project maintenance.
 
-They do not browse the web and do not confirm live legal currentness.
+`source_audit.py` checks local source-file structure.
+
+`source_watch.py` checks official source URLs online and detects possible changes or failed links.
+
+`case_audit.py` checks local case-library structure.
+
+`add_missing_metadata.py` supports source metadata maintenance.
+
+The audit scripts do not prove legal currentness.
+
+The source watcher detects possible changes in official online sources, but it does not automatically rewrite local legal summaries.
+
+### `source_snapshots/`
+
+The `source_snapshots/` folder stores source-watch state.
+
+Current important file:
+
+```text
+source_snapshots/source_watch_state.json
+```
+
+This file stores URL fingerprints and metadata used by `scripts/source_watch.py`.
+
+It does not store full webpage copies.
+
+It helps CyberLex detect whether official source pages appear to have changed since the previous watch run.
+
+### `tests/`
+
+The `tests/` folder contains automated regression tests.
+
+Current test files:
+
+```text
+tests/test_incident_engine.py
+tests/test_language_detection.py
+tests/test_routing_logic.py
+```
+
+The tests currently cover:
+
+* incident-response detection
+* ransomware and encrypted-file detection
+* suspicious login detection
+* suspicious link detection
+* suspicious email detection
+* compromised-account detection
+* data leak detection
+* Swedish and English language detection
+* mixed Swedish/English cyber wording
+* routing behavior for selected question types
+* unsafe refusal routing
+* out-of-scope routing
+* CyberLex self-description routing
+* NIS2 sector-scope routing
+* case-context routing
+
+The test suite can be run with:
+
+```powershell
+python -m pytest
+```
 
 ---
 
@@ -352,7 +472,8 @@ They do not browse the web and do not confirm live legal currentness.
 
 ```text
 app/
-├── main.py              # Streamlit app flow, UI rendering, answer display, and routing glue
+├── main.py              # Streamlit app flow, UI rendering, answer display, and page behavior
+├── routing.py           # Question routing, behavior profiles, source targeting, and safety/scope routing
 ├── config.py            # App settings and folder paths
 ├── styles.py            # CSS and visual styling
 ├── text_utils.py        # Text normalization and matching helpers
@@ -401,6 +522,49 @@ python scripts/source_audit.py
 The audit checks local structure and metadata.
 
 It does not check the internet and does not prove that laws or guidance are currently up to date.
+
+---
+
+## Online Source Watch
+
+CyberLex Sweden includes an online source watch system.
+
+The source watcher is run with:
+
+```powershell
+python scripts/source_watch.py
+```
+
+It reads official source URLs from the local Markdown files in `data/`.
+
+It checks whether each official source URL can be reached and whether the fetched content appears to have changed since the previous run.
+
+It generates:
+
+```text
+docs/source_watch_report.md
+```
+
+It stores source-watch state in:
+
+```text
+source_snapshots/source_watch_state.json
+```
+
+The source watch report may show:
+
+* first snapshots
+* unchanged sources
+* changed sources
+* failed checks
+* redirects
+* HTTP status codes
+* content hashes
+* recommended manual review actions
+
+The source watcher does not automatically update local source summaries.
+
+Changed or failed official sources should be reviewed manually before local Markdown files are updated.
 
 ---
 
@@ -479,15 +643,16 @@ The normal question flow is:
 1. The user enters a question or selects an example question.
 2. Streamlit session state stores the active question.
 3. Auto language mode determines whether the active question should use Swedish or English.
-4. The app checks whether the question is about CyberLex Sweden itself.
-5. The app checks whether the question is in scope.
+4. The app builds a question behavior profile using `app/routing.py`.
+5. The app checks whether the question is about CyberLex Sweden itself.
 6. The app checks whether the question is unsafe and should be refused.
-7. The app routes supported questions toward a relevant source file where possible.
-8. The app searches local Markdown chunks from `data/`.
-9. The best source match is used to build the main CyberLex answer.
-10. The app displays supporting source links, source metadata, limitations, practical sections, and source context where relevant.
-11. Related cases from `cases/` are shown only when the question is suitable for case-library examples.
-12. SOC-style report download is shown only for practical incident-response questions.
+7. The app checks whether the question is inside the supported CyberLex scope.
+8. The app routes supported questions toward a relevant source file where possible.
+9. The app searches local Markdown chunks from `data/`.
+10. The best source match is used to build the main CyberLex answer.
+11. The app displays supporting source links, source metadata, limitations, practical sections, and source context where relevant.
+12. Related cases from `cases/` are shown only when the question is suitable for case-library examples.
+13. SOC-style report download is shown only for practical incident-response questions.
 
 The app does not browse the web live during this process.
 
@@ -576,6 +741,117 @@ They are not official incident records, forensic reports, legal assessments, reg
 
 ---
 
+## Automated Tests
+
+CyberLex Sweden includes automated tests using `pytest`.
+
+Current test files:
+
+```text
+tests/test_incident_engine.py
+tests/test_language_detection.py
+tests/test_routing_logic.py
+```
+
+The tests currently verify selected core behavior:
+
+* incident detection
+* language detection
+* routing behavior
+* source target selection
+* related-case visibility
+* SOC report visibility
+* unsafe request refusal
+* out-of-scope refusal
+* NIS2 scope behavior
+* CyberLex self-description behavior
+
+Run tests locally with:
+
+```powershell
+python -m pytest
+```
+
+The GitHub Actions test workflow also runs these tests automatically.
+
+Workflow file:
+
+```text
+.github/workflows/tests.yml
+```
+
+This workflow runs on:
+
+* pushes to `main`
+* pull requests to `main`
+* manual workflow dispatch
+
+The automated tests are not full UI tests yet.
+
+They are a regression safety net for core logic. In less decorative terms: they stop future “small improvements” from silently punching holes in working behavior.
+
+---
+
+## GitHub Actions Workflows
+
+CyberLex Sweden currently includes three GitHub Actions workflows:
+
+```text
+.github/workflows/source-audit.yml
+.github/workflows/source-watch.yml
+.github/workflows/tests.yml
+```
+
+### Weekly Source Audit
+
+Runs:
+
+```powershell
+python scripts/source_audit.py
+```
+
+Purpose:
+
+* checks local Markdown source structure
+* updates `docs/source_audit_report.md`
+
+This does not confirm live legal currentness.
+
+### Weekly Source Watch
+
+Runs:
+
+```powershell
+python scripts/source_watch.py
+python scripts/source_audit.py
+```
+
+Purpose:
+
+* checks official online source URLs
+* detects possible source changes or failed links
+* updates `docs/source_watch_report.md`
+* updates `docs/source_audit_report.md`
+* updates `source_snapshots/source_watch_state.json`
+
+This does not update local legal summaries automatically.
+
+### Tests
+
+Runs:
+
+```powershell
+python -m pytest
+```
+
+Purpose:
+
+* checks automated regression tests
+* verifies selected incident, language, and routing behavior
+* fails if core tested behavior breaks
+
+---
+
 ## Why the App Was Refactored
 
 Earlier versions of CyberLex Sweden had most of the logic inside `app/main.py`.
@@ -586,7 +862,9 @@ The refactor improves the project by:
 
 * making the code easier to understand
 * separating UI from helper logic
-* making future testing easier
+* separating routing logic from Streamlit rendering
+* making automated tests easier
+* making future source-routing tests possible
 * making the project look more professional
 * making it easier to add new features later
 * reducing the risk of breaking unrelated parts of the app
@@ -599,6 +877,7 @@ Run syntax checks:
 
 ```powershell
 python -m py_compile app/main.py
+python -m py_compile app/routing.py
 python -m py_compile app/config.py
 python -m py_compile app/styles.py
 python -m py_compile app/text_utils.py
@@ -607,22 +886,32 @@ python -m py_compile app/source_loader.py
 python -m py_compile app/incident_engine.py
 python -m py_compile app/case_search.py
 python -m py_compile app/vector_search.py
+python -m py_compile scripts/source_watch.py
 ```
 
 These commands check whether the Python files can compile without syntax errors.
 
-Run audits:
+Run tests:
 
 ```powershell
+python -m pytest
+```
+
+This runs automated regression tests.
+
+Run audits and source watch:
+
+```powershell
+python scripts/source_watch.py
 python scripts/source_audit.py
 python scripts/case_audit.py
 ```
 
-These commands run the local source and case audits.
+These commands run the online source watch, local source audit, and local case audit.
 
-They check local file structure and metadata.
+The audit commands check local file structure and metadata.
 
-They do not browse the web or confirm live legal currentness.
+The source-watch command checks official URLs and possible source changes.
 
 Run the app:
 
@@ -643,12 +932,13 @@ Possible future improvements include:
 * moving source-context display into `source_context.py`
 * moving incident report generation into `incident_reports.py`
 * moving UI components into `ui_components.py`
-* moving safety checks into `safety.py`
+* moving safety checks into a dedicated `safety.py` module if they grow beyond routing
 * adding `semantic_search.py` for real vector search later
-* adding automated tests for language detection
-* adding automated tests for source routing
-* adding automated tests for incident detection
+* adding automated tests for source ranking
 * adding automated tests for case matching
+* adding automated tests for incident report generation
+* adding automated tests for source watch behavior
+* adding full Streamlit UI smoke tests later
 * expanding vector search into a full RAG pipeline
 * adding stronger citation handling
 * improving deployment structure for Streamlit Cloud or another hosting platform
@@ -683,6 +973,8 @@ The app should always make clear that its answers are educational and source-gro
 
 The source audit and case audit are local structure checks only.
 
+The source watcher can detect changed or failed official source URLs, but it does not understand legal meaning and does not update local legal summaries automatically.
+
 They do not prove live legal accuracy or currentness.
 
 ---
@@ -695,6 +987,6 @@ CyberLex Sweden is built around a simple principle:
 Better sources first. Better AI second.
 ```
 
-The current architecture supports that principle by keeping the system local, inspectable, source-grounded, and cautious.
+The current architecture supports that principle by keeping the system local, inspectable, source-grounded, cautious, and easier to test.
 
-That may sound less exciting than a magical AI oracle. Good. Oracles were mostly disaster machines with better branding.
+That may sound less exciting than a magical AI oracle. Which is good, since Oracles were mostly disaster machines with better branding.
