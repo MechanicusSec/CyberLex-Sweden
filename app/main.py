@@ -4476,19 +4476,24 @@ if question:
                     )
 
                     with st.expander(
-                        "Incident log and download"
+                        "SOC incident report and documentation"
                         if language != "Svenska"
-                        else "Incidentlogg och nedladdning",
+                        else "SOC-incidentrapport och dokumentation",
                         expanded=False
                     ):
+                        st.caption(
+                            "CyberLex can generate a draft SOC triage report for this incident-response question. Use it as a working note and complete it with real systems, accounts, timestamps, owners, evidence, and decisions."
+                            if language != "Svenska"
+                            else "CyberLex kan skapa ett utkast till SOC-triagerapport för denna incidentfråga. Använd den som arbetsunderlag och komplettera med verkliga system, konton, tidpunkter, ansvariga, bevis och beslut."
+                        )
                         st.markdown(
                             generate_incident_log_template(question, language),
                             unsafe_allow_html=True
                         )
                         st.caption(
-                            "Use the log template above to document the incident. The downloaded Markdown report contains SOC triage, first steps, checklist, incident log fields, source note, and disclaimer. Open it in VS Code Markdown Preview for the cleanest view."
+                            "The downloaded Markdown report contains SOC triage, recommended first steps, action support, a control checklist, incident log fields, source notes, and a disclaimer. Open it in VS Code Markdown Preview for the cleanest view."
                             if language != "Svenska"
-                            else "Använd incidentloggen ovan för att dokumentera händelsen. Den nedladdade Markdown-rapporten innehåller SOC-triage, första steg, checklista, incidentlogg, källnotering och ansvarsbegränsning. Öppna den i VS Code Markdown Preview för renast vy."
+                            else "Den nedladdade Markdown-rapporten innehåller SOC-triage, rekommenderade första steg, åtgärdsstöd, kontrollchecklista, incidentlogg, källnotering och ansvarsbegränsning. Öppna den i VS Code Markdown Preview för renast vy."
                         )
                         soc_report_filename = build_soc_report_download_filename(copy_ready_summary)
                         st.caption(
