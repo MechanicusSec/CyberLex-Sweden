@@ -4467,14 +4467,6 @@ if question:
                         )
 
                 if question_profile["show_soc_report"]:
-                    copy_ready_summary = generate_copy_ready_incident_summary(
-                        question,
-                        best_match,
-                        search_results,
-                        language,
-                        answer_html=answer_html
-                    )
-
                     with st.expander(
                         "SOC incident report and documentation"
                         if language != "Svenska"
@@ -4494,6 +4486,23 @@ if question:
                             "The downloaded Markdown report contains SOC triage, recommended first steps, action support, a control checklist, incident log fields, source notes, and a disclaimer. Open it in VS Code Markdown Preview for the cleanest view."
                             if language != "Svenska"
                             else "Den nedladdade Markdown-rapporten innehåller SOC-triage, rekommenderade första steg, åtgärdsstöd, kontrollchecklista, incidentlogg, källnotering och ansvarsbegränsning. Öppna den i VS Code Markdown Preview för renast vy."
+                        )
+                        prepared_by_value = st.text_input(
+                            "Prepared by / team"
+                            if language != "Svenska"
+                            else "Förberedd av / team",
+                            placeholder="SOC analyst / IT team"
+                            if language != "Svenska"
+                            else "SOC-analytiker / IT-team",
+                            key="soc_report_prepared_by",
+                        )
+                        copy_ready_summary = generate_copy_ready_incident_summary(
+                            question,
+                            best_match,
+                            search_results,
+                            language,
+                            answer_html=answer_html,
+                            prepared_by=prepared_by_value,
                         )
                         soc_report_filename = build_soc_report_download_filename(copy_ready_summary)
                         st.caption(

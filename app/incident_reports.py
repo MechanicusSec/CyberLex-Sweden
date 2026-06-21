@@ -956,7 +956,14 @@ def generate_soc_download_control_checklist(question, language="English"):
     return "\n".join(items)
 
 
-def generate_copy_ready_incident_summary(question, best_match, search_results, language="English", answer_html=None):
+def generate_copy_ready_incident_summary(
+    question,
+    best_match,
+    search_results,
+    language="English",
+    answer_html=None,
+    prepared_by="",
+):
     # Builds a SOC-oriented Markdown incident report.
     # Markdown makes the downloaded report look professional in VS Code, GitHub,
     # Obsidian, Typora, and many ticket systems while staying easy to edit.
@@ -970,6 +977,7 @@ def generate_copy_ready_incident_summary(question, best_match, search_results, l
     generated_now = datetime.now()
     generated_timestamp = generated_now.strftime("%Y-%m-%d %H:%M")
     generated_report_id = f"CYBERLEX-SOC-{generated_now.strftime('%Y%m%d-%H%M')}"
+    prepared_by_text = str(prepared_by or "").strip()
 
     if use_swedish:
         title = "CyberLex Sweden SOC-incidentrapport"
@@ -991,7 +999,6 @@ def generate_copy_ready_incident_summary(question, best_match, search_results, l
         priority_review_label = "Prioritetsgranskning"
         priority_review_text = "Krävs av incidentägare"
         prepared_by_label = "Förberedd av"
-        prepared_by_text = ""
         generated_time_label = "Genererad tid"
         generated_time_text = generated_timestamp
         question_label = "Fråga / rapporterad händelse"
@@ -1032,7 +1039,6 @@ def generate_copy_ready_incident_summary(question, best_match, search_results, l
         priority_review_label = "Priority review"
         priority_review_text = "Required by incident owner"
         prepared_by_label = "Prepared by"
-        prepared_by_text = ""
         generated_time_label = "Generated time"
         generated_time_text = generated_timestamp
         question_label = "Question / reported event"
