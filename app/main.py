@@ -4496,6 +4496,13 @@ if question:
                             else "SOC-analytiker / IT-team",
                             key="soc_report_prepared_by",
                         )
+                        incident_id_value = st.text_input(
+                            "Incident ID / Ticket ID"
+                            if language != "Svenska"
+                            else "Incident-ID / Ärende-ID",
+                            placeholder="INC-2026-0042",
+                            key="soc_report_incident_id",
+                        )
                         copy_ready_summary = generate_copy_ready_incident_summary(
                             question,
                             best_match,
@@ -4503,6 +4510,7 @@ if question:
                             language,
                             answer_html=answer_html,
                             prepared_by=prepared_by_value,
+                            incident_id=incident_id_value,
                         )
                         soc_report_filename = build_soc_report_download_filename(copy_ready_summary)
                         st.caption(
