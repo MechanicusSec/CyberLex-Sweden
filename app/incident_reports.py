@@ -1,5 +1,6 @@
 import html
 import re
+from datetime import datetime
 
 from incident_engine import (
     is_practical_incident_response_question,
@@ -966,6 +967,7 @@ def generate_copy_ready_incident_summary(question, best_match, search_results, l
         return ""
 
     use_swedish = language == "Svenska"
+    generated_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
 
     if use_swedish:
         title = "CyberLex Sweden SOC-incidentrapport"
@@ -987,7 +989,7 @@ def generate_copy_ready_incident_summary(question, best_match, search_results, l
         prepared_by_label = "Förberedd av"
         prepared_by_text = ""
         generated_time_label = "Genererad tid"
-        generated_time_text = ""
+        generated_time_text = generated_timestamp
         question_label = "Fråga / rapporterad händelse"
         answer_label = "Rekommenderade första steg"
         soc_triage_label = "SOC-triage"
@@ -1026,7 +1028,7 @@ def generate_copy_ready_incident_summary(question, best_match, search_results, l
         prepared_by_label = "Prepared by"
         prepared_by_text = ""
         generated_time_label = "Generated time"
-        generated_time_text = ""
+        generated_time_text = generated_timestamp
         question_label = "Question / reported event"
         answer_label = "Recommended first steps"
         soc_triage_label = "SOC triage"
@@ -1076,8 +1078,8 @@ def generate_copy_ready_incident_summary(question, best_match, search_results, l
 - {status_label}: {status_text}
 - {classification_label}: {classification_text}
 - {priority_review_label}: {priority_review_text}
-- {generated_time_label}:
-- {prepared_by_label}:
+- {generated_time_label}: {generated_time_text}
+- {prepared_by_label}: {prepared_by_text}
 
 ## 2. {purpose_label}
 {purpose_text}
