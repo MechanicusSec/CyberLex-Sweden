@@ -52,7 +52,7 @@ Current implemented status:
 * source-grounded answers from a local Markdown knowledge base
 * official source links and source metadata
 * source quality labels and source freshness labels
-* expandable relevant source context
+* expandable relevant source context generated through `app/source_context.py`
 * rule-based routing for supported legal, compliance, and incident-response questions
 * improved answer-routing profile logic in `app/routing.py`
 * defensive incident-response support for selected scenarios
@@ -64,7 +64,7 @@ Current implemented status:
 * local source audit support through scripts and GitHub Actions
 * online source watch support for checking official source URLs
 * local case audit support through `scripts/case_audit.py`
-* automated regression tests for incident detection, language detection, routing logic, and SOC incident reports
+* automated regression tests for incident detection, language detection, routing logic, SOC incident reports, and source-context behavior
 * GitHub Actions test workflow using `pytest`
 * refusal behavior for out-of-scope and unsafe cyber misuse questions
 
@@ -94,6 +94,7 @@ CyberLex Sweden currently supports several core functions.
 * generates structured CyberLex summary answers
 * shows official source links and source metadata
 * shows relevant source context where useful
+* cleans and formats source-context cards through `app/source_context.py`
 
 ### Legal and compliance learning
 
@@ -145,10 +146,11 @@ The source watcher does not rewrite legal content automatically. It only detects
 * tests Swedish and English language detection in `tests/test_language_detection.py`
 * tests routing behavior in `tests/test_routing_logic.py`
 * tests SOC incident report generation in `tests/test_incident_reports.py`
+* tests source-context cleaning and display helpers in `tests/test_source_context.py`
 * runs tests locally with `python -m pytest`
 * runs tests automatically in GitHub Actions through `.github/workflows/tests.yml`
 
-The tests help protect important behavior from breaking during future changes. They do not test the full Streamlit UI yet, but they do cover core logic that affects routing, incident detection, and language handling. A small safety net, yes, but still better than praying to the laptop fan.
+The tests help protect important behavior from breaking during future changes. They do not test the full Streamlit UI yet, but they do cover core logic that affects routing, incident detection, language handling, SOC report generation, and source-context formatting. A small safety net, yes, but still better than praying to the laptop fan.
 
 ### Safety boundaries
 
@@ -483,6 +485,7 @@ Supporting logic is now split into smaller modules:
 | `app/text_utils.py`      | Text normalization and phrase-matching helpers                                                         |
 | `app/language.py`        | Swedish/English detection, Auto language mode, and localization                                        |
 | `app/source_loader.py`   | Markdown source loading, metadata extraction, and chunking                                             |
+| `app/source_context.py`  | Source-context cleaning, filtering, friendly source names, and relevant source-context card generation |
 | `app/incident_engine.py` | Practical incident-response question detection                                                         |
 | `app/incident_reports.py` | SOC incident report generation, incident log templates, triage blocks, and Markdown report export     |
 | `app/routing.py`         | Question routing, behavior profiles, source targeting, safety routing, and source-context filtering    |
@@ -516,6 +519,7 @@ CyberLex-Sweden
 │   ├── text_utils.py
 │   ├── language.py
 │   ├── source_loader.py
+│   ├── source_context.py
 │   ├── incident_engine.py
 │   ├── case_search.py
 │   └── vector_search.py
@@ -605,6 +609,7 @@ python -m py_compile app/styles.py
 python -m py_compile app/text_utils.py
 python -m py_compile app/language.py
 python -m py_compile app/source_loader.py
+python -m py_compile app/source_context.py
 python -m py_compile app/incident_engine.py
 python -m py_compile app/case_search.py
 python -m py_compile app/vector_search.py
@@ -628,7 +633,7 @@ The current tests check incident-response detection, Swedish/English language de
 Expected result:
 
 ```text
-47 passed
+50 passed
 ```
 
 ### 7. Run audits and source watch
@@ -723,6 +728,7 @@ python -m py_compile app/styles.py
 python -m py_compile app/text_utils.py
 python -m py_compile app/language.py
 python -m py_compile app/source_loader.py
+python -m py_compile app/source_context.py
 python -m py_compile app/incident_engine.py
 python -m py_compile app/case_search.py
 python -m py_compile app/vector_search.py
@@ -803,6 +809,7 @@ tests/test_incident_engine.py
 tests/test_incident_reports.py
 tests/test_language_detection.py
 tests/test_routing_logic.py
+tests/test_source_context.py
 ```
 
 The automated tests currently check:
@@ -975,7 +982,10 @@ Current test files:
 
 ```text
 tests/test_incident_engine.py
+tests/test_incident_reports.py
 tests/test_language_detection.py
+tests/test_routing_logic.py
+tests/test_source_context.py
 ```
 
 These tests check selected core logic without launching the Streamlit app.
@@ -994,6 +1004,7 @@ The current test suite focuses on:
 * mixed Swedish/English cyber wording
 * routing behavior for supported, unsafe, and out-of-scope questions
 * SOC incident report generation and incident log templates
+* source-context cleaning, filtering, and display helper behavior
 
 The tests can be run locally with:
 
@@ -1004,7 +1015,7 @@ python -m pytest
 The expected current result is:
 
 ```text
-47 passed
+50 passed
 ```
 
 A GitHub Actions workflow also exists for automated tests:
@@ -1104,7 +1115,7 @@ Current limitations:
 * the current answers are rule-based
 * the current module split improves maintainability but does not make the app production-ready
 * the experimental retrieval module is not real vector search yet
-* the automated tests currently cover selected core logic, routing behavior, language handling, and SOC report generation
+* the automated tests currently cover selected core logic, routing behavior, language handling, SOC report generation, and source-context helper behavior
 * the automated tests do not yet cover the full Streamlit UI
 * source freshness labels describe stored local review dates only
 * the source audit checks file structure, not live legal currency
@@ -1129,7 +1140,7 @@ Planned or possible improvements include:
 
 * continue reducing `app/main.py` gradually where it makes sense
 * consider moving answer routing, search ranking, UI rendering, and report export into separate modules later
-* continue expanding automated regression tests for routing, language handling, safety refusals, source watch, and report export
+* continue expanding automated regression tests for routing, language handling, safety refusals, source watch, source-context edge cases, and report export
 * add automated tests for example-question behavior and Auto language switching
 * add tests for source routing and case visibility behavior
 * improve maintainability without changing the current working demo behavior

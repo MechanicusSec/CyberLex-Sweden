@@ -252,6 +252,26 @@ It is responsible for:
 
 This module separates source loading from the Streamlit UI.
 
+## Source Context Display
+
+### `app/source_context.py`
+
+This file builds and formats the relevant source-context cards shown below CyberLex answers.
+
+It handles:
+
+* cleaning source excerpts
+* hiding low-value helper sections
+* filtering checklist sections so they do not duplicate visible assessment checklists
+* trimming long excerpts at readable sentence or paragraph boundaries
+* keeping source excerpts aligned with the selected UI language
+* creating short and expandable source-context previews
+* converting internal source filenames into user-friendly source area names
+* selecting useful source-context cards for the current question
+* generating the HTML used for source-context cards
+
+Moving this logic out of `app/main.py` keeps the Streamlit entry point smaller and makes source-context behavior easier to test without launching the full UI.
+
 ---
 
 ## Incident Detection
@@ -465,6 +485,7 @@ tests/test_incident_engine.py
 tests/test_incident_reports.py
 tests/test_language_detection.py
 tests/test_routing_logic.py
+tests/test_source_context.py
 ```
 
 The tests currently cover:
@@ -482,6 +503,7 @@ The tests currently cover:
 * SOC incident report generation
 * SOC triage report content
 * incident log template generation
+* source-context excerpt cleaning and display formatting
 * unsafe refusal routing
 * out-of-scope routing
 * CyberLex self-description routing
@@ -507,6 +529,7 @@ app/
 ├── text_utils.py        # Text normalization and matching helpers
 ├── language.py          # Swedish/English detection and localization
 ├── source_loader.py     # Markdown source loading, metadata extraction, and chunking
+├── source_context.py    # Source-context cleaning, filtering, friendly names, and card generation
 ├── incident_engine.py   # Incident-response question detection
 ├── incident_reports.py  # SOC report, triage, checklist, and incident-log generation
 ├── case_search.py       # Related case and incident-example search
@@ -783,6 +806,7 @@ tests/test_incident_engine.py
 tests/test_incident_reports.py
 tests/test_language_detection.py
 tests/test_routing_logic.py
+tests/test_source_context.py
 ```
 
 The tests currently verify selected core behavior:
@@ -795,6 +819,7 @@ The tests currently verify selected core behavior:
 * SOC report visibility
 * SOC report Markdown generation
 * incident log template generation
+* source-context excerpt cleaning and display formatting
 * unsafe request refusal
 * out-of-scope refusal
 * NIS2 scope behavior
@@ -809,7 +834,7 @@ python -m pytest
 Expected current result:
 
 ```text
-47 passed
+50 passed
 ```
 
 The GitHub Actions test workflow also runs these tests automatically.
@@ -904,6 +929,7 @@ The refactor improves the project by:
 * separating UI from helper logic
 * separating routing logic from Streamlit rendering
 * separating SOC report generation from Streamlit rendering
+* separating source-context display from Streamlit rendering
 * making automated tests easier
 * making future source-routing tests possible
 * making the project look more professional
@@ -924,6 +950,7 @@ python -m py_compile app/styles.py
 python -m py_compile app/text_utils.py
 python -m py_compile app/language.py
 python -m py_compile app/source_loader.py
+python -m py_compile app/source_context.py
 python -m py_compile app/incident_engine.py
 python -m py_compile app/incident_reports.py
 python -m py_compile app/case_search.py
@@ -971,7 +998,7 @@ Possible future improvements include:
 
 * moving answer-generation logic into `answer_engine.py`
 * moving search-ranking logic into `search_engine.py`
-* moving source-context display into `source_context.py`
+* expanding tests for source-context edge cases and card selection behavior
 * moving UI components into `ui_components.py`
 * moving safety checks into a dedicated `safety.py` module if they grow beyond routing
 * adding `semantic_search.py` for real vector search later
