@@ -964,6 +964,7 @@ def generate_copy_ready_incident_summary(
     answer_html=None,
     prepared_by="",
     incident_id="",
+    affected_system="",
 ):
     # Builds a SOC-oriented Markdown incident report.
     # Markdown makes the downloaded report look professional in VS Code, GitHub,
@@ -980,6 +981,7 @@ def generate_copy_ready_incident_summary(
     generated_report_id = f"CYBERLEX-SOC-{generated_now.strftime('%Y%m%d-%H%M')}"
     prepared_by_text = str(prepared_by or "").strip()
     incident_id_text = str(incident_id or "").strip()
+    affected_system_text = str(affected_system or "").strip()
 
     if use_swedish:
         title = "CyberLex Sweden SOC-incidentrapport"
@@ -993,6 +995,7 @@ def generate_copy_ready_incident_summary(
         report_id_label = "Rapport-ID"
         report_id_text = generated_report_id
         incident_id_label = "Incident-ID / Ärende-ID"
+        affected_system_label = "Berört system / tjänst"
         report_type_label = "Rapporttyp"
         report_type_text = "SOC-triageunderlag"
         status_label = "Status"
@@ -1034,6 +1037,7 @@ def generate_copy_ready_incident_summary(
         report_id_label = "Report ID"
         report_id_text = generated_report_id
         incident_id_label = "Incident ID / Ticket ID"
+        affected_system_label = "Affected system / service"
         report_type_label = "Report type"
         report_type_text = "SOC triage note"
         status_label = "Status"
@@ -1092,6 +1096,7 @@ def generate_copy_ready_incident_summary(
 - {generated_by_label}: CyberLex Sweden
 - {report_id_label}: {report_id_text}
 - {incident_id_label}: {incident_id_text}
+- {affected_system_label}: {affected_system_text}
 - {report_type_label}: {report_type_text}
 - {status_label}: {status_text}
 - {classification_label}: {classification_text}

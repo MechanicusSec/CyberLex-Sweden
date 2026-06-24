@@ -4535,6 +4535,15 @@ if question:
                             placeholder="INC-2026-0042",
                             key="soc_report_incident_id",
                         )
+                        affected_system_value = st.text_input(
+                            "Affected system / service"
+                            if language != "Svenska"
+                            else "Berört system / tjänst",
+                            placeholder="File server / Microsoft 365 / HR system"
+                            if language != "Svenska"
+                            else "Filserver / Microsoft 365 / HR-system",
+                            key="soc_report_affected_system",
+                        )
                         copy_ready_summary = generate_copy_ready_incident_summary(
                             question,
                             best_match,
@@ -4543,6 +4552,7 @@ if question:
                             answer_html=answer_html,
                             prepared_by=prepared_by_value,
                             incident_id=incident_id_value,
+                            affected_system=affected_system_value,
                         )
                         soc_report_filename = build_soc_report_download_filename(copy_ready_summary)
                         st.caption(
