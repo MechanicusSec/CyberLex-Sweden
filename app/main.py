@@ -4559,6 +4559,20 @@ if question:
                             key="soc_report_incident_status",
                         )
 
+                        analyst_severity_options = (
+                            ["Ej satt", "Låg", "Medel", "Hög", "Kritisk"]
+                            if language == "Svenska"
+                            else ["Not set", "Low", "Medium", "High", "Critical"]
+                        )
+                        analyst_severity_value = st.selectbox(
+                            "Analyst severity / priority"
+                            if language != "Svenska"
+                            else "Analytikerbedömd allvarlighetsgrad / prioritet",
+                            analyst_severity_options,
+                            index=0,
+                            key="soc_report_analyst_severity",
+                        )
+
                         copy_ready_summary = generate_copy_ready_incident_summary(
                             question,
                             best_match,
@@ -4569,6 +4583,7 @@ if question:
                             incident_id=incident_id_value,
                             affected_system=affected_system_value,
                             incident_status=incident_status_value,
+                            analyst_severity=analyst_severity_value,
                         )
                         soc_report_filename = build_soc_report_download_filename(copy_ready_summary)
                         st.caption(
