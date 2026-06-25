@@ -4544,6 +4544,21 @@ if question:
                             else "Filserver / Microsoft 365 / HR-system",
                             key="soc_report_affected_system",
                         )
+
+                        incident_status_options = (
+                            ["Ny", "Pågående", "Begränsad", "Övervakning", "Stängd"]
+                            if language == "Svenska"
+                            else ["New", "In progress", "Contained", "Monitoring", "Closed"]
+                        )
+                        incident_status_value = st.selectbox(
+                            "Incident status"
+                            if language != "Svenska"
+                            else "Incidentstatus",
+                            incident_status_options,
+                            index=0,
+                            key="soc_report_incident_status",
+                        )
+
                         copy_ready_summary = generate_copy_ready_incident_summary(
                             question,
                             best_match,
@@ -4553,6 +4568,7 @@ if question:
                             prepared_by=prepared_by_value,
                             incident_id=incident_id_value,
                             affected_system=affected_system_value,
+                            incident_status=incident_status_value,
                         )
                         soc_report_filename = build_soc_report_download_filename(copy_ready_summary)
                         st.caption(
