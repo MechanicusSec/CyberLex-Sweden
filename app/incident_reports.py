@@ -965,6 +965,8 @@ def generate_copy_ready_incident_summary(
     prepared_by="",
     incident_id="",
     affected_system="",
+    detected_time="",
+    reported_time="",
     incident_status="",
     analyst_severity="",
 ):
@@ -984,6 +986,8 @@ def generate_copy_ready_incident_summary(
     prepared_by_text = str(prepared_by or "").strip()
     incident_id_text = str(incident_id or "").strip()
     affected_system_text = str(affected_system or "").strip()
+    detected_time_text = str(detected_time or "").strip()
+    reported_time_text = str(reported_time or "").strip()
     incident_status_text = str(incident_status or "").strip()
     analyst_severity_text = str(analyst_severity or "").strip()
 
@@ -1003,6 +1007,8 @@ def generate_copy_ready_incident_summary(
         report_id_text = generated_report_id
         incident_id_label = "Incident-ID / Ärende-ID"
         affected_system_label = "Berört system / tjänst"
+        detected_time_label = "Upptäckt tidpunkt"
+        reported_time_label = "Rapporterad tidpunkt"
         incident_status_label = "Incidentstatus"
         analyst_severity_label = "Analytikerbedömd allvarlighetsgrad / prioritet"
         report_type_label = "Rapporttyp"
@@ -1047,6 +1053,8 @@ def generate_copy_ready_incident_summary(
         report_id_text = generated_report_id
         incident_id_label = "Incident ID / Ticket ID"
         affected_system_label = "Affected system / service"
+        detected_time_label = "Detected time"
+        reported_time_label = "Reported time"
         incident_status_label = "Incident status"
         analyst_severity_label = "Analyst severity / priority"
         report_type_label = "Report type"
@@ -1108,6 +1116,8 @@ def generate_copy_ready_incident_summary(
 - {report_id_label}: {report_id_text}
 - {incident_id_label}: {incident_id_text}
 - {affected_system_label}: {affected_system_text}
+- {detected_time_label}: {detected_time_text}
+- {reported_time_label}: {reported_time_text}
 - {incident_status_label}: {incident_status_text}
 - {analyst_severity_label}: {analyst_severity_text}
 - {report_type_label}: {report_type_text}

@@ -4544,6 +4544,20 @@ if question:
                             else "Filserver / Microsoft 365 / HR-system",
                             key="soc_report_affected_system",
                         )
+                        detected_time_value = st.text_input(
+                            "Detected time"
+                            if language != "Svenska"
+                            else "Upptäckt tidpunkt",
+                            placeholder="2026-06-24 14:30",
+                            key="soc_report_detected_time",
+                        )
+                        reported_time_value = st.text_input(
+                            "Reported time"
+                            if language != "Svenska"
+                            else "Rapporterad tidpunkt",
+                            placeholder="2026-06-24 14:45",
+                            key="soc_report_reported_time",
+                        )
 
                         incident_status_options = (
                             ["Ny", "Pågående", "Begränsad", "Övervakning", "Stängd"]
@@ -4582,6 +4596,8 @@ if question:
                             prepared_by=prepared_by_value,
                             incident_id=incident_id_value,
                             affected_system=affected_system_value,
+                            detected_time=detected_time_value,
+                            reported_time=reported_time_value,
                             incident_status=incident_status_value,
                             analyst_severity=analyst_severity_value,
                         )
