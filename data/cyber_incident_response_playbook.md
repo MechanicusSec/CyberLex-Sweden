@@ -1932,7 +1932,7 @@ Use IMY material for Swedish GDPR authority context.
 
 - [CERT-SE - The national CSIRT of Sweden](https://www.cert.se/en/)
 - [MSB - Hantera pågående it-incident](https://www.msb.se/sv/amnesomraden/informationssakerhet-cybersakerhet-och-sakra-kommunikationer/hantera-och-rapportera-it-incidenter-och-cyberangrepp/hantera-pagaende-it-incident/)
-- [MSB - Frivillig rapportering av it-incident](https://www.msb.se/sv/amnesomraden/informationssakerhet-cybersakerhet-och-sakra-kommunikationer/hantera-och-rapportera-it-incidenter-och-cyberangrepp/rapportera-it-incident/frivillig-rapportering/)
+- [NCSC/CERT-SE - Frivillig rapportering av it-incident](https://www.ncsc.se/sv/radgivning-och-stod/hantera-och-rapportera-it-incidenter-och-cyberangrepp/rapportera-cyberincident/rapportera-it-incident--frivillig/)
 - [MSB - Incidentrapportering enligt cybersäkerhetslagen](https://www.msb.se/sv/amnesomraden/informationssakerhet-cybersakerhet-och-sakra-kommunikationer/krav-och-regler-inom-informationssakerhet-och-cybersakerhet/nis-direktivet/incidentrapportering-enligt-cybersakerhetslagen/)
 - [IMY - Notification of a personal data breach](https://www.imy.se/en/organisations/forms-and-e-services/notification-of-a-personal-data-breach/)
 - [EDPB - Notify a personal data breach](https://www.edpb.europa.eu/notify-data-breach_en)
@@ -1943,9 +1943,9 @@ Use IMY material for Swedish GDPR authority context.
 
 ## Source metadata
 
-Source date: Last checked: 2026-06-04
+Source date: Last checked: 2026-07-10
 
-Version notes: CyberLex Sweden incident response playbook expanded. Includes defensive first steps for suspected hacking, unauthorized access, ransomware, malware, compromised accounts, data leaks, suspicious login activity, suspicious MFA activity, suspicious email, phishing, clicked links, opened attachments, and entered credentials. Added Swedish and English step-by-step answer patterns, topic-specific assessment checklists, evidence preservation guidance, GDPR/IMY assessment notes, NIS2/cybersäkerhetslagen assessment notes, CERT-SE escalation notes, official source links, and safety boundaries.
+Version notes: CyberLex Sweden incident response playbook expanded. Includes defensive first steps for suspected hacking, unauthorized access, ransomware, malware, compromised accounts, data leaks, suspicious login activity, suspicious MFA activity, suspicious email, phishing, clicked links, opened attachments, and entered credentials. Added Swedish and English step-by-step answer patterns, topic-specific assessment checklists, evidence preservation guidance, GDPR/IMY assessment notes, NIS2/cybersäkerhetslagen assessment notes, CERT-SE escalation notes, official source links, and safety boundaries. Updated the voluntary IT incident reporting source link from the old MSB URL to the current NCSC/CERT-SE URL after the source watch reported a 404.
 
 ---
 

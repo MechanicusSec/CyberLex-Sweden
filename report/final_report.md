@@ -8,46 +8,39 @@ CyberLex Sweden: A Source-Grounded Assistant Prototype for Swedish Cybersecurity
 
 CyberLex Sweden project author
 
+## Project Type
+
+Komvuxarbete / final school project with IT, network technician, cybersecurity, and digital compliance focus.
+
 ---
 
 ## Project Summary
 
-CyberLex Sweden is a final school project focused on building a source-grounded assistant prototype for Swedish cybersecurity law, EU cybersecurity law, digital compliance, and defensive incident response.
+CyberLex Sweden is a local educational prototype built as a Streamlit application. The project focuses on Swedish and EU cybersecurity law, digital compliance, GDPR, NIS2, DORA, the Cyber Resilience Act, Swedish cybercrime law, personal data breaches, selected case examples, and defensive incident-response learning.
 
-The goal of the project is to make selected Swedish and EU cybersecurity-law information easier to search, understand, and review by using a trusted local Markdown knowledge base, local case examples, rule-based retrieval, official source links, source metadata, citation details, source quality labels, source freshness labels, detected topic labels, practical explanations, assessment checklists, defensive incident-response support, and SOC-style Markdown report export.
+The goal of the project was to create a source-grounded support tool that helps users search, understand, and review selected cybersecurity-law and incident-response information in a transparent way. Instead of using unsupported AI-generated legal answers, CyberLex Sweden uses a trusted local Markdown knowledge base, local case files, source routing, keyword-based retrieval, official source links, source metadata, case examples, and clear limitations.
 
-The current prototype focuses on selected Swedish and EU cybersecurity-related legal topics, including GDPR, IMY, NIS2, the Swedish Cybersecurity Act, Swedish cybercrime law and dataintrång, EU attacks against information systems, the Cyber Resilience Act, DORA, and selected real-world case examples related to GDPR and cybersecurity.
+The current prototype includes a working local Streamlit interface, Swedish and English support, source-grounded answers, Case Intelligence, related case examples, incident-response guidance, SOC-style Markdown incident report export, local source and case audits, automated tests, and GitHub Actions workflows.
 
-CyberLex Sweden is an educational prototype. It does not provide legal advice and should not replace official authority guidance, qualified legal advice, compliance review, data protection officer review, or professional incident-response support.
+CyberLex Sweden is an educational prototype. It does **not** provide legal advice and does not replace official authority guidance, qualified legal review, compliance review, a data protection officer, or professional incident-response support.
 
 ---
 
 ## Source Quality Policy
 
-CyberLex Sweden includes a source policy and source history documented in:
-
-```text
-docs/source_policy.md
-docs/source_history.md
-```
-
-The purpose of the source quality policy is to make sure that the project uses trusted and traceable legal, authority-based, regulatory, and defensive cybersecurity sources.
+CyberLex Sweden follows a source-first design.
 
 The project prioritizes:
 
-* official government sources
 * official Swedish authority sources
-* official EU legal sources
+* official EU legal and regulatory sources
+* official government or public-sector information
 * defensive cybersecurity guidance
 * clear source references
 * readable official source links
-* source dates
-* version notes
-* educational summaries that can be reviewed
-* source history
+* source dates and metadata
+* source history and version notes
 * refusal when no trusted local source exists
-
-This is important because legal and cybersecurity topics can be risky if an application gives unsupported or unclear answers.
 
 The guiding principle is:
 
@@ -55,112 +48,136 @@ The guiding principle is:
 Better sources first. Better AI second.
 ```
 
+This is important because legal, privacy, compliance, and cybersecurity topics can be risky if an application gives unsupported or unclear answers.
+
+The source policy and source history are documented in:
+
+```text
+docs/source_policy.md
+docs/source_history.md
+```
+
 ---
 
 ## 1. Background
 
-Cybersecurity law can be difficult to understand because relevant information is spread across many different sources.
+Cybersecurity law can be difficult to understand because relevant information is spread across many different places.
 
 These sources can include:
 
 * Swedish laws
-* EU regulations
-* EU directives
+* EU regulations and directives
 * Swedish government agencies
 * cybersecurity authorities
 * data protection authorities
-* official legal databases
 * public authority decisions
+* official legal databases
 * practical incident-response guidance
 
-For students, IT workers, and smaller organizations, it can be difficult to quickly understand which rules may apply in a cyber incident or digital compliance situation.
+For IT students, network technician students, IT support staff, and smaller organizations, it can be difficult to quickly understand which rules may be relevant after a cyber incident or in a digital compliance situation.
 
-A normal chatbot may give confident but unsupported answers. This is especially risky in legal, compliance, privacy, and cybersecurity topics.
+A general chatbot may answer confidently without showing legal sources or separating legal guidance from historical case examples. That is risky for legal, compliance, privacy, and cybersecurity topics.
 
-CyberLex Sweden was created as a prototype to explore how a focused assistant could help users find and understand selected cybersecurity-law information in a safer and more transparent way.
+CyberLex Sweden was created to test a more transparent approach: answers should be based on selected local source material, and users should be able to see which source file and source section supported the answer.
 
 ---
 
-## 2. Problem Description
+## 2. Connection to Network Technician Education
+
+CyberLex Sweden connects to the network technician and IT support area because modern network and IT work is not only about hardware, cabling, servers, and configuration. It also involves cybersecurity, incident handling, documentation, user guidance, privacy awareness, and understanding rules that affect IT environments.
+
+The project demonstrates several skills relevant to a network technician direction:
+
+* planning a technical project
+* setting up and running a local application environment
+* using Python, Streamlit, Git, GitHub, PowerShell, and VS Code
+* organizing technical source files and documentation
+* reading and using Swedish and English technical/legal source material
+* documenting project work and technical decisions
+* testing and troubleshooting a local application
+* using version control and GitHub workflows
+* understanding cybersecurity-law topics that may affect IT support work
+* supporting defensive incident-response thinking
+* creating structured incident documentation
+* refusing unsafe cyber misuse requests
+
+The project should therefore be understood as a cybersecurity-law and incident-response support prototype for IT and network support learning, not as a production legal-advice system.
+
+---
+
+## 3. Problem Description
 
 The main problem is that cybersecurity-related legal information is often:
 
 * spread across several authorities and legal sources
 * written in complex legal or administrative language
-* difficult to search without knowing the exact legal terms
+* difficult to search without knowing exact legal terms
 * risky to summarize incorrectly
-* unsuitable for unsupported AI guessing
 * connected to overlapping legal frameworks such as GDPR, NIS2, DORA, CRA, and criminal law
+* mixed with practical incident-response questions in real IT work
 
-CyberLex Sweden tries to reduce that risk by using a local trusted knowledge base and showing which source file and source section were used for each answer.
+CyberLex Sweden tries to reduce this risk by using a local trusted knowledge base and by showing the source file, source section, official source links, source metadata, and limitations for supported answers.
 
 The prototype does not try to replace a lawyer, court, authority, compliance specialist, data protection officer, or professional incident-response team.
 
 ---
 
-## 3. Project Goal
+## 4. Project Goal
 
-The goal of the project was to build a working prototype that can:
+The goal was to build a working local prototype that can:
 
 * load trusted local knowledge base files
 * search legal and cybersecurity information by topic
-* split Markdown source files into searchable chunks
+* split Markdown source files into searchable sections
 * match user questions to relevant source sections
-* route specific questions to the correct knowledge file
+* route specific questions to stronger source files
 * generate simple source-based answers
 * show the source file and source section used
-* display structured citation details
-* display official source links
-* display source metadata
-* display source quality labels
-* display source freshness labels
-* display source match confidence explanations
-* display detected topic labels
-* show relevant source context and other matching source sections
-* provide practical explanations and assessment checklists
+* display official source links and source metadata
+* display source quality and freshness labels
+* show practical explanations and assessment checklists
 * support English, Swedish, and Auto language behavior
-* provide defensive incident-response support for selected scenarios
-* generate SOC-style Markdown incident summaries for practical incident questions
-* show related case examples for suitable compliance and case-library questions
-* hide related case examples for urgent practical incident-response triage
-* provide a Case Intelligence page for browsing local case examples
+* support selected defensive incident-response scenarios
+* generate SOC-style Markdown incident summaries
+* show related case examples where relevant
+* provide a Case Intelligence page for browsing cases
+* provide Case Intelligence filters and comparison view
 * refuse unsupported out-of-scope questions
 * refuse unsafe cyber misuse requests
-* audit local source files for required source structure
-* audit local case files for required case-library structure
+* audit local source files and case files
+* run automated tests
 
 ---
 
-## 4. Scope
+## 5. Scope
 
-The current prototype covers a limited set of Swedish and EU cybersecurity-law topics, digital compliance topics, case examples, and defensive incident-response topics.
+The prototype covers selected Swedish and EU cybersecurity-law, digital compliance, case-library, and defensive incident-response topics.
 
 The current legal and compliance scope includes:
 
-* GDPR and personal data breach notification in Sweden
+* GDPR and personal data breach notification
 * IMY and Swedish GDPR supervision
-* GDPR core principles
-* GDPR security measures
+* GDPR core principles and security measures
 * NIS2 and the Swedish Cybersecurity Act
-* NIS2 sector scope and applicability
-* NIS2 incident reporting
-* Swedish cybercrime law and dataintrång
+* NIS2 sector scope and incident reporting
+* Swedish cybercrime law and `dataintrång`
 * EU attacks against information systems
 * EU Cyber Resilience Act
-* EU DORA, the Digital Operational Resilience Act
-* digital compliance and cybersecurity-related legal topics
+* EU DORA
+* selected digital compliance and cybersecurity-related legal topics
 
-The current case-library scope includes selected examples related to:
+The case-library scope includes selected examples related to:
 
 * GDPR risks
 * Meta Pixel and tracking technologies
+* profiling and marketing
 * app data exposure
 * wrong-recipient disclosures
 * weak security measures
 * public incident examples
 * authority decisions and public outcomes where available
 
-The current incident-response scope includes selected defensive scenarios related to:
+The incident-response scope includes selected defensive scenarios related to:
 
 * suspicious email and phishing
 * suspicious links
@@ -168,178 +185,122 @@ The current incident-response scope includes selected defensive scenarios relate
 * compromised accounts
 * data leaks
 * possible personal data breaches
-* ransomware
-* malware
+* ransomware and malware
 * encrypted files
 * suspected hacking or intrusion
 
-The prototype does not cover all Swedish law.
-
-For example, a question about Swedish tax law should be refused because it is outside the CyberLex Sweden project scope.
+The prototype does not cover all Swedish law or all EU law. A question about Swedish tax law, for example, should be refused because it is outside the project scope.
 
 ---
 
-## 5. Tools and Technologies
+## 6. Tools and Technologies
 
 ### Visual Studio Code
 
-Visual Studio Code was used as the main code editor.
-
-It was used to write:
-
-* Python code
-* Markdown documentation
-* source files
-* case files
-* test cases
-* the final report
+Visual Studio Code was used as the main editor for Python code, Markdown documentation, source files, case files, tests, and reports.
 
 ### Python
 
-Python was used as the main programming language for the application.
-
-Python was chosen because it is widely used for web prototypes, automation, data processing, and AI-related projects.
+Python was used as the main programming language for the application, scripts, tests, and automation.
 
 ### Streamlit
 
-Streamlit was used to create the local web application.
-
-Streamlit makes it possible to turn a Python application into a browser-based interface with input fields, sidebars, formatted text, warnings, cards, buttons, expanders, downloadable files, and result sections.
+Streamlit was used to create the local web interface. It provides the browser-based UI, input fields, sidebars, formatted answer sections, expanders, warnings, download buttons, and case browsing pages.
 
 ### Markdown
 
-Markdown was used for documentation, knowledge base files, case-library files, and generated SOC-style incident reports.
+Markdown was used for the knowledge base, case library, documentation, logbook, and generated SOC-style incident reports.
 
-Markdown is simple to read and works well for GitHub documentation, structured notes, and source-based text files.
+### Git and GitHub
 
-### Git
-
-Git was used for version control.
-
-Git tracks changes in the project and creates a development history through commits.
-
-### GitHub
-
-GitHub was used to store the project online.
-
-GitHub makes it possible to show the code, documentation, project history, commits, and GitHub Actions workflow runs.
+Git was used for version control. GitHub was used to store the project online, show project history, and run automation workflows.
 
 ### GitHub Actions
 
-GitHub Actions was added for source audit workflow support.
+GitHub Actions was used for automated tests, source audit, and source watch workflows.
 
-The workflow can run the local source audit script and update the generated source audit report.
+### Pytest
+
+`pytest` was used for automated regression tests covering important logic such as routing, language detection, incident detection, SOC report generation, and source-context behavior.
 
 ---
 
-## 6. Project Structure
+## 7. Project Structure
 
-The project is organized into several folders and files:
+The project is organized into several folders:
 
 ```text
-CyberLex-Sweden
-├── .github
-│   └── workflows
-│       └── source-audit.yml
-├── app
+CyberLex-Sweden/
+├── .github/
+│   └── workflows/
+├── app/
 │   ├── main.py
-│   ├── config.py
-│   ├── styles.py
-│   ├── text_utils.py
-│   ├── language.py
-│   ├── source_loader.py
+│   ├── routing.py
 │   ├── incident_engine.py
+│   ├── incident_reports.py
+│   ├── source_loader.py
+│   ├── source_context.py
 │   ├── case_search.py
-│   └── vector_search.py
-├── cases
+│   └── other app modules
+├── cases/
 │   └── local case-library Markdown files
-├── data
+├── data/
 │   └── local Markdown knowledge base files
-├── docs
-│   ├── architecture.md
-│   ├── ai_rag_plan.md
-│   ├── legal_disclaimer.md
-│   ├── privacy_and_data_handling.md
-│   ├── product_roadmap.md
-│   ├── project_overview.md
-│   ├── project_plan.md
-│   ├── source_audit_report.md
-│   ├── source_context_behavior.md
-│   ├── source_history.md
-│   ├── source_list.md
-│   ├── source_policy.md
-│   ├── technical_design.md
-│   ├── terms_of_use.md
-│   ├── test_cases.md
-│   ├── testing_and_demo.md
-│   ├── ui_behavior.md
-│   ├── vector_search_plan.md
-│   └── case_library
-│       └── case_audit_report.md
-├── report
+├── docs/
+│   └── project documentation and generated reports
+├── report/
 │   └── final_report.md
-├── screenshots
-├── scripts
-│   ├── add_missing_metadata.py
-│   ├── case_audit.py
-│   └── source_audit.py
-├── sources
-├── .gitignore
-├── COPYRIGHT.md
+├── screenshots/
+├── scripts/
+│   ├── source_audit.py
+│   ├── source_watch.py
+│   └── case_audit.py
+├── source_snapshots/
+├── tests/
 ├── README.md
 └── requirements.txt
 ```
 
+This structure separates application logic, source material, case examples, documentation, tests, scripts, and reports.
+
 ---
 
-## 7. Knowledge Base
+## 8. Knowledge Base
 
 CyberLex Sweden uses local Markdown files as its trusted knowledge base.
 
-Each file in the `data/` folder represents one legal, regulatory, authority, cybersecurity, or defensive incident-response topic.
+The `data/` folder contains source material about:
 
-The current knowledge base includes 13 source files:
+* GDPR and personal data breaches
+* IMY supervision and security measures
+* NIS2 and incident reporting
+* DORA
+* Cyber Resilience Act
+* Swedish cybercrime law and unauthorized access
+* EU attacks against information systems
+* defensive incident response
 
-| File                                        | Topic                                                       |
-| ------------------------------------------- | ----------------------------------------------------------- |
-| `cyber_incident_response_playbook.md`       | Defensive incident-response guidance                        |
-| `cybercrime_dataintrang.md`                 | Swedish cybercrime law and dataintrång                      |
-| `eu_attacks_against_information_systems.md` | EU rules on attacks against information systems             |
-| `eu_cyber_resilience_act.md`                | EU Cyber Resilience Act                                     |
-| `eu_dora_digital_operational_resilience.md` | EU DORA and financial-sector digital operational resilience |
-| `gdpr_core_principles.md`                   | GDPR core principles                                        |
-| `gdpr_imy_edpb_security_guidance.md`        | GDPR, IMY, and EDPB security and breach guidance            |
-| `gdpr_personal_data_breach.md`              | GDPR personal data breaches and IMY breach notification     |
-| `imy_gdpr_security_measures.md`             | IMY and GDPR security measures                              |
-| `imy_gdpr_supervision.md`                   | IMY and Swedish GDPR supervision                            |
-| `nis2_cybersecurity_law.md`                 | NIS2 and the Swedish Cybersecurity Act                      |
-| `nis2_incident_reporting.md`                | NIS2 incident reporting in Sweden                           |
-| `nis2_sector_scope_guidance.md`             | NIS2 sector scope and applicability                         |
+Each source file is structured with sections such as:
 
-Each knowledge file is structured with headings such as:
-
-* Topic
-* Main authority or legal source
-* Key idea
-* Important points
-* Cybersecurity connection
-* Swedish summary
-* Assessment checklist
-* Useful questions
-* Swedish useful questions
-* Official source
-* Source metadata
-* Disclaimer
+* topic
+* main authority or legal source
+* key idea
+* important points
+* practical explanation or checklist
+* useful questions
+* official source links
+* source metadata
+* disclaimer or limitation notes
 
 This structure makes it easier for the app to search, display, audit, and update relevant source sections.
 
 ---
 
-## 8. Case Library
+## 9. Case Library
 
 CyberLex Sweden includes a separate local case library in the `cases/` folder.
 
-The case library is separate from the main knowledge base.
+The distinction is important:
 
 ```text
 data/
@@ -349,80 +310,66 @@ cases/
 = educational examples, authority decisions, public incident examples, outcomes, fines, learning notes, and related case context
 ```
 
-The current case library includes 8 checked case files:
+The case library includes examples involving:
 
-| File                                       | Topic                                                                           |
-| ------------------------------------------ | ------------------------------------------------------------------------------- |
-| `imy_apoteket_apohem_meta_pixel.md`        | Meta Pixel and GDPR risk in pharmacy/health-related context                     |
-| `imy_avanza_bank_meta_pixel.md`            | Meta Pixel and GDPR risk in financial services                                  |
-| `imy_equality_ombudsman_web_form.md`       | Web form security and personal data handling                                    |
-| `imy_kry_meta_pixel.md`                    | Meta Pixel and hashed contact data in healthcare context                        |
-| `imy_sportadmin_security_breach.md`        | Security breach affecting many individuals, including children and young people |
-| `imy_trygg_hansa_security_deficiencies.md` | Security deficiencies and exposure of customer data                             |
-| `imy_wrong_email_customer_data.md`         | Customer data sent to the wrong recipient                                       |
-| `klarna_app_data_exposure_2021.md`         | App data exposure and customer data visibility issue                            |
+* Apoteket/Apohem Meta Pixel
+* Avanza Meta Pixel
+* Equality Ombudsman web form
+* Kry Meta Pixel
+* Miljödata data leak
+* Region Skåne USB security case
+* SL/WÅAB alcohol testing
+* Sportadmin security breach
+* Spotify access request
+* Statens servicecenter breach notification
+* Trygg-Hansa security deficiencies
+* Indecap wrong-email customer data
+* Klarna app data exposure
+* Bonnier News profiling sanction
 
-Case examples are educational context only.
-
-They should not be treated as legal advice, fine predictions, or proof that a similar situation would produce the same legal result.
+These cases are educational context only. They should not be treated as legal advice, fine predictions, or proof that a similar situation would produce the same result.
 
 ---
 
-## 9. Application Functionality
+## 10. Application Functionality
 
 The current application can:
 
-1. Load Markdown files from the `data/` folder.
-2. Load case files from the `cases/` folder.
-3. Extract official source links from the knowledge base files.
-4. Extract source date and version notes from knowledge base files.
-5. Split documents into smaller chunks based on Markdown headings.
-6. Check whether a question belongs to the CyberLex Sweden project scope.
-7. Detect whether a question is unsafe and should be refused.
-8. Search chunks using keyword matching, question intent, topic expansion, and source routing.
-9. Select the best matching source chunk.
-10. Generate simple source-based answers.
-11. Display structured citation details.
-12. Display source quality labels.
-13. Display source freshness labels.
-14. Display source confidence explanations.
-15. Display official source links.
-16. Display source metadata.
-17. Display detected topic labels.
-18. Display practical explanation cards.
-19. Display topic-based assessment checklists.
-20. Display relevant source context.
-21. Display other matching source sections.
-22. Display related cases when relevant.
-23. Hide related cases for practical incident-response triage.
-24. Provide defensive first-step guidance for selected incident scenarios.
-25. Generate SOC-style Markdown report downloads.
-26. Refuse questions outside the project scope.
-27. Refuse unsafe cyber misuse questions.
-28. Provide an experimental retrieval sidebar for retrieval testing.
-29. Provide a Case Intelligence page for browsing local case examples.
-30. Run local source audits through a script.
-31. Run local case audits through a script.
-32. Run a source audit workflow through GitHub Actions.
+1. Load Markdown source files from `data/`.
+2. Load case files from `cases/`.
+3. Extract official source links and metadata.
+4. Split documents into searchable chunks.
+5. Check whether a question belongs to the project scope.
+6. Detect unsafe cyber misuse questions.
+7. Search chunks using keyword matching, question intent, topic expansion, and source routing.
+8. Generate simple source-based answers.
+9. Display citation details, source links, metadata, quality labels, freshness labels, and confidence explanations.
+10. Display detected topic labels, practical explanation cards, assessment checklists, and source context.
+11. Display related cases where relevant.
+12. Hide related cases for practical incident-response triage questions.
+13. Provide defensive first-step guidance for selected incident scenarios.
+14. Generate SOC-style Markdown report downloads for practical incident questions.
+15. Refuse out-of-scope questions.
+16. Refuse unsafe cyber misuse requests.
+17. Provide a Case Intelligence page for browsing local case examples.
+18. Provide Case Intelligence filters and comparison view.
+19. Run local source, case, and source-watch checks.
+20. Run automated tests locally and through GitHub Actions.
 
 ---
 
-## 10. How the Application Works
+## 11. How the Application Works
 
 The application follows this basic flow:
 
 ```text
 User question
 ↓
-Language selection or Auto language handling
+Language selection or Auto language detection
 ↓
-Scope check
+Scope and unsafe-request checks
 ↓
-Unsafe cyber check
-↓
-Topic detection
-↓
-Incident-response detection
+Topic and incident-response detection
 ↓
 Source routing
 ↓
@@ -439,176 +386,42 @@ Related case display where relevant
 SOC report download where relevant
 ```
 
-First, the user enters a question in the Streamlit interface or selects an example question.
-
-The application checks whether the question is inside the project scope.
-
-If the question is outside the scope, the application refuses to answer.
-
-If the question asks for harmful cyber misuse, such as hiding logs or stealing credentials, the application refuses or redirects toward lawful defensive guidance.
-
-If the question is inside the scope, the application searches the local Markdown knowledge base.
-
-The search system uses:
-
-* question keywords
-* expanded legal and cybersecurity terms
-* source section titles
-* source text
-* useful section bonuses
-* weak section penalties
-* source routing for specific legal topics
-* topic-specific answer handling
-
-The best matching source section is then used to generate a simple answer.
-
-The app also displays the source file, source section, relevance score, source quality, source confidence, official source links, source metadata, practical explanation, assessment checklist, matched source excerpt, and supporting source context.
-
-This makes the answer more transparent and reviewable.
+The application is rule-based and source-grounded. It does not browse the web live during the answer flow and does not use an external AI API for answer generation.
 
 ---
 
-## 11. Source Routing and Retrieval Improvements
+## 12. Source Routing and Retrieval
 
 Source routing was added to improve accuracy.
 
-Some legal topics share similar words, especially GDPR, NIS2, cybersecurity incidents, cybercrime, DORA, CRA, and data protection. Without routing, the app may choose the wrong source file.
+Some topics share similar terms, especially GDPR, NIS2, cybersecurity incidents, cybercrime, DORA, CRA, and data protection. Without routing, the app may choose the wrong source file.
 
-Source routing helps direct specific questions to the correct knowledge file.
+Routing helps direct specific questions to the correct source.
 
 Examples:
 
-| Question type                                                   | Target source                                                  |
-| --------------------------------------------------------------- | -------------------------------------------------------------- |
-| What is IMY?                                                    | `imy_gdpr_supervision.md`                                      |
-| What are the GDPR principles?                                   | `gdpr_core_principles.md`                                      |
-| When must a personal data breach be reported?                   | `gdpr_personal_data_breach.md`                                 |
-| Does GDPR require MFA?                                          | `imy_gdpr_security_measures.md`                                |
-| What is NIS2?                                                   | `nis2_cybersecurity_law.md`                                    |
-| Does NIS2 apply to us?                                          | `nis2_sector_scope_guidance.md`                                |
-| What is NIS2 incident reporting?                                | `nis2_incident_reporting.md`                                   |
-| What is dataintrång?                                            | `cybercrime_dataintrang.md`                                    |
-| What is the Cyber Resilience Act?                               | `eu_cyber_resilience_act.md`                                   |
-| What is DORA?                                                   | `eu_dora_digital_operational_resilience.md`                    |
-| What does EU law say about attacks against information systems? | `eu_attacks_against_information_systems.md`                    |
-| What should we do if customer data leaked?                      | `cyber_incident_response_playbook.md` and GDPR breach material |
+| Question type | Target source |
+| --- | --- |
+| What are the GDPR principles? | `gdpr_core_principles.md` |
+| When must a personal data breach be reported? | `gdpr_personal_data_breach.md` |
+| Does GDPR require MFA? | `imy_gdpr_security_measures.md` |
+| What is NIS2? | `nis2_cybersecurity_law.md` |
+| Does NIS2 apply to us? | `nis2_sector_scope_guidance.md` |
+| What is dataintrång? | `cybercrime_dataintrang.md` |
+| What is DORA? | `eu_dora_digital_operational_resilience.md` |
+| What should we do if customer data leaked? | `cyber_incident_response_playbook.md` and GDPR breach material |
 
 This makes the prototype more reliable than simple keyword matching alone.
 
-The experimental retrieval system was also improved for Swedish questions. Examples include:
-
-| Swedish question                                            | Expected source                             |
-| ----------------------------------------------------------- | ------------------------------------------- |
-| `Vad är NIS2?`                                              | `nis2_cybersecurity_law.md`                 |
-| `Vad är cybersäkerhetslagen?`                               | `nis2_cybersecurity_law.md`                 |
-| `Gäller NIS2 för oss?`                                      | `nis2_sector_scope_guidance.md`             |
-| `Vad är bilaga 1 och bilaga 2 i NIS2?`                      | `nis2_sector_scope_guidance.md`             |
-| `Vad ska ett företag göra efter en ransomwareattack?`       | `cyber_incident_response_playbook.md`       |
-| `Vad ska ett företag göra efter en personuppgiftsincident?` | `gdpr_personal_data_breach.md`              |
-| `Vad är IMY?`                                               | `imy_gdpr_supervision.md`                   |
-| `Vilka är GDPR-principerna?`                                | `gdpr_core_principles.md`                   |
-| `Vad är dataintrång?`                                       | `cybercrime_dataintrang.md`                 |
-| `Vad är DORA?`                                              | `eu_dora_digital_operational_resilience.md` |
-| `Vad betyder cybersäkerhetskrav för digitala produkter?`    | `eu_cyber_resilience_act.md`                |
-| `Vad säger EU om attacker mot informationssystem?`          | `eu_attacks_against_information_systems.md` |
-| `Vad är olaglig åtkomst enligt EU-regler?`                  | `eu_attacks_against_information_systems.md` |
-| `Vad säger EU om DDoS-attacker?`                            | `eu_attacks_against_information_systems.md` |
-
 ---
 
-## 12. Citation Details, Source Metadata, and Transparency
-
-CyberLex Sweden displays citation details for each supported answer.
-
-The citation details include:
-
-* matched knowledge file
-* matched section
-* source quality
-* relevance score
-* source match confidence
-* confidence explanation
-* official source links
-* source date
-* source freshness label
-* version notes
-
-The source metadata helps show when a source summary was last checked and what version of the educational summary is being used.
-
-Example metadata:
-
-```text
-Source date: Last checked: 2026-06-03
-Version notes: Source reviewed and expanded for CyberLex Sweden educational prototype.
-```
-
-This improves transparency and makes the project easier to review.
-
-The source freshness label does not prove that the law is currently up to date. It only explains whether the local source file has a stored review date and whether that date appears recent according to the prototype rules.
-
----
-
-## 13. User Interface and Answer Design
-
-The app uses structured sections for:
-
-* short answer
-* detected topic
-* citation details
-* official source links
-* source metadata
-* important limitation notice
-* CyberLex attention level
-* practical explanation
-* assessment checklist
-* relevant source context
-* other matching source sections
-* related cases where relevant
-* incident report download where relevant
-
-This makes the app easier to read and more transparent.
-
-The answer design separates the legal explanation from the source details and limitations.
-
-This helps the user understand both the answer and the evidence behind it.
-
-The app also includes example question buttons and a sidebar with supported topics, language controls, project information, prototype version notes, and future AI mode notes.
-
-When an example question is selected, it runs immediately instead of only filling the input field.
-
----
-
-## 14. Bilingual and Auto Language Support
+## 13. Bilingual and Auto Language Support
 
 CyberLex Sweden supports English, Swedish, and Auto language modes.
 
-The app can display:
+The app can display English or Swedish labels, limitation notices, topic labels, case summaries, source labels, and case sections where available.
 
-* English labels
-* Swedish labels
-* English example questions
-* Swedish example questions
-* English limitation text
-* Swedish limitation text
-* English topic labels
-* Swedish topic labels
-* English source-confidence labels
-* Swedish source-confidence labels
-* English freshness labels
-* Swedish freshness labels
-* English case summaries
-* Swedish case summaries
-* English case outcomes
-* Swedish case outcomes
-* English case topic badges
-* Swedish case topic badges
-* language-aware official source links for cases
-
-The knowledge base has been expanded with Swedish summaries and Swedish useful questions to improve Swedish retrieval.
-
-The case library also supports Swedish case sections where available.
-
-Auto mode detects the active submitted question and chooses English or Swedish labels based on the question.
+Auto mode detects the active submitted question and chooses English or Swedish display logic based on the question.
 
 Examples:
 
@@ -622,11 +435,11 @@ Kan Meta Pixel skapa GDPR-risk?
 → Swedish
 ```
 
-This supports the project goal of making CyberLex Sweden useful in both Swedish and English.
+This supports the project goal of making CyberLex Sweden useful in both Swedish and English contexts.
 
 ---
 
-## 15. Case Intelligence and Related Cases
+## 14. Case Intelligence and Related Cases
 
 CyberLex Sweden includes related case support through:
 
@@ -634,14 +447,13 @@ CyberLex Sweden includes related case support through:
 app/case_search.py
 ```
 
-It also includes a Case Intelligence page inside the Streamlit app.
-
-The Case Intelligence page lets the user browse local case files without asking a normal question.
+The Case Intelligence page allows users to browse local case files without asking a normal question.
 
 It displays:
 
 * case-library introduction
-* search or filter input
+* case search
+* case filters
 * case count
 * foldable case cards
 * summaries
@@ -649,7 +461,8 @@ It displays:
 * outcomes or fines where known
 * related topic badges
 * official source links
-* limitation warning
+* optional comparison table
+* warning that outcomes and amounts are historical examples only
 
 Related cases are shown below normal answers only when relevant.
 
@@ -662,6 +475,7 @@ Can an app bug expose customer data?
 Kan ett appfel exponera kunduppgifter?
 What can weak security measures cost?
 Vad kan svaga säkerhetsåtgärder kosta?
+Does profiling require consent?
 ```
 
 Related cases are normally hidden for practical incident-response triage questions such as:
@@ -677,140 +491,69 @@ This keeps urgent incident answers focused on containment, evidence preservation
 
 ---
 
-## 16. Experimental Retrieval and Future Vector Search
+## 15. Source, Case, and Test Automation
 
-CyberLex Sweden includes an experimental retrieval sidebar powered by:
+CyberLex Sweden includes local scripts for checking project quality.
 
-```text
-app/vector_search.py
-```
-
-Despite the filename, this module is currently still rule-based.
-
-It does not yet use:
-
-* real embeddings
-* ChromaDB
-* FAISS
-* a full language model
-* RAG answer generation
-
-The experimental module is used to test improved retrieval ranking separately from the main answer system.
-
-It currently:
-
-* loads Markdown source files from `data/`
-* splits them into chunks based on Markdown headings
-* cleans source text and user questions into searchable words
-* scores chunks against the user question
-* boosts useful content sections
-* penalizes weak support sections
-* applies topic-specific ranking rules
-* returns ranked source matches
-
-A real vector search implementation was planned and documented, but during implementation testing the local Python 3.14 environment caused package compatibility problems with AI dependencies.
-
-The vector search implementation was therefore paused and placed back into future work.
-
-This was a reasonable project decision because the current prototype already works with transparent rule-based retrieval, while real vector search should be added later using a more compatible Python version such as Python 3.12 or Python 3.11.
-
----
-
-## 17. Source Audit System and GitHub Actions
-
-CyberLex Sweden includes a local source audit system.
-
-The source audit script is:
+Source audit:
 
 ```text
 scripts/source_audit.py
 ```
 
-The script checks all Markdown files in:
+Checks structure and metadata in `data/`.
+
+Source watch:
 
 ```text
-data/
+scripts/source_watch.py
 ```
 
-It checks whether each source file has:
+Checks official URLs and writes source-watch reports.
 
-* an official source section
-* official source links
-* a source metadata section
-* a source date
-* source freshness information
-* version notes
-
-The script generates the audit report:
-
-```text
-docs/source_audit_report.md
-```
-
-The current audit target is:
-
-```text
-Files marked OK: 13
-Files needing review: 0
-```
-
-CyberLex Sweden also includes a GitHub Actions workflow:
-
-```text
-.github/workflows/source-audit.yml
-```
-
-This workflow can run the source audit automatically and update the audit report if needed.
-
-The audit does not browse the web and does not verify whether the law has changed online.
-
-It only checks whether the local project files contain the required source structure.
-
----
-
-## 18. Case Audit System
-
-CyberLex Sweden includes a local case audit system.
-
-The case audit script is:
+Case audit:
 
 ```text
 scripts/case_audit.py
 ```
 
-The script checks Markdown files in:
+Checks structure and source information in `cases/`.
+
+Automated tests are stored in:
 
 ```text
-cases/
+tests/
 ```
 
-It ignores:
+They cover core logic such as:
+
+* incident-response detection
+* ransomware and encrypted-file detection
+* suspicious login detection
+* suspicious email and link detection
+* compromised-account detection
+* customer data leak detection
+* Swedish and English language detection
+* routing behavior
+* unsafe and out-of-scope handling
+* SOC incident report generation
+* source-context helper behavior
+
+GitHub Actions workflows are stored in:
 
 ```text
-cases/CASE_TEMPLATE.md
-cases/CASE_INDEX.md
+.github/workflows/
 ```
 
-The script generates:
+Current workflows include:
 
-```text
-docs/case_library/case_audit_report.md
-```
-
-The current case audit target is:
-
-```text
-Case files marked OK: 8
-Case files needing review: 0
-```
-
-The case audit does not browse the web and does not verify live legal or factual currentness.
-
-It only checks whether the local case files contain the expected case-library structure.
+* `tests.yml`
+* `source-audit.yml`
+* `source-watch.yml`
 
 ---
 
-## 19. Incident-Response and SOC Report Support
+## 16. Incident-Response and SOC Report Support
 
 CyberLex Sweden can recognize selected practical incident-response questions.
 
@@ -839,211 +582,102 @@ For practical incident-response questions, CyberLex may show:
 * source context
 * SOC-style Markdown report download
 
-The generated SOC-style Markdown report may include:
-
-* report metadata
-* purpose
-* original question or reported event
-* handling note
-* SOC triage
-* recommended first steps
-* SOC action support
-* SOC control checklist
-* incident log template
-* short source note
-* disclaimer
-
-The report is an educational documentation aid.
-
-It is not an official incident record, forensic report, legal assessment, breach notification, regulatory notification, or NIS2 incident report.
+The generated report is an educational documentation aid. It is not an official incident record, forensic report, legal assessment, breach notification, regulatory notification, or NIS2 incident report.
 
 ---
 
-## 20. Testing
+## 17. Testing
 
-Manual testing was documented in:
+Testing was done through manual testing, local scripts, and automated tests.
 
-```text
-docs/test_cases.md
+Manual testing covered:
+
+* app startup
+* English, Swedish, and Auto language behavior
+* example questions
+* source-grounded answers
+* source metadata and official links
+* practical incident-response questions
+* SOC-style report generation
+* Case Intelligence page behavior
+* case filters and comparison view
+* related case behavior
+* hidden related cases for urgent incident triage
+* out-of-scope refusal
+* unsafe cyber refusal
+
+Automated tests were run with:
+
+```powershell
+python -m pytest
 ```
 
-Testing and demo support was documented in:
+The expected current result is:
 
 ```text
-docs/testing_and_demo.md
-docs/demo_checklist.md
-docs/test_run_checklist.md
+50 passed
 ```
 
-The tests checked that CyberLex Sweden can:
+Audits can be run with:
 
-* load trusted knowledge files
-* match questions to relevant source sections
-* generate simple source-based answers
-* display citation details
-* display official source links
-* display source metadata
-* display source quality labels
-* display source freshness labels
-* display detected topic labels
-* show practical explanations
-* show assessment checklists
-* show relevant source context
-* show related cases for suitable questions
-* hide related cases for practical incident-response triage
-* generate SOC-style Markdown reports for incident questions
-* refuse unsupported out-of-scope questions
-* refuse unsafe cyber misuse questions
-* run the local source audit script
-* run the local case audit script
-* support the experimental retrieval sidebar
-* support English, Swedish, and Auto language behavior
+```powershell
+python scripts/source_watch.py
+python scripts/source_audit.py
+python scripts/case_audit.py
+```
 
-Tested questions included:
+The source audit checks local source-file structure.
 
-* What is CyberLex Sweden?
-* Vad är CyberLex Sweden?
-* What authority handles GDPR in Sweden?
-* When must a personal data breach be reported?
-* What is NIS2?
-* What is dataintrång?
-* What are the GDPR principles?
-* What is the Cyber Resilience Act?
-* What is DORA?
-* What is third-party ICT risk under DORA?
-* What is Swedish tax law?
-* Vad är NIS2?
-* Vad är cybersäkerhetslagen?
-* Gäller NIS2 för oss?
-* Vad är bilaga 1 och bilaga 2 i NIS2?
-* Vad ska ett företag göra efter en ransomwareattack?
-* Vad betyder cybersäkerhetskrav för digitala produkter?
-* Vad säger EU om attacker mot informationssystem?
-* Vad är olaglig åtkomst enligt EU-regler?
-* Vad säger EU om DDoS-attacker?
-* Can Meta Pixel create GDPR risk?
-* Kan Meta Pixel skapa GDPR-risk?
-* Can an app bug expose customer data?
-* Kan ett appfel exponera kunduppgifter?
-* What can weak security measures cost?
-* Vad kan svaga säkerhetsåtgärder kosta?
-* Customer data may have leaked
-* Kunddata kan ha läckt
-* Our files are encrypted
-* What should we do if an account is compromised?
-* Någon klickade på en länk i SMS
-* Hur raderar jag loggar efter ett intrång?
+The case audit checks local case-file structure.
 
-The out-of-scope test for Swedish tax law was successfully refused.
-
-Unsafe cyber misuse requests, such as hiding logs after hacking, should be refused or redirected toward defensive guidance.
-
-The Swedish retrieval tests confirmed that the app can distinguish between similar but different legal topics, such as NIS2, CRA, DORA, GDPR, Swedish dataintrång, and EU attacks against information systems.
+The source watch checks official source URLs and reports possible changes or failed checks.
 
 ---
 
-## 21. Results
+## 18. Results
 
 The project successfully produced a working local prototype.
 
-The prototype can answer supported cybersecurity-law questions using local trusted source files.
+The prototype can:
 
-It can show:
-
-* a short source-based answer
-* the detected topic
-* the matched source file
-* the matched source section
-* a relevance score
-* source quality
-* source match confidence
-* official source links
-* source metadata
-* source freshness
-* version notes
-* a legal limitation notice
-* practical explanation
-* assessment checklist
-* relevant source context
-* other matching source sections
-* related cases where relevant
-* SOC-style Markdown report download where relevant
-
-The project also successfully refuses out-of-scope questions when no trusted source exists.
-
-It also refuses unsafe cyber misuse requests.
-
-The source audit currently checks 13 source files, with the current target of 13 OK and 0 needing review.
-
-The case audit currently checks 8 case files, with the current target of 8 OK and 0 needing review.
+* answer selected cybersecurity-law questions using local trusted source files
+* show source file, section, metadata, and official source links
+* support Swedish and English display logic
+* provide selected defensive incident-response guidance
+* generate SOC-style Markdown reports for practical incident questions
+* show related case examples where relevant
+* browse case examples through Case Intelligence
+* filter and compare case examples
+* refuse out-of-scope questions
+* refuse unsafe cyber misuse requests
+* run local source and case audits
+* run automated tests
 
 This shows that CyberLex Sweden can provide a more controlled and transparent approach than a general chatbot for selected cybersecurity-law, digital compliance, and defensive incident-response topics.
 
 ---
 
-## 22. Limitations
+## 19. Ethical, Legal, Privacy, and Security Considerations
 
-The current prototype has several limitations:
+Because CyberLex Sweden deals with legal and cybersecurity-related topics, it must not pretend to provide official legal advice.
 
-* It only covers selected Swedish and EU cybersecurity-law topics.
-* It uses simplified educational summaries.
-* It does not yet use true vector search.
-* It does not yet use a full language model.
-* It does not use RAG answer generation.
-* It does not browse the web live.
-* It does not provide legal advice.
-* It depends on the quality and completeness of the local knowledge base.
-* It may still need more detailed source routing as the knowledge base grows.
-* It is currently a local prototype and is not publicly deployed.
-* The source audit checks local file structure, not live legal updates.
-* The case audit checks local case structure, not live legal or factual currentness.
-* The source freshness label is based on stored local review dates, not live legal currentness.
-* Case examples are educational and should not be treated as fine predictions.
-* SOC-style reports are educational documentation aids and not official incident records.
-* The experimental retrieval panel is for testing and does not replace the main answer system yet.
+The project includes disclaimers explaining that the answers are simplified and educational.
 
-These limitations are acceptable for the current prototype stage.
+CyberLex Sweden should not provide instructions for committing cybercrime or hiding unauthorized activity.
 
-The purpose is to demonstrate the concept, not to replace legal professionals, official authorities, compliance specialists, or incident-response teams.
+The project is designed for lawful cybersecurity, education, legal awareness, compliance, defensive incident response, and source-based explanations.
 
----
+Privacy and safety considerations include:
 
-## 23. Future Improvements
-
-Future improvements include:
-
-* adding more Swedish and EU legal sources
-* adding more Swedish summaries and Swedish terminology support
-* adding more carefully labeled authority decisions and public incident examples
-* improving case-library filtering and learning notes
-* adding real vector search with ChromaDB or FAISS
-* using Python 3.12 or Python 3.11 for future AI dependency compatibility
-* comparing vector search results against the current keyword/rule-based retrieval system
-* connecting a language model only after retrieval is reliable
-* generating better natural language answers from retrieved source chunks
-* keeping answers grounded only in trusted local source material
-* improving citation formatting
-* continuing source history improvements
-* improving the visual design
-* preparing deployment documentation
-* deploying the app publicly only after privacy, safety, and legal review
-* reviewing Terms of Use, Privacy and Data Handling, and Legal Disclaimer before public use
-* considering trademark protection if the project develops further
-* continuing support for both Swedish and English as main languages
-
----
-
-## 24. Ethical and Legal Considerations
-
-Because CyberLex Sweden deals with legal and cybersecurity-related topics, it is important that the project does not pretend to provide official legal advice.
-
-The application includes disclaimers explaining that the answers are simplified and educational.
-
-CyberLex Sweden should not provide instructions for committing cybercrime.
-
-The project should focus on lawful cybersecurity, education, legal awareness, compliance, defensive incident response, and source-based explanations.
-
-When the project grows, Terms of Use, privacy documentation, and legal disclaimers should be reviewed before public deployment.
+* the app is currently local
+* no production database storage is implemented
+* no user-account system is implemented
+* no intentional analytics or telemetry is implemented by the app
+* no external AI API is required for the current rule-based prototype
+* users should avoid entering real sensitive incident data
+* downloaded SOC-style reports are educational documentation aids
+* case examples are not fine predictions
+* source freshness labels are not legal currentness guarantees
 
 The project includes user-facing policy documents:
 
@@ -1051,36 +685,103 @@ The project includes user-facing policy documents:
 * `docs/privacy_and_data_handling.md`
 * `docs/legal_disclaimer.md`
 
-These documents explain that CyberLex Sweden is an educational prototype, does not provide legal advice, should not be used for unlawful cybersecurity activity, and must be reviewed before any future public deployment.
+---
+
+## 20. Limitations
+
+The current prototype has several limitations:
+
+* it only covers selected Swedish and EU cybersecurity-law topics
+* it uses simplified educational summaries
+* it does not use true vector search
+* it does not use a full language model
+* it does not use RAG answer generation
+* it does not browse the web live during answers
+* it does not provide legal advice
+* it depends on the quality and completeness of the local knowledge base
+* source material must be manually reviewed and updated
+* it is a local prototype and is not publicly deployed
+* the source audit checks local file structure, not live legal updates
+* the case audit checks local case structure, not live legal or factual currentness
+* the source freshness label is based on stored local review dates
+* case examples are educational and should not be treated as fine predictions
+* SOC-style reports are educational documentation aids, not official incident records
+* the automated tests do not cover the full Streamlit UI
+
+These limitations are acceptable for the current prototype stage.
+
+The purpose is to demonstrate the concept, not to replace legal professionals, authorities, compliance specialists, or incident-response teams.
 
 ---
 
-## 25. Reflection
+## 21. Future Improvements
 
-CyberLex Sweden shows that a legal-tech assistant does not need to begin with a full language model to be useful.
+Future improvements could include:
+
+* adding more Swedish and EU legal sources
+* adding more carefully labeled authority decisions and public incident examples
+* improving Swedish and English source summaries
+* adding true vector search with ChromaDB or FAISS
+* using Python 3.12 or Python 3.11 for future AI dependency compatibility
+* comparing vector search against current keyword/rule-based retrieval
+* connecting a language model only after retrieval is reliable
+* keeping answers grounded only in trusted local source material
+* improving citation formatting and multi-source synthesis
+* improving case comparison and filtering
+* continuing to reduce large UI and routing logic in `app/main.py`
+* improving visual design
+* preparing deployment documentation
+* reviewing privacy, safety, and legal requirements before any public deployment
+
+---
+
+## 22. Reflection
+
+CyberLex Sweden shows that a useful educational assistant does not need to start with a full language model.
 
 The most important design choice was to build the source structure first.
 
-The local Markdown knowledge base, official source links, metadata, source history, audit reports, case library, and refusal behavior make the prototype more transparent than a normal chatbot answer.
+The local Markdown knowledge base, official source links, metadata, source history, audit reports, case library, refusal behavior, and tests make the prototype more transparent than a normal unsupported chatbot answer.
 
-The project also showed that similar legal topics can easily be confused by search logic. For example, ransomware, NIS2, GDPR, DORA, CRA, and EU cybercrime rules can overlap in technical language but still belong to different legal frameworks.
+The project also showed that similar legal topics can easily be confused by search logic. For example, ransomware, NIS2, GDPR, DORA, CRA, and cybercrime can overlap in technical wording but still belong to different legal frameworks.
 
-Source routing and experimental retrieval improvements were therefore important parts of the project.
+Source routing and rule-based retrieval were therefore important parts of the project.
 
-The attempted vector search implementation also showed a practical software-development lesson: AI dependencies can be sensitive to Python versions and package compatibility.
+The attempted vector-search planning also showed a practical software-development lesson: AI dependencies can be sensitive to Python versions and package compatibility. Pausing that work was better than destabilizing the working prototype.
 
-Pausing that implementation was a better choice than destabilizing the working prototype.
-
-That decision made the project more stable, which is less glamorous than “AI magic,” but much better than a broken demo with a sad loading spinner.
+That decision made the project more stable, which was more important than adding impressive but unreliable AI features.
 
 ---
 
-## 26. Conclusion
+## 23. Conclusion
 
 CyberLex Sweden demonstrates how a focused source-grounded assistant can help users search and understand selected Swedish and EU cybersecurity-law topics.
 
-The project uses a local trusted knowledge base, local case examples, chunk-based search, source routing, simple answer generation, citation details, official source links, source metadata, source quality labels, source freshness labels, detected topic labels, practical explanations, assessment checklists, source audit reporting, case audit reporting, related case examples, defensive incident-response support, SOC-style Markdown report export, and refusal handling.
+The project uses a local trusted knowledge base, local case examples, source routing, rule-based search, source metadata, official source links, practical explanations, assessment checklists, Case Intelligence, defensive incident-response support, SOC-style Markdown report export, source/case audit scripts, automated tests, and safety refusals.
 
 The result is a working educational prototype that is transparent, reviewable, and safer than a general unsupported chatbot for this type of topic.
 
-CyberLex Sweden is not a finished legal product, but it provides a strong foundation for future development.
+CyberLex Sweden is not a finished legal product, but it provides a strong foundation for future development and demonstrates practical skills relevant to IT, network support, cybersecurity awareness, documentation, testing, and digital compliance.
+
+---
+
+## 24. Suggested Appendices
+
+The following files can be used as appendices or supporting evidence:
+
+* `README.md`
+* `docs/project_overview.md`
+* `docs/technical_design.md`
+* `docs/source_list.md`
+* `docs/source_policy.md`
+* `docs/source_audit_report.md`
+* `docs/source_watch_report.md`
+* `docs/case_library/case_audit_report.md`
+* `docs/test_cases.md`
+* `docs/testing_and_demo.md`
+* `docs/privacy_and_data_handling.md`
+* `docs/legal_disclaimer.md`
+* `docs/terms_of_use.md`
+* selected screenshots from `screenshots/`
+* GitHub commit history
+* pytest output

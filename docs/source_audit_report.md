@@ -10,7 +10,7 @@ This audit does not browse the web and does not confirm whether the law is curre
 
 ## Audit Summary
 
-- Generated at: `2026-07-06 12:04:21`
+- Generated at: `2026-07-10 13:23:51`
 - Total source files checked: `13`
 - Files marked OK: `13`
 - Files needing review: `0`
@@ -23,9 +23,9 @@ This audit does not browse the web and does not confirm whether the law is curre
 
 - Status: `OK`
 - Official source links found: `16`
-- Source date: `Source date: Last checked: 2026-06-04`
+- Source date: `Source date: Last checked: 2026-07-10`
 - Source freshness: `Recently checked`
-- Version notes: `Version notes: CyberLex Sweden incident response playbook expanded. Includes defensive first steps for suspected hacking, unauthorized access, ransomware, malware, compromised accounts, data leaks, suspicious login activity, suspicious MFA activity, suspicious email, phishing, clicked links, opened attachments, and entered credentials. Added Swedish and English step-by-step answer patterns, topic-specific assessment checklists, evidence preservation guidance, GDPR/IMY assessment notes, NIS2/cybersäkerhetslagen assessment notes, CERT-SE escalation notes, official source links, and safety boundaries.`
+- Version notes: `Version notes: CyberLex Sweden incident response playbook expanded. Includes defensive first steps for suspected hacking, unauthorized access, ransomware, malware, compromised accounts, data leaks, suspicious login activity, suspicious MFA activity, suspicious email, phishing, clicked links, opened attachments, and entered credentials. Added Swedish and English step-by-step answer patterns, topic-specific assessment checklists, evidence preservation guidance, GDPR/IMY assessment notes, NIS2/cybersäkerhetslagen assessment notes, CERT-SE escalation notes, official source links, and safety boundaries. Updated the voluntary IT incident reporting source link from the old MSB URL to the current NCSC/CERT-SE URL after the source watch reported a 404.`
 
 No issues found.
 
