@@ -1,4 +1,9 @@
-from case_search import search_related_cases
+from case_search import (
+    search_related_cases,
+    get_case_filter_options,
+    filter_case_entries,
+    build_case_comparison_rows,
+)
 from config import APP_ICON, APP_LAYOUT, APP_TITLE, CASES_DIR
 from styles import apply_app_styles
 from text_utils import clean_words, normalize_query_text, contains_any
@@ -3652,44 +3657,108 @@ def display_case_intelligence_page(language="English", source_language_mode="Aut
         unsafe_allow_html=True,
     )
 
+    if use_swedish:
+        topic_filter_label = "Ämnesfilter"
+        outcome_filter_label = "Utfallsfilter"
+        data_filter_label = "Datafilter"
+        affected_filter_label = "Berörd grupp"
+        all_filter_label = "Alla"
+        comparison_toggle_label = "Visa jämförelsetabell för filtrerade fall"
+        comparison_caption = (
+            "Jämförelsen är en förenklad utbildningsvy. Den ersätter inte själva falltexten "
+            "eller de officiella källorna."
+        )
+    else:
+        topic_filter_label = "Topic filter"
+        outcome_filter_label = "Outcome filter"
+        data_filter_label = "Data filter"
+        affected_filter_label = "Affected group"
+        all_filter_label = "All"
+        comparison_toggle_label = "Show comparison table for filtered cases"
+        comparison_caption = (
+            "The comparison is a simplified educational view. It does not replace the case text "
+            "or the official sources."
+        )
+
+    def display_filter_value(value):
+        translations = {
+            "All": all_filter_label,
+            "Meta Pixel / tracking": "Meta Pixel / tracking",
+            "Security deficiency": "Säkerhetsbrist" if use_swedish else "Security deficiency",
+            "Accidental disclosure": "Oavsiktligt röjande" if use_swedish else "Accidental disclosure",
+            "App exposure": "Appexponering" if use_swedish else "App exposure",
+            "Cyberattack / intrusion": "Cyberattack / intrång" if use_swedish else "Cyberattack / intrusion",
+            "Removable media": "Flyttbart lagringsmedium" if use_swedish else "Removable media",
+            "Access rights / transparency": "Åtkomsträtt / transparens" if use_swedish else "Access rights / transparency",
+            "Workplace privacy": "Arbetsplatsintegritet" if use_swedish else "Workplace privacy",
+            "Breach notification": "Incidentanmälan" if use_swedish else "Breach notification",
+            "Public incident": "Offentlig incident" if use_swedish else "Public incident",
+            "Administrative fine": "Administrativ sanktionsavgift" if use_swedish else "Administrative fine",
+            "Reprimand": "Reprimand" if use_swedish else "Reprimand",
+            "No confirmed fine": "Ingen bekräftad sanktionsavgift" if use_swedish else "No confirmed fine",
+            "Ongoing review": "Pågående granskning" if use_swedish else "Ongoing review",
+            "Sensitive personal data": "Känsliga personuppgifter" if use_swedish else "Sensitive personal data",
+            "Customer data": "Kunduppgifter" if use_swedish else "Customer data",
+            "Financial data": "Finansiella uppgifter" if use_swedish else "Financial data",
+            "Healthcare data": "Vårduppgifter" if use_swedish else "Healthcare data",
+            "Children / young people": "Barn / unga" if use_swedish else "Children / young people",
+            "Protected identity": "Skyddad identitet" if use_swedish else "Protected identity",
+            "Employees": "Anställda" if use_swedish else "Employees",
+            "Large user group": "Stor användargrupp" if use_swedish else "Large user group",
+            "General customers/users": "Kunder / användare" if use_swedish else "General customers/users",
+        }
+        return translations.get(value, value)
+
+    filter_options = get_case_filter_options(cases)
+
     filter_text = st.text_input(
         search_label,
         placeholder=search_placeholder,
         key="case_intelligence_filter",
     ).strip()
 
-    normalized_filter = normalize_query_text(filter_text)
+    filter_col_1, filter_col_2, filter_col_3, filter_col_4 = st.columns(4)
 
-    if normalized_filter:
-        filtered_cases = []
+    with filter_col_1:
+        topic_filter = st.selectbox(
+            topic_filter_label,
+            ["All"] + filter_options.get("topics", []),
+            key="case_intelligence_topic_filter",
+            format_func=display_filter_value,
+        )
 
-        for case in cases:
-            haystack = normalize_query_text(
-                " ".join(
-                    [
-                        case.get("title", ""),
-                        case.get("summary", ""),
-                        case.get("summary_sv", ""),
-                        case.get("fine_or_cost", ""),
-                        case.get("fine_or_cost_sv", ""),
-                        case.get("related_topics", ""),
-                        case.get("related_topics_sv", ""),
-                        case.get("what_happened", ""),
-                        case.get("what_happened_sv", ""),
-                        case.get("decision", ""),
-                        case.get("decision_sv", ""),
-                        case.get("learning_note", ""),
-                        case.get("learning_note_sv", ""),
-                        case.get("official_source", ""),
-                        case.get("official_source_sv", ""),
-                    ]
-                )
-            )
+    with filter_col_2:
+        outcome_filter = st.selectbox(
+            outcome_filter_label,
+            ["All"] + filter_options.get("outcomes", []),
+            key="case_intelligence_outcome_filter",
+            format_func=display_filter_value,
+        )
 
-            if normalized_filter in haystack:
-                filtered_cases.append(case)
-    else:
-        filtered_cases = cases
+    with filter_col_3:
+        data_filter = st.selectbox(
+            data_filter_label,
+            ["All"] + filter_options.get("data_types", []),
+            key="case_intelligence_data_filter",
+            format_func=display_filter_value,
+        )
+
+    with filter_col_4:
+        affected_filter = st.selectbox(
+            affected_filter_label,
+            ["All"] + filter_options.get("affected_groups", []),
+            key="case_intelligence_affected_filter",
+            format_func=display_filter_value,
+        )
+
+    filtered_cases = filter_case_entries(
+        cases,
+        query=filter_text,
+        topic_filter=topic_filter,
+        outcome_filter=outcome_filter,
+        data_filter=data_filter,
+        affected_filter=affected_filter,
+    )
 
     st.markdown(
         f"""
@@ -3713,6 +3782,19 @@ def display_case_intelligence_page(language="English", source_language_mode="Aut
     if not filtered_cases:
         st.info(no_result_text)
         return
+
+    show_comparison = st.checkbox(
+        comparison_toggle_label,
+        value=False,
+        key="case_intelligence_show_comparison",
+    )
+
+    if show_comparison:
+        comparison_rows = build_case_comparison_rows(filtered_cases, language=language)
+
+        if comparison_rows:
+            st.caption(comparison_caption)
+            st.dataframe(comparison_rows, use_container_width=True, hide_index=True)
 
     for case in filtered_cases:
         case_title = case.get("title", "Untitled case")

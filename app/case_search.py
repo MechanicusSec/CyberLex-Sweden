@@ -105,6 +105,21 @@ def get_case_profile(case):
     if "apoteket" in combined or "apohem" in combined:
         return "apoteket_apohem_meta_pixel"
 
+    if "region skane" in combined or "region skåne" in combined or "usb" in combined or "removable storage" in combined:
+        return "region_skane_usb_security"
+
+    if "spotify" in combined or "access request" in combined or "rätten till tillgång" in combined:
+        return "spotify_access_request"
+
+    if "statens servicecenter" in combined or "servicecenter" in combined or "breach notification" in combined:
+        return "statens_servicecenter_breach_notification"
+
+    if "sl" in combined and ("waab" in combined or "alcohol" in combined or "alkohol" in combined):
+        return "sl_waab_alcohol_testing"
+
+    if "miljodata" in combined:
+        return "miljodata_data_leak"
+
     return "generic_case"
 
 
@@ -672,6 +687,271 @@ def search_related_cases(question, limit=3):
         result.pop("priority", None)
 
     return results[:limit]
+
+
+def _first_sentence(text, max_length=170):
+    """Return a compact first-sentence style summary for comparison tables."""
+    cleaned = re.sub(r"\s+", " ", str(text or "")).strip()
+
+    if not cleaned:
+        return ""
+
+    parts = re.split(r"(?<=[.!?])\s+", cleaned)
+    first = parts[0].strip() if parts else cleaned
+
+    if len(first) <= max_length:
+        return first
+
+    return first[:max_length].rsplit(" ", 1)[0].strip() + "..."
+
+
+def _has_any(text, terms):
+    cleaned = clean_text(text)
+    return any(clean_text(term) in cleaned for term in terms)
+
+
+def _case_text_for_filters(case):
+    return " ".join(
+        [
+            str(case.get("title", "")),
+            str(case.get("filename", "")),
+            str(case.get("case_type", "")),
+            str(case.get("topic", "")),
+            str(case.get("summary", "")),
+            str(case.get("summary_sv", "")),
+            str(case.get("what_happened", "")),
+            str(case.get("what_happened_sv", "")),
+            str(case.get("decision", "")),
+            str(case.get("decision_sv", "")),
+            str(case.get("fine_or_cost", "")),
+            str(case.get("fine_or_cost_sv", "")),
+            str(case.get("related_topics", "")),
+            str(case.get("related_topics_sv", "")),
+            str(case.get("learning_note", "")),
+            str(case.get("learning_note_sv", "")),
+            str(case.get("official_source", "")),
+            str(case.get("official_source_sv", "")),
+            str(case.get("content", "")),
+        ]
+    )
+
+
+def get_case_filter_metadata(case):
+    """
+    Build deterministic filter metadata for Case Intelligence.
+
+    The function intentionally uses simple labels and rule-based matching. This
+    keeps the case browser transparent and avoids pretending that a tiny case
+    library needs a miniature fake AI analyst wearing a tie.
+    """
+    profile = get_case_profile(case)
+    combined = _case_text_for_filters(case)
+    combined_clean = clean_text(combined)
+
+    topics = set()
+    data_types = set()
+    affected_groups = set()
+
+    if profile in {"apoteket_apohem_meta_pixel", "avanza_meta_pixel", "kry_meta_pixel"} or _has_any(combined, ["meta pixel", "tracking", "analytics"]):
+        topics.add("Meta Pixel / tracking")
+
+    if profile in {
+        "trygg_hansa_security_deficiencies",
+        "sportadmin_security_breach",
+        "equality_ombudsman_web_form",
+        "region_skane_usb_security",
+    } or _has_any(combined, ["security deficiencies", "security measures", "article 32", "säkerhetsåtgärder"]):
+        topics.add("Security deficiency")
+
+    if profile == "wrong_email_customer_data" or _has_any(combined, ["wrong email", "wrong attachment", "wrong recipient", "fel bilaga"]):
+        topics.add("Accidental disclosure")
+
+    if profile == "klarna_app_data_exposure" or _has_any(combined, ["app bug", "app incident", "account separation", "session handling"]):
+        topics.add("App exposure")
+
+    if profile in {"sportadmin_security_breach", "miljodata_data_leak"} or _has_any(combined, ["cyber attack", "it attack", "intrusion", "darknet", "darkweb"]):
+        topics.add("Cyberattack / intrusion")
+
+    if profile == "region_skane_usb_security" or _has_any(combined, ["usb", "removable storage", "flyttbara lagringsmedier"]):
+        topics.add("Removable media")
+
+    if profile == "spotify_access_request" or _has_any(combined, ["access request", "right of access", "rätten till tillgång"]):
+        topics.add("Access rights / transparency")
+
+    if profile == "sl_waab_alcohol_testing" or _has_any(combined, ["alcohol", "alkohol", "workplace", "employee testing"]):
+        topics.add("Workplace privacy")
+
+    if profile == "statens_servicecenter_breach_notification" or _has_any(combined, ["breach notification", "72 hours", "processor"]):
+        topics.add("Breach notification")
+
+    if profile == "klarna_app_data_exposure" or _has_any(combined, ["public incident", "supervisory investigation"]):
+        topics.add("Public incident")
+
+    # Outcome filters.
+    fine_text = str(case.get("fine_or_cost", "")) + " " + str(case.get("fine_or_cost_sv", "")) + " " + str(case.get("outcome", "")) + " " + str(case.get("decision", ""))
+    fine_clean = clean_text(fine_text)
+
+    if _has_any(fine_text, ["no confirmed administrative fine", "ingen bekräftad administrativ", "no administrative fine is stored"]):
+        outcome = "No confirmed fine"
+    elif _has_any(fine_text, ["ongoing review", "pågående granskning", "not final", "inte slutligt"]):
+        outcome = "Ongoing review"
+    elif "reprimand" in fine_clean:
+        outcome = "Reprimand"
+    elif "sek" in fine_clean or "sanktionsavgift" in fine_clean or "administrative fine" in fine_clean:
+        outcome = "Administrative fine"
+    else:
+        outcome = "No confirmed fine"
+
+    # Data type filters.
+    if _has_any(combined, ["sensitive personal data", "känsliga personuppgifter", "health data", "protected identity", "alcohol testing"]):
+        data_types.add("Sensitive personal data")
+
+    if _has_any(combined, ["customer data", "customers", "kunduppgifter", "kunder"]):
+        data_types.add("Customer data")
+
+    if _has_any(combined, ["financial", "bank", "fund", "holdings", "insurance", "finansiell", "fond", "försäkring"]):
+        data_types.add("Financial data")
+
+    if _has_any(combined, ["healthcare", "health data", "vård", "hälsa", "patient"]):
+        data_types.add("Healthcare data")
+
+    if _has_any(combined, ["personal identity number", "personnummer"]):
+        data_types.add("Sensitive personal data")
+
+    # Affected group filters.
+    if _has_any(combined, ["children", "young people", "barn", "unga"]):
+        affected_groups.add("Children / young people")
+
+    if _has_any(combined, ["protected identity", "skyddad identitet"]):
+        affected_groups.add("Protected identity")
+
+    if _has_any(combined, ["employees", "employee", "anställda", "medarbetare"]):
+        affected_groups.add("Employees")
+
+    if _has_any(combined, ["650 000", "650,000", "2.1 million", "2,1 miljoner", "52 000", "52,000", "1 million", "1 miljon"]):
+        affected_groups.add("Large user group")
+
+    if not affected_groups:
+        affected_groups.add("General customers/users")
+
+    return {
+        "profile": profile,
+        "topics": sorted(topics) or ["Other"],
+        "outcome": outcome,
+        "data_types": sorted(data_types) or ["Personal data"],
+        "affected_groups": sorted(affected_groups),
+    }
+
+
+def get_case_filter_options(cases):
+    """Return available Case Intelligence filter options from the loaded cases."""
+    topics = set()
+    outcomes = set()
+    data_types = set()
+    affected_groups = set()
+
+    for case in cases:
+        metadata = get_case_filter_metadata(case)
+        topics.update(metadata.get("topics", []))
+        outcomes.add(metadata.get("outcome", "No confirmed fine"))
+        data_types.update(metadata.get("data_types", []))
+        affected_groups.update(metadata.get("affected_groups", []))
+
+    return {
+        "topics": sorted(topics),
+        "outcomes": sorted(outcomes),
+        "data_types": sorted(data_types),
+        "affected_groups": sorted(affected_groups),
+    }
+
+
+def case_entry_matches_filter(case, query="", topic_filter="All", outcome_filter="All", data_filter="All", affected_filter="All"):
+    """Check whether a loaded Case Intelligence entry matches all active filters."""
+    combined = _case_text_for_filters(case)
+    combined_clean = clean_text(combined)
+    query_clean = clean_text(query)
+
+    if query_clean and query_clean not in combined_clean:
+        return False
+
+    metadata = get_case_filter_metadata(case)
+
+    if topic_filter and topic_filter != "All" and topic_filter not in metadata.get("topics", []):
+        return False
+
+    if outcome_filter and outcome_filter != "All" and outcome_filter != metadata.get("outcome"):
+        return False
+
+    if data_filter and data_filter != "All" and data_filter not in metadata.get("data_types", []):
+        return False
+
+    if affected_filter and affected_filter != "All" and affected_filter not in metadata.get("affected_groups", []):
+        return False
+
+    return True
+
+
+def filter_case_entries(cases, query="", topic_filter="All", outcome_filter="All", data_filter="All", affected_filter="All"):
+    """Filter Case Intelligence entries for the Streamlit case browser."""
+    return [
+        case for case in cases
+        if case_entry_matches_filter(
+            case,
+            query=query,
+            topic_filter=topic_filter,
+            outcome_filter=outcome_filter,
+            data_filter=data_filter,
+            affected_filter=affected_filter,
+        )
+    ]
+
+
+def build_case_comparison_rows(cases, language="English"):
+    """
+    Build compact rows for the Case Intelligence comparison table.
+
+    The table is intentionally simple: it helps users compare cases quickly
+    without creating yet another export button. Civilization survives.
+    """
+    use_swedish = language == "Svenska"
+    rows = []
+
+    for case in cases:
+        metadata = get_case_filter_metadata(case)
+
+        title = str(case.get("title", "Untitled case"))
+        topics = ", ".join(metadata.get("topics", []))
+        data_types = ", ".join(metadata.get("data_types", []))
+        affected_groups = ", ".join(metadata.get("affected_groups", []))
+        outcome = metadata.get("outcome", "No confirmed fine")
+
+        if use_swedish:
+            lesson_source = case.get("learning_note_sv") or case.get("learning_note") or case.get("summary_sv") or case.get("summary")
+            rows.append(
+                {
+                    "Fall": title,
+                    "Kategori": topics,
+                    "Data": data_types,
+                    "Berörd grupp": affected_groups,
+                    "Utfall": outcome,
+                    "Kort lärdom": _first_sentence(lesson_source),
+                }
+            )
+        else:
+            lesson_source = case.get("learning_note") or case.get("summary") or case.get("learning_note_sv") or case.get("summary_sv")
+            rows.append(
+                {
+                    "Case": title,
+                    "Category": topics,
+                    "Data": data_types,
+                    "Affected group": affected_groups,
+                    "Outcome": outcome,
+                    "Main lesson": _first_sentence(lesson_source),
+                }
+            )
+
+    return rows
+
 
 
 if __name__ == "__main__":
