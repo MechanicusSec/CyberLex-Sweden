@@ -12,11 +12,11 @@ This report does not automatically update CyberLex source summaries and does not
 
 ## Watch Summary
 
-- Generated at: `2026-08-24 08:45:36`
+- Generated at: `2026-08-31 15:51:46`
 - Total official source URLs checked: `53`
 - First snapshots created: `0`
-- Unchanged sources: `22`
-- Changed sources: `29`
+- Unchanged sources: `31`
+- Changed sources: `20`
 - Failed checks: `2`
 
 ---
@@ -28,54 +28,14 @@ This report does not automatically update CyberLex source summaries and does not
 ### cyber_incident_response_playbook.md
 
 - Local file: `data/cyber_incident_response_playbook.md`
-- Official source URL: `https://www.msb.se/sv/amnesomraden/informationssakerhet-cybersakerhet-och-sakra-kommunikationer/hantera-och-rapportera-it-incidenter-och-cyberangrepp/hantera-pagaende-it-incident/`
-- Final URL after redirects: `https://www.ncsc.se/sv/radgivning-och-stod/hantera-och-rapportera-it-incidenter-och-cyberangrepp/hantera-pagaende-it-incident/`
+- Official source URL: `https://www.edpb.europa.eu/notify-data-breach_en`
+- Final URL after redirects: `https://www.edpb.europa.eu/contact/notify-a-data-breach_en`
 - Status: `Changed`
 - HTTP status: `200`
-- Content length: `7293`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `c8bc524fc7c7a7d6...`
-- Current hash: `c7f0d31195ed950f...`
-
-Recommended action: Review the official source manually and update the local Markdown summary if needed.
-
-### cyber_incident_response_playbook.md
-
-- Local file: `data/cyber_incident_response_playbook.md`
-- Official source URL: `https://www.ncsc.se/sv/radgivning-och-stod/hantera-och-rapportera-it-incidenter-och-cyberangrepp/rapportera-cyberincident/rapportera-it-incident--frivillig/`
-- Status: `Changed`
-- HTTP status: `200`
-- Content length: `9714`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `575035bf99341c3e...`
-- Current hash: `7e75fd7f7fa1632e...`
-
-Recommended action: Review the official source manually and update the local Markdown summary if needed.
-
-### cyber_incident_response_playbook.md
-
-- Local file: `data/cyber_incident_response_playbook.md`
-- Official source URL: `https://www.msb.se/sv/amnesomraden/informationssakerhet-cybersakerhet-och-sakra-kommunikationer/krav-och-regler-inom-informationssakerhet-och-cybersakerhet/nis-direktivet/incidentrapportering-enligt-cybersakerhetslagen/`
-- Final URL after redirects: `https://www.ncsc.se/sv/radgivning-och-stod/cybersakerhetslagen-nis2/incidentrapportering-enligt-cybersakerhetslagen/`
-- Status: `Changed`
-- HTTP status: `200`
-- Content length: `11413`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `aef9d7fbda2080a6...`
-- Current hash: `0abae72eb3f19b34...`
-
-Recommended action: Review the official source manually and update the local Markdown summary if needed.
-
-### cyber_incident_response_playbook.md
-
-- Local file: `data/cyber_incident_response_playbook.md`
-- Official source URL: `https://www.imy.se/en/organisations/forms-and-e-services/notification-of-a-personal-data-breach/`
-- Status: `Changed`
-- HTTP status: `200`
-- Content length: `6886`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `8573d45d046a7986...`
-- Current hash: `09a10e76faac6d07...`
+- Content length: `20309`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `c645e2a9e0b4a266...`
+- Current hash: `8e0fc7493ca8156b...`
 
 Recommended action: Review the official source manually and update the local Markdown summary if needed.
 
@@ -85,36 +45,101 @@ Recommended action: Review the official source manually and update the local Mar
 - Official source URL: `https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/brottsbalk-1962700_sfs-1962-700/`
 - Status: `Changed`
 - HTTP status: `200`
-- Content length: `316789`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `50a16b8e8d984a42...`
-- Current hash: `f82294aa7256a6bd...`
+- Content length: `368544`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `f82294aa7256a6bd...`
+- Current hash: `fd5dbf11d294ac65...`
+
+Recommended action: Review the official source manually and update the local Markdown summary if needed.
+
+### eu_attacks_against_information_systems.md
+
+- Local file: `data/eu_attacks_against_information_systems.md`
+- Official source URL: `https://eur-lex.europa.eu/eli/dir/2013/40/oj/eng`
+- Status: `Changed`
+- HTTP status: `200`
+- Content length: `42095`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `e3b0c44298fc1c14...`
+- Current hash: `41332e25ff3e5009...`
+
+Recommended action: Review the official source manually and update the local Markdown summary if needed.
+
+### eu_attacks_against_information_systems.md
+
+- Local file: `data/eu_attacks_against_information_systems.md`
+- Official source URL: `https://eur-lex.europa.eu/EN/legal-content/summary/attacks-against-information-systems.html`
+- Status: `Changed`
+- HTTP status: `200`
+- Content length: `9424`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `e3b0c44298fc1c14...`
+- Current hash: `77724ebcdbdd7e39...`
+
+Recommended action: Review the official source manually and update the local Markdown summary if needed.
+
+### eu_cyber_resilience_act.md
+
+- Local file: `data/eu_cyber_resilience_act.md`
+- Official source URL: `https://eur-lex.europa.eu/eli/reg/2024/2847/oj/eng`
+- Status: `Changed`
+- HTTP status: `200`
+- Content length: `355297`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `e3b0c44298fc1c14...`
+- Current hash: `a44aafaf4485e394...`
+
+Recommended action: Review the official source manually and update the local Markdown summary if needed.
+
+### eu_cyber_resilience_act.md
+
+- Local file: `data/eu_cyber_resilience_act.md`
+- Official source URL: `https://eur-lex.europa.eu/eli/reg/2024/2847/oj?locale=sv`
+- Status: `Changed`
+- HTTP status: `200`
+- Content length: `350115`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `e3b0c44298fc1c14...`
+- Current hash: `ed6e85d0d1ecb7cc...`
+
+Recommended action: Review the official source manually and update the local Markdown summary if needed.
+
+### eu_dora_digital_operational_resilience.md
+
+- Local file: `data/eu_dora_digital_operational_resilience.md`
+- Official source URL: `https://eur-lex.europa.eu/eli/reg/2022/2554/oj/eng`
+- Status: `Changed`
+- HTTP status: `200`
+- Content length: `310734`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `e3b0c44298fc1c14...`
+- Current hash: `61cd169b09d1760b...`
+
+Recommended action: Review the official source manually and update the local Markdown summary if needed.
+
+### eu_dora_digital_operational_resilience.md
+
+- Local file: `data/eu_dora_digital_operational_resilience.md`
+- Official source URL: `https://eur-lex.europa.eu/EN/legal-content/summary/digital-operational-resilience-for-the-financial-sector.html`
+- Status: `Changed`
+- HTTP status: `200`
+- Content length: `16769`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `e3b0c44298fc1c14...`
+- Current hash: `eff378174ec99b2e...`
 
 Recommended action: Review the official source manually and update the local Markdown summary if needed.
 
 ### gdpr_core_principles.md
 
 - Local file: `data/gdpr_core_principles.md`
-- Official source URL: `https://www.imy.se/en/`
+- Official source URL: `https://eur-lex.europa.eu/eli/reg/2016/679/oj/eng`
 - Status: `Changed`
 - HTTP status: `200`
-- Content length: `5640`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `634a47e1b49d9843...`
-- Current hash: `4d85858a6ae53f6d...`
-
-Recommended action: Review the official source manually and update the local Markdown summary if needed.
-
-### gdpr_core_principles.md
-
-- Local file: `data/gdpr_core_principles.md`
-- Official source URL: `https://www.imy.se/en/organisations/data-protection/`
-- Status: `Changed`
-- HTTP status: `200`
-- Content length: `6701`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `adb7a9002a6a6aa8...`
-- Current hash: `8d2f01bf99de9b8b...`
+- Content length: `358055`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `e3b0c44298fc1c14...`
+- Current hash: `677792469324a0e5...`
 
 Recommended action: Review the official source manually and update the local Markdown summary if needed.
 
@@ -124,10 +149,10 @@ Recommended action: Review the official source manually and update the local Mar
 - Official source URL: `https://www.imy.se/verksamhet/dataskydd/det-har-galler-enligt-gdpr/personuppgiftsincidenter/`
 - Status: `Changed`
 - HTTP status: `200`
-- Content length: `29099`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `28333fa261d1891d...`
-- Current hash: `058a314bbfcdb2fc...`
+- Content length: `29227`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `058a314bbfcdb2fc...`
+- Current hash: `452133d320cacd7d...`
 
 Recommended action: Review the official source manually and update the local Markdown summary if needed.
 
@@ -137,36 +162,10 @@ Recommended action: Review the official source manually and update the local Mar
 - Official source URL: `https://www.imy.se/verksamhet/dataskydd/det-har-galler-enligt-gdpr/personuppgiftsincidenter/detta-hander-da-en-verksamhet-anmalt-en-personuppgiftsincident/`
 - Status: `Changed`
 - HTTP status: `200`
-- Content length: `24403`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `abe7684eb3295876...`
-- Current hash: `5753282879bbe787...`
-
-Recommended action: Review the official source manually and update the local Markdown summary if needed.
-
-### gdpr_personal_data_breach.md
-
-- Local file: `data/gdpr_personal_data_breach.md`
-- Official source URL: `https://www.imy.se/en/organisations/forms-and-e-services/notification-of-a-personal-data-breach/`
-- Status: `Changed`
-- HTTP status: `200`
-- Content length: `6886`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `8573d45d046a7986...`
-- Current hash: `09a10e76faac6d07...`
-
-Recommended action: Review the official source manually and update the local Markdown summary if needed.
-
-### gdpr_personal_data_breach.md
-
-- Local file: `data/gdpr_personal_data_breach.md`
-- Official source URL: `https://www.imy.se/en/frequently-asked-questions/do-we-have-to-report-all-personal-data-breaches-to-imy/`
-- Status: `Changed`
-- HTTP status: `200`
-- Content length: `4284`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `1370d8dbbc811f70...`
-- Current hash: `8b04a4339924e7f0...`
+- Content length: `24531`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `5753282879bbe787...`
+- Current hash: `f8f73e89a67fc37e...`
 
 Recommended action: Review the official source manually and update the local Markdown summary if needed.
 
@@ -176,10 +175,23 @@ Recommended action: Review the official source manually and update the local Mar
 - Official source URL: `https://www.imy.se/verksamhet/dataskydd/det-har-galler-enligt-gdpr/personuppgiftsincidenter/`
 - Status: `Changed`
 - HTTP status: `200`
-- Content length: `29099`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `28333fa261d1891d...`
-- Current hash: `058a314bbfcdb2fc...`
+- Content length: `29227`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `058a314bbfcdb2fc...`
+- Current hash: `452133d320cacd7d...`
+
+Recommended action: Review the official source manually and update the local Markdown summary if needed.
+
+### gdpr_personal_data_breach.md
+
+- Local file: `data/gdpr_personal_data_breach.md`
+- Official source URL: `https://eur-lex.europa.eu/eli/reg/2016/679/oj/eng`
+- Status: `Changed`
+- HTTP status: `200`
+- Content length: `358055`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `e3b0c44298fc1c14...`
+- Current hash: `677792469324a0e5...`
 
 Recommended action: Review the official source manually and update the local Markdown summary if needed.
 
@@ -189,10 +201,10 @@ Recommended action: Review the official source manually and update the local Mar
 - Official source URL: `https://www.imy.se/verksamhet/dataskydd/det-har-galler-enligt-gdpr/informationssakerhet/sakerhetsatgarder/`
 - Status: `Changed`
 - HTTP status: `200`
-- Content length: `28393`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `c85494c67e21debe...`
-- Current hash: `24551524f2c0284f...`
+- Content length: `28521`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `24551524f2c0284f...`
+- Current hash: `155a0d5b35ce431b...`
 
 Recommended action: Review the official source manually and update the local Markdown summary if needed.
 
@@ -202,10 +214,10 @@ Recommended action: Review the official source manually and update the local Mar
 - Official source URL: `https://www.imy.se/vanliga-fragor-och-svar/vilka-sakerhetsatgarder-maste-vi-som-foretag-vidta/`
 - Status: `Changed`
 - HTTP status: `200`
-- Content length: `16045`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `9d4eee00a3b0891b...`
-- Current hash: `803a63aad7700773...`
+- Content length: `16127`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `803a63aad7700773...`
+- Current hash: `e039c984e181160a...`
 
 Recommended action: Review the official source manually and update the local Markdown summary if needed.
 
@@ -215,10 +227,10 @@ Recommended action: Review the official source manually and update the local Mar
 - Official source URL: `https://www.imy.se/verksamhet/dataskydd/det-har-galler-enligt-gdpr/grundlaggande-principer/`
 - Status: `Changed`
 - HTTP status: `200`
-- Content length: `31141`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `2f00dbe07354f1c0...`
-- Current hash: `3b533c98ec012ca1...`
+- Content length: `31269`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `3b533c98ec012ca1...`
+- Current hash: `3485f96817dd83d2...`
 
 Recommended action: Review the official source manually and update the local Markdown summary if needed.
 
@@ -228,132 +240,23 @@ Recommended action: Review the official source manually and update the local Mar
 - Official source URL: `https://www.imy.se/verksamhet/dataskydd/det-har-galler-enligt-gdpr/personuppgiftsincidenter/`
 - Status: `Changed`
 - HTTP status: `200`
-- Content length: `29099`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `28333fa261d1891d...`
-- Current hash: `058a314bbfcdb2fc...`
-
-Recommended action: Review the official source manually and update the local Markdown summary if needed.
-
-### imy_gdpr_supervision.md
-
-- Local file: `data/imy_gdpr_supervision.md`
-- Official source URL: `https://www.imy.se/en/`
-- Status: `Changed`
-- HTTP status: `200`
-- Content length: `5640`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `634a47e1b49d9843...`
-- Current hash: `4d85858a6ae53f6d...`
-
-Recommended action: Review the official source manually and update the local Markdown summary if needed.
-
-### imy_gdpr_supervision.md
-
-- Local file: `data/imy_gdpr_supervision.md`
-- Official source URL: `https://www.imy.se/en/about-us/`
-- Status: `Changed`
-- HTTP status: `200`
-- Content length: `5252`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `4a72023aec15bba6...`
-- Current hash: `cec1bcc07a662457...`
-
-Recommended action: Review the official source manually and update the local Markdown summary if needed.
-
-### imy_gdpr_supervision.md
-
-- Local file: `data/imy_gdpr_supervision.md`
-- Official source URL: `https://www.imy.se/en/about-us/swedish-authority-for-privacy-protections-assignment/`
-- Status: `Changed`
-- HTTP status: `200`
-- Content length: `9045`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `88e7a90b9cfc2630...`
-- Current hash: `3a33e3616dbc8b53...`
-
-Recommended action: Review the official source manually and update the local Markdown summary if needed.
-
-### imy_gdpr_supervision.md
-
-- Local file: `data/imy_gdpr_supervision.md`
-- Official source URL: `https://www.imy.se/en/organisations/data-protection/`
-- Status: `Changed`
-- HTTP status: `200`
-- Content length: `6701`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `adb7a9002a6a6aa8...`
-- Current hash: `8d2f01bf99de9b8b...`
+- Content length: `29227`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `058a314bbfcdb2fc...`
+- Current hash: `452133d320cacd7d...`
 
 Recommended action: Review the official source manually and update the local Markdown summary if needed.
 
 ### nis2_cybersecurity_law.md
 
 - Local file: `data/nis2_cybersecurity_law.md`
-- Official source URL: `https://www.mcf.se/sv/amnesomraden/informationssakerhet-och-cybersakerhet/krav-och-regler-inom-informationssakerhet-och-cybersakerhet/nis-direktivet/`
-- Final URL after redirects: `https://www.ncsc.se/sv/radgivning-och-stod/cybersakerhetslagen-nis2/`
+- Official source URL: `https://eur-lex.europa.eu/eli/dir/2022/2555/oj/eng`
 - Status: `Changed`
 - HTTP status: `200`
-- Content length: `7093`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `59241812453e6aaf...`
-- Current hash: `6901098ea241a627...`
-
-Recommended action: Review the official source manually and update the local Markdown summary if needed.
-
-### nis2_cybersecurity_law.md
-
-- Local file: `data/nis2_cybersecurity_law.md`
-- Official source URL: `https://www.mcf.se/sv/amnesomraden/informationssakerhet-och-cybersakerhet/krav-och-regler-inom-informationssakerhet-och-cybersakerhet/nis-direktivet/cybersakerhetslagen-nis2/det-har-ar-cybersakerhetslagen/`
-- Final URL after redirects: `https://www.ncsc.se/sv/radgivning-och-stod/cybersakerhetslagen-nis2/det-har-ar-cybersakerhetslagen/`
-- Status: `Changed`
-- HTTP status: `200`
-- Content length: `11231`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `3c8a00b9ae6e3f3d...`
-- Current hash: `b21d2300e0f7537d...`
-
-Recommended action: Review the official source manually and update the local Markdown summary if needed.
-
-### nis2_incident_reporting.md
-
-- Local file: `data/nis2_incident_reporting.md`
-- Official source URL: `https://www.msb.se/sv/amnesomraden/informationssakerhet-cybersakerhet-och-sakra-kommunikationer/krav-och-regler-inom-informationssakerhet-och-cybersakerhet/nis-direktivet/incidentrapportering-enligt-cybersakerhetslagen/`
-- Final URL after redirects: `https://www.ncsc.se/sv/radgivning-och-stod/cybersakerhetslagen-nis2/incidentrapportering-enligt-cybersakerhetslagen/`
-- Status: `Changed`
-- HTTP status: `200`
-- Content length: `11413`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `aef9d7fbda2080a6...`
-- Current hash: `0abae72eb3f19b34...`
-
-Recommended action: Review the official source manually and update the local Markdown summary if needed.
-
-### nis2_incident_reporting.md
-
-- Local file: `data/nis2_incident_reporting.md`
-- Official source URL: `https://www.msb.se/sv/amnesomraden/informationssakerhet-cybersakerhet-och-sakra-kommunikationer/krav-och-regler-inom-informationssakerhet-och-cybersakerhet/nis-direktivet/det-har-ar-nis2-direktivet/`
-- Final URL after redirects: `https://www.ncsc.se/sv/radgivning-och-stod/cybersakerhetslagen-nis2/det-har-ar-cybersakerhetslagen/`
-- Status: `Changed`
-- HTTP status: `200`
-- Content length: `11231`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `3c8a00b9ae6e3f3d...`
-- Current hash: `b21d2300e0f7537d...`
-
-Recommended action: Review the official source manually and update the local Markdown summary if needed.
-
-### nis2_incident_reporting.md
-
-- Local file: `data/nis2_incident_reporting.md`
-- Official source URL: `https://www.msb.se/sv/amnesomraden/informationssakerhet-cybersakerhet-och-sakra-kommunikationer/krav-och-regler-inom-informationssakerhet-och-cybersakerhet/nis-direktivet/tidsplan-for-nis2-inforandet-i-sverige/`
-- Final URL after redirects: `https://www.ncsc.se/sv/radgivning-och-stod/cybersakerhetslagen-nis2/tidsplan-for-inforandet-av-cybersakerhetslagen-i-sverige/`
-- Status: `Changed`
-- HTTP status: `200`
-- Content length: `9009`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `a38161485acf2fde...`
-- Current hash: `48570ca0d478cfac...`
+- Content length: `282864`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `e3b0c44298fc1c14...`
+- Current hash: `c040019bf005c100...`
 
 Recommended action: Review the official source manually and update the local Markdown summary if needed.
 
@@ -364,52 +267,23 @@ Recommended action: Review the official source manually and update the local Mar
 - Final URL after redirects: `https://www.ncsc.se/sv/radgivning-och-stod/cybersakerhetslagen-nis2/fragor-och-svar-om-cybersakerhetslagen/`
 - Status: `Changed`
 - HTTP status: `200`
-- Content length: `36479`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `c8a4574c18b13de0...`
-- Current hash: `4d7b7c87908cf0b3...`
+- Content length: `36938`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `4d7b7c87908cf0b3...`
+- Current hash: `fcfba7ced313abb4...`
 
 Recommended action: Review the official source manually and update the local Markdown summary if needed.
 
 ### nis2_sector_scope_guidance.md
 
 - Local file: `data/nis2_sector_scope_guidance.md`
-- Official source URL: `https://www.mcf.se/sv/amnesomraden/informationssakerhet-och-cybersakerhet/krav-och-regler-inom-informationssakerhet-och-cybersakerhet/nis-direktivet/cybersakerhetslagen-nis2/det-har-ar-cybersakerhetslagen/`
-- Final URL after redirects: `https://www.ncsc.se/sv/radgivning-och-stod/cybersakerhetslagen-nis2/det-har-ar-cybersakerhetslagen/`
+- Official source URL: `https://eur-lex.europa.eu/eli/dir/2022/2555/oj`
 - Status: `Changed`
 - HTTP status: `200`
-- Content length: `11231`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `3c8a00b9ae6e3f3d...`
-- Current hash: `b21d2300e0f7537d...`
-
-Recommended action: Review the official source manually and update the local Markdown summary if needed.
-
-### nis2_sector_scope_guidance.md
-
-- Local file: `data/nis2_sector_scope_guidance.md`
-- Official source URL: `https://www.mcf.se/sv/amnesomraden/informationssakerhet-och-cybersakerhet/krav-och-regler-inom-informationssakerhet-och-cybersakerhet/nis-direktivet/cybersakerhetslagen-nis2/omfattas-verksamheten-av-cybersakerhetslagen/`
-- Final URL after redirects: `https://www.ncsc.se/sv/radgivning-och-stod/cybersakerhetslagen-nis2/omfattas-verksamheten-av-cybersakerhetslagen/`
-- Status: `Changed`
-- HTTP status: `200`
-- Content length: `16581`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `89c0cf00bb8e530c...`
-- Current hash: `240996d70b5a9af0...`
-
-Recommended action: Review the official source manually and update the local Markdown summary if needed.
-
-### nis2_sector_scope_guidance.md
-
-- Local file: `data/nis2_sector_scope_guidance.md`
-- Official source URL: `https://www.mcf.se/sv/amnesomraden/informationssakerhet-och-cybersakerhet/krav-och-regler-inom-informationssakerhet-och-cybersakerhet/nis-direktivet/cybersakerhetslagen-nis2/att-anmala-en-verksamhet/`
-- Final URL after redirects: `https://www.ncsc.se/sv/radgivning-och-stod/cybersakerhetslagen-nis2/att-anmala-en-verksamhet/`
-- Status: `Changed`
-- HTTP status: `200`
-- Content length: `11888`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `dedffb6a42a37a14...`
-- Current hash: `d27c71ed1f0527a5...`
+- Content length: `282864`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `e3b0c44298fc1c14...`
+- Current hash: `c040019bf005c100...`
 
 Recommended action: Review the official source manually and update the local Markdown summary if needed.
 
@@ -422,7 +296,7 @@ Recommended action: Review the official source manually and update the local Mar
 - Status: `Failed`
 - HTTP status: `403`
 - Content length: `0`
-- Checked at: `2026-08-24 08:44:52`
+- Checked at: `2026-08-31 15:50:32`
 - Error: `HTTP error 403`
 
 Recommended action: Check whether the URL is still correct, temporarily unavailable, blocked, redirected, or moved.
@@ -434,7 +308,7 @@ Recommended action: Check whether the URL is still correct, temporarily unavaila
 - Status: `Failed`
 - HTTP status: `403`
 - Content length: `0`
-- Checked at: `2026-08-24 08:44:52`
+- Checked at: `2026-08-31 15:50:32`
 - Error: `HTTP error 403`
 
 Recommended action: Check whether the URL is still correct, temporarily unavailable, blocked, redirected, or moved.
@@ -456,7 +330,7 @@ No first snapshots were created in this run.
 - Status: `Unchanged`
 - HTTP status: `200`
 - Content length: `4724`
-- Checked at: `2026-08-24 08:44:52`
+- Checked at: `2026-08-31 15:50:32`
 - Previous hash: `45279a081927604e...`
 - Current hash: `45279a081927604e...`
 
@@ -464,14 +338,51 @@ No first snapshots were created in this run.
 ### cyber_incident_response_playbook.md
 
 - Local file: `data/cyber_incident_response_playbook.md`
-- Official source URL: `https://www.edpb.europa.eu/notify-data-breach_en`
-- Final URL after redirects: `https://www.edpb.europa.eu/contact/notify-a-data-breach_en`
+- Official source URL: `https://www.msb.se/sv/amnesomraden/informationssakerhet-cybersakerhet-och-sakra-kommunikationer/hantera-och-rapportera-it-incidenter-och-cyberangrepp/hantera-pagaende-it-incident/`
+- Final URL after redirects: `https://www.ncsc.se/sv/radgivning-och-stod/hantera-och-rapportera-it-incidenter-och-cyberangrepp/hantera-pagaende-it-incident/`
 - Status: `Unchanged`
 - HTTP status: `200`
-- Content length: `20312`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `c645e2a9e0b4a266...`
-- Current hash: `c645e2a9e0b4a266...`
+- Content length: `7293`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `c7f0d31195ed950f...`
+- Current hash: `c7f0d31195ed950f...`
+
+
+### cyber_incident_response_playbook.md
+
+- Local file: `data/cyber_incident_response_playbook.md`
+- Official source URL: `https://www.ncsc.se/sv/radgivning-och-stod/hantera-och-rapportera-it-incidenter-och-cyberangrepp/rapportera-cyberincident/rapportera-it-incident--frivillig/`
+- Status: `Unchanged`
+- HTTP status: `200`
+- Content length: `9714`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `7e75fd7f7fa1632e...`
+- Current hash: `7e75fd7f7fa1632e...`
+
+
+### cyber_incident_response_playbook.md
+
+- Local file: `data/cyber_incident_response_playbook.md`
+- Official source URL: `https://www.msb.se/sv/amnesomraden/informationssakerhet-cybersakerhet-och-sakra-kommunikationer/krav-och-regler-inom-informationssakerhet-och-cybersakerhet/nis-direktivet/incidentrapportering-enligt-cybersakerhetslagen/`
+- Final URL after redirects: `https://www.ncsc.se/sv/radgivning-och-stod/cybersakerhetslagen-nis2/incidentrapportering-enligt-cybersakerhetslagen/`
+- Status: `Unchanged`
+- HTTP status: `200`
+- Content length: `11413`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `0abae72eb3f19b34...`
+- Current hash: `0abae72eb3f19b34...`
+
+
+### cyber_incident_response_playbook.md
+
+- Local file: `data/cyber_incident_response_playbook.md`
+- Official source URL: `https://www.imy.se/en/organisations/forms-and-e-services/notification-of-a-personal-data-breach/`
+- Status: `Unchanged`
+- HTTP status: `200`
+- Content length: `6886`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `09a10e76faac6d07...`
+- Current hash: `09a10e76faac6d07...`
 
 
 ### cybercrime_dataintrang.md
@@ -481,7 +392,7 @@ No first snapshots were created in this run.
 - Status: `Unchanged`
 - HTTP status: `200`
 - Content length: `102489`
-- Checked at: `2026-08-24 08:44:52`
+- Checked at: `2026-08-31 15:50:32`
 - Previous hash: `f9a19f89d6ba25b4...`
 - Current hash: `f9a19f89d6ba25b4...`
 
@@ -493,57 +404,9 @@ No first snapshots were created in this run.
 - Status: `Unchanged`
 - HTTP status: `200`
 - Content length: `253651`
-- Checked at: `2026-08-24 08:44:52`
+- Checked at: `2026-08-31 15:50:32`
 - Previous hash: `60a36112e2e3e4f1...`
 - Current hash: `60a36112e2e3e4f1...`
-
-
-### eu_attacks_against_information_systems.md
-
-- Local file: `data/eu_attacks_against_information_systems.md`
-- Official source URL: `https://eur-lex.europa.eu/eli/dir/2013/40/oj/eng`
-- Status: `Unchanged`
-- HTTP status: `202`
-- Content length: `0`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `e3b0c44298fc1c14...`
-- Current hash: `e3b0c44298fc1c14...`
-
-
-### eu_attacks_against_information_systems.md
-
-- Local file: `data/eu_attacks_against_information_systems.md`
-- Official source URL: `https://eur-lex.europa.eu/EN/legal-content/summary/attacks-against-information-systems.html`
-- Status: `Unchanged`
-- HTTP status: `202`
-- Content length: `0`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `e3b0c44298fc1c14...`
-- Current hash: `e3b0c44298fc1c14...`
-
-
-### eu_cyber_resilience_act.md
-
-- Local file: `data/eu_cyber_resilience_act.md`
-- Official source URL: `https://eur-lex.europa.eu/eli/reg/2024/2847/oj/eng`
-- Status: `Unchanged`
-- HTTP status: `202`
-- Content length: `0`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `e3b0c44298fc1c14...`
-- Current hash: `e3b0c44298fc1c14...`
-
-
-### eu_cyber_resilience_act.md
-
-- Local file: `data/eu_cyber_resilience_act.md`
-- Official source URL: `https://eur-lex.europa.eu/eli/reg/2024/2847/oj?locale=sv`
-- Status: `Unchanged`
-- HTTP status: `202`
-- Content length: `0`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `e3b0c44298fc1c14...`
-- Current hash: `e3b0c44298fc1c14...`
 
 
 ### eu_cyber_resilience_act.md
@@ -553,7 +416,7 @@ No first snapshots were created in this run.
 - Status: `Unchanged`
 - HTTP status: `200`
 - Content length: `5138`
-- Checked at: `2026-08-24 08:44:52`
+- Checked at: `2026-08-31 15:50:32`
 - Previous hash: `d1ffbb7d800aed25...`
 - Current hash: `d1ffbb7d800aed25...`
 
@@ -565,33 +428,9 @@ No first snapshots were created in this run.
 - Status: `Unchanged`
 - HTTP status: `200`
 - Content length: `4318`
-- Checked at: `2026-08-24 08:44:52`
+- Checked at: `2026-08-31 15:50:32`
 - Previous hash: `b85eac58b8b6e53f...`
 - Current hash: `b85eac58b8b6e53f...`
-
-
-### eu_dora_digital_operational_resilience.md
-
-- Local file: `data/eu_dora_digital_operational_resilience.md`
-- Official source URL: `https://eur-lex.europa.eu/eli/reg/2022/2554/oj/eng`
-- Status: `Unchanged`
-- HTTP status: `202`
-- Content length: `0`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `e3b0c44298fc1c14...`
-- Current hash: `e3b0c44298fc1c14...`
-
-
-### eu_dora_digital_operational_resilience.md
-
-- Local file: `data/eu_dora_digital_operational_resilience.md`
-- Official source URL: `https://eur-lex.europa.eu/EN/legal-content/summary/digital-operational-resilience-for-the-financial-sector.html`
-- Status: `Unchanged`
-- HTTP status: `202`
-- Content length: `0`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `e3b0c44298fc1c14...`
-- Current hash: `e3b0c44298fc1c14...`
 
 
 ### eu_dora_digital_operational_resilience.md
@@ -601,7 +440,7 @@ No first snapshots were created in this run.
 - Status: `Unchanged`
 - HTTP status: `200`
 - Content length: `7385`
-- Checked at: `2026-08-24 08:44:52`
+- Checked at: `2026-08-31 15:50:32`
 - Previous hash: `87b124d8e4c91559...`
 - Current hash: `87b124d8e4c91559...`
 
@@ -613,7 +452,7 @@ No first snapshots were created in this run.
 - Status: `Unchanged`
 - HTTP status: `200`
 - Content length: `8243`
-- Checked at: `2026-08-24 08:44:52`
+- Checked at: `2026-08-31 15:50:32`
 - Previous hash: `cd64ce9f9a743d79...`
 - Current hash: `cd64ce9f9a743d79...`
 
@@ -625,7 +464,7 @@ No first snapshots were created in this run.
 - Status: `Unchanged`
 - HTTP status: `200`
 - Content length: `7362`
-- Checked at: `2026-08-24 08:44:52`
+- Checked at: `2026-08-31 15:50:32`
 - Previous hash: `765ba3b34767b669...`
 - Current hash: `765ba3b34767b669...`
 
@@ -633,13 +472,25 @@ No first snapshots were created in this run.
 ### gdpr_core_principles.md
 
 - Local file: `data/gdpr_core_principles.md`
-- Official source URL: `https://eur-lex.europa.eu/eli/reg/2016/679/oj/eng`
+- Official source URL: `https://www.imy.se/en/`
 - Status: `Unchanged`
-- HTTP status: `202`
-- Content length: `0`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `e3b0c44298fc1c14...`
-- Current hash: `e3b0c44298fc1c14...`
+- HTTP status: `200`
+- Content length: `5640`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `4d85858a6ae53f6d...`
+- Current hash: `4d85858a6ae53f6d...`
+
+
+### gdpr_core_principles.md
+
+- Local file: `data/gdpr_core_principles.md`
+- Official source URL: `https://www.imy.se/en/organisations/data-protection/`
+- Status: `Unchanged`
+- HTTP status: `200`
+- Content length: `6701`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `8d2f01bf99de9b8b...`
+- Current hash: `8d2f01bf99de9b8b...`
 
 
 ### gdpr_imy_edpb_security_guidance.md
@@ -650,7 +501,7 @@ No first snapshots were created in this run.
 - Status: `Unchanged`
 - HTTP status: `200`
 - Content length: `2452`
-- Checked at: `2026-08-24 08:44:52`
+- Checked at: `2026-08-31 15:50:32`
 - Previous hash: `3eafba1541e5f2b4...`
 - Current hash: `3eafba1541e5f2b4...`
 
@@ -663,7 +514,7 @@ No first snapshots were created in this run.
 - Status: `Unchanged`
 - HTTP status: `200`
 - Content length: `3608`
-- Checked at: `2026-08-24 08:44:52`
+- Checked at: `2026-08-31 15:50:32`
 - Previous hash: `9d2d7d8777fa2bea...`
 - Current hash: `9d2d7d8777fa2bea...`
 
@@ -671,13 +522,99 @@ No first snapshots were created in this run.
 ### gdpr_personal_data_breach.md
 
 - Local file: `data/gdpr_personal_data_breach.md`
-- Official source URL: `https://eur-lex.europa.eu/eli/reg/2016/679/oj/eng`
+- Official source URL: `https://www.imy.se/en/organisations/forms-and-e-services/notification-of-a-personal-data-breach/`
 - Status: `Unchanged`
-- HTTP status: `202`
-- Content length: `0`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `e3b0c44298fc1c14...`
-- Current hash: `e3b0c44298fc1c14...`
+- HTTP status: `200`
+- Content length: `6886`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `09a10e76faac6d07...`
+- Current hash: `09a10e76faac6d07...`
+
+
+### gdpr_personal_data_breach.md
+
+- Local file: `data/gdpr_personal_data_breach.md`
+- Official source URL: `https://www.imy.se/en/frequently-asked-questions/do-we-have-to-report-all-personal-data-breaches-to-imy/`
+- Status: `Unchanged`
+- HTTP status: `200`
+- Content length: `4284`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `8b04a4339924e7f0...`
+- Current hash: `8b04a4339924e7f0...`
+
+
+### imy_gdpr_supervision.md
+
+- Local file: `data/imy_gdpr_supervision.md`
+- Official source URL: `https://www.imy.se/en/`
+- Status: `Unchanged`
+- HTTP status: `200`
+- Content length: `5640`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `4d85858a6ae53f6d...`
+- Current hash: `4d85858a6ae53f6d...`
+
+
+### imy_gdpr_supervision.md
+
+- Local file: `data/imy_gdpr_supervision.md`
+- Official source URL: `https://www.imy.se/en/about-us/`
+- Status: `Unchanged`
+- HTTP status: `200`
+- Content length: `5252`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `cec1bcc07a662457...`
+- Current hash: `cec1bcc07a662457...`
+
+
+### imy_gdpr_supervision.md
+
+- Local file: `data/imy_gdpr_supervision.md`
+- Official source URL: `https://www.imy.se/en/about-us/swedish-authority-for-privacy-protections-assignment/`
+- Status: `Unchanged`
+- HTTP status: `200`
+- Content length: `9045`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `3a33e3616dbc8b53...`
+- Current hash: `3a33e3616dbc8b53...`
+
+
+### imy_gdpr_supervision.md
+
+- Local file: `data/imy_gdpr_supervision.md`
+- Official source URL: `https://www.imy.se/en/organisations/data-protection/`
+- Status: `Unchanged`
+- HTTP status: `200`
+- Content length: `6701`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `8d2f01bf99de9b8b...`
+- Current hash: `8d2f01bf99de9b8b...`
+
+
+### nis2_cybersecurity_law.md
+
+- Local file: `data/nis2_cybersecurity_law.md`
+- Official source URL: `https://www.mcf.se/sv/amnesomraden/informationssakerhet-och-cybersakerhet/krav-och-regler-inom-informationssakerhet-och-cybersakerhet/nis-direktivet/`
+- Final URL after redirects: `https://www.ncsc.se/sv/radgivning-och-stod/cybersakerhetslagen-nis2/`
+- Status: `Unchanged`
+- HTTP status: `200`
+- Content length: `7093`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `6901098ea241a627...`
+- Current hash: `6901098ea241a627...`
+
+
+### nis2_cybersecurity_law.md
+
+- Local file: `data/nis2_cybersecurity_law.md`
+- Official source URL: `https://www.mcf.se/sv/amnesomraden/informationssakerhet-och-cybersakerhet/krav-och-regler-inom-informationssakerhet-och-cybersakerhet/nis-direktivet/cybersakerhetslagen-nis2/det-har-ar-cybersakerhetslagen/`
+- Final URL after redirects: `https://www.ncsc.se/sv/radgivning-och-stod/cybersakerhetslagen-nis2/det-har-ar-cybersakerhetslagen/`
+- Status: `Unchanged`
+- HTTP status: `200`
+- Content length: `11231`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `b21d2300e0f7537d...`
+- Current hash: `b21d2300e0f7537d...`
 
 
 ### nis2_cybersecurity_law.md
@@ -687,33 +624,87 @@ No first snapshots were created in this run.
 - Status: `Unchanged`
 - HTTP status: `200`
 - Content length: `30566`
-- Checked at: `2026-08-24 08:44:52`
+- Checked at: `2026-08-31 15:50:32`
 - Previous hash: `320cef6674e3b57e...`
 - Current hash: `320cef6674e3b57e...`
 
 
-### nis2_cybersecurity_law.md
+### nis2_incident_reporting.md
 
-- Local file: `data/nis2_cybersecurity_law.md`
-- Official source URL: `https://eur-lex.europa.eu/eli/dir/2022/2555/oj/eng`
+- Local file: `data/nis2_incident_reporting.md`
+- Official source URL: `https://www.msb.se/sv/amnesomraden/informationssakerhet-cybersakerhet-och-sakra-kommunikationer/krav-och-regler-inom-informationssakerhet-och-cybersakerhet/nis-direktivet/incidentrapportering-enligt-cybersakerhetslagen/`
+- Final URL after redirects: `https://www.ncsc.se/sv/radgivning-och-stod/cybersakerhetslagen-nis2/incidentrapportering-enligt-cybersakerhetslagen/`
 - Status: `Unchanged`
-- HTTP status: `202`
-- Content length: `0`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `e3b0c44298fc1c14...`
-- Current hash: `e3b0c44298fc1c14...`
+- HTTP status: `200`
+- Content length: `11413`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `0abae72eb3f19b34...`
+- Current hash: `0abae72eb3f19b34...`
+
+
+### nis2_incident_reporting.md
+
+- Local file: `data/nis2_incident_reporting.md`
+- Official source URL: `https://www.msb.se/sv/amnesomraden/informationssakerhet-cybersakerhet-och-sakra-kommunikationer/krav-och-regler-inom-informationssakerhet-och-cybersakerhet/nis-direktivet/det-har-ar-nis2-direktivet/`
+- Final URL after redirects: `https://www.ncsc.se/sv/radgivning-och-stod/cybersakerhetslagen-nis2/det-har-ar-cybersakerhetslagen/`
+- Status: `Unchanged`
+- HTTP status: `200`
+- Content length: `11231`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `b21d2300e0f7537d...`
+- Current hash: `b21d2300e0f7537d...`
+
+
+### nis2_incident_reporting.md
+
+- Local file: `data/nis2_incident_reporting.md`
+- Official source URL: `https://www.msb.se/sv/amnesomraden/informationssakerhet-cybersakerhet-och-sakra-kommunikationer/krav-och-regler-inom-informationssakerhet-och-cybersakerhet/nis-direktivet/tidsplan-for-nis2-inforandet-i-sverige/`
+- Final URL after redirects: `https://www.ncsc.se/sv/radgivning-och-stod/cybersakerhetslagen-nis2/tidsplan-for-inforandet-av-cybersakerhetslagen-i-sverige/`
+- Status: `Unchanged`
+- HTTP status: `200`
+- Content length: `9009`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `48570ca0d478cfac...`
+- Current hash: `48570ca0d478cfac...`
 
 
 ### nis2_sector_scope_guidance.md
 
 - Local file: `data/nis2_sector_scope_guidance.md`
-- Official source URL: `https://eur-lex.europa.eu/eli/dir/2022/2555/oj`
+- Official source URL: `https://www.mcf.se/sv/amnesomraden/informationssakerhet-och-cybersakerhet/krav-och-regler-inom-informationssakerhet-och-cybersakerhet/nis-direktivet/cybersakerhetslagen-nis2/det-har-ar-cybersakerhetslagen/`
+- Final URL after redirects: `https://www.ncsc.se/sv/radgivning-och-stod/cybersakerhetslagen-nis2/det-har-ar-cybersakerhetslagen/`
 - Status: `Unchanged`
-- HTTP status: `202`
-- Content length: `0`
-- Checked at: `2026-08-24 08:44:52`
-- Previous hash: `e3b0c44298fc1c14...`
-- Current hash: `e3b0c44298fc1c14...`
+- HTTP status: `200`
+- Content length: `11231`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `b21d2300e0f7537d...`
+- Current hash: `b21d2300e0f7537d...`
+
+
+### nis2_sector_scope_guidance.md
+
+- Local file: `data/nis2_sector_scope_guidance.md`
+- Official source URL: `https://www.mcf.se/sv/amnesomraden/informationssakerhet-och-cybersakerhet/krav-och-regler-inom-informationssakerhet-och-cybersakerhet/nis-direktivet/cybersakerhetslagen-nis2/omfattas-verksamheten-av-cybersakerhetslagen/`
+- Final URL after redirects: `https://www.ncsc.se/sv/radgivning-och-stod/cybersakerhetslagen-nis2/omfattas-verksamheten-av-cybersakerhetslagen/`
+- Status: `Unchanged`
+- HTTP status: `200`
+- Content length: `16581`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `240996d70b5a9af0...`
+- Current hash: `240996d70b5a9af0...`
+
+
+### nis2_sector_scope_guidance.md
+
+- Local file: `data/nis2_sector_scope_guidance.md`
+- Official source URL: `https://www.mcf.se/sv/amnesomraden/informationssakerhet-och-cybersakerhet/krav-och-regler-inom-informationssakerhet-och-cybersakerhet/nis-direktivet/cybersakerhetslagen-nis2/att-anmala-en-verksamhet/`
+- Final URL after redirects: `https://www.ncsc.se/sv/radgivning-och-stod/cybersakerhetslagen-nis2/att-anmala-en-verksamhet/`
+- Status: `Unchanged`
+- HTTP status: `200`
+- Content length: `11888`
+- Checked at: `2026-08-31 15:50:32`
+- Previous hash: `d27c71ed1f0527a5...`
+- Current hash: `d27c71ed1f0527a5...`
 
 
 ---
