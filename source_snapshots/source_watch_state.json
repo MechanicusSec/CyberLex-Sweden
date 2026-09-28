@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated_at": "2026-09-21 14:50:29",
+  "generated_at": "2026-09-28 16:27:11",
   "description": "CyberLex Sweden source watch state. This stores URL hashes for detecting possible official source changes. It does not store full webpage contents.",
   "sources": {
     "https://www.cert.se/en/": {
@@ -8,9 +8,9 @@
       "source_path": "data/cyber_incident_response_playbook.md",
       "url": "https://www.cert.se/en/",
       "final_url": "https://www.cert.se/en/",
-      "content_hash": "7598d252d6cf5ad1b3ee5936e5e548a5f5aaa3101178dc9b1d6205d25166c3fc",
-      "content_length": 4778,
-      "last_successful_check": "2026-09-21 14:50:29",
+      "content_hash": "bcbf81d5f6657dc2e484bc008bb2af6a650c99b76f235216a7b452a4421f7f70",
+      "content_length": 4782,
+      "last_successful_check": "2026-09-28 16:27:11",
       "last_status": "Changed",
       "http_status": 200
     },
@@ -21,7 +21,7 @@
       "final_url": "https://www.ncsc.se/sv/radgivning-och-stod/hantera-och-rapportera-it-incidenter-och-cyberangrepp/hantera-pagaende-it-incident/",
       "content_hash": "5cddb1a75f5c7f536704cde9ca698c15064bad960d0dd9bf592a824402220117",
       "content_length": 7324,
-      "last_successful_check": "2026-09-21 14:50:29",
+      "last_successful_check": "2026-09-28 16:27:11",
       "last_status": "Unchanged",
       "http_status": 200
     },
@@ -32,7 +32,7 @@
       "final_url": "https://www.ncsc.se/sv/radgivning-och-stod/hantera-och-rapportera-it-incidenter-och-cyberangrepp/rapportera-cyberincident/rapportera-it-incident--frivillig/",
       "content_hash": "9b7bac8e241c6517f0cdc564a6d012be93fe8229d3f5d074bdee4b8c0eeb59e6",
       "content_length": 9745,
-      "last_successful_check": "2026-09-21 14:50:29",
+      "last_successful_check": "2026-09-28 16:27:11",
       "last_status": "Unchanged",
       "http_status": 200
     },
@@ -43,7 +43,7 @@
       "final_url": "https://www.ncsc.se/sv/radgivning-och-stod/cybersakerhetslagen-nis2/incidentrapportering-enligt-cybersakerhetslagen/",
       "content_hash": "8b47160afe6590d58e0e6352aa243cfa800768b0dda59bcb3a5fa835e89cb836",
       "content_length": 11444,
-      "last_successful_check": "2026-09-21 14:50:29",
+      "last_successful_check": "2026-09-28 16:27:11",
       "last_status": "Unchanged",
       "http_status": 200
     },
@@ -54,8 +54,8 @@
       "final_url": "https://www.imy.se/en/organisations/forms-and-e-services/notification-of-a-personal-data-breach/",
       "content_hash": "09a10e76faac6d07da94f86f6d60687db43084f9575c49e8c75231ed010987ed",
       "content_length": 6886,
-      "last_successful_check": "2026-09-21 14:50:29",
-      "last_status": "Changed",
+      "last_successful_check": "2026-09-28 16:27:11",
+      "last_status": "Unchanged",
       "http_status": 200
     },
     "https://www.edpb.europa.eu/notify-data-breach_en": {
@@ -65,7 +65,7 @@
       "final_url": "https://www.edpb.europa.eu/contact/notify-a-data-breach_en",
       "content_hash": "8e0fc7493ca8156b13a0dcc93ebf482d0142c71e4c629a4e3f8d92def06dbead",
       "content_length": 20309,
-      "last_successful_check": "2026-09-21 14:50:29",
+      "last_successful_check": "2026-09-28 16:27:11",
       "last_status": "Unchanged",
       "http_status": 200
     },
@@ -79,7 +79,7 @@
       "last_successful_check": "2026-07-10 13:24:15",
       "last_status": "Unchanged",
       "http_status": 200,
-      "last_failed_check": "2026-09-21 14:50:29",
+      "last_failed_check": "2026-09-28 16:27:11",
       "last_error": "HTTP error 403"
     },
     "https://www.cisa.gov/stopransomware/ive-been-hit-ransomware": {
@@ -92,7 +92,7 @@
       "last_successful_check": "2026-07-10 13:24:15",
       "last_status": "Unchanged",
       "http_status": 200,
-      "last_failed_check": "2026-09-21 14:50:29",
+      "last_failed_check": "2026-09-28 16:27:11",
       "last_error": "HTTP error 403"
     },
     "https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/brottsbalk-1962700_sfs-1962-700/": {
@@ -100,10 +100,10 @@
       "source_path": "data/cybercrime_dataintrang.md",
       "url": "https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/brottsbalk-1962700_sfs-1962-700/",
       "final_url": "https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/brottsbalk-1962700_sfs-1962-700/",
-      "content_hash": "def5a627473b6b8490c7c13b88ded9ac7f2ae3800b75009e0def711fb05d309a",
-      "content_length": 362148,
-      "last_successful_check": "2026-09-21 14:50:29",
-      "last_status": "Unchanged",
+      "content_hash": "a3db1fa83a6090b407b4d29fd73698580ac33bfb04687a1b99c2d79cfc14404b",
+      "content_length": 362277,
+      "last_successful_check": "2026-09-28 16:27:11",
+      "last_status": "Changed",
       "http_status": 200
     },
     "https://www.riksdagen.se/sv/dokument-och-lagar/dokument/proposition/skarpt-straff-for-dataintrang_h10392/html/": {
@@ -113,7 +113,7 @@
       "final_url": "https://www.riksdagen.se/sv/dokument-och-lagar/dokument/proposition/skarpt-straff-for-dataintrang_h10392/html/",
       "content_hash": "f9a19f89d6ba25b4713fa6f8ff553f6c140df377ab0714de1e0b108684663cb3",
       "content_length": 102489,
-      "last_successful_check": "2026-09-21 14:50:29",
+      "last_successful_check": "2026-09-28 16:27:11",
       "last_status": "Unchanged",
       "http_status": 200
     },
@@ -124,7 +124,7 @@
       "final_url": "https://www.riksdagen.se/sv/dokument-och-lagar/dokument/betankande/straffrattsliga-fragor_ha01juu11/html/",
       "content_hash": "60a36112e2e3e4f169f51f00594d0778fc736384a6495abce8371d03b009edf4",
       "content_length": 253651,
-      "last_successful_check": "2026-09-21 14:50:29",
+      "last_successful_check": "2026-09-28 16:27:11",
       "last_status": "Unchanged",
       "http_status": 200
     },
@@ -135,7 +135,7 @@
       "final_url": "https://eur-lex.europa.eu/eli/dir/2013/40/oj/eng",
       "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "content_length": 0,
-      "last_successful_check": "2026-09-21 14:50:29",
+      "last_successful_check": "2026-09-28 16:27:11",
       "last_status": "Unchanged",
       "http_status": 202
     },
@@ -146,7 +146,7 @@
       "final_url": "https://eur-lex.europa.eu/EN/legal-content/summary/attacks-against-information-systems.html",
       "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "content_length": 0,
-      "last_successful_check": "2026-09-21 14:50:29",
+      "last_successful_check": "2026-09-28 16:27:11",
       "last_status": "Unchanged",
       "http_status": 202
     },
@@ -157,7 +157,7 @@
       "final_url": "https://eur-lex.europa.eu/eli/reg/2024/2847/oj/eng",
       "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "content_length": 0,
-      "last_successful_check": "2026-09-21 14:50:29",
+      "last_successful_check": "2026-09-28 16:27:11",
       "last_status": "Unchanged",
       "http_status": 202
     },
@@ -168,7 +168,7 @@
       "final_url": "https://eur-lex.europa.eu/eli/reg/2024/2847/oj?locale=sv",
       "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "content_length": 0,
-      "last_successful_check": "2026-09-21 14:50:29",
+      "last_successful_check": "2026-09-28 16:27:11",
       "last_status": "Unchanged",
       "http_status": 202
     },
@@ -179,7 +179,7 @@
       "final_url": "https://digital-strategy.ec.europa.eu/en/policies/cyber-resilience-act",
       "content_hash": "84322a9de8d5da3c9cde97e78225c9c8c0a05b9575114847975e3475f610fe99",
       "content_length": 5037,
-      "last_successful_check": "2026-09-21 14:50:29",
+      "last_successful_check": "2026-09-28 16:27:11",
       "last_status": "Unchanged",
       "http_status": 200
     },
@@ -190,7 +190,7 @@
       "final_url": "https://digital-strategy.ec.europa.eu/en/factpages/cyber-resilience-act-implementation",
       "content_hash": "b85eac58b8b6e53ff29e570caef4e2f0992b4a67956a3ac7d1f8a34e82d82be1",
       "content_length": 4318,
-      "last_successful_check": "2026-09-21 14:50:29",
+      "last_successful_check": "2026-09-28 16:27:11",
       "last_status": "Unchanged",
       "http_status": 200
     },
@@ -201,7 +201,7 @@
       "final_url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj/eng",
       "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "content_length": 0,
-      "last_successful_check": "2026-09-21 14:50:29",
+      "last_successful_check": "2026-09-28 16:27:11",
       "last_status": "Unchanged",
       "http_status": 202
     },
@@ -212,7 +212,7 @@
       "final_url": "https://eur-lex.europa.eu/EN/legal-content/summary/digital-operational-resilience-for-the-financial-sector.html",
       "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "content_length": 0,
-      "last_successful_check": "2026-09-21 14:50:29",
+      "last_successful_check": "2026-09-28 16:27:11",
       "last_status": "Unchanged",
       "http_status": 202
     },
@@ -223,7 +223,7 @@
       "final_url": "https://finance.ec.europa.eu/regulation-and-supervision/financial-services-legislation/implementing-and-delegated-acts/digital-operational-resilience-regulation_en",
       "content_hash": "87b124d8e4c91559b5b33c417d9cf610779cee14298fcd07db3d670bd8b351f5",
       "content_length": 7385,
-      "last_successful_check": "2026-09-21 14:50:29",
+      "last_successful_check": "2026-09-28 16:27:11",
       "last_status": "Unchanged",
       "http_status": 200
     },
@@ -234,7 +234,7 @@
       "final_url": "https://www.eba.europa.eu/activities/direct-supervision-and-oversight/digital-operational-resilience-act",
       "content_hash": "cd64ce9f9a743d791c21549588ead6ea2c6ce7a3201fece141f3d66eda12b1a4",
       "content_length": 8243,
-      "last_successful_check": "2026-09-21 14:50:29",
+      "last_successful_check": "2026-09-28 16:27:11",
       "last_status": "Unchanged",
       "http_status": 200
     },
@@ -243,9 +243,9 @@
       "source_path": "data/eu_dora_digital_operational_resilience.md",
       "url": "https://www.eiopa.europa.eu/digital-operational-resilience-act-dora_en",
       "final_url": "https://www.eiopa.europa.eu/digital-operational-resilience-act-dora_en",
-      "content_hash": "0b60f21c43f51cc80634915862d2573850ab22cafa07a569dcad35ff5cf2cf45",
-      "content_length": 7441,
-      "last_successful_check": "2026-09-21 14:50:29",
+      "content_hash": "73ff3b1d4cb31bbc40d83a1435ace08fb5b8ab065b4c4dc6b2d50cab04e40394",
+      "content_length": 7536,
+      "last_successful_check": "2026-09-28 16:27:11",
       "last_status": "Changed",
       "http_status": 200
     },
@@ -256,7 +256,7 @@
       "final_url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj/eng",
       "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "content_length": 0,
-      "last_successful_check": "2026-09-21 14:50:29",
+      "last_successful_check": "2026-09-28 16:27:11",
       "last_status": "Unchanged",
       "http_status": 202
     },
@@ -265,9 +265,9 @@
       "source_path": "data/imy_gdpr_supervision.md",
       "url": "https://www.imy.se/en/",
       "final_url": "https://www.imy.se/en/",
-      "content_hash": "4d85858a6ae53f6dd64c3223d7e530bd5a1484990f122fac283f339327be8c6a",
-      "content_length": 5640,
-      "last_successful_check": "2026-09-21 14:50:29",
+      "content_hash": "f75479b0553347ed87250431af6602e7932081f56763b77421957a4b4a7e5170",
+      "content_length": 5574,
+      "last_successful_check": "2026-09-28 16:27:11",
       "last_status": "Changed",
       "http_status": 200
     },
@@ -278,8 +278,8 @@
       "final_url": "https://www.imy.se/en/organisations/data-protection/",
       "content_hash": "d5f2519d56c0d7c9409c2647b345d7a36097ade94fd665f81949dce8b5420b41",
       "content_length": 6693,
-      "last_successful_check": "2026-09-21 14:50:29",
-      "last_status": "Changed",
+      "last_successful_check": "2026-09-28 16:27:11",
+      "last_status": "Unchanged",
       "http_status": 200
     },
     "https://www.imy.se/verksamhet/dataskydd/det-har-galler-enligt-gdpr/personuppgiftsincidenter/": {
@@ -287,9 +287,9 @@
       "source_path": "data/imy_gdpr_security_measures.md",
       "url": "https://www.imy.se/verksamhet/dataskydd/det-har-galler-enligt-gdpr/personuppgiftsincidenter/",
       "final_url": "https://www.imy.se/verksamhet/dataskydd/det-har-galler-enligt-gdpr/personuppgiftsincidenter/",
-      "content_hash": "1b1c3968fac799925cef5db4d3a34648b2521bb210fb7f09726dc8555d4d03ec",
-      "content_length": 29542,
-      "last_successful_check": "2026-09-21 14:50:29",
+      "content_hash": "922b29603f223baa5bc22bb805f8b9d1d2e936df0d8cbf9591978f46d7031713",
+      "content_length": 29643,
+      "last_successful_check": "2026-09-28 16:27:11",
       "last_status": "Changed",
       "http_status": 200
     },
@@ -298,9 +298,9 @@
       "source_path": "data/gdpr_imy_edpb_security_guidance.md",
       "url": "https://www.imy.se/verksamhet/dataskydd/det-har-galler-enligt-gdpr/personuppgiftsincidenter/detta-hander-da-en-verksamhet-anmalt-en-personuppgiftsincident/",
       "final_url": "https://www.imy.se/verksamhet/dataskydd/det-har-galler-enligt-gdpr/personuppgiftsincidenter/detta-hander-da-en-verksamhet-anmalt-en-personuppgiftsincident/",
-      "content_hash": "40f05de058b67ed514a7e0504fcbfb45ebd3e6188ca30663be1856fb72c2f328",
-      "content_length": 24846,
-      "last_successful_check": "2026-09-21 14:50:29",
+      "content_hash": "d875c70449aff5c46951f8a52b3049fa9ada05a6b3013824d9f3fa4e58f1a18c",
+      "content_length": 24947,
+      "last_successful_check": "2026-09-28 16:27:11",
       "last_status": "Changed",
       "http_status": 200
     },
@@ -311,7 +311,7 @@
       "final_url": "https://www.edpb.europa.eu/documents/guideline/guidelines-012021-on-examples-regarding-personal-data-breach-notification_en",
       "content_hash": "3eafba1541e5f2b4923f20841bab8e14b095c86a3690850d779008476591eb0b",
       "content_length": 2452,
-      "last_successful_check": "2026-09-21 14:50:29",
+      "last_successful_check": "2026-09-28 16:27:11",
       "last_status": "Unchanged",
       "http_status": 200
     },
@@ -320,10 +320,10 @@
       "source_path": "data/gdpr_imy_edpb_security_guidance.md",
       "url": "https://www.edpb.europa.eu/our-work-tools/our-documents/guidelines/guidelines-42019-article-25-data-protection-design-and_en",
       "final_url": "https://www.edpb.europa.eu/documents/guideline/guidelines-42019-on-article-25-data-protection-by-design-and-by-default_en",
-      "content_hash": "2823311e637e794c4fddbfbaf17302a30dbba779250c138bf2d83f750a3b0c29",
-      "content_length": 3624,
-      "last_successful_check": "2026-09-21 14:50:29",
-      "last_status": "Unchanged",
+      "content_hash": "37969d7de54b85f1e9b97120776a5ff42f4c2d42563cba0ea413a80ffa1fadd8",
+      "content_length": 3680,
+      "last_successful_check": "2026-09-28 16:27:11",
+      "last_status": "Changed",
       "http_status": 200
     },
     "https://www.imy.se/en/frequently-asked-questions/do-we-have-to-report-all-personal-data-breaches-to-imy/": {
@@ -333,8 +333,8 @@
       "final_url": "https://www.imy.se/en/frequently-asked-questions/do-we-have-to-report-all-personal-data-breaches-to-imy/",
       "content_hash": "8b04a4339924e7f09cb92bbfe143899703ff37f88d600f2ff6734bedd4fb63e4",
       "content_length": 4284,
-      "last_successful_check": "2026-09-21 14:50:29",
-      "last_status": "Changed",
+      "last_successful_check": "2026-09-28 16:27:11",
+      "last_status": "Unchanged",
       "http_status": 200
     },
     "https://www.imy.se/verksamhet/dataskydd/det-har-galler-enligt-gdpr/informationssakerhet/sakerhetsatgarder/": {
@@ -342,9 +342,9 @@
       "source_path": "data/imy_gdpr_security_measures.md",
       "url": "https://www.imy.se/verksamhet/dataskydd/det-har-galler-enligt-gdpr/informationssakerhet/sakerhetsatgarder/",
       "final_url": "https://www.imy.se/verksamhet/dataskydd/det-har-galler-enligt-gdpr/informationssakerhet/sakerhetsatgarder/",
-      "content_hash": "18e69e1f2e3015e1b1db7b7a7f62984d0e867771569658cf5b9f9068efbbd02d",
-      "content_length": 28836,
-      "last_successful_check": "2026-09-21 14:50:29",
+      "content_hash": "7989108c287dcf3131b585e27b57d4755e038d658019c14d24ef8e8cc1b90499",
+      "content_length": 28937,
+      "last_successful_check": "2026-09-28 16:27:11",
       "last_status": "Changed",
       "http_status": 200
     },
@@ -353,9 +353,9 @@
       "source_path": "data/imy_gdpr_security_measures.md",
       "url": "https://www.imy.se/vanliga-fragor-och-svar/vilka-sakerhetsatgarder-maste-vi-som-foretag-vidta/",
       "final_url": "https://www.imy.se/vanliga-fragor-och-svar/vilka-sakerhetsatgarder-maste-vi-som-foretag-vidta/",
-      "content_hash": "864222713896bb93c7acd3e4cff9268a1aef4555c72b5b7dde7d8b8fa0d7c5d7",
-      "content_length": 16361,
-      "last_successful_check": "2026-09-21 14:50:29",
+      "content_hash": "8a87805941bb205366381285b0fbf009ebc97802268740dce4893bd85c71c04a",
+      "content_length": 16462,
+      "last_successful_check": "2026-09-28 16:27:11",
       "last_status": "Changed",
       "http_status": 200
     },
@@ -364,9 +364,9 @@
       "source_path": "data/imy_gdpr_security_measures.md",
       "url": "https://www.imy.se/verksamhet/dataskydd/det-har-galler-enligt-gdpr/grundlaggande-principer/",
       "final_url": "https://www.imy.se/verksamhet/dataskydd/det-har-galler-enligt-gdpr/grundlaggande-principer/",
-      "content_hash": "3d9dea782ed6e3c8f6be4d9480d14fad8f5839555eecc620986aad5fed13173f",
-      "content_length": 31584,
-      "last_successful_check": "2026-09-21 14:50:29",
+      "content_hash": "ff7e762c7b02028e21a4e6d1a4ecc8c78a7d45dc06e6604cf6b8d622ceb05d2d",
+      "content_length": 31685,
+      "last_successful_check": "2026-09-28 16:27:11",
       "last_status": "Changed",
       "http_status": 200
     },
@@ -377,8 +377,8 @@
       "final_url": "https://www.imy.se/en/about-us/",
       "content_hash": "cec1bcc07a662457d3a9acf4699394a4f60331c1f395bf71619f0559cb5a1fae",
       "content_length": 5252,
-      "last_successful_check": "2026-09-21 14:50:29",
-      "last_status": "Changed",
+      "last_successful_check": "2026-09-28 16:27:11",
+      "last_status": "Unchanged",
       "http_status": 200
     },
     "https://www.imy.se/en/about-us/swedish-authority-for-privacy-protections-assignment/": {
@@ -388,8 +388,8 @@
       "final_url": "https://www.imy.se/en/about-us/swedish-authority-for-privacy-protections-assignment/",
       "content_hash": "3a33e3616dbc8b53bbbf3b635e65f701c3c8f0f528498de09bd1c5e7f883d59c",
       "content_length": 9045,
-      "last_successful_check": "2026-09-21 14:50:29",
-      "last_status": "Changed",
+      "last_successful_check": "2026-09-28 16:27:11",
+      "last_status": "Unchanged",
       "http_status": 200
     },
     "https://www.mcf.se/sv/amnesomraden/informationssakerhet-och-cybersakerhet/krav-och-regler-inom-informationssakerhet-och-cybersakerhet/nis-direktivet/": {
@@ -399,7 +399,7 @@
       "final_url": "https://www.ncsc.se/sv/radgivning-och-stod/cybersakerhetslagen-nis2/",
       "content_hash": "2b146098973b6636c6c26625e6a2b1f76627fd74f1e581ecdc33c7da581432d0",
       "content_length": 7124,
-      "last_successful_check": "2026-09-21 14:50:29",
+      "last_successful_check": "2026-09-28 16:27:11",
       "last_status": "Unchanged",
       "http_status": 200
     },
@@ -408,9 +408,9 @@
       "source_path": "data/nis2_sector_scope_guidance.md",
       "url": "https://www.mcf.se/sv/amnesomraden/informationssakerhet-och-cybersakerhet/krav-och-regler-inom-informationssakerhet-och-cybersakerhet/nis-direktivet/cybersakerhetslagen-nis2/det-har-ar-cybersakerhetslagen/",
       "final_url": "https://www.ncsc.se/sv/radgivning-och-stod/cybersakerhetslagen-nis2/det-har-ar-cybersakerhetslagen/",
-      "content_hash": "030fb936c0621dce9e92e2b47883cb2487bdabad3b1b3bd7e1425fbe73d6342c",
-      "content_length": 11327,
-      "last_successful_check": "2026-09-21 14:50:29",
+      "content_hash": "83f225cb7a3cfec7c8342fbb9cbb90e597139170a361814aaa37e0e2af56f3cd",
+      "content_length": 11348,
+      "last_successful_check": "2026-09-28 16:27:11",
       "last_status": "Changed",
       "http_status": 200
     },
@@ -419,10 +419,10 @@
       "source_path": "data/nis2_cybersecurity_law.md",
       "url": "https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/cybersakerhetslag-20251506_sfs-2025-1506/",
       "final_url": "https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/cybersakerhetslag-20251506_sfs-2025-1506/",
-      "content_hash": "320cef6674e3b57e49a5cef898e0c72972d6e328a2213d724f3ef9447489d605",
-      "content_length": 30566,
-      "last_successful_check": "2026-09-21 14:50:29",
-      "last_status": "Unchanged",
+      "content_hash": "25ee109926e5f12383205565404d5c161a92155ab66e3efe2fa112dfe0967895",
+      "content_length": 30695,
+      "last_successful_check": "2026-09-28 16:27:11",
+      "last_status": "Changed",
       "http_status": 200
     },
     "https://eur-lex.europa.eu/eli/dir/2022/2555/oj/eng": {
@@ -432,7 +432,7 @@
       "final_url": "https://eur-lex.europa.eu/eli/dir/2022/2555/oj/eng",
       "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "content_length": 0,
-      "last_successful_check": "2026-09-21 14:50:29",
+      "last_successful_check": "2026-09-28 16:27:11",
       "last_status": "Unchanged",
       "http_status": 202
     },
@@ -441,9 +441,9 @@
       "source_path": "data/nis2_incident_reporting.md",
       "url": "https://www.msb.se/sv/amnesomraden/informationssakerhet-cybersakerhet-och-sakra-kommunikationer/krav-och-regler-inom-informationssakerhet-och-cybersakerhet/nis-direktivet/det-har-ar-nis2-direktivet/",
       "final_url": "https://www.ncsc.se/sv/radgivning-och-stod/cybersakerhetslagen-nis2/det-har-ar-cybersakerhetslagen/",
-      "content_hash": "030fb936c0621dce9e92e2b47883cb2487bdabad3b1b3bd7e1425fbe73d6342c",
-      "content_length": 11327,
-      "last_successful_check": "2026-09-21 14:50:29",
+      "content_hash": "83f225cb7a3cfec7c8342fbb9cbb90e597139170a361814aaa37e0e2af56f3cd",
+      "content_length": 11348,
+      "last_successful_check": "2026-09-28 16:27:11",
       "last_status": "Changed",
       "http_status": 200
     },
@@ -454,7 +454,7 @@
       "final_url": "https://www.ncsc.se/sv/radgivning-och-stod/cybersakerhetslagen-nis2/tidsplan-for-inforandet-av-cybersakerhetslagen-i-sverige/",
       "content_hash": "c66fab6a2f742dc9fb87fc01970bdc798d208a28743cb7d2b611cbb17233906a",
       "content_length": 9040,
-      "last_successful_check": "2026-09-21 14:50:29",
+      "last_successful_check": "2026-09-28 16:27:11",
       "last_status": "Unchanged",
       "http_status": 200
     },
@@ -465,7 +465,7 @@
       "final_url": "https://www.ncsc.se/sv/radgivning-och-stod/cybersakerhetslagen-nis2/fragor-och-svar-om-cybersakerhetslagen/",
       "content_hash": "777505de4141faa234addde5e240e652a92125e67da6de48ed2a4f4133ebaaee",
       "content_length": 36969,
-      "last_successful_check": "2026-09-21 14:50:29",
+      "last_successful_check": "2026-09-28 16:27:11",
       "last_status": "Unchanged",
       "http_status": 200
     },
@@ -476,7 +476,7 @@
       "final_url": "https://www.ncsc.se/sv/radgivning-och-stod/cybersakerhetslagen-nis2/omfattas-verksamheten-av-cybersakerhetslagen/",
       "content_hash": "e6a3126d979e9e19e0c55137e634010a92032b13e30ddbc6f9bdd1eaa224cebc",
       "content_length": 16612,
-      "last_successful_check": "2026-09-21 14:50:29",
+      "last_successful_check": "2026-09-28 16:27:11",
       "last_status": "Unchanged",
       "http_status": 200
     },
@@ -485,10 +485,10 @@
       "source_path": "data/nis2_sector_scope_guidance.md",
       "url": "https://www.mcf.se/sv/amnesomraden/informationssakerhet-och-cybersakerhet/krav-och-regler-inom-informationssakerhet-och-cybersakerhet/nis-direktivet/cybersakerhetslagen-nis2/att-anmala-en-verksamhet/",
       "final_url": "https://www.ncsc.se/sv/radgivning-och-stod/cybersakerhetslagen-nis2/att-anmala-en-verksamhet/",
-      "content_hash": "fdf120ff2affbba21034dacdb334c652f77156bcdc794a696a7f61bcff9a159d",
-      "content_length": 11919,
-      "last_successful_check": "2026-09-21 14:50:29",
-      "last_status": "Unchanged",
+      "content_hash": "2637f34c46e52925351786051378b6c1e1e23db6f02142d31b7c457cc2481467",
+      "content_length": 12085,
+      "last_successful_check": "2026-09-28 16:27:11",
+      "last_status": "Changed",
       "http_status": 200
     },
     "https://eur-lex.europa.eu/eli/dir/2022/2555/oj": {
@@ -498,7 +498,7 @@
       "final_url": "https://eur-lex.europa.eu/eli/dir/2022/2555/oj",
       "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "content_length": 0,
-      "last_successful_check": "2026-09-21 14:50:29",
+      "last_successful_check": "2026-09-28 16:27:11",
       "last_status": "Unchanged",
       "http_status": 202
     }
